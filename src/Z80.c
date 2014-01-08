@@ -394,11 +394,10 @@ void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT);}
 inline uint8_t SUB_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 1;
-    reg.H_FLAG = (val1 & 0xF) > (val2 & 0xf) ? 1 : 0;
-    reg.C_FLAG = val1 >= val2 ? 1 : 0;
-    val1 -= val2;
-    reg.Z_FLAG = val1 == 0 ? 1 : 0;
-    return val1;
+    reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) ? 1 : 0;
+    reg.C_FLAG = val1 < val2 ? 1 : 0;
+    reg.Z_FLAG = val1  == val2 ? 1 : 0;
+    return val1 - val2;
 }
 
 void SUB_A_A(){reg.A = SUB_8(reg.A, reg.A);}
@@ -410,6 +409,17 @@ void SUB_A_H(){reg.A = SUB_8(reg.A, reg.H);}
 void SUB_A_L(){reg.A = SUB_8(reg.A, reg.L);} 
 void SUB_A_memHL(){reg.A = SUB_8(reg.A, mem[reg.HL]);}
 void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+/*  Performs SUB carry operation on 2 bytes, returns result and sets flags */
+inline uint8_t SBC_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 1;
+    reg.Z_FLAG = val1 == val2 + reg.C_FLAG ? 1 : 0;
+    reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) + reg.C_FLAG ? 1 : 0;
+    reg.C_FLAG = val1 < val2 || reg.C_FLAG == 1 && val1 == val2 ? 1 : 0;
+    return val1 - val2;
+}
 
 
 /* Performs AND operation on 2 bytes, returns result and sets flags */
@@ -478,6 +488,85 @@ void XOR_A_H(){reg.A = XOR_8(reg.A, reg.H);}
 void XOR_A_L(){reg.A = XOR_8(reg.A, reg.L);} 
 void XOR_A_memHL(){reg.A = XOR_8(reg.A, mem[reg.HL]);}
 void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+/*  Performs Compare operation on 2 bytes, sets flags */
+
+inline void CP_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) ? 1 : 0;
+    reg.C_FLAG = val1 < val2 ? 1 : 0;
+    reg.Z_FLAG = val1 == val2 ? 1 : 0;
+}
+
+void CP_A_A(){ CP_8(reg.A, reg.A);}
+void CP_A_B(){ CP_8(reg.A, reg.B);}
+void CP_A_C(){ CP_8(reg.A, reg.C);}
+void CP_A_D(){ CP_8(reg.A, reg.D);} 
+void CP_A_E(){ CP_8(reg.A, reg.E);} 
+void CP_A_H(){ CP_8(reg.A, reg.H);} 
+void CP_A_L(){CP_8(reg.A, reg.L);} 
+void CP_A_memHL(){ CP_8(reg.A, mem[reg.HL]);}
+void CP_A_Im8(){CP_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+/*  Performs Increment operation on register, sets flags */
+inline uint8_t INC_8(uint8_t val)
+{
+    val++; 
+    reg.N_FLAG = 0;
+    reg.H_FLAG = val & 0xF == 0 ? 1 : 0;
+    reg.Z_FLAG = val == 0 ? 1 : 0;
+    return val;
+}
+
+void INC_A(){reg.A = INC_8(reg.A);}
+void INC_B(){reg.B = INC_8(reg.B);}
+void INC_C(){reg.C = INC_8(reg.C);}
+void INC_D(){reg.D = INC_8(reg.D);} 
+void INC_E(){reg.E = INC_8(reg.E);} 
+void INC_H(){reg.H = INC_8(reg.H);} 
+void INC_L(){reg.L = INC_8(reg.L);} 
+void INC_memHL(){mem[reg.HL] = INC_8(mem[reg.HL]);}
+
+
+/*  Performs Decrement operation on register, sets flags */
+inline uint8_t DEC_8(uint8_t val)
+{
+    val--;
+    reg.N_FLAG = 1;
+    reg.H_FLAG = val & 0xF == 0xF ? 1 : 0;
+    reg.Z_FLAG = !val;
+}
+
+
+void DEC_A(){reg.A = DEC_8(reg.A);}
+void DEC_B(){reg.B = DEC_8(reg.B);}
+void DEC_C(){reg.C = DEC_8(reg.C);}
+void DEC_D(){reg.D = DEC_8(reg.D);} 
+void DEC_E(){reg.E = DEC_8(reg.E);} 
+void DEC_H(){reg.H = DEC_8(reg.H);} 
+void DEC_L(){reg.L = DEC_8(reg.L);} 
+void DEC_memHL(){mem[reg.HL] = DEC_8(mem[reg.HL]);}
+
+
+/**********************  16 bit ALU *****************/
+
+/*  Performs Add for 2 16bit values, sets flags */
+inline uint16_t ADD_16(uint16_t val1, uint16_t val2)
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF ? 1 : 0;
+    reg.C_FLAG = 0xFFFF - val1 < val2 ? 1 : 0;
+    return val1 + val2;
+}
+
+void ADD_HL_BC() {reg.HL = ADD_16(reg.HL, reg.BC);}
+void ADD_HL_DE() {reg.HL = ADD_16(reg.HL, reg.DE);}
+void ADD_HL_HL() {reg.HL = ADD_16(reg.HL, reg.HL);}
+void ADD_HL_SP() {reg.HL = ADD_16(reg.HL, reg.SP);}
+
 
 
 
