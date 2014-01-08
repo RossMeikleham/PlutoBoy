@@ -567,6 +567,34 @@ void ADD_HL_DE() {reg.HL = ADD_16(reg.HL, reg.DE);}
 void ADD_HL_HL() {reg.HL = ADD_16(reg.HL, reg.HL);}
 void ADD_HL_SP() {reg.HL = ADD_16(reg.HL, reg.SP);}
 
+void ADD_SP_IM8() 
+{
+  uint8_t im_val = IMMEDIATE_8_BIT;   
+  reg.Z_FLAG = 0;
+  reg.N_FLAG = 0;
+  reg.H_FLAG = (reg.SP & 0x0F) + (im_val & 0x0F) > 0x0F ? 1 : 0;
+  reg.SP += im_val;
+  reg.C_FLAG = reg.SP < im_val ? 1 : 0;
+}
+
+
+/* 16 bit register Increments */
+
+void INC_BC(){reg.BC++;}
+void INC_DE(){reg.DE++;}
+void INC_HL(){reg.HL++;}
+void INC_SP(){reg.SP++;}
+
+/* 16 bit register Decrements */
+
+void INC_BC(){reg.BC--;}
+void INC_DE(){reg.DE--;}
+void INC_HL(){reg.HL--;}
+void INC_SP(){reg.SP--;}
+
+
+/*  Miscellaneous instructions */
+
 
 
 
