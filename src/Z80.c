@@ -1,4 +1,4 @@
-/* Z80 GameBoy CPU*/
+/* Modified Z80 GameBoy CPU*/
 /* Ross Meikleham */
 #include <stdio.h>
 #include <stdint.h>
@@ -65,24 +65,24 @@ operation operations[] = {}; */
  */
 
 
-//8 Bit Load Operations
+/************* 8 Bit Load Operations ********************/
 
 /* Load 8 bit immediate value into specified location */
 void ins_LD_8_IM(uint8_t *loc) { *loc = mem[IMMEDIATE_8_BIT];}
 
-void ins_LD_A_n(){ins_LD_n(&reg.A);}
+void ins_LD_A_IM(){ins_LD_n(&reg.A);}
 
-void ins_LD_B_n(){ins_LD_n(&reg.B);}
+void ins_LD_B_IM(){ins_LD_n(&reg.B);}
 
-void ins_LD_C_n(){ins_LD_n(&reg.C);}
+void ins_LD_C_IM(){ins_LD_n(&reg.C);}
 
-void ins_LD_D_n(){ins_LD_n(&reg.D);}
+void ins_LD_D_IM(){ins_LD_n(&reg.D);}
 
-void ins_LD_E_n(){ins_LD_n(&reg.E);}
+void ins_LD_E_IM(){ins_LD_n(&reg.E);}
 
-void ins_LD_H_n(){ins_LD_n(&reg.H);}
+void ins_LD_H_IM(){ins_LD_n(&reg.H);}
 
-void ins_LD_L_n(){ins_LD_n(&reg.L);}
+void ins_LD_L_IM(){ins_LD_n(&reg.L);}
 
 
 
@@ -291,7 +291,193 @@ void ins_LDH_n_A() { mem[0xFF00 + IMMEDIATE_8_BIT] = reg.A; }
 void ins_LDH_A_n_() { reg.A = mem[0xFF00 + IMMEDIATE_8_BIT]; }
 
 
-//16 bit load operations
+
+/******************* 16 bit load operations ****************/
+
+
+/*  Load 16 bit immediate value into combined reg */
+void ins_LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT;}
+
+void ins_LD_BC_IM() {ins_LD_16_IM(&reg.BC);}
+
+void ins_LD_DE_IM() {ins_LD_16_IM(&reg.DE);}
+
+void ins_LD_HL_IM() {ins_LD_16_IM(&reg.HL);}
+
+void ins_LD_SP_IM() {ins_LD_16_IM(&reg.SP);}
+
+
+/*  Load HL into stack pointer */
+void LD_SP_HL() {reg.SP = reg.HL;}
+
+/*  Place SP + Immediate 8 bit into HL */
+void LD_SP_HL_n() {reg.HL =reg.SP + IMMEDIATE_8_BIT;}
+
+
+void to_mem(uint16_t value, uint16_t mem_loc) {mem[mem_loc+1] = value >> 8; mem[mem_loc] = value & 0xFF;}
+
+void from_mem(uint16_t *value, uint16_t mem_loc) {*value = mem[mem_loc]; *value |= (mem[mem_loc+1] << 8);}
+
+/*  SP place into memory at immediate address nn */
+void LD_nn_SP() {to_mem(reg.SP, IMMEDIATE_16_BIT);}
+
+
+/*  Push register pair onto stack, decrement stack pointer */
+void PUSH(uint16_t r) {to_mem(r, reg.SP); reg.SP-=2; }
+
+void PUSH_AF() {PUSH(reg.AF);}
+
+void PUSH_BC() {PUSH(reg.BC);}
+
+void PUSH_DE() {PUSH(reg.DE);}
+
+void PUSH_HL() {PUSH(reg.HL);}
+
+
+/*  Pop register pair from stack, increment stack pointer */
+void POP(uint16_t *r) {from_mem(r, reg.SP); reg.SP+=2;}
+
+void POP_AF() {POP(&(reg.AF));}
+
+void POP_BC() {POP(&(reg.BC));}
+
+void POP_DE() {POP(&(reg.DE));}
+
+void POP_HL() {POP(&(reg.HL));}
+
+/**********************  8 bit ALU *****************/
+
+/* Reset flags, add value2 to value1, set appropriate flags */
+inline uint8_t ADD_8(uint8_t val1, uint8_t val2) 
+{ 
+    reg.N_FLAG = 0;
+    reg.H_FLAG = ((val1 & 0xF) + (val2 & 0xF)) > 0xF ? 1 : 0; 
+    val1 += val2; 
+    reg.C_FLAG = val1 < val2 ? 1 : 0;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+    return val1;
+}
+
+
+void ADD_A_A(){reg.A = ADD_8(reg.A, reg.A);}
+void ADD_A_B(){reg.A = ADD_8(reg.A, reg.B);}
+void ADD_A_C(){reg.A = ADD_8(reg.A, reg.C);}
+void ADD_A_D(){reg.A = ADD_8(reg.A, reg.D);} 
+void ADD_A_E(){reg.A = ADD_8(reg.A, reg.E);} 
+void ADD_A_H(){reg.A = ADD_8(reg.A, reg.H);} 
+void ADD_A_L(){reg.A = ADD_8(reg.A, reg.L);} 
+void ADD_A_memHL(){reg.A = ADD_8(reg.A, mem[reg.HL]);}
+void ADD_A_Im8(){reg.A = ADD_8(reg.A, IMMEDIATE_8_BIT);}    
+
+inline uint8_t ADC_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = (val1 & 0xF) + (val2 & 0xF) + reg.C_FLAG > 0xF ? 1 : 0;
+    val1 += val2 + reg.C_FLAG;
+    reg.C_FLAG = val1 < val2 || reg.C_FLAG == 1 && val1 == val2 ? 1 : 0;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+    return val1;
+    
+}
+
+void ADC_A_A(){reg.A = ADC_8(reg.A, reg.A);}
+void ADC_A_B(){reg.A = ADC_8(reg.A, reg.B);}
+void ADC_A_C(){reg.A = ADC_8(reg.A, reg.C);}
+void ADC_A_D(){reg.A = ADC_8(reg.A, reg.D);} 
+void ADC_A_E(){reg.A = ADC_8(reg.A, reg.E);} 
+void ADC_A_H(){reg.A = ADC_8(reg.A, reg.H);} 
+void ADC_A_L(){reg.A = ADC_8(reg.A, reg.L);} 
+void ADC_A_memHL(){reg.A = ADC_8(reg.A, mem[reg.HL]);}
+void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT);}    
+
+
+inline uint8_t SUB_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 1;
+    reg.H_FLAG = (val1 & 0xF) > (val2 & 0xf) ? 1 : 0;
+    reg.C_FLAG = val1 >= val2 ? 1 : 0;
+    val1 -= val2;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+    return val1;
+}
+
+void SUB_A_A(){reg.A = SUB_8(reg.A, reg.A);}
+void SUB_A_B(){reg.A = SUB_8(reg.A, reg.B);}
+void SUB_A_C(){reg.A = SUB_8(reg.A, reg.C);}
+void SUB_A_D(){reg.A = SUB_8(reg.A, reg.D);} 
+void SUB_A_E(){reg.A = SUB_8(reg.A, reg.E);} 
+void SUB_A_H(){reg.A = SUB_8(reg.A, reg.H);} 
+void SUB_A_L(){reg.A = SUB_8(reg.A, reg.L);} 
+void SUB_A_memHL(){reg.A = SUB_8(reg.A, mem[reg.HL]);}
+void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+/* Performs AND operation on 2 bytes, returns result and sets flags */
+inline uint8_t AND_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 1;
+    reg.C_FLAG = 0;
+    val1 = val1 & val2;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+    return val1;
+}
+
+void AND_A_A(){reg.A = AND_8(reg.A, reg.A);}
+void AND_A_B(){reg.A = AND_8(reg.A, reg.B);}
+void AND_A_C(){reg.A = AND_8(reg.A, reg.C);}
+void AND_A_D(){reg.A = AND_8(reg.A, reg.D);} 
+void AND_A_E(){reg.A = AND_8(reg.A, reg.E);} 
+void AND_A_H(){reg.A = AND_8(reg.A, reg.H);} 
+void AND_A_L(){reg.A = AND_8(reg.A, reg.L);} 
+void AND_A_memHL(){reg.A = AND_8(reg.A, mem[reg.HL]);}
+void AND_A_Im8(){reg.A = AND_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+
+/*  Performs OR operation on 2 bytes, returns result and sets flags */
+
+inline uint8_t OR_8(uint8_t val1, uint8_t val2)
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+    reg.C_FLAG = 0;
+    val1 = val1 | val2;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+}
+
+void OR_A_A(){reg.A = OR_8(reg.A, reg.A);}
+void OR_A_B(){reg.A = OR_8(reg.A, reg.B);}
+void OR_A_C(){reg.A = OR_8(reg.A, reg.C);}
+void OR_A_D(){reg.A = OR_8(reg.A, reg.D);} 
+void OR_A_E(){reg.A = OR_8(reg.A, reg.E);} 
+void OR_A_H(){reg.A = OR_8(reg.A, reg.H);} 
+void OR_A_L(){reg.A = OR_8(reg.A, reg.L);} 
+void OR_A_memHL(){reg.A = OR_8(reg.A, mem[reg.HL]);}
+void OR_A_Im8(){reg.A = OR_8(reg.A, IMMEDIATE_8_BIT);}  
+
+
+/*  Performs XOR operation on 2 bytes, returns result and sets flags */
+
+inline uint8_t XOR_8(uint8_t val1, uint8_t val2) 
+{
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+    reg.C_FLAG = 0;
+    val1 = val1 ^ val2;
+    reg.Z_FLAG = val1 == 0 ? 1 : 0;
+
+}
+
+void XOR_A_A(){reg.A = XOR_8(reg.A, reg.A);}
+void XOR_A_B(){reg.A = XOR_8(reg.A, reg.B);}
+void XOR_A_C(){reg.A = XOR_8(reg.A, reg.C);}
+void XOR_A_D(){reg.A = XOR_8(reg.A, reg.D);} 
+void XOR_A_E(){reg.A = XOR_8(reg.A, reg.E);} 
+void XOR_A_H(){reg.A = XOR_8(reg.A, reg.H);} 
+void XOR_A_L(){reg.A = XOR_8(reg.A, reg.L);} 
+void XOR_A_memHL(){reg.A = XOR_8(reg.A, mem[reg.HL]);}
+void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
