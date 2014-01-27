@@ -22,6 +22,9 @@ union REGISTERS
 #define IMMEDIATE_16_BIT ((++reg.PC)<< 8) | (++reg.PC)
 
 uint8_t opcode;
+int halt = 0;
+int stop = 0;
+int interrupts_disabled = 0;
 
 /*  Stores address to the function executing the
  *  instruction as well as the number of machine cycles it takes */
@@ -64,6 +67,8 @@ operation operations[] = {}; */
  *C_FLAG // Carry flag -
  */
 
+
+void invalid_op(){}
 
 /************* 8 Bit Load Operations ********************/
 
@@ -594,6 +599,763 @@ void INC_SP(){reg.SP--;}
 
 
 /*  Miscellaneous instructions */
+
+/*  Swap upper and lower nibbles of n */
+inline void SWAP_n(uint8_t *val)
+{
+    return (*val >> 4) | (*val << 4)
+}
+
+void SWAP_A(){SWAP_n(&reg.A);}
+void SWAP_B(){SWAP_n(&reg.B);}
+void SWAP_C(){SWAP_n(&reg.C);}
+void SWAP_D(){SWAP_n(&reg.D);}
+void SWAP_E(){SWAP_n(&reg.E);}
+void SWAP_H(){SWAP_n(&reg.H);}
+void SWAP_L(){SWAP_n(&reg.L);}
+void SWAP_memHL(){SWAP_n(&mem[reg.HL];}
+
+
+/*  Decimal adjust register A so that correct 
+ *  representation of  binary encoded decimal is obtained */
+void DAA()
+{
+ uint8_t A_hi = (reg.A & 0xF0) >> 4;
+ uint8_t A_lo = (reg.A & 0x0F);
+    
+ if( reg.N_FLAG == 0) {
+     if( reg.C_FLAG == 0) {
+        if( reg.H_FLAG == 0) {
+            if(a.hi < 0xA && a.lo < 0XA) reg.C_FLAG = 0;
+            else if (A_hi < 0x9 && A_lo > 0x9) {reg.A += 0x06; reg.C_FLAG = 0;}
+            else if (A_hi > 0x9 && A_lo < 0x9i) {reg.A += 0x60; reg.C_FLAG = 1;}
+            else if (A_hi > 0x8 && A_lo > 0x9) {reg.A += 0x66; reg.C_FLAG = 1;}
+
+            }
+       else if (reg.H_FLAG == 1) {
+           if(A_hi < 0xA && A_lo < 0x4) {reg.A  += 0x06; reg.C_FLAG = 0;}
+           else if(A_hi > 0x9 && A_lo < 0x4) {reg.A += 0x66; reg.C_FLAG = 1;}
+       }
+     }
+     else if( reg.C_FLAG == 1) {
+         if( reg.H_FLAG == 0) {
+             if(reg.hi < 0x3 && reg.lo < 0xA) {reg.A += 0x60; reg.C_FLAG =1;}
+             else {/*  error */} 
+         }
+         else if (reg.H_FLAG ==1) {
+             if(A_hi < 0x4 && A_lo < 0x4) {reg.A += 0x66; reg.C_FLAG = 1;}
+             else {/* error  */}
+        }
+     }
+ }
+ else if (reg.N_FLAG == 1) {
+     if(reg.C_FLAG == 0) {
+        if(reg.H_FLAG == 0) {
+            if(reg.A_lo < 0xA && reg.A_hi < 0xA) {reg.C_FLAG = 0;}
+            else {/* error */}
+        }
+        else if(reg.H_FLAG == 1) {
+            if(reg.A_lo < 0x9 && reg.A_hi > 0x5) {reg.A += 0xFA; reg.C_FLAG = 0;}
+            else {/*  error*/}
+        }
+     }
+     else if(reg.C_FLAG == 1) {
+         if(reg.H_FLAG == 0) {
+             if(A_hi > 0x06 && A_lo > 0x08) {reg.A += 0xA0; reg.C_FLAG = 1;}
+             else {/* error */}
+         }
+         else if(reg.H_FLAG == 1) {
+             if(A_hi > 0x05 && A_lo > 0x05) {reg.A += 0x9A; reg.C_FLAG =1 ;}
+             else {/* error */}
+         }
+     }     
+
+
+ }
+ else {
+     /* error */
+ }
+}
+
+/* Flips all bits in register A */
+void CPL() {reg.A = !reg.A; reg.FLAG_N = 1; reg.FLAG_H = 1;}
+
+
+/*  Flips carry flag  */
+void CCF() {reg.C_FLAG = !reg.C_FLAG; reg.H_FLAG = 0; reg.N_FLAG = 0;}
+
+/*  Sets carry flag */
+void SCF() {reg.C_FLAG = 1; reg.H_FLAG = 0; reg.N_FLAG = 0;}
+
+
+/*No operation */
+void NOP() {}
+
+
+/*  Halt CPU until interupt */
+void HALT() {halt = 1;}
+
+/*  Halt CPU and LCD until button pressed */
+void STOP() {stop = 1;}
+
+
+/*  Disable interrupts */
+void DI() {interrupts_disabled = 1;}
+
+/*  Enable interrupts */
+void EI() {interrupts_disabled = 0;}
+
+
+/*  Rotates and shifts */
+
+/* Rotate A left, Old msb to carry flag and bit 0 */
+void RLCA()
+{
+    reg.C_FLAG = (reg.A & 0x80) << 8; /*  Carry flag stores msb */
+    reg.A = reg.A << 1 | reg.C_FLAG:
+    reg.Z_FLAG = !reg.A;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+
+    
+}
+
+/*  Rotate A left, Old C_Flag goes to bit 0, bit 7 goes to C_Flag */
+void RLA()
+{
+   unsigned int temp = (reg.A & 0x80) >> 7;
+   reg.A = reg.A << 1 | reg.C_FLAG;
+   reg.C_FLAG = temp;
+   reg.Z_FLAG  = !reg.A;
+   reg.N_FLAG = 0;
+   reg.H_FLAG = 0;
+
+}
+
+
+/*  Rotate A right, old bit 0 goes to carry flag and bit 7*/
+void RRCA()
+{
+    reg.C_FLAG = (reg.A & 0x01);
+    reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
+    reg.Z_FLAG = !reg.A;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0; 
+}
+
+
+void RRA()
+{
+    unsigned int temp = (reg.A & 0x01);
+    reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
+    reg.C_FLAG = temp; 
+    reg.Z_FLAG = !reg.A;
+    reg.H_FLAG = 0;
+    reg.N_FLAG = 0;
+}
+
+
+/* Extended instructions */
+/*Rotate n left. Old bit 7 to Carry flag*/
+inline void RLC_N(uint8_t *val)
+{
+   reg.C_FLAG = (*val & 0x80) >> 7;
+   *val = *val << 1 | reg.C_FLAG;
+   reg.Z_FLAG = !*val;
+   reg.N_FLAG = 0;
+   reg.H_FLAG = 0;
+
+}
+
+/*  8 cycles */
+void RLC_A() { RLC_N(&reg.A);}
+void RLC_B() { RLC_N(&reg.B);}
+void RLC_C() { RLC_N(&reg.C);}
+void RLC_D() { RLC_N(&reg.D);}
+void RLC_E() { RLC_N(&reg.E);}
+void RLC_H() { RLC_N(&reg.H);}
+void RLC_L() { RLC_N(&reg.L);}
+/* 16 cycles */
+void RLC_memHL() { RLC_N(&mem[reg.HL])}
+
+
+
+
+/*  Rotate n left through carry flag */
+inline void RL_N(uint8_t *val) 
+{
+   uint8_t temp = reg.C_FLAG; 
+   reg.C_FLAG = (*val & 0x80) >> 7;
+   *val = *val << 1 | temp;
+   reg.Z_FLAG = !*val;
+   reg.N_FLAG = 0;
+   reg.H_FLAG = 0;
+
+}
+
+void RL_A() {RL_N(&reg.A);}
+void RL_B() {RL_N(&reg.B);}
+void RL_C() {RL_N(&reg.C);}
+void RL_D() {RL_N(&reg.D);}
+void RL_E() {RL_N(&reg.E);}
+void RL_H() {RL_N(&reg.H);}
+void RL_L() {RL_N(&reg.L);}
+/*  12 cycles */
+void RL_memHL() {RL_N(&mem[reg.HL]);}
+
+
+/* Rotate N right, Old bit 0 to Carry flag */
+inline void RRC_N(uint8_t *val)
+{
+    reg.C_FLAG = (*val & 0x1);
+    *val >>= 1;
+    *val |= (reg.C_FLAG << 7);
+    reg.Z_FLAG = !*val;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+}
+
+/*  4 cyles */
+void RRC_A() {RRC_N(&reg.A);}
+void RRC_B() {RRC_N(&reg.B);}
+void RRC_C() {RRC_N(&reg.C);}
+void RRC_D() {RRC_N(&reg.D);}
+void RRC_E() {RRC_N(&reg.E);}
+void RRC_H() {RRC_N(&reg.H);}
+void RRC_L() {RRC_N(&reg.L);}
+/*  12 cycles */
+void RRC_memHL() {RRC_N(&mem[reg.HL]);}
+
+
+/*  Rotate N right through Carry flag */
+inline void RR_N(uint8_t *val)
+{
+    uint8_t temp = (*val & 0x1);
+    *val >>= 1;
+    *val |= (reg.C_FLAG << 7);
+    reg.C_FLAG = temp;
+    reg.Z_FLAG = !*val;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+}
+
+/*  4 cyles */
+void RR_A() {RR_N(&reg.A);}
+void RR_B() {RR_N(&reg.B);}
+void RR_C() {RR_N(&reg.C);}
+void RR_D() {RR_N(&reg.D);}
+void RR_E() {RR_N(&reg.E);}
+void RR_H() {RR_N(&reg.H);}
+void RR_L() {RR_N(&reg.L);}
+/*  12 cycles */
+void RR_memHL() {RR_N(&mem[reg.HL]);}
+
+
+
+inline void SLA_N(uint8_t *val)
+{
+    reg.C_FLAG = (*val & 0x80) >> 7;
+    *val <<= 1;
+    reg.Z_FLAG = !*val;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+
+}
+
+
+/*  4 cyles */
+void SLA_A() {SLA_N(&reg.A);}
+void SLA_B() {SLA_N(&reg.B);}
+void SLA_C() {SLA_N(&reg.C);}
+void SLA_D() {SLA_N(&reg.D);}
+void SLA_E() {SLA_N(&reg.E);}
+void SLA_H() {SLA_N(&reg.H);}
+void SLA_L() {SLA_N(&reg.L);}
+/*  12 cycles */
+void SLA_memHL() {SLA_N(&mem[reg.HL]);}
+
+
+
+/* Shift n left into Carry. LSB of n set to 0.*/
+inline void SRA_N(uint8_t *val)
+{
+    reg.C_FLAG = (*val & 0x80);
+    *val <<=1;
+    reg.Z_FLAG = !*val;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+}
+
+/*  4 cyles */
+void SRA_A() {SRA_N(&reg.A);}
+void SRA_B() {SRA_N(&reg.B);}
+void SRA_C() {SRA_N(&reg.C);}
+void SRA_D() {SRA_N(&reg.D);}
+void SRA_E() {SRA_N(&reg.E);}
+void SRA_H() {SRA_N(&reg.H);}
+void SRA_L() {SRA_N(&reg.L);}
+/*  12 cycles */
+void SRA_memHL() {SRA_N(&mem[reg.HL]);}
+
+
+
+/* Shift n right into Carry, MSB set to 0 */
+inline void SRL_N(uint8_t *val)
+{
+    reg.C_FLAG = *val & 0x1;
+    *val >>= 1;
+    *val &= 0x7F;
+}
+
+/*  8 cyles */
+void SRL_A() {SRL_N(&reg.A);}
+void SRL_B() {SRL_N(&reg.B);}
+void SRL_C() {SRL_N(&reg.C);}
+void SRL_D() {SRL_N(&reg.D);}
+void SRL_E() {SRL_N(&reg.E);}
+void SRL_H() {SRL_N(&reg.H);}
+void SRL_L() {SRL_N(&reg.L);}
+/*  16 cycles */
+void SRL_memHL() {SRL_N(&mem[reg.HL]);}
+
+
+/**** Bit Opcodes ****/
+
+/* TODO Test bit b in register r */
+inline void BIT_b_r(uint8_t *val, uint8_t bit)
+{
+    reg.H_FLAG = 1;
+    reg.N_FLAG = 0;
+    reg.Z_FLAG = !((*val >> bit) & 0x1); 
+}
+
+/*  8 cyles */
+void BIT_A_0() {BIT_b_r(&reg.A, 0);}
+void BIT_A_1() {BIT_b_r(&reg.A, 1);}
+void BIT_A_2() {BIT_b_r(&reg.A, 2);}
+void BIT_A_3() {BIT_b_r(&reg.A, 3);}
+void BIT_A_4() {BIT_b_r(&reg.A, 4);}
+void BIT_A_5() {BIT_b_r(&reg.A, 5);}
+void BIT_A_6() {BIT_b_r(&reg.A, 6);}
+void BIT_A_7() {BIT_b_r(&reg.A, 7);}
+
+void BIT_B_0() {BIT_b_r(&reg.B, 0);}
+void BIT_B_1() {BIT_b_r(&reg.B, 1);}
+void BIT_B_2() {BIT_b_r(&reg.B, 2);}
+void BIT_B_3() {BIT_b_r(&reg.B, 3);}
+void BIT_B_4() {BIT_b_r(&reg.B, 4);}
+void BIT_B_5() {BIT_b_r(&reg.B, 5);}
+void BIT_B_6() {BIT_b_r(&reg.B, 6);}
+void BIT_B_7() {BIT_b_r(&reg.B, 7);}
+
+void BIT_C_0() {BIT_b_r(&reg.C, 0);}
+void BIT_C_1() {BIT_b_r(&reg.C, 1);}
+void BIT_C_2() {BIT_b_r(&reg.C, 2);}
+void BIT_C_3() {BIT_b_r(&reg.C, 3);}
+void BIT_C_4() {BIT_b_r(&reg.C, 4);}
+void BIT_C_5() {BIT_b_r(&reg.C, 5);}
+void BIT_C_6() {BIT_b_r(&reg.C, 6);}
+void BIT_C_7() {BIT_b_r(&reg.C, 7);}
+
+void BIT_D_0() {BIT_b_r(&reg.D, 0);}
+void BIT_D_1() {BIT_b_r(&reg.D, 1);}
+void BIT_D_2() {BIT_b_r(&reg.D, 2);}
+void BIT_D_3() {BIT_b_r(&reg.D, 3);}
+void BIT_D_4() {BIT_b_r(&reg.D, 4);}
+void BIT_D_5() {BIT_b_r(&reg.D, 5);}
+void BIT_D_6() {BIT_b_r(&reg.D, 6);}
+void BIT_D_7() {BIT_b_r(&reg.D, 7);}
+
+void BIT_E_0() {BIT_b_r(&reg.E, 0);}
+void BIT_E_1() {BIT_b_r(&reg.E, 1);}
+void BIT_E_2() {BIT_b_r(&reg.E, 2);}
+void BIT_E_3() {BIT_b_r(&reg.E, 3);}
+void BIT_E_4() {BIT_b_r(&reg.E, 4);}
+void BIT_E_5() {BIT_b_r(&reg.E, 5);}
+void BIT_E_6() {BIT_b_r(&reg.E, 6);}
+void BIT_E_7() {BIT_b_r(&reg.E, 7);}
+
+void BIT_H_0() {BIT_b_r(&reg.H, 0);}
+void BIT_H_1() {BIT_b_r(&reg.H, 1);}
+void BIT_H_2() {BIT_b_r(&reg.H, 2);}
+void BIT_H_3() {BIT_b_r(&reg.H, 3);}
+void BIT_H_4() {BIT_b_r(&reg.H, 4);}
+void BIT_H_5() {BIT_b_r(&reg.H, 5);}
+void BIT_H_6() {BIT_b_r(&reg.H, 6);}
+void BIT_H_7() {BIT_b_r(&reg.H, 7);}
+
+void BIT_L_0() {BIT_b_r(&reg.L, 0);}
+void BIT_L_1() {BIT_b_r(&reg.L, 1);}
+void BIT_L_2() {BIT_b_r(&reg.L, 2);}
+void BIT_L_3() {BIT_b_r(&reg.L, 3);}
+void BIT_L_4() {BIT_b_r(&reg.L, 4);}
+void BIT_L_5() {BIT_b_r(&reg.L, 5);}
+void BIT_L_6() {BIT_b_r(&reg.L, 6);}
+void BIT_L_7() {BIT_b_r(&reg.L, 7);}
+
+/*  16 cycles */
+void BIT_memHL_0() {BIT_b_r(&mem[reg.HL],0);}
+void BIT_memHL_1() {BIT_b_r(&mem[reg.HL],1);}
+void BIT_memHL_2() {BIT_b_r(&mem[reg.HL],2);}
+void BIT_memHL_3() {BIT_b_r(&mem[reg.HL],3);}
+void BIT_memHL_4() {BIT_b_r(&mem[reg.HL],4);}
+void BIT_memHL_5() {BIT_b_r(&mem[reg.HL],5);}
+void BIT_memHL_6() {BIT_b_r(&mem[reg.HL],6);}
+void BIT_memHL_7() {BIT_b_r(&mem[reg.HL],7);}
+
+
+
+/*  Set bit b in register r */
+inline void SET_b_r(uint8_t *val, uint8_t bit)
+{
+    *val |= (0x1 << bit);
+}
+
+/*  8 cyles */
+void SET_A_0() {SET_b_r(&reg.A, 0);}
+void SET_A_1() {SET_b_r(&reg.A, 1);}
+void SET_A_2() {SET_b_r(&reg.A, 2);}
+void SET_A_3() {SET_b_r(&reg.A, 3);}
+void SET_A_4() {SET_b_r(&reg.A, 4);}
+void SET_A_5() {SET_b_r(&reg.A, 5);}
+void SET_A_6() {SET_b_r(&reg.A, 6);}
+void SET_A_7() {SET_b_r(&reg.A, 7);}
+
+void SET_B_0() {SET_b_r(&reg.B, 0);}
+void SET_B_1() {SET_b_r(&reg.B, 1);}
+void SET_B_2() {SET_b_r(&reg.B, 2);}
+void SET_B_3() {SET_b_r(&reg.B, 3);}
+void SET_B_4() {SET_b_r(&reg.B, 4);}
+void SET_B_5() {SET_b_r(&reg.B, 5);}
+void SET_B_6() {SET_b_r(&reg.B, 6);}
+void SET_B_7() {SET_b_r(&reg.B, 7);}
+
+void SET_C_0() {SET_b_r(&reg.C, 0);}
+void SET_C_1() {SET_b_r(&reg.C, 1);}
+void SET_C_2() {SET_b_r(&reg.C, 2);}
+void SET_C_3() {SET_b_r(&reg.C, 3);}
+void SET_C_4() {SET_b_r(&reg.C, 4);}
+void SET_C_5() {SET_b_r(&reg.C, 5);}
+void SET_C_6() {SET_b_r(&reg.C, 6);}
+void SET_C_7() {SET_b_r(&reg.C, 7);}
+
+void SET_D_0() {SET_b_r(&reg.D, 0);}
+void SET_D_1() {SET_b_r(&reg.D, 1);}
+void SET_D_2() {SET_b_r(&reg.D, 2);}
+void SET_D_3() {SET_b_r(&reg.D, 3);}
+void SET_D_4() {SET_b_r(&reg.D, 4);}
+void SET_D_5() {SET_b_r(&reg.D, 5);}
+void SET_D_6() {SET_b_r(&reg.D, 6);}
+void SET_D_7() {SET_b_r(&reg.D, 7);}
+
+void SET_E_0() {SET_b_r(&reg.E, 0);}
+void SET_E_1() {SET_b_r(&reg.E, 1);}
+void SET_E_2() {SET_b_r(&reg.E, 2);}
+void SET_E_3() {SET_b_r(&reg.E, 3);}
+void SET_E_4() {SET_b_r(&reg.E, 4);}
+void SET_E_5() {SET_b_r(&reg.E, 5);}
+void SET_E_6() {SET_b_r(&reg.E, 6);}
+void SET_E_7() {SET_b_r(&reg.E, 7);}
+
+void SET_H_0() {SET_b_r(&reg.H, 0);}
+void SET_H_1() {SET_b_r(&reg.H, 1);}
+void SET_H_2() {SET_b_r(&reg.H, 2);}
+void SET_H_3() {SET_b_r(&reg.H, 3);}
+void SET_H_4() {SET_b_r(&reg.H, 4);}
+void SET_H_5() {SET_b_r(&reg.H, 5);}
+void SET_H_6() {SET_b_r(&reg.H, 6);}
+void SET_H_7() {SET_b_r(&reg.H, 7);}
+
+void SET_L_0() {SET_b_r(&reg.L, 0);}
+void SET_L_1() {SET_b_r(&reg.L, 1);}
+void SET_L_2() {SET_b_r(&reg.L, 2);}
+void SET_L_3() {SET_b_r(&reg.L, 3);}
+void SET_L_4() {SET_b_r(&reg.L, 4);}
+void SET_L_5() {SET_b_r(&reg.L, 5);}
+void SET_L_6() {SET_b_r(&reg.L, 6);}
+void SET_L_7() {SET_b_r(&reg.L, 7);}
+
+/*  16 cycles */
+void SET_memHL_0() {SET_b_r(&mem[reg.HL],0);}
+void SET_memHL_1() {SET_b_r(&mem[reg.HL],1);}
+void SET_memHL_2() {SET_b_r(&mem[reg.HL],2);}
+void SET_memHL_3() {SET_b_r(&mem[reg.HL],3);}
+void SET_memHL_4() {SET_b_r(&mem[reg.HL],4);}
+void SET_memHL_5() {SET_b_r(&mem[reg.HL],5);}
+void SET_memHL_6() {SET_b_r(&mem[reg.HL],6);}
+void SET_memHL_7() {SET_b_r(&mem[reg.HL],7);}
+
+
+
+/*  Reset bit b in register r */
+inline void RES_b_r(uint8_t *val, uint8_t bit)
+{
+    *val = *val & ~(0x1 << bit);
+}
+
+
+/*  8 cyles */
+void RES_A_0() {RES_b_r(&reg.A, 0);}
+void RES_A_1() {RES_b_r(&reg.A, 1);}
+void RES_A_2() {RES_b_r(&reg.A, 2);}
+void RES_A_3() {RES_b_r(&reg.A, 3);}
+void RES_A_4() {RES_b_r(&reg.A, 4);}
+void RES_A_5() {RES_b_r(&reg.A, 5);}
+void RES_A_6() {RES_b_r(&reg.A, 6);}
+void RES_A_7() {RES_b_r(&reg.A, 7);}
+
+void RES_B_0() {RES_b_r(&reg.B, 0);}
+void RES_B_1() {RES_b_r(&reg.B, 1);}
+void RES_B_2() {RES_b_r(&reg.B, 2);}
+void RES_B_3() {RES_b_r(&reg.B, 3);}
+void RES_B_4() {RES_b_r(&reg.B, 4);}
+void RES_B_5() {RES_b_r(&reg.B, 5);}
+void RES_B_6() {RES_b_r(&reg.B, 6);}
+void RES_B_7() {RES_b_r(&reg.B, 7);}
+
+void RES_C_0() {RES_b_r(&reg.C, 0);}
+void RES_C_1() {RES_b_r(&reg.C, 1);}
+void RES_C_2() {RES_b_r(&reg.C, 2);}
+void RES_C_3() {RES_b_r(&reg.C, 3);}
+void RES_C_4() {RES_b_r(&reg.C, 4);}
+void RES_C_5() {RES_b_r(&reg.C, 5);}
+void RES_C_6() {RES_b_r(&reg.C, 6);}
+void RES_C_7() {RES_b_r(&reg.C, 7);}
+
+void RES_D_0() {RES_b_r(&reg.D, 0);}
+void RES_D_1() {RES_b_r(&reg.D, 1);}
+void RES_D_2() {RES_b_r(&reg.D, 2);}
+void RES_D_3() {RES_b_r(&reg.D, 3);}
+void RES_D_4() {RES_b_r(&reg.D, 4);}
+void RES_D_5() {RES_b_r(&reg.D, 5);}
+void RES_D_6() {RES_b_r(&reg.D, 6);}
+void RES_D_7() {RES_b_r(&reg.D, 7);}
+
+void RES_E_0() {RES_b_r(&reg.E, 0);}
+void RES_E_1() {RES_b_r(&reg.E, 1);}
+void RES_E_2() {RES_b_r(&reg.E, 2);}
+void RES_E_3() {RES_b_r(&reg.E, 3);}
+void RES_E_4() {RES_b_r(&reg.E, 4);}
+void RES_E_5() {RES_b_r(&reg.E, 5);}
+void RES_E_6() {RES_b_r(&reg.E, 6);}
+void RES_E_7() {RES_b_r(&reg.E, 7);}
+
+void RES_H_0() {RES_b_r(&reg.H, 0);}
+void RES_H_1() {RES_b_r(&reg.H, 1);}
+void RES_H_2() {RES_b_r(&reg.H, 2);}
+void RES_H_3() {RES_b_r(&reg.H, 3);}
+void RES_H_4() {RES_b_r(&reg.H, 4);}
+void RES_H_5() {RES_b_r(&reg.H, 5);}
+void RES_H_6() {RES_b_r(&reg.H, 6);}
+void RES_H_7() {RES_b_r(&reg.H, 7);}
+
+void RES_L_0() {RES_b_r(&reg.L, 0);}
+void RES_L_1() {RES_b_r(&reg.L, 1);}
+void RES_L_2() {RES_b_r(&reg.L, 2);}
+void RES_L_3() {RES_b_r(&reg.L, 3);}
+void RES_L_4() {RES_b_r(&reg.L, 4);}
+void RES_L_5() {RES_b_r(&reg.L, 5);}
+void RES_L_6() {RES_b_r(&reg.L, 6);}
+void RES_L_7() {RES_b_r(&reg.L, 7);}
+
+/*  16 cycles */
+void RES_memHL_0() {RES_b_r(&mem[reg.HL],0);}
+void RES_memHL_1() {RES_b_r(&mem[reg.HL],1);}
+void RES_memHL_2() {RES_b_r(&mem[reg.HL],2);}
+void RES_memHL_3() {RES_b_r(&mem[reg.HL],3);}
+void RES_memHL_4() {RES_b_r(&mem[reg.HL],4);}
+void RES_memHL_5() {RES_b_r(&mem[reg.HL],5);}
+void RES_memHL_6() {RES_b_r(&mem[reg.HL],6);}
+void RES_memHL_7() {RES_b_r(&mem[reg.HL],7);}
+
+
+/**** Jumps ****/
+
+/* Jump to immediate 2 byte address */
+void JP_nn()
+{
+    reg.PC = mem[IMMEDIATE_16_BIT];
+}
+
+
+/*  Jump to address n if following condition is
+ *  true */
+
+/*  Zero flag not set */
+void JP_NZ_nn() 
+{
+    if (!reg.Z_FLAG) JP_nn();
+}
+
+/*  Zero flag set */
+void JP_Z_nn()
+{
+    if(reg.Z_FLAG) JP_nn();
+}
+
+
+/*  Carry flag not set */
+void JP_NC_nn()
+{
+    if(!reg.C_FLAG) JP_nn();
+}
+
+/*  Carry flag set */
+void JP_C_nn()
+{
+    if(reg.C_FLAG) JP_nn();
+}
+
+
+/*  Jump to address contained in HL */
+void JP_memHL()
+{
+    reg.PC = mem[reg.HL];
+}
+
+/*  Add 8 bit immediate value to current address
+ *  and jump to it */
+void JR_n()
+{
+    reg.PC += IMMEDIATE_8_BIT;
+}
+
+
+
+/*  If following conditions are true
+ *  add 8 bit immediate to pc */
+
+/*  Zero flag not set */
+void JR_NZ_n() 
+{
+    if(!reg.Z_FLAG) JR_n();
+}
+
+/* Zero flag set */
+void JR_Z_n()
+{
+    if(reg.Z_FLAG) JR_n();
+}
+
+/*  Carry flag not set */
+void JR_NC_n()
+{
+    if(!reg.C_FLAG) JR_n();
+}
+
+/*  Carry flag set */
+void JR_C_n()
+{
+    if(!reg.C_FLAG) JR_n();
+}
+
+/**** Calls ****/
+
+/*  Push address of next instruction onto stack
+ *  then jump to address nn */
+void CALL_nn()
+{
+    uint16_t addr;
+    push(reg.PC + 3);
+    reg.PC = IMMEDIATE_16_BIT;
+
+}
+
+/*  Call if flag is set/unset */
+void CALL_NZ_nn()
+{
+    if(!reg.Z_FLAG) CALL_nn();
+}
+
+void CALL_Z_nn()
+{
+    if(reg.Z_FLAG) CALL_nn();
+}
+
+void CALL_NC_nn()
+{
+    if(!reg.C_FLAG) CALL_nn();
+}
+
+void CALL_C_nn()
+{
+    if(reg.C_FLAG) CALL_nn();
+}
+
+
+/**** Restarts ****/
+/*  Push present address onto stack
+ *  Jump to addres $0000 + n */
+void RST_n(uint8_t addr)
+{
+    push(reg.PC);
+    reg.PC = addr;
+}
+
+
+void RST_00() {RST_n(0x00);}
+
+void RST_08() {RST_n(0x08);}
+
+void RST_10() {RST_n(0x10);}
+
+void RST_18() {RST_n(0x18);}
+
+void RST_20() {RST_n(0x20);}
+
+void RST_28() {RST_n(0x28);}
+
+void RST_30() {RST_n(0x30);}
+
+void RST_38() {RST_n(0x38);}
+
+/**** Returns ****/
+
+/*  Pop two bytes from stack and jump to that addr */
+void RET()
+{
+    reg.PC = (POP() << 8) | POP();
+}
+
+
+void RET_NZ()
+{
+    if(!reg.Z_FLAG) RET();
+}
+
+void RET_Z()
+{
+    if(reg.Z_FLAG) RET();
+}
+
+
+void RET_NC()
+{
+    if(!reg.C_FLAG) RET();
+}
+
+
+void RET_C()
+{
+    if(reg.C_FLAG) RET();
+}
+
+
+void RETI() 
+{
+    RET();
+    EI();
+}
+
+
+
+
+
+
+
+
+
+
 
 
 
