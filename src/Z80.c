@@ -8,6 +8,12 @@
 
 uint8_t mem[(4096*4096)-1];
 
+void setMem(uint8_t loc, uint8_t val) 
+{
+    
+
+}
+
 union REGISTERS
 
 {
