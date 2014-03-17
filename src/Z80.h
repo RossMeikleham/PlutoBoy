@@ -1,5 +1,10 @@
 /* Modified Z80 GameBoy CPU*/
 /* Ross Meikleham */
+
+#ifndef Z80_H
+#define Z80_H
+
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -25,17 +30,6 @@ uint8_t opcode;
 int halt = 0;
 int stop = 0;
 int interrupts_disabled = 0;
-
-
-/*  Stores address to the function executing the
- *  instruction as well as the number of machine cycles it takes */
-
-/*  typedef struct operation {
-    uint8_t m_cycles;
-    void *(instruction)();
-}
-
-operation operations[] = {}; */
 
 
 
@@ -1399,4 +1393,4 @@ void RETI()
 
 
 
-
+#endif
