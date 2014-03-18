@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
     printf("\nROM size: %dKB",get_rom_size(getMem(CARTRIDGE_ROM_SIZE)));
     printf("\nRAM save size: %dKB",get_ram_save_size(getMem(CARTRIDGE_RAM_SIZE)));
     printf("\nCartridge Type: %s",get_cartridge_type());
-    printf("\nGameboy Color Game:%s", is_colour_compatible() ? "Yes":"No");
+    printf("\nGameboy Color Only Game:%s", is_colour_compatible() ? "Yes":"No");
     printf("\nSuper Gameboy Features:%s", has_sgb_features() ? "Yes":"No");
     printf("\n");
     

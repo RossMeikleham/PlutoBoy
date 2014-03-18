@@ -40,8 +40,11 @@
 #define CART_ROM_SWITCH_BANK_START 0x4000
 #define CART_ROM_SWITCH_BANK_END   0x7FFF
   
-#define CHAR_RAM_START 0x8000
-#define CHAR_RAM_END 0x97FF
+#define TILE_SET_0_START 0x8000
+#define TILE_SET_0_END   0x8FFF
+
+#define TILE_SET_1_START 0x8800
+#define TILE_SET_1_END   0x97FF
 
 #define BG_MAP_DATA1_START 0x9800
 #define BG_MAP_DATA1_END 0x9BFF
@@ -60,6 +63,9 @@
 
 #define ECHO_RAM_START 0xE000 /*  Mirrored Memory */
 #define ECHO_RAM_END   0xFDFF 
+
+/*  IO ports/registers */
+
 
 
 /*--------------- HIGH MEM-------------- */
@@ -111,44 +117,36 @@
 /* -------------------------------- */
 
 /*--------  Cartridge Header info---- */
-#define LICENSES_LEN sizeof(licenses)/sizeof(licensee)
-#define ROM_SIZES_LEN sizeof(rom_sizes)/sizeof(rom_size)
-#define CARTRIDGE_TYPE_LEN sizeof(cartridge_types)/sizeof(cartridge_type)  
-#define RAM_SAVE_SIZES_LEN sizeof(ram_save_sizes)/sizeof(ram_save_size)
 
 typedef struct {
     uint8_t id;
     char *name;
 } licensee;
 
-extern licensee licenses[];
 
 typedef struct {
     uint8_t id;
     char *name;
 } cartridge_type;
 
-extern cartridge_type cartridge_types[]; 
 
 typedef struct {
     uint8_t id;
     uint16_t size_kb;
 } rom_size;
 
-extern rom_size rom_sizes[];
 
 typedef struct {
     uint8_t id;
     uint8_t size_kb;
 } ram_save_size;
 
-extern ram_save_size ram_save_sizes[];
-
-extern char *destination_codes[];
  /*  ----------------------------------- */
 void exec_opcode(void);
+
 void setMem(uint16_t loc, uint8_t val);
 uint8_t getMem(uint16_t loc);
+
 const char *get_licensee();
 uint16_t get_rom_size(uint8_t id);
 const char *get_cartridge_type();
