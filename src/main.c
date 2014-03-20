@@ -41,7 +41,7 @@
       for (count = 0; count <= CART_HEADER_END; count++) {
       //Read file contents into buffer
         fread(&cur, 1, 1, file);
-        setMem(count, cur);
+        set_mem(count, cur);
       }
       fclose(file);
       return 1;
@@ -64,13 +64,13 @@ int main(int argc, char* argv[]) {
     /*  print rom name */
     printf("Game Title:");
     for(i = ROM_NAME_START; i<= ROM_NAME_END; i++) {
-        printf("%c",getMem(i));
+        printf("%c",get_mem(i));
     }
    
     printf("\nLicensee: %s", get_licensee());
-    printf("\nDestination: %s", get_destination_code(getMem(DESTINATION_CODE)));
-    printf("\nROM size: %dKB",get_rom_size(getMem(CARTRIDGE_ROM_SIZE)));
-    printf("\nRAM save size: %dKB",get_ram_save_size(getMem(CARTRIDGE_RAM_SIZE)));
+    printf("\nDestination: %s", get_destination_code(get_mem(DESTINATION_CODE)));
+    printf("\nROM size: %dKB",get_rom_size(get_mem(CARTRIDGE_ROM_SIZE)));
+    printf("\nRAM save size: %dKB",get_ram_save_size(get_mem(CARTRIDGE_RAM_SIZE)));
     printf("\nCartridge Type: %s",get_cartridge_type());
     printf("\nGameboy Color Only Game:%s", is_colour_compatible() ? "Yes":"No");
     printf("\nSuper Gameboy Features:%s", has_sgb_features() ? "Yes":"No");
