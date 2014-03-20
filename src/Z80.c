@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "cpu.h"
+#include "memory.h"
 
 
 uint8_t mem[WORD_MAX];

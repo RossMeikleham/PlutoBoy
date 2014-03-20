@@ -10,13 +10,14 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
- *         Author:  YOUR NAME (), 
+ *         Author:  Ross Meikleham, 
  *   Organization:  
  *
  * =====================================================================================
  */
 
 #include "cpu.h"
+#include "memory.h"
 #include <stdint.h>
 #include <stdio.h>
 
