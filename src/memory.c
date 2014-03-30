@@ -71,6 +71,12 @@ void set_mem(uint16_t loc, uint8_t val)
 {
     pthread_rwlock_wrlock(&mem_lock);
     mem[loc] = val;
+    /*  Check if mirrored memory being written to */
+    if (loc >= ECHO_RAM_START && loc <= ECHO_RAM_END) {
+        mem[loc-0x2000] = val;
+    } else if (loc >= ECHO_RAM_START-0x2000 && loc <= ECHO_RAM_END-0x2000) {
+        mem[loc+0x2000] = val;
+    }
     pthread_rwlock_unlock(&mem_lock);
 }
 
