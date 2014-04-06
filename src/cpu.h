@@ -2,6 +2,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-void exec_opcode(void);
+void reset_cpu();
+int exec_opcode(void);
 
 #endif

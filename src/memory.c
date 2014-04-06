@@ -63,9 +63,8 @@ ram_save_size ram_save_sizes[] = {{0, 0}, {1, 2}, {2, 8}, {3, 32}};
 
 char *destination_codes[] = {"Japanese", "Non-Japanese"};
 
+
 uint8_t mem[WORD_MAX];
-
-
 
 void set_mem(uint16_t loc, uint8_t val) 
 {

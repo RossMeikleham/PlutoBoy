@@ -20,8 +20,14 @@
 #include "memory.h"
 #include <stdint.h>
 #include <stdio.h>
+#include "graphics.h"
 
- 
+/* Stores possible frequencies in hz of when the
+ * timer should be incremented */
+long timer_frequencies[] = {4096, 16384, 65536, 262144};
+
+long timer_frequency;
+long clock_speed;
 
 
  int load_program(const char *filename)
@@ -38,15 +44,43 @@
           return 0;
      }
   
-      for (count = 0; count <= CART_HEADER_END; count++) {
+      for (count = 0; count <= 0xFFFF; count++) {
       //Read file contents into buffer
-        fread(&cur, 1, 1, file);
+        if(!fread(&cur, 1, 1, file)) {
+            break;
+        }
         set_mem(count, cur);
       }
       fclose(file);
       return 1;
   }
 
+
+
+int run(long cycles) {
+    long ly_cycles = 0, current_cycles;
+    int num;
+    while(cycles > 0) {
+        check_interrupt();
+
+        /*  Increment lcd y line every 456 cycles */
+        if(ly_cycles >= 456) {
+            increment_ly();
+            ly_cycles = 0;
+        }
+        current_cycles = exec_opcode();
+        cycles -= current_cycles;
+        ly_cycles += current_cycles;
+        scanf("%d",&num);
+
+    }
+
+    return 0;
+}
+
+
+void timer_interrupt() {
+}
 
 int main(int argc, char* argv[]) {
 
@@ -76,11 +110,10 @@ int main(int argc, char* argv[]) {
     printf("\nSuper Gameboy Features:%s", has_sgb_features() ? "Yes":"No");
     printf("\n");
     
-    /*  while (1) {
-        printf("pc: %x\n opcode: %x\n",reg.PC,mem[reg.PC]);
-        
-        ins[mem[reg.PC++]]();
-    }*/
+    init_gfx();
+    reset_cpu();
+
+    run(100000000);
 
 }
 

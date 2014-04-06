@@ -17,26 +17,47 @@
  */
 
 #include "cpu.h"
+#include <stdio.h>
+#include "SDL/SDL.h"
+#include "memory.h"
+#include "stdint.h"
+#include "graphics.h"
+#include "IO.h"
+
+Uint32 cols[3];
+SDL_Surface *screen;
+SDL_Event event;
+
+int VBLANK_ENABLED; 
 
 
-#define BIT_0 0x01              
-#define BIT_1 0x02
-#define BIT_2 0x04
-#define BIT_3 0x08
-#define BIT_4 0x10
-#define BIT_5 0x20
-#define BIT_6 0x40
-#define BIT_7 0x80
+int Screen_Width = SCREEN_WIDTH * 2;
+int Screen_Height = SCREEN_HEIGHT * 2;
 
-typedef enum {WHITE:0, GREY:1, DARK_GREY:2, BLACK:3} Colour;
-typedef enum {TYPE0, TYPE1} TileType;
 
-uint8_t bit_mask = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20
+uint8_t bit_mask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20
     , 0x40, 0x80};
 
-typedef struct {
-    Colour colour[8][8];
-} Tile;
+
+int init_gfx() {
+
+    if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
+    	printf("Could not initialize SDL: %s.\n", SDL_GetError());
+    	return 0;
+    }
+
+    SDL_WM_SetCaption("Gameboy","");
+    screen = SDL_SetVideoMode(Screen_Width,Screen_Height, 32 ,SDL_DOUBLEBUF);
+    SDL_EnableKeyRepeat(0,0);
+
+    cols[0] = SDL_MapRGB(screen->format, 255, 255, 255); /* White */
+    cols[1] = SDL_MapRGB(screen->format, 170, 170, 170); /* Light Grey */
+    cols[2] = SDL_MapRGB(screen->format, 85, 85, 85); /* Dark Grey */ 
+    cols[3] = SDL_MapRGB(screen->format, 0, 0, 0); /*  Black */
+
+    return 1;
+}
+
 
 
 Tile get_tile(uint8_t tile_no, TileType tile_type) {
@@ -46,11 +67,11 @@ Tile get_tile(uint8_t tile_no, TileType tile_type) {
 
     uint16_t tile_start_loc = tile_set_mem + (tile_no * 16);
     int i, j;
-    uint8_t tile_byte1, tile_byte2;
+    uint8_t tile_byte_0, tile_byte_1;
     Tile tile;
     for (i = 0; i < 8; i++) {
-        tile_byte1 = getMem(tile_start_loc);
-        tile_byte2 = getMem(tile_start_lock+1);
+        tile_byte_0 = get_mem(tile_start_loc);
+        tile_byte_1 = get_mem(tile_start_loc+1);
 
         /*  Obtain the colour for each pixel in the row
          *  for bit n in the row, colour is calculated by
@@ -58,13 +79,68 @@ Tile get_tile(uint8_t tile_no, TileType tile_type) {
         for (j = 0; j < 8; j++) {
             tile.colour[i][j] = (((tile_byte_1 & bit_mask[i]) >> i)
             << 1)
-            | (((tile_byte_0 & bit_mask[i]) >> i);
+            | (((tile_byte_0 & bit_mask[i]) >> i));
         }
 
     }
 
     return tile;
 }
+
+
+
+
+void fill_rect(int x, int y, int w, int h, Uint32 color) 
+{
+    SDL_Rect rect = {x,y,w,h};
+    SDL_FillRect(screen, &rect, color);
+}
+
+
+
+void draw_pix(Colour colour, int x, int y)
+{
+    int width_inc = Screen_Width/SCREEN_WIDTH;
+    int height_inc = Screen_Height/SCREEN_HEIGHT;
+
+    fill_rect(x*width_inc,y*height_inc,width_inc,height_inc,cols[colour]);
+        
+}
+
+void update_screen()
+{
+    SDL_Flip(screen);
+}
+
+
+
+
+void draw_row(uint8_t row) {
+
+    uint8_t i, x_pos;
+    uint8_t y = get_win_y_pos() + row; /*  overlaps if overflow */
+    uint8_t x = get_win_x_pos();
+    lcd_ctrl_t lcd_ctrl;
+    lcd_ctrl = get_lcd_control();
+    Colour colour;
+    Tile tile;
+
+    uint16_t current = lcd_ctrl.bg_win_tile == 0 ? 0x9800 : 0x9C00;
+    
+
+    for (x_pos = x; x_pos-x < SCREEN_WIDTH/8; x_pos++) {
+        tile = get_tile(x , !current);
+        for (i = 0; i < 8; i++) {
+            draw_pix(tile.colour[i][0], (x_pos*8)+i ,y);
+        }
+    }
+
+    update_screen();
+}
+
+
+
+
 
 
 /*  Tile type 0 supplied as unsigned int
@@ -80,6 +156,7 @@ Tile get_tile_1(int8_t tile_no) {
     return get_tile(u_tile_no, TYPE1);
 }
 
-Colour get_pixel(uint8_t x, uint8_t y) {
-    
-}
+
+
+
+

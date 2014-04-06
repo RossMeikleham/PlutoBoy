@@ -123,8 +123,8 @@ typedef struct {
 
  /*  ----------------------------------- */
 
-void setMem(uint16_t loc, uint8_t val);
-uint8_t getMem(uint16_t loc);
+void set_mem(uint16_t loc, uint8_t val);
+uint8_t get_mem(uint16_t loc);
 
 const char *get_licensee();
 uint16_t get_rom_size(uint8_t id);

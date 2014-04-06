@@ -15,25 +15,13 @@ union REGISTERS
 
 } reg;
 
-#define IMMEDIATE_8_BIT (++reg.PC)
-#define IMMEDIATE_16_BIT ((++reg.PC)<< 8) | (++reg.PC)
+#define IMMEDIATE_8_BIT get_mem(++reg.PC)
+#define IMMEDIATE_16_BIT (get_mem((++reg.PC)+1)<< 8) | get_mem((reg.PC++))
 
 uint8_t opcode;
 int halt = 0;
 int stop = 0;
 int interrupts_disabled = 0;
-
-
-/*  Stores address to the function executing the
- *  instruction as well as the number of machine cycles it takes */
-
-/*  typedef struct operation {
-    uint8_t m_cycles;
-    void *(instruction)();
-}
-
-operation operations[] = {}; */
-
 
 
 /* 16 bit registers
@@ -92,7 +80,7 @@ void invalid_op(){}
 /************* 8 Bit Load Operations ********************/
 
 /* Load 8 bit immediate value into specified location */
-void LD_8_IM(uint8_t *loc) { *loc = get_mem(IMMEDIATE_8_BIT);}
+void LD_8_IM(uint8_t *loc) { *loc = IMMEDIATE_8_BIT;}
 
 void LD_A_IM(){LD_8_IM(&reg.A);}
 
@@ -349,7 +337,7 @@ void LD_nn_SP() {to_mem(reg.SP, IMMEDIATE_16_BIT);}
 
 
 /*  Push register pair onto stack, decrement stack pointer */
-void PUSH(uint16_t r) {to_mem(r, reg.SP); reg.SP-=2; }
+void PUSH(uint16_t r) {reg.SP-=2; printf("pushsp:%x\n",reg.SP); to_mem(r, reg.SP);}
 
 void PUSH_AF() {PUSH(reg.AF);}
 
@@ -361,7 +349,7 @@ void PUSH_HL() {PUSH(reg.HL);}
 
 
 /*  Pop register pair from stack, increment stack pointer */
-void POP(uint16_t *r) {from_mem(r, reg.SP); reg.SP+=2;}
+void POP(uint16_t *r) {reg.SP +=2; printf("popsp:%x\n",reg.SP); from_mem(r, reg.SP);}
 
 void POP_AF() {POP(&(reg.AF));}
 
@@ -578,6 +566,7 @@ inline uint8_t DEC_8(uint8_t val)
     reg.N_FLAG = 1;
     reg.H_FLAG = val & 0xF == 0xF ? 1 : 0;
     reg.Z_FLAG = !val;
+    return val; 
 }
 
 
@@ -1228,6 +1217,7 @@ void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 void JP_nn()
 {
     reg.PC = IMMEDIATE_16_BIT;
+    reg.PC--;
 }
 
 
@@ -1237,26 +1227,26 @@ void JP_nn()
 /*  Zero flag not set */
 void JP_NZ_nn() 
 {
-    if (!reg.Z_FLAG) JP_nn();
+    if (!reg.Z_FLAG) JP_nn(); else reg.PC+=2;
 }
 
 /*  Zero flag set */
 void JP_Z_nn()
 {
-    if(reg.Z_FLAG) JP_nn();
+    if(reg.Z_FLAG) JP_nn(); else reg.PC+=2;
 }
 
 
 /*  Carry flag not set */
 void JP_NC_nn()
 {
-    if(!reg.C_FLAG) JP_nn();
+    if(!reg.C_FLAG) JP_nn(); else reg.PC+=2;
 }
 
 /*  Carry flag set */
 void JP_C_nn()
 {
-    if(reg.C_FLAG) JP_nn();
+    if(reg.C_FLAG) JP_nn(); else reg.PC+=2;
 }
 
 
@@ -1264,6 +1254,7 @@ void JP_C_nn()
 void JP_memHL()
 {
     reg.PC = get_mem(reg.HL);
+    reg.PC--;
 }
 
 /*  Add 8 bit immediate value to current address
@@ -1271,6 +1262,7 @@ void JP_memHL()
 void JR_n()
 {
     reg.PC += IMMEDIATE_8_BIT;
+    reg.PC--;
 }
 
 
@@ -1281,25 +1273,25 @@ void JR_n()
 /*  Zero flag not set */
 void JR_NZ_n() 
 {
-    if(!reg.Z_FLAG) JR_n();
+    if(!reg.Z_FLAG) JR_n(); else reg.PC+=1;;
 }
 
 /* Zero flag set */
 void JR_Z_n()
 {
-    if(reg.Z_FLAG) JR_n();
+    if(reg.Z_FLAG) JR_n(); else reg.PC+=1;;
 }
 
 /*  Carry flag not set */
 void JR_NC_n()
 {
-    if(!reg.C_FLAG) JR_n();
+    if(!reg.C_FLAG) JR_n(); else reg.PC+=1;;
 }
 
 /*  Carry flag set */
 void JR_C_n()
 {
-    if(!reg.C_FLAG) JR_n();
+    if(!reg.C_FLAG) JR_n(); else reg.PC+=1;;
 }
 
 
@@ -1312,28 +1304,29 @@ void CALL_nn()
     uint16_t addr;
     PUSH(reg.PC + 3);
     reg.PC = IMMEDIATE_16_BIT;
+    reg.PC--;
 
 }
 
 /*  Call if flag is set/unset */
 void CALL_NZ_nn()
 {
-    if(!reg.Z_FLAG) CALL_nn();
+    if(!reg.Z_FLAG) CALL_nn(); else reg.PC+=2;
 }
 
 void CALL_Z_nn()
 {
-    if(reg.Z_FLAG) CALL_nn();
+    if(reg.Z_FLAG) CALL_nn(); else reg.PC+=2;;
 }
 
 void CALL_NC_nn()
 {
-    if(!reg.C_FLAG) CALL_nn();
+    if(!reg.C_FLAG) CALL_nn(); else reg.PC+=2;
 }
 
 void CALL_C_nn()
 {
-    if(reg.C_FLAG) CALL_nn();
+    if(reg.C_FLAG) CALL_nn(); else reg.PC+=2;
 }
 
 
@@ -1344,6 +1337,7 @@ void RST_n(uint8_t addr)
 {
     PUSH(reg.PC);
     reg.PC = addr;
+    reg.PC--;
 }
 
 
@@ -1486,11 +1480,82 @@ instruction ext_ins[] = {
     SET_B_7, SET_C_7, SET_D_7, SET_E_7, SET_H_7, SET_L_7, SET_memHL_7, SET_A_7};   
    
 
+/*  Table of machine cycles per instruction */
+int ins_cycles[] = {
 
-void exec_opcode() {
-    opcode == 0xCB ? ext_ins[(++reg.PC)]() : ins[reg.PC];
-    reg.PC++;
+    4,12, 8, 8, 4, 4, 8, 4,20, 8, 8, 8, 4, 4, 8, 4,
+    0,12, 8, 8, 4, 4, 8, 4,12, 8, 8, 8, 4, 4, 8, 4,
+    8,12, 8, 8, 4, 4, 8, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+    8,12, 8, 8,12,12,12, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    8, 8, 8, 8, 8, 8, 0, 8, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    8,12,12,16,12,16, 8,16, 8,16,12, 0,12,24, 8,16,
+    8,12,12, 0,12,16, 8,16, 8,16,12, 0,12, 0, 8,16,
+    12,12, 8, 0, 0,16, 8,16,16, 4,16, 0, 0, 0, 8,16,
+    12,12, 8, 4, 0,16, 8,16,12, 8,16, 4, 0, 0, 8,16
+};
+
+/*  Table of machine cycles per extended (CB) instruction */
+int ext_ins_cycles[] = 
+{
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
+    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
+    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
+    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8
+};
+
+void reset_cpu() {
+    /*  Default starting values for normal GB */
+    reg.AF = 0x01B0;
+    reg.BC = 0x0013;
+    reg.DE = 0x00D8;
+    reg.HL = 0x014D;
+    reg.PC = 0x100;
+    reg.SP = 0xFFFE;
 }
+
+/*  Executes the next processor instruction and returns
+ *  the amount of cycles the instruction takes */
+int exec_opcode() {
+    uint8_t opcode;
+    printf("pc location:%x\n", reg.PC);
+    printf("reg b %x\n", reg.B);
+    opcode = get_mem(reg.PC);
+    if (opcode != 0xCB) {
+        printf("opcode %x\n", opcode);
+        ins[opcode]();
+        reg.PC++;
+        return ins_cycles[opcode];
+    } else {
+        /*  extended instruction */
+        opcode = get_mem(++reg.PC);
+        ins[opcode]();
+        reg.PC++;
+        printf("extended opcode %x\n", opcode);
+        return ext_ins_cycles[opcode];
+    }
+}
+
+
+
 
 
 
