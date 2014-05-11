@@ -207,7 +207,7 @@ void LD_memHL_L() {reg.L = get_mem(reg.HL);}
 
 /*  2 words 3 M cycles 
  *  Load value from 2nd word into mem location HL */
-void LD_HL_n() {set_mem(reg.HL, IMMEDIATE_8_BIT); reg.PC++;}
+void LD_HL_n() {set_mem(reg.HL, IMMEDIATE_8_BIT);}
 
 
 /*  1 Word 2 M Cyles */
@@ -219,7 +219,7 @@ void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 /*  3 Words 4 M Cycles*/
 /* Load value stored at mem location 2nd byte and 3rd byte
  * into A  */
-void LD_A_memnn() { reg.A = get_mem(IMMEDIATE_16_BIT); reg.PC+=2; }
+void LD_A_memnn() { reg.A = get_mem(IMMEDIATE_16_BIT);}
 
 /*  2 Words 2 M Cycles */
 void LD_memBC_A() { set_mem(reg.BC, reg.A); }
@@ -228,7 +228,7 @@ void LD_memBC_A() { set_mem(reg.BC, reg.A); }
 void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
 
-void LD_memnn_A() { set_mem(IMMEDIATE_16_BIT, reg.A); reg.PC+=2; }
+void LD_memnn_A() { set_mem(IMMEDIATE_16_BIT, reg.A);}
 
 /*  Put value at address HL into A
  *  decrement HL 1 word 2 m cycles*/
@@ -249,11 +249,11 @@ void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
 /* Put A into memory address $FF00+n*/
 /* 2 Words 3 m Cycles */
-void LDH_n_A() {  set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A); reg.PC++; }
+void LDH_n_A() {  set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
 
 /*  Put memory address $FF00+n into A */
 /*  2 Words 2 m cycles*/
-void LDH_A_n() { reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); reg.PC++; }
+void LDH_A_n() { reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
 
 
 void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
@@ -263,7 +263,7 @@ void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
 
 
 /*  Load 16 bit immediate value into combined reg */
-void LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT; reg.PC+=2;}
+void LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT;}
 
 void LD_BC_IM() {LD_16_IM(&reg.BC);}
 
@@ -278,7 +278,7 @@ void LD_SP_IM() {LD_16_IM(&reg.SP);}
 void LD_SP_HL() {reg.SP = reg.HL;}
 
 /*  Place SP + Immediate 8 bit into HL */
-void LD_HL_SP_n() {reg.HL =reg.SP + IMMEDIATE_8_BIT; reg.PC++;}
+void LD_HL_SP_n() {reg.HL =reg.SP + IMMEDIATE_8_BIT;}
 
 
 void to_mem(uint16_t value, uint16_t mem_loc) {set_mem(mem_loc+1, value >> 8); set_mem(mem_loc, value & 0xFF);}
@@ -286,7 +286,7 @@ void to_mem(uint16_t value, uint16_t mem_loc) {set_mem(mem_loc+1, value >> 8); s
 void from_mem(uint16_t *value, uint16_t mem_loc) {*value = get_mem(mem_loc); *value |= (get_mem(mem_loc+1) << 8);}
 
 /*  SP place into memory at immediate address nn */
-void LD_nn_SP() {to_mem(reg.SP, IMMEDIATE_16_BIT); reg.PC+=2;}
+void LD_nn_SP() {to_mem(reg.SP, IMMEDIATE_16_BIT); }
 
 
 /*  Push register pair onto stack, decrement stack pointer */
@@ -335,7 +335,7 @@ void ADD_A_E(){reg.A = ADD_8(reg.A, reg.E);}
 void ADD_A_H(){reg.A = ADD_8(reg.A, reg.H);} 
 void ADD_A_L(){reg.A = ADD_8(reg.A, reg.L);} 
 void ADD_A_memHL(){reg.A = ADD_8(reg.A, get_mem(reg.HL));}
-void ADD_A_Im8(){reg.A = ADD_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}    
+void ADD_A_Im8(){reg.A = ADD_8(reg.A, IMMEDIATE_8_BIT);}    
 
 static inline uint8_t ADC_8(uint8_t val1, uint8_t val2)
 {
@@ -356,7 +356,7 @@ void ADC_A_E(){reg.A = ADC_8(reg.A, reg.E);}
 void ADC_A_H(){reg.A = ADC_8(reg.A, reg.H);} 
 void ADC_A_L(){reg.A = ADC_8(reg.A, reg.L);} 
 void ADC_A_memHL(){reg.A = ADC_8(reg.A, get_mem(reg.HL));}
-void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}    
+void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT);}    
 
 
 static inline uint8_t SUB_8(uint8_t val1, uint8_t val2)
@@ -376,7 +376,7 @@ void SUB_A_E(){reg.A = SUB_8(reg.A, reg.E);}
 void SUB_A_H(){reg.A = SUB_8(reg.A, reg.H);} 
 void SUB_A_L(){reg.A = SUB_8(reg.A, reg.L);} 
 void SUB_A_memHL(){reg.A = SUB_8(reg.A, get_mem(reg.HL));}
-void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs SUB carry operation on 2 bytes, returns result and sets flags */
@@ -397,7 +397,7 @@ void SBC_A_E(){reg.A = SBC_8(reg.A, reg.E);}
 void SBC_A_H(){reg.A = SBC_8(reg.A, reg.H);} 
 void SBC_A_L(){reg.A = SBC_8(reg.A, reg.L);} 
 void SBC_A_memHL(){reg.A = SBC_8(reg.A, get_mem(reg.HL));}
-void SBC_A_Im8(){reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void SBC_A_Im8(){reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
@@ -422,7 +422,7 @@ void AND_A_E(){reg.A = AND_8(reg.A, reg.E);}
 void AND_A_H(){reg.A = AND_8(reg.A, reg.H);} 
 void AND_A_L(){reg.A = AND_8(reg.A, reg.L);} 
 void AND_A_memHL(){reg.A = AND_8(reg.A, get_mem(reg.HL));}
-void AND_A_Im8(){reg.A = AND_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void AND_A_Im8(){reg.A = AND_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
@@ -446,7 +446,7 @@ void OR_A_E(){reg.A = OR_8(reg.A, reg.E);}
 void OR_A_H(){reg.A = OR_8(reg.A, reg.H);} 
 void OR_A_L(){reg.A = OR_8(reg.A, reg.L);} 
 void OR_A_memHL(){reg.A = OR_8(reg.A, get_mem(reg.HL));}
-void OR_A_Im8(){reg.A = OR_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void OR_A_Im8(){reg.A = OR_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs XOR operation on 2 bytes, returns result and sets flags */
@@ -469,7 +469,7 @@ void XOR_A_E(){reg.A = XOR_8(reg.A, reg.E);}
 void XOR_A_H(){reg.A = XOR_8(reg.A, reg.H);} 
 void XOR_A_L(){reg.A = XOR_8(reg.A, reg.L);} 
 void XOR_A_memHL(){reg.A = XOR_8(reg.A, get_mem(reg.HL));}
-void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT); }  
 
 
 /*  Performs Compare operation on 2 bytes, sets flags */
@@ -489,7 +489,7 @@ void CP_A_E(){ CP_8(reg.A, reg.E);}
 void CP_A_H(){ CP_8(reg.A, reg.H);} 
 void CP_A_L(){CP_8(reg.A, reg.L);} 
 void CP_A_memHL(){ CP_8(reg.A, get_mem(reg.HL));}
-void CP_A_Im8(){CP_8(reg.A, IMMEDIATE_8_BIT); reg.PC++;}  
+void CP_A_Im8(){CP_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs Increment operation on register, sets flags */
@@ -656,6 +656,7 @@ void DAA()
      /* error */
  }
 }
+
 
 /* Flips all bits in register A */
 void CPL() {reg.A = ~reg.A; reg.N_FLAG = 1; reg.H_FLAG = 1;}
@@ -1171,7 +1172,7 @@ void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 void JP_nn()
 {
     reg.PC = IMMEDIATE_16_BIT;
-    reg.PC--;
+    reg.PC -= 2;
 }
 
 
@@ -1181,26 +1182,26 @@ void JP_nn()
 /*  Zero flag not set */
 void JP_NZ_nn() 
 {
-    if (!reg.Z_FLAG) JP_nn(); else reg.PC+=2;
+    if (!reg.Z_FLAG) JP_nn();
 }
 
 /*  Zero flag set */
 void JP_Z_nn()
 {
-    if(reg.Z_FLAG) JP_nn(); else reg.PC+=2;
+    if(reg.Z_FLAG) JP_nn();
 }
 
 
 /*  Carry flag not set */
 void JP_NC_nn()
 {
-    if(!reg.C_FLAG) JP_nn(); else reg.PC+=2;
+    if(!reg.C_FLAG) JP_nn(); 
 }
 
 /*  Carry flag set */
 void JP_C_nn()
 {
-    if(reg.C_FLAG) JP_nn(); else reg.PC+=2;
+    if(reg.C_FLAG) JP_nn();
 }
 
 
@@ -1216,7 +1217,7 @@ void JR_n()
 {
     int val = IMMEDIATE_8_BIT;
     reg.PC  = val < 128 ? reg.PC + val : reg.PC + (val - 256);
-    reg.PC--;
+    reg.PC -=2; /* Cancel out PC increment before next instruction */
 }
 
 
@@ -1227,25 +1228,25 @@ void JR_n()
 /*  Zero flag not set */
 void JR_NZ_n() 
 {
-    if(!reg.Z_FLAG) JR_n(); else reg.PC+=1;;
+    if(!reg.Z_FLAG) JR_n();
 }
 
 /* Zero flag set */
-void JR_Z_n()
+void JR_Z_n() 
 {
-    if(reg.Z_FLAG) JR_n(); else reg.PC+=1;;
+    if(reg.Z_FLAG) JR_n(); 
 }
 
 /*  Carry flag not set */
 void JR_NC_n()
 {
-    if(!reg.C_FLAG) JR_n(); else reg.PC+=1;;
+    if(!reg.C_FLAG) JR_n(); 
 }
 
 /*  Carry flag set */
 void JR_C_n()
 {
-    if(!reg.C_FLAG) JR_n(); else reg.PC+=1;;
+    if(!reg.C_FLAG) JR_n(); 
 }
 
 
@@ -1257,28 +1258,28 @@ void CALL_nn()
 {
     PUSH(reg.PC + 3);
     reg.PC = IMMEDIATE_16_BIT;
-    reg.PC++;
+    reg.PC-=3; /*  Cancel out PC increment for next instruction */
 }
 
 /*  Call if flag is set/unset */
 void CALL_NZ_nn()
 {
-    if(!reg.Z_FLAG) CALL_nn(); else reg.PC+=2;
+    if(!reg.Z_FLAG) CALL_nn(); 
 }
 
 void CALL_Z_nn()
 {
-    if(reg.Z_FLAG) CALL_nn(); else reg.PC+=2;;
+    if(reg.Z_FLAG) CALL_nn(); 
 }
 
 void CALL_NC_nn()
 {
-    if(!reg.C_FLAG) CALL_nn(); else reg.PC+=2;
+    if(!reg.C_FLAG) CALL_nn(); 
 }
 
 void CALL_C_nn()
 {
-    if(reg.C_FLAG) CALL_nn(); else reg.PC+=2;
+    if(reg.C_FLAG) CALL_nn();
 }
 
 
@@ -1289,7 +1290,7 @@ void RST_n(uint8_t addr)
 {
     PUSH(reg.PC);
     reg.PC = addr;
-    reg.PC--;
+    reg.PC-=2; /*  Cancel out PC increment for next instruction */
 }
 
 

@@ -5,10 +5,10 @@
 #include "memory.h"
 #include "cpu.h"
 
-#define IMMEDIATE_8_BIT get_mem(reg.PC+1)
-#define IMMEDIATE_16_BIT (get_mem((reg.PC)+2)<< 8) | get_mem((reg.PC+1))
+#define IMMEDIATE_8_BIT get_mem(reg.PC-1)
+#define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
 
-static uint8_t opcode;
+
 static int halt = 0;
 static int stop = 0;
 static int interrupts_disabled = 0;
@@ -429,6 +429,7 @@ static char const * const asm_ext_instruction_set[UINT8_MAX+1] = {
     "SET 7,H", "SET 7,L", "SET 7,(HL)", "SET 7,A",
 
 };
+
  
 static Instructions instructions = {
     .instruction_set = ins, .words = ins_words, 
@@ -473,20 +474,20 @@ int exec_opcode() {
     for (i = 0xfff9; i < 0x10000; i++) {
       //  printf("mem:%x\n",get_mem(i));
     }
-    opcode = get_mem(reg.PC);
+    opcode = get_mem(reg.PC); /*  fetch */
+    reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */
     //printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
 
     if (opcode != 0xCB) {
-        //printf("opcode %x\n", opcode);
+        
         instructions.instruction_set[opcode].operation();
-        reg.PC++;
         return instructions.instruction_set[opcode].cycles;
-    } else {
-        /*  extended instruction */
-        opcode = get_mem(++reg.PC);
+
+    } else { /*  extended instruction */
+
+        opcode = get_mem(IMMEDIATE_8_BIT);
         instructions.ext_instruction_set[opcode].operation();
-        reg.PC++;
-        //printf("extended opcode %x\n", opcode);
+       
         return instructions.ext_instruction_set[opcode].cycles;
     }
 }
