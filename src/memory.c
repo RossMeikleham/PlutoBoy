@@ -18,6 +18,7 @@
 
 #include "memory.h"
 #include "pthread.h"
+#include "stdio.h"
 
 #define LICENSES_LEN sizeof(licenses)/sizeof(licensee)
 #define OLD_LICENSES_LEN sizeof(old_licenses)/sizeof(licensee)
@@ -66,9 +67,8 @@ char *destination_codes[] = {"Japanese", "Non-Japanese"};
 
 uint8_t mem[WORD_MAX];
 
-void set_mem(uint16_t loc, uint8_t val) 
+void set_mem(uint16_t const loc, uint8_t const val) 
 {
-    pthread_rwlock_wrlock(&mem_lock);
     mem[loc] = val;
     /*  Check if mirrored memory being written to */
     if (loc >= ECHO_RAM_START && loc <= ECHO_RAM_END) {
@@ -76,15 +76,12 @@ void set_mem(uint16_t loc, uint8_t val)
     } else if (loc >= ECHO_RAM_START-0x2000 && loc <= ECHO_RAM_END-0x2000) {
         mem[loc+0x2000] = val;
     }
-    pthread_rwlock_unlock(&mem_lock);
 }
 
 uint8_t get_mem(uint16_t loc) {
 
     uint8_t result;
-    pthread_rwlock_rdlock(&mem_lock); 
     result = mem[loc];
-    pthread_rwlock_unlock(&mem_lock);
     return result;
 }
 
@@ -101,8 +98,8 @@ const char *get_licensee() {
     *  is the MSB of the new license code location
     *  and 3Y is the LSB of the new licence code location*/
    if (mem[OLD_LICENSE_CODE] == 0x33) {
-       id = mem[NEW_LICENSE_CODE_MSB] << 0x4 |
-       mem[NEW_LICENSE_CODE_LSB] & 0xF;
+       id = mem[NEW_LICENSE_CODE_MSB] << 0x4 | (
+           mem[NEW_LICENSE_CODE_LSB] & 0xF);
        for (i = 0; i < LICENSES_LEN; i++) {
            if(id == licenses[i].id) {
                return licenses[i].name;

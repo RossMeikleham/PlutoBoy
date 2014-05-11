@@ -21,6 +21,16 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "graphics.h"
+#include <string.h>
+#include <stdlib.h>
+
+#define BREAKPOINT_OFF 0x100009
+#define BREAKPOINT_MAX 0xFFFF
+#define BREAKPOINT_MIN 0x0
+
+int DEBUG = 0;
+int STEP_COUNT = -1;
+int BREAKPOINT = BREAKPOINT_OFF;
 
 /* Stores possible frequencies in hz of when the
  * timer should be incremented */
@@ -56,22 +66,69 @@ long clock_speed;
   }
 
 
+void get_command() {
+    #define BUFSIZE 1024
+    int step;
+    int breakpoint;
+    char buf[BUFSIZE];
+
+    BREAKPOINT = BREAKPOINT_OFF;
+    STEP_COUNT = -1;
+
+    for(;;) {
+   
+        printf("->");
+        fgets(buf, BUFSIZE, stdin);
+        
+        if(!strcmp(buf, "exit\n")) {
+            exit(EXIT_SUCCESS);
+        }
+        if(!strcmp(buf, "showregs\n")) {
+            print_regs();
+        }
+        else if (BUFSIZE > 5 && !strncmp(buf, "step ", 5)) {
+            if (sscanf(buf+5, "%d", &step) && step > 0) {
+                STEP_COUNT = step;
+                return;
+            } else {
+                printf("usage: step [stepcount] where stepcount > 0\n");
+            }
+        }
+        else if (!strcmp(buf, "go\n")) {
+            return;
+        }
+        else if (BUFSIZE > 5 && !strncmp(buf,"setb ",5)) {
+            if(sscanf(buf+5, "%d", &breakpoint) && breakpoint >= BREAKPOINT_MIN && breakpoint <= BREAKPOINT_MAX) {
+                BREAKPOINT = breakpoint;
+            } else {
+                printf("usage bpoint [breakpoint] where breakpoint is between 0x0000 and 0xFFFF inclusive\n");
+            } 
+        } 
+        else {printf("unknown command\n");}
+   }
+    
+}
+
 
 int run(long cycles) {
     long ly_cycles = 0, current_cycles;
     int num;
+    get_command();
     while(cycles > 0) {
-        check_interrupt();
+       // check_interrupt();
 
         /*  Increment lcd y line every 456 cycles */
         if(ly_cycles >= 456) {
-            increment_ly();
+          //  increment_ly();
             ly_cycles = 0;
         }
         current_cycles = exec_opcode();
         cycles -= current_cycles;
         ly_cycles += current_cycles;
-        scanf("%d",&num);
+        //scanf("%d",&num);
+        if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
+            get_command();
+        }
 
     }
 

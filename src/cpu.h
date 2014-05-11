@@ -4,5 +4,7 @@
 
 void reset_cpu();
 int exec_opcode(void);
+void print_regs();
+
 
 #endif
