@@ -5,6 +5,15 @@
 #include "memory.h"
 #include "cpu.h"
 
+#define IMMEDIATE_8_BIT get_mem(reg.PC+1)
+#define IMMEDIATE_16_BIT (get_mem((reg.PC)+2)<< 8) | get_mem((reg.PC+1))
+
+
+static uint8_t opcode;
+static int halt = 0;
+static int stop = 0;
+static int interrupts_disabled = 0;
+
 
 union REGISTERS
 
@@ -17,65 +26,15 @@ union REGISTERS
 
 } static reg;
 
-#define IMMEDIATE_8_BIT get_mem(reg.PC+1)
-#define IMMEDIATE_16_BIT (get_mem((reg.PC)+2)<< 8) | get_mem((reg.PC+1))
-
-uint8_t opcode;
-int halt = 0;
-int stop = 0;
-int interrupts_disabled = 0;
 
 
-/* 16 bit registers
- *AF //Normally not used as A and F registers needed seperately
- *BC //Used by instructions and code sections, 16 bit counter
- *DE
- *HL //General 16 bit reg 
- *PC //Program Counter
- *SP //Stack Pointer
- */
+#include "opcodes.c"  //Include opcode implementations
 
 
-/*8 bit registers 
- *A // lower 8 bytes of AF 
- *F // higher 8 bytes of AF, Flags register
- *
- *B // lower 8 bytes of BC
- *C // higer 8 bytes of BC
- *
- *D // lower 8 bytes of DE
- *E // higher 8 bytes of ED
- *
- *H // lower 8 bytes of HL
- *L // higher 8 bytes of HL
- *
- */
-
-
-/*8 bit flags stored in register F
- *Z_FLAG // Zero flag - set if result is zero
- *N_FLAG // Subtraction flag - set if subtraction operation performed
- *H_FLAG // Half Carry flag -
- *C_FLAG // Carry flag -
- */
-
-
-//uint8_t cycles = {};
-//(void)()* getOp() 
-//{
-//}
-
-void print_regs() {
-    printf("AF:%x-%x\n",reg.A,reg.F);
-    printf("BC:%x-%x\n",reg.B,reg.C);
-    printf("DE:%x-%x\n",reg.D,reg.E);
-    printf("HL:%x-%x\n",reg.H,reg.L);
-    printf("PC:%x\n",reg.PC);
-    printf("SP:%x\n",reg.SP);
-}
 // Pointer to function which performs an operation
 // based on an opcode
 typedef void (*Operation)(void); 
+
 
 typedef struct {
 
@@ -101,9 +60,8 @@ typedef struct {
 } Instructions;
 
 
-static Instructions instructions;
-instructions.instruction_set_1 = { 
-
+static Instruction ins[256] = {
+    
     // 0x00 - 0x0F
     {4, NOP}, {12, LD_BC_IM}, {8, LD_memBC_A}, {8, INC_BC},     
     {4, INC_B}, {4, DEC_B}, {8, LD_B_IM}, {4, RLC_A},     
@@ -130,7 +88,7 @@ instructions.instruction_set_1 = {
 
     //0x40 - 0x4F
     {4, LD_B_B}, {4, LD_B_C}, {4, LD_B_D}, {4, LD_B_E},     
-    {4 ,LD_B_H, {4, LD_B_L}, {8, LD_B_memHL}, {4 ,LD_B_A},
+    {4 ,LD_B_H}, {4, LD_B_L}, {8, LD_B_memHL}, {4 ,LD_B_A},
     {4 ,LD_C_B}, {4 ,LD_C_C}, {4, LD_C_D}, {4, LD_C_E},
     {4 ,LD_C_H}, {4 ,LD_C_L}, {8 ,LD_C_memHL}, {4 ,LD_C_A},
                           
@@ -149,8 +107,8 @@ instructions.instruction_set_1 = {
     //0x70 - 0x7F
     {8, LD_memHL_B}, {8, LD_memHL_C}, {8, LD_memHL_D}, {8, LD_memHL_E}, 
     {8, LD_memHL_H}, {8 ,LD_memHL_L}, {0, HALT}, {8, LD_memHL_A}, 
-    {4, LD_A_B}, {4, LD_A_C}}, {4, LD_A_D}, {4. LD_A_E},
-    {4, LD_A_H, {4, LD_A_L}, {8, LD_A_memHL}, {4, LD_A_A},
+    {4, LD_A_B}, {4, LD_A_C}, {4, LD_A_D}, {4, LD_A_E},
+    {4, LD_A_H}, {4, LD_A_L}, {8, LD_A_memHL}, {4, LD_A_A},
 
     //0x80 - 0x8F
     {4, ADD_A_B}, {4, ADD_A_C}, {4, ADD_A_D},  {4, ADD_A_E},    
@@ -173,7 +131,7 @@ instructions.instruction_set_1 = {
     //0xB0 - 0xBF
     {4, OR_A_B}, {4, OR_A_C}, {4, OR_A_D}, {4, OR_A_E},
     {4, OR_A_H}, {4, OR_A_L}, {8, OR_A_memHL}, {4, OR_A_A},
-    {4, CP_A_B}, {4, CP_A_C}, {4, CP_A_D}, {4, CP_A_E,}  
+    {4, CP_A_B}, {4, CP_A_C}, {4, CP_A_D}, {4, CP_A_E},  
     {4, CP_A_H}, {4, CP_A_L}, {8, CP_A_memHL,}, {4, CP_A_A},
 
     //0xC0 - 0xCF
@@ -201,81 +159,96 @@ instructions.instruction_set_1 = {
     {0 , NULL}, {0, NULL}, {8, CP_A_Im8}, {16, RST_38}
 };
 
+static Instruction ext_ins[256] = {
+
+    {8, RLC_B}, {8, RLC_C}, {8, RLC_D},      {8, RLC_E}, 
+    {8, RLC_H}, {8, RLC_L}, {16, RLC_memHL}, {8, RLC_A}, 
+    {8, RRC_B}, {8, RRC_C}, {8, RRC_D},      {8, RRC_E},
+    {8, RRC_H}, {8, RRC_L}, {16, RRC_memHL}, {8, RRC_A},
 
 
+    {8, RL_B}, {8, RL_C}, {8, RL_D},      {8, RL_E},
+    {8, RL_H}, {8, RL_L}, {16, RL_memHL}, {8, RL_A}, 
+    {8, RR_B}, {8, RR_C}, {8, RR_D},      {8, RR_E},
+    {8, RR_H}, {8, RR_L}, {16, RR_memHL}, {8, RR_A},
 
+    {8, SLA_B}, {8, SLA_C}, {8, SLA_D},      {8, SLA_E},
+    {8, SLA_H}, {8, SLA_L}, {16, SLA_memHL}, {8, SLA_A}, 
+    {8, SRA_B}, {8, SRA_C}, {8, SRA_D},      {8, SRA_E},
+    {8, SRA_H}, {8, SRA_L}, {16, SRA_memHL}, {8, SRA_A},
 
-instruction.ext_instruction_set = {
+    {8, SWAP_B}, {8, SWAP_C}, {8, SWAP_D},      {8, SWAP_E},
+    {8, SWAP_H}, {8, SWAP_L}, {16, SWAP_memHL}, {8, SWAP_A}, 
+    {8, SRL_B},  {8, SRL_C},  {8, SRL_D},       {8, SRL_E},
+    {8, SRL_H},  {8, SRL_L},  {16, SRL_memHL},  {8, SRL_A},
+
+    {8, BIT_B_0}, {8, BIT_C_0}, {8, BIT_D_0},      {8, BIT_E_0},
+    {8, BIT_H_0}, {8, BIT_L_0}, {12, BIT_memHL_0}, {8, BIT_A_0},
+    {8, BIT_B_1}, {8, BIT_C_1}, {8, BIT_D_1},      {8, BIT_E_1}, 
+    {8, BIT_H_1}, {8, BIT_L_1}, {12, BIT_memHL_1}, {8, BIT_A_1},
+     
+    {8, BIT_B_2}, {8, BIT_C_2}, {8, BIT_D_2},      {8, BIT_E_2}, 
+    {8, BIT_H_2}, {8, BIT_L_2}, {12, BIT_memHL_2}, {8, BIT_A_2}, 
+    {8, BIT_B_3}, {8, BIT_C_3}, {8, BIT_D_3},      {8, BIT_E_3}, 
+    {8, BIT_H_3}, {8, BIT_L_3}, {12, BIT_memHL_3}, {8, BIT_A_3},
+
+    {8, BIT_B_4}, {8, BIT_C_4}, {8, BIT_D_4},      {8, BIT_E_4}, 
+    {8, BIT_H_4}, {8, BIT_L_4}, {12, BIT_memHL_4}, {8, BIT_A_4},
+    {8, BIT_B_5}, {8, BIT_C_5}, {8, BIT_D_5},      {8, BIT_E_5}, 
+    {8, BIT_H_5}, {8, BIT_L_5}, {12, BIT_memHL_5}, {8, BIT_A_5},
+     
+    {8, BIT_B_6}, {8, BIT_C_6}, {8, BIT_D_6},      {8, BIT_E_6}, 
+    {8, BIT_H_6}, {8, BIT_L_6}, {12, BIT_memHL_6}, {8, BIT_A_6}, 
+    {8, BIT_B_7}, {8, BIT_C_7}, {8, BIT_D_7},      {8, BIT_E_7},
+    {8, BIT_H_7}, {8, BIT_L_7}, {12, BIT_memHL_7}, {8, BIT_A_7},
     
-    {, RLC_B}, {, RLC_C}, {, RLC_D}, {, RLC_E}, 
-    {, RLC_H}, {, RLC_L}, {, RLC_memHL}, {, RLC_A}, 
-    {, RRC_B}, {, RRC_C}, {, RRC_D}, {, RRC_E},
-    {, RRC_H},{, RRC_L}, {,RRC_memHL}, {,RRC_A},
-
-
-    {, RL_B}, {, RL_C}, {, RL_D} {, RL_E},
-    {, RL_H}, {, RL_L}, {, RL_memHL}, {, RL_A}, 
-    {, RR_B}, {, RR_C}, {, RR_D}, {, RR_E},
-    {, RR_H}, {, RR_L}, {, RR_memHL}, {, RR_A},
-
-    {, SLA_B}, {, SLA_C}, {,SLA_D}, {,SLA_E},
-    {, SLA_H}, {, SLA_L}, {,SLA_memHL}, {,SLA_A}, 
-    {, SRA_B}, {, SRA_C},{, SRA_D}, {, SRA_E},
-    {, SRA_H}, {, SRA_L}, SRA_memHL, SRA_A,
-    SWAP_B, SWAP_C, SWAP_D, SWAP_E, SWAP_H, SWAP_L, SWAP_memHL, SWAP_A, 
-    SRL_B, SRL_C, SRL_D, SRL_E, SRL_H, SRL_L, SRL_memHL, SRL_A,
-
-    BIT_B_0, BIT_C_0, BIT_D_0, BIT_E_0, BIT_H_0, BIT_L_0, BIT_memHL_0, BIT_A_0,
-    BIT_B_1, BIT_C_1, BIT_D_1, BIT_E_1, BIT_H_1, BIT_L_1, BIT_memHL_1, BIT_A_1, 
-    BIT_B_2, BIT_C_2, BIT_D_2, BIT_E_2, BIT_H_2, BIT_L_2, BIT_memHL_2, BIT_A_2, 
-    BIT_B_3, BIT_C_3, BIT_D_3, BIT_E_3, BIT_H_3, BIT_L_3, BIT_memHL_3, BIT_A_3,
-    BIT_B_4, BIT_C_4, BIT_D_4, BIT_E_4, BIT_H_4, BIT_L_4, BIT_memHL_4, BIT_A_4,
-    BIT_B_5, BIT_C_5, BIT_D_5, BIT_E_5, BIT_H_5, BIT_L_5, BIT_memHL_5, BIT_A_5, 
-    BIT_B_6, BIT_C_6, BIT_D_6, BIT_E_6, BIT_H_6, BIT_L_6, BIT_memHL_6, BIT_A_6, 
-    BIT_B_7, BIT_C_7, BIT_D_7, BIT_E_7, BIT_H_7, BIT_L_7, BIT_memHL_7, BIT_A_7,
     
+    {8, RES_B_0}, {8, RES_C_0}, {8, RES_D_0},      {8, RES_E_0}, 
+    {8, RES_H_0}, {8, RES_L_0}, {16, RES_memHL_0}, {8, RES_A_0},
+    {8, RES_B_1}, {8, RES_C_1}, {8, RES_D_1},      {8, RES_E_1}, 
+    {8, RES_H_1}, {8, RES_L_1}, {16, RES_memHL_1}, {8, RES_A_1},
+     
+    {8, RES_B_2}, {8, RES_C_2}, {8, RES_D_2},      {8, RES_E_2}, 
+    {8, RES_H_2}, {8, RES_L_2}, {16, RES_memHL_2}, {8, RES_A_2}, 
+    {8, RES_B_3}, {8, RES_C_3}, {8, RES_D_3},      {8, RES_E_3}, 
+    {8, RES_H_3}, {8, RES_L_3}, {16, RES_memHL_3}, {8, RES_A_3},
+
+    {8, RES_B_4}, {8, RES_C_4}, {8, RES_D_4},      {8, RES_E_4}, 
+    {8, RES_H_4}, {8, RES_L_4}, {16, RES_memHL_4}, {8, RES_A_4},
+    {8, RES_B_5}, {8, RES_C_5}, {8, RES_D_5},      {8, RES_E_5}, 
+    {8, RES_H_5}, {8, RES_L_5}, {16, RES_memHL_5}, {8, RES_A_5},
+     
+    {8, RES_B_6}, {8, RES_C_6}, {8, RES_D_6},      {8, RES_E_6},
+    {8, RES_H_6}, {8, RES_L_6}, {16, RES_memHL_6}, {8, RES_A_6}, 
+    {8, RES_B_7}, {8, RES_C_7}, {8, RES_D_7},      {8, RES_E_7}, 
+    {8, RES_H_7}, {8, RES_L_7}, {16, RES_memHL_7}, {8, RES_A_7},      
     
-    RES_B_0, RES_C_0, RES_D_0, RES_E_0, RES_H_0, RES_L_0, RES_memHL_0, RES_A_0,
-    RES_B_1, RES_C_1, RES_D_1, RES_E_1, RES_H_1, RES_L_1, RES_memHL_1, RES_A_1, 
-    RES_B_2, RES_C_2, RES_D_2, RES_E_2, RES_H_2, RES_L_2, RES_memHL_2, RES_A_2, 
-    RES_B_3, RES_C_3, RES_D_3, RES_E_3, RES_H_3, RES_L_3, RES_memHL_3, RES_A_3,
-    RES_B_4, RES_C_4, RES_D_4, RES_E_4, RES_H_4, RES_L_4, RES_memHL_4, RES_A_4,
-    RES_B_5, RES_C_5, RES_D_5, RES_E_5, RES_H_5, RES_L_5, RES_memHL_5, RES_A_5, 
-    RES_B_6, RES_C_6, RES_D_6, RES_E_6, RES_H_6, RES_L_6, RES_memHL_6, RES_A_6, 
-    RES_B_7, RES_C_7, RES_D_7, RES_E_7, RES_H_7, RES_L_7, RES_memHL_7, RES_A_7,   
-    
-    
-    SET_B_0, SET_C_0, SET_D_0, SET_E_0, SET_H_0, SET_L_0, SET_memHL_0, SET_A_0,
-    SET_B_1, SET_C_1, SET_D_1, SET_E_1, SET_H_1, SET_L_1, SET_memHL_1, SET_A_1, 
-    SET_B_2, SET_C_2, SET_D_2, SET_E_2, SET_H_2, SET_L_2, SET_memHL_2, SET_A_2, 
-    SET_B_3, SET_C_3, SET_D_3, SET_E_3, SET_H_3, SET_L_3, SET_memHL_3, SET_A_3,
-    SET_B_4, SET_C_4, SET_D_4, SET_E_4, SET_H_4, SET_L_4, SET_memHL_4, SET_A_4,
-    SET_B_5, SET_C_5, SET_D_5, SET_E_5, SET_H_5, SET_L_5, SET_memHL_5, SET_A_5, 
-    SET_B_6, SET_C_6, SET_D_6, SET_E_6, SET_H_6, SET_L_6, SET_memHL_6, SET_A_6, 
-    SET_B_7, SET_C_7, SET_D_7, SET_E_7, SET_H_7, SET_L_7, SET_memHL_7, SET_A_7};   
+    {8, SET_B_0}, {8, SET_C_0}, {8, SET_D_0},      {8, SET_E_0}, 
+    {8, SET_H_0}, {8, SET_L_0}, {16, SET_memHL_0}, {8, SET_A_0},
+    {8, SET_B_1}, {8, SET_C_1}, {8, SET_D_1},      {8, SET_E_1}, 
+    {8, SET_H_1}, {8, SET_L_1}, {16, SET_memHL_1}, {8, SET_A_1}, 
+
+    {8, SET_B_2}, {8, SET_C_2}, {8, SET_D_2},      {8, SET_E_2}, 
+    {8, SET_H_2}, {8, SET_L_2}, {16, SET_memHL_2}, {8, SET_A_2}, 
+    {8, SET_B_3}, {8, SET_C_3}, {8, SET_D_3},      {8, SET_E_3}, 
+    {8, SET_H_3}, {8, SET_L_3}, {16, SET_memHL_3}, {8, SET_A_3},
+
+    {8, SET_B_4}, {8, SET_C_4}, {8, SET_D_4},      {8, SET_E_4}, 
+    {8, SET_H_4}, {8, SET_L_4}, {16, SET_memHL_4}, {8, SET_A_4},
+    {8, SET_B_5}, {8, SET_C_5}, {8, SET_D_5},      {8, SET_E_5}, 
+    {8, SET_H_5}, {8, SET_L_5}, {16, SET_memHL_5}, {8, SET_A_5},
+     
+    {8, SET_B_6}, {8, SET_C_6}, {8, SET_D_6},      {8, SET_E_6}, 
+    {8, SET_H_6}, {8, SET_L_6}, {16, SET_memHL_6}, {8, SET_A_6}, 
+    {8, SET_B_7}, {8, SET_C_7}, {8, SET_D_7},      {8, SET_E_7}, 
+    {8, SET_H_7}, {8, SET_L_7}, {16, SET_memHL_7}, {8, SET_A_7}
+};
+
+static Instructions instructions = {
+    .instruction_set = ins, .ext_instruction_set = ext_ins, NULL, NULL
+};   
    
 
-
-/*  Table of machine cycles per extended (CB) instruction */
-int ext_ins_cycles[] = 
-{
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
-    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
-    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
-    8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,12, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
-    8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8
-};
 
 void reset_cpu() {
     /*  Default starting values for normal GB */
@@ -286,6 +259,18 @@ void reset_cpu() {
     reg.PC = 0x100;
     reg.SP = 0xFFFE;
 }
+
+
+
+void print_regs() {
+    printf("AF:%x-%x\n",reg.A,reg.F);
+    printf("BC:%x-%x\n",reg.B,reg.C);
+    printf("DE:%x-%x\n",reg.D,reg.E);
+    printf("HL:%x-%x\n",reg.H,reg.L);
+    printf("PC:%x\n",reg.PC);
+    printf("SP:%x\n",reg.SP);
+}
+
 
 /*  Executes the next processor instruction and returns
  *  the amount of cycles the instruction takes */
@@ -300,20 +285,20 @@ int exec_opcode() {
       //  printf("mem:%x\n",get_mem(i));
     }
     opcode = get_mem(reg.PC);
-    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.SP);
+    //printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
 
     if (opcode != 0xCB) {
         //printf("opcode %x\n", opcode);
-        ins[opcode]();
+        instructions.instruction_set[opcode].operation();
         reg.PC++;
-        return ins_cycles[opcode];
+        return instructions.instruction_set[opcode].cycles;
     } else {
         /*  extended instruction */
         opcode = get_mem(++reg.PC);
-        ins[opcode]();
+        instructions.ext_instruction_set[opcode].operation();
         reg.PC++;
         //printf("extended opcode %x\n", opcode);
-        return ext_ins_cycles[opcode];
+        return instructions.ext_instruction_set[opcode].cycles;
     }
 }
 
