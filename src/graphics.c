@@ -24,7 +24,7 @@
 #include "graphics.h"
 #include "IO.h"
 
-Uint32 cols[3];
+Uint32 cols[4];
 SDL_Surface *screen;
 SDL_Event event;
 

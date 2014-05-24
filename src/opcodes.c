@@ -1172,7 +1172,6 @@ void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 void JP_nn()
 {
     reg.PC = IMMEDIATE_16_BIT;
-    reg.PC -= 2;
 }
 
 
@@ -1217,7 +1216,6 @@ void JR_n()
 {
     int val = IMMEDIATE_8_BIT;
     reg.PC  = val < 128 ? reg.PC + val : reg.PC + (val - 256);
-    reg.PC -=2; /* Cancel out PC increment before next instruction */
 }
 
 
@@ -1258,7 +1256,6 @@ void CALL_nn()
 {
     PUSH(reg.PC + 3);
     reg.PC = IMMEDIATE_16_BIT;
-    reg.PC-=3; /*  Cancel out PC increment for next instruction */
 }
 
 /*  Call if flag is set/unset */
@@ -1290,7 +1287,6 @@ void RST_n(uint8_t addr)
 {
     PUSH(reg.PC);
     reg.PC = addr;
-    reg.PC-=2; /*  Cancel out PC increment for next instruction */
 }
 
 
@@ -1316,7 +1312,6 @@ void RST_38() {RST_n(0x38);}
 void RET()
 {
     POP(&reg.PC);
-    reg.PC--;
 }
 
 

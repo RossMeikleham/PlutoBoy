@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "memory.h"
 #include "cpu.h"
+#include <string.h>
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
 #define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
@@ -268,26 +269,28 @@ static int ins_words[UINT8_MAX+1] = {
     2,1,2,1,1,1,2,1,2,1,3,1,1,1,2,1
 };
 
+/*  i1 represents immediate word 
+ *  i2 represents imeediate two words*/
 static char const * const asm_instruction_set[UINT8_MAX+1] = { 
-    "NOP", "LD BC,d16", "LD (BC),A", "INC BC", 
-    "INC B","DEC B", "LD B,d8", "RLCA", 
-    "LD (a16),SP", "ADD HL,BC", "LD A,(BC)", "DEC BC", 
-    "INC C","DEC C", "LD C,d8", "RRCA",
+    "NOP", "LD BC,i2", "LD (BC),A", "INC BC", 
+    "INC B","DEC B", "LD B,i1", "RLCA", 
+    "LD (i2),SP", "ADD HL,BC", "LD A,(BC)", "DEC BC", 
+    "INC C","DEC C", "LD C,i1", "RRCA",
     
-    "STOP 0", "LD DE,d16", "LD (DE),A", "INC DE",
-    "INC D", "DEC D", "LD D,d8", "RLA",
-    "JR r8", "ADD HL,DE", "LD A,(DE)", "DEC DE",
-    "INC E", "DEC E", "LD E,de", "RRA",
+    "STOP 0", "LD DE,i2", "LD (DE),A", "INC DE",
+    "INC D", "DEC D", "LD D,i1", "RLA",
+    "JR i1", "ADD HL,DE", "LD A,(DE)", "DEC DE",
+    "INC E", "DEC E", "LD E,i1", "RRA",
      
-    "JR NZ,r8", "LD HL,d16", "LD (HL+),A", "INC HL",
-    "INC H", "DEC H", "LD H,d8", "DAA",
-    "JR Z,r8", "ADD HL,HL", "LD A,(HL+)", "DEC HL",
-    "INC L", "DEC L", "LD L,d8", "CPL",
+    "JR NZ,i1", "LD HL,i2", "LD (HL+),A", "INC HL",
+    "INC H", "DEC H", "LD H,i1", "DAA",
+    "JR Z,i1", "ADD HL,HL", "LD A,(HL+)", "DEC HL",
+    "INC L", "DEC L", "LD L,i1", "CPL",
      
-    "JR NC,r8", "LD SP,d16", "LD (HL-),A", "INC SP",
+    "JR NC,i1", "LD SP,i2", "LD (HL-),A", "INC SP",
     "INC (HL)", "DEC (HL)", "LD (HL),d8", "SCF",
-    "JR C,r8", "ADD HL,SP","LD A,(HL-)", "DEC SP",
-    "INC A", "DEC A", "LD A,d8", "CCF",
+    "JR C,i1", "ADD HL,SP","LD A,(HL-)", "DEC SP",
+    "INC A", "DEC A", "LD A,i1", "CCF",
 
     "LD B,B", "LD B,C", "LD B,D", "LD B,E", 
     "LD B,H","LD B,L", "LD B,(HL)", "LD B,A"
@@ -329,25 +332,25 @@ static char const * const asm_instruction_set[UINT8_MAX+1] = {
     "CP A,B", "CP A,C", "CP A,D", "CP A,E",
     "CP A,H", "CP A,L", "CP A,(HL)", "CP A,A",
 
-    "RET NZ", "POP BC", "JP NZ,a16", "JP a16",
-    "CALL NZ,a16", "PUSH BC", "ADD A,d8", "RST 00H", 
-    "RET Z", "RET", "JP Z,a16", "EXT_INSTRUCTION", 
-    "CALL Z,a16", "CALL a16", "ADC A,d8", "RST 08H",
+    "RET NZ", "POP BC", "JP NZ,i2", "JP i2",
+    "CALL NZ,i2", "PUSH BC", "ADD A,i1", "RST 00H", 
+    "RET Z", "RET", "JP Z,i2", "EXT_INSTRUCTION", 
+    "CALL Z,i2", "CALL i2", "ADC A,i1", "RST 08H",
 
-    "RET NC", "POP DE", "JP NC,a16", "NONE", 
-    "CALL NC,a16", "PUSH DE", "SUB d8", "RST 10H", 
-    "RET C", "RETI", "JP C,a16", "NONE", 
-    "CALL C,a16", "NONE", "SBC A,d8", "RST 18H",
+    "RET NC", "POP DE", "JP NC,i2", "NONE", 
+    "CALL NC,i2", "PUSH DE", "SUB i1", "RST 10H", 
+    "RET C", "RETI", "JP C,i2", "NONE", 
+    "CALL C,i2", "NONE", "SBC A,i1", "RST 18H",
 
-    "LDH (a8), A", "POP HL", "LD (C),A", "NONE",
-    "NONE", "PUSH HL", "AND d8", "RST 20H",
-    "ADD SP,r8", "JP (HL)", "LD (a16),A", "NONE",
-    "NONE", "NONE", "XOR d8", "RST 28H",
+    "LDH (i1), A", "POP HL", "LD (C),A", "NONE",
+    "NONE", "PUSH HL", "AND i1", "RST 20H",
+    "ADD SP,i1", "JP (HL)", "LD (i2),A", "NONE",
+    "NONE", "NONE", "XOR i1", "RST 28H",
     
-    "LDH A,(a8)", "POP AF", "LD A,(C)", "DI",
-    "NONE", "PUSH AF", "OR d8", "RST 30H", 
-    "LD HL,SP+r8", "LD SP,HL", "LD A,(a16)", "EI",
-    "NONE", "NONE", "CP d8", "RST 38H"
+    "LDH A,(i1)", "POP AF", "LD A,(C)", "DI",
+    "NONE", "PUSH AF", "OR i1", "RST 30H", 
+    "LD HL,SP+i1", "LD SP,HL", "LD A,(i2)", "EI",
+    "NONE", "NONE", "CP i1", "RST 38H"
     
 };
 
@@ -430,7 +433,8 @@ static char const * const asm_ext_instruction_set[UINT8_MAX+1] = {
 
 };
 
- 
+
+
 static Instructions instructions = {
     .instruction_set = ins, .words = ins_words, 
     .ext_instruction_set = ext_ins, 
@@ -438,6 +442,35 @@ static Instructions instructions = {
     .asm_name_set_2 = asm_ext_instruction_set
 };   
    
+
+
+/* Send to specified stream the opcode of the instruction
+ * at the specified memory location*/
+static void dasm_instruction(uint16_t mem, FILE *stream) {
+
+    uint8_t opcode = get_mem(mem);
+    
+    if (opcode == 0xCB) {
+        fprintf(stream,"%s",instructions.asm_name_set_2[get_mem(mem+1)]);
+
+    } else {
+
+        char const *dasm_str = instructions.asm_name_set_1[opcode];
+        char const *p = dasm_str;
+        /* print up until i1 or i2 reached*/
+        while (p[0] != '\0' && !(p[0] == 'i' && (p[1] == '1' || p[1] == '2'))) {
+            fprintf(stream, "%c", *p);
+            p++;
+        }
+        /* print specified 8 bit or 16 bit immediate address and rest of string  */
+        switch (p[0]) {
+            case '1': fprintf(stream, "0x%X%s", get_mem(mem+1), p+2); break;
+            case '2': fprintf(stream, "0x%X%s", (get_mem(mem+2) << 8) 
+                | get_mem(mem+1), p+2); break;
+        }
+    }
+}
+
 
 
 void reset_cpu() {
@@ -475,8 +508,9 @@ int exec_opcode() {
       //  printf("mem:%x\n",get_mem(i));
     }
     opcode = get_mem(reg.PC); /*  fetch */
+    dasm_instruction(reg.PC, stdout);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */
-    //printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
+    printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
 
     if (opcode != 0xCB) {
         
