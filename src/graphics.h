@@ -17,5 +17,7 @@ typedef struct {
 int init_gfx();
 
 void draw_row(uint8_t row);
+void draw_tile_0(uint8_t tile_no);
+void draw_tile_1(int8_t tile_no);
 
 #endif /* GRAPHICS_H */

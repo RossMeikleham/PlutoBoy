@@ -97,7 +97,8 @@ lcd_ctrl_t get_lcd_control();
 uint8_t get_scroll_x();
 uint8_t get_scroll_y();
 
-
+uint8_t get_win_y_pos();
+uint8_t get_win_x_pos();
 
 
 #endif /*  IO_H */

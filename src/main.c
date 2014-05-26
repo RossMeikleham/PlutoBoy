@@ -23,6 +23,7 @@
 #include "graphics.h"
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define BREAKPOINT_OFF 0x100009
 #define BREAKPOINT_MAX 0xFFFF
@@ -86,6 +87,18 @@ void get_command() {
         if(!strcmp(buf, "showregs\n")) {
             print_regs();
         }
+        else if(!strcmp(buf, "dumptile0\n")) {
+            unsigned int i;
+            for (i = 0; i < 255; i++) {
+                draw_tile_0(i);
+            }
+        }
+        else if(!strcmp(buf, "dumptile1\n")) {
+            int i;
+            for (i = -128; i < 128; i++) {
+                draw_tile_1(i);
+            }
+        }
         else if (BUFSIZE > 5 && !strncmp(buf, "step ", 5)) {
             if (sscanf(buf+5, "%d", &step) && step > 0) {
                 STEP_COUNT = step;
@@ -119,8 +132,9 @@ int run(long cycles) {
 
         /*  Increment lcd y line every 456 cycles */
         if(ly_cycles >= 456) {
-          //  increment_ly();
+            //increment_ly();
             ly_cycles = 0;
+            
         }
         current_cycles = exec_opcode();
         cycles -= current_cycles;
@@ -129,8 +143,7 @@ int run(long cycles) {
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
             get_command();
         }
-
-    }
+   }
 
     return 0;
 }
@@ -169,8 +182,9 @@ int main(int argc, char* argv[]) {
     
     init_gfx();
     reset_cpu();
-
-    run(100000000);
+    
+    for(;;)
+        run(100000000);
 
 }
 

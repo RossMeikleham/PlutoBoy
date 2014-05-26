@@ -313,8 +313,8 @@ int exec_opcode() {
       //  printf("mem:%x\n",get_mem(i));
     }
     opcode = get_mem(reg.PC); /*  fetch */
-    dasm_instruction(reg.PC, stdout);
-    printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
+    //dasm_instruction(reg.PC, stdout);
+   // printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
         

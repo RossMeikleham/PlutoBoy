@@ -24,9 +24,9 @@
 #include "graphics.h"
 #include "IO.h"
 
-Uint32 cols[4];
-SDL_Surface *screen;
-SDL_Event event;
+static Uint32 cols[4];
+static SDL_Surface *screen;
+static SDL_Event event;
 
 int VBLANK_ENABLED; 
 
@@ -66,20 +66,31 @@ Tile get_tile(uint8_t tile_no, TileType tile_type) {
         tile_type == TYPE0 ? TILE_SET_0_START : TILE_SET_1_START;
 
     uint16_t tile_start_loc = tile_set_mem + (tile_no * 16);
-    int i, j;
     uint8_t tile_byte_0, tile_byte_1;
     Tile tile;
-    for (i = 0; i < 8; i++) {
-        tile_byte_0 = get_mem(tile_start_loc);
-        tile_byte_1 = get_mem(tile_start_loc+1);
 
-        /*  Obtain the colour for each pixel in the row
+    for (int i = 0; i  < 8; i++) {
+        /*  Each row of 8 pixels in a tile made of 2 bytes */
+        tile_byte_0 = get_mem(tile_start_loc + (2 * i));
+        tile_byte_1 = get_mem(tile_start_loc + (2 * i) + 1);
+    
+        /*  Obtain the colour for each pixel in the row.
          *  for bit n in the row, colour is calculated by
          *  the values of the nth bit of each two tile bytes */
-        for (j = 0; j < 8; j++) {
-            tile.colour[i][j] = (((tile_byte_1 & bit_mask[i]) >> i)
-            << 1)
-            | (((tile_byte_0 & bit_mask[i]) >> i));
+        for (int j = 0; j < 8; j++) {
+            int bit_byte_0 = tile_byte_0 & (0x80 >> j);
+            int bit_byte_1 = tile_byte_1 & (0x80 >> j);
+            
+            if (! (bit_byte_0 || bit_byte_1)) {
+                tile.colour[i][j] = WHITE;
+            } else if (bit_byte_0 && bit_byte_1) {
+                tile.colour[i][j] = BLACK;
+            } else if (bit_byte_0 && !bit_byte_1) {
+                tile.colour[i][j] = GREY;
+            } else { /*  bit 0 unset and bit 1 set */
+                tile.colour[i][j] = DARK_GREY;
+            }
+
         }
 
     }
@@ -102,7 +113,7 @@ void draw_pix(Colour colour, int x, int y)
 {
     int width_inc = Screen_Width/SCREEN_WIDTH;
     int height_inc = Screen_Height/SCREEN_HEIGHT;
-
+    
     fill_rect(x*width_inc,y*height_inc,width_inc,height_inc,cols[colour]);
         
 }
@@ -152,9 +163,47 @@ Tile get_tile_0(uint8_t tile_no){
 /*  Tile type 1 supplied as signed int
  *  ranging from -128 to 127 */
 Tile get_tile_1(int8_t tile_no) {
-    uint8_t u_tile_no = tile_no + 128;
+    int i_tile_no = tile_no + 128;
+    uint8_t u_tile_no = i_tile_no; 
     return get_tile(u_tile_no, TYPE1);
 }
+
+
+
+
+
+void draw_tile(uint8_t tile_no, TileType tile_type) {
+
+    int startx = (tile_no % 16) * 8;
+    int starty = (tile_no / 16) * 8;
+
+    /*  Calculate tile from VRAM */
+    Tile tile = get_tile(tile_no, tile_type);
+
+    /*  Draw each pixel in the tile */
+    for (int y = starty; y < starty + 8; y++) {
+        for (int x = startx; x < startx + 8; x++) {
+            draw_pix(tile.colour[y-starty][x-startx], x, y);
+        }
+    }
+
+    update_screen();
+}
+
+/*  Draw tile 0-127 from 0x8000 - 0x8FFF */
+void draw_tile_0(uint8_t tile_no) {
+    draw_tile(tile_no, TYPE0);
+}
+
+/*  Draw tile -128 to 127 from 0x8800 - 0x97FF */
+void draw_tile_1(int8_t tile_no) {
+    int i_tile_no = tile_no + 128;
+    uint8_t u_tile_no = i_tile_no;
+    draw_tile(u_tile_no, TYPE1);
+}
+
+
+
 
 
 

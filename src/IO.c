@@ -24,6 +24,8 @@ int check_interrupt() {
         if (interrupt & BIT_4);
 
     }
+
+    return !!interrupt;
 }
 
 /*  Increments the TIMA register
@@ -85,6 +87,8 @@ lcd_ctrl_t get_lcd_control() {
     lcd_ctrl.sprite_size = lcd_ctrl_val & BIT_2; /* 0: 8x8. 1: 8*x16  (width * height) */
     lcd_ctrl.sprite_display = lcd_ctrl_val & BIT_1; /* 0: off, 1: on */
     lcd_ctrl.bg_window_display = lcd_ctrl_val & BIT_0; /* 0 off, 1: on  */
+
+    return lcd_ctrl;
 }
 
 void lcd_status() {
@@ -145,17 +149,20 @@ uint8_t bg_palette() {
     /*  5-4 Data for Dark colour */
     /*  3-2 Data for Light Colour */
     /*  1-0 Data for Lightest Colour */
+    return 0;
 }
 
 
 uint8_t OBP0() {
     /*  Selects colours for sprite palette 0. Works exactly as BGP
      *  (0xFF47) except 0 is transparent */
+    return 0;
 }
 
 uint8_t OBP1() {
    /* Selects the colours for sprite palette 1. Works exactly as OBPO
     * (0xFF48) */
+   return 0;
 }
 
 uint8_t get_win_y_pos() {
