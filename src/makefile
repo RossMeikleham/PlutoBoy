@@ -7,8 +7,8 @@ all: GameBoy clean
 clean:
 	rm *.o
 
-GameBoy: cpu.o main.o memory.o graphics.o IO.o
-	$(COMPILER) -o GameBoy $(CFLAGS) cpu.o memory.o graphics.o IO.o main.o $(LINKS)
+GameBoy: cpu.o main.o memory.o graphics.o IO.o disasm.o
+	$(COMPILER) -o GameBoy $(CFLAGS) disasm.o cpu.o memory.o graphics.o IO.o main.o $(LINKS)
 
 cpu.o: cpu.c memory.h cpu.h
 	$(COMPILER) -c $(CFLAGS) cpu.c
@@ -24,3 +24,6 @@ graphics.o: graphics.c
 
 IO.o: IO.c
 	$(COMPILER) -c $(CFLAGS) IO.c
+
+disasm.o : disasm.c
+	$(COMPILER) -c $(CFLAGS) disasm.c
