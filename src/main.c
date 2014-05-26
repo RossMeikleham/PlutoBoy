@@ -18,6 +18,7 @@
 
 #include "cpu.h"
 #include "memory.h"
+#include "disasm.h"
 #include <stdint.h>
 #include <stdio.h>
 #include "graphics.h"
@@ -66,7 +67,9 @@ long clock_speed;
       return 1;
   }
 
-
+/* Performs set of debugging commands  
+ * TODO seperate functionality and split
+ * into smaller functions */
 void get_command() {
     #define BUFSIZE 1024
     int step;
@@ -89,7 +92,7 @@ void get_command() {
         }
         else if(!strcmp(buf, "dumptile0\n")) {
             unsigned int i;
-            for (i = 0; i < 255; i++) {
+            for (i = 0; i < 256; i++) {
                 draw_tile_0(i);
             }
         }
@@ -110,12 +113,44 @@ void get_command() {
         else if (!strcmp(buf, "go\n")) {
             return;
         }
-        else if (BUFSIZE > 5 && !strncmp(buf,"setb ",5)) {
+        else if (!strcmp(buf, "help\n") || !strcmp(buf, "h\n")) {
+            printf("exit : exit emulator\n"
+                   "showregs: display current contents of registers\n"
+                   "dumptile0: display tile set 0 from vram\n"
+                   "dumptile1: display tile set 1 from vram\n"
+                   "step [n]: execute n operations\n"
+                   "go: execute forever\n"
+                   "setb [n]: set a breakpoint for address n\n"
+                   "showmem [n]: display contents of memory address n\n"
+                   "disasm [n]: dissasemble instruction at address n \n");
+
+        }
+        else if (BUFSIZE > 5 && !strncmp(buf,"setb",4)) {
             if(sscanf(buf+5, "%d", &breakpoint) && breakpoint >= BREAKPOINT_MIN && breakpoint <= BREAKPOINT_MAX) {
                 BREAKPOINT = breakpoint;
             } else {
-                printf("usage bpoint [breakpoint] where breakpoint is between 0x0000 and 0xFFFF inclusive\n");
+                printf("usage: setb [breakpoint] (where breakpoint is between 0x0000 and 0xFFFF inclusive)\n");
             } 
+        }
+        else if (BUFSIZE > 8 && !strncmp(buf,"showmem",7)) {
+            int mem;
+            if(sscanf(buf+8, "%d", &mem) == 1 && mem >= 0 && mem <= 0xFFFF) {
+                printf("0x%X\n",get_mem(mem));
+            } else {
+                printf("usage: showmem [address] (where address is between 0x0000 and 0xFFFF inclusive)\n"); 
+            }
+        }
+        else if (BUFSIZE > 7 && !strncmp(buf,"disasm",6)) {
+            int mem;
+            if(sscanf(buf+7, "%d", &mem) == 1 && mem >= 0 && mem <= 0xFFFF) {
+                dasm_instruction(mem, stdout);
+                printf("\n");
+            } else {
+                printf("usage: disasm [address] (where address is between 0x0000 and 0xFFFF inclusive)\n");
+            }
+        }
+        else if (!strcmp("\n")) {
+            ;;
         } 
         else {printf("unknown command\n");}
    }
