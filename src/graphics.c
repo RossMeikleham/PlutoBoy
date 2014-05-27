@@ -24,6 +24,7 @@
 #include "graphics.h"
 #include "IO.h"
 
+
 static Uint32 cols[4];
 static SDL_Surface *screen;
 static SDL_Event event;
@@ -59,7 +60,7 @@ int init_gfx() {
 }
 
 
-
+/*  Return Tile 8x8 pixels from vram given tile type */
 Tile get_tile(uint8_t tile_no, TileType tile_type) {
 
     uint16_t tile_set_mem =  
@@ -133,7 +134,6 @@ void draw_row(uint8_t row) {
     uint8_t x = get_win_x_pos();
     lcd_ctrl_t lcd_ctrl;
     lcd_ctrl = get_lcd_control();
-    Colour colour;
     Tile tile;
 
     uint16_t current = lcd_ctrl.bg_win_tile == 0 ? 0x9800 : 0x9C00;
@@ -172,10 +172,11 @@ Tile get_tile_1(int8_t tile_no) {
 
 
 
-void draw_tile(uint8_t tile_no, TileType tile_type) {
+/*  0 < x,y < 32 */
+void draw_tile(uint8_t tile_no, uint8_t row, uint8_t col, TileType tile_type) {
 
-    int startx = (tile_no % 16) * 8;
-    int starty = (tile_no / 16) * 8;
+    int startx = row * 8;
+    int starty = col * 8;
 
     /*  Calculate tile from VRAM */
     Tile tile = get_tile(tile_no, tile_type);
@@ -191,20 +192,69 @@ void draw_tile(uint8_t tile_no, TileType tile_type) {
 }
 
 /*  Draw tile 0-127 from 0x8000 - 0x8FFF */
-void draw_tile_0(uint8_t tile_no) {
-    draw_tile(tile_no, TYPE0);
+void draw_tile_0(uint8_t tile_no, uint8_t x, uint8_t y) {
+    draw_tile(tile_no, x,y, TYPE0);
 }
 
 /*  Draw tile -128 to 127 from 0x8800 - 0x97FF */
-void draw_tile_1(int8_t tile_no) {
-    int i_tile_no = tile_no + 128;
+void draw_tile_1(int8_t tile_no, uint8_t x, uint8_t y) {
+    int16_t i_tile_no = tile_no + 128;
     uint8_t u_tile_no = i_tile_no;
-    draw_tile(u_tile_no, TYPE1);
+    draw_tile(u_tile_no, x, y, TYPE1);
 }
 
 
+/*  Obtain the 32x32 background */
+Background get_background(TileType tile_type) {
+
+    uint16_t bg_map_set_mem = 
+        tile_type == TYPE0 ? BG_MAP_DATA0_START : BG_MAP_DATA1_START;
+    
+    Background background;
+    background.type = tile_type;
+        
+    for (uint16_t y = 0; y < 32; y++) {
+        for(uint16_t x = 0; x < 32; x++) {
+            if (tile_type == TYPE0) {
+                background.tiles[y][x] = get_mem(bg_map_set_mem);
+            } else if (tile_type == TYPE1) { 
+                /*  Type 1 is signed from -127 to 128 so need to convert */
+                uint8_t val = get_mem(bg_map_set_mem);
+                val = val < 128 ? 128 + val : (val - 128);
+                background.tiles[y][x] = val;
+                
+            } else {
+                fprintf(stderr, "error, invalid tile_type entered\n");
+                exit(1);
+            }
+        }
+    }
+
+    return background;
+}
+
+//TODO fix draw tile so it specifies x and
+//y co-ordinate
+void draw_background(TileType tile_type) {
+    Background background = get_background(tile_type);
+
+    for (uint8_t y = 0; y < 32; y++) {
+        for(uint8_t x = 0; x < 32; x++) {
+            uint8_t tile_no = background.tiles[y][x];
+            printf("x:%d y:%d tNo:%d\n",x,y,tile_no);
+            draw_tile(tile_no, x,y, tile_type);
+        }
+    }
+}
 
 
+void draw_background_0() {
+    draw_background(TYPE0);
+}
+
+void draw_background_1() {
+    draw_background(TYPE1);
+}
 
 
 

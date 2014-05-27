@@ -13,11 +13,20 @@ typedef struct {
 } Tile;
 
 
+typedef struct  {
+
+    TileType type;
+    uint8_t tiles[32][32]; /* Stores tile numbers */
+
+} Background;
+
 
 int init_gfx();
 
 void draw_row(uint8_t row);
-void draw_tile_0(uint8_t tile_no);
-void draw_tile_1(int8_t tile_no);
+void draw_tile_0(uint8_t tile_no, uint8_t x, uint8_t y);
+void draw_tile_1(int8_t tile_no, uint8_t x, uint8_t y);
+void draw_background_0(void);
+void draw_background_1(void);
 
 #endif /* GRAPHICS_H */
