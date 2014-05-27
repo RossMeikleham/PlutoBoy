@@ -102,6 +102,8 @@ void get_command() {
                 
                 draw_tile_1(i, (i+128)%16, (i+128)/16);
             }
+        } else if (!strcmp(buf,"dumpsprites\n")) {
+            draw_sprites();
         }
         else if (!strcmp(buf, "dumpbg0\n")) {
             draw_background_0();
@@ -125,7 +127,8 @@ void get_command() {
                    "dumptile0:   display tile set 0 from vram\n"
                    "dumptile1:   display tile set 1 from vram\n"
                    "dumpbg0:     display background set 0 from vram\n"
-                   "dumpbg1:     displat background set 1 from vram\n"
+                   "dumpbg1:     display background set 1 from vram\n"
+                   "dumpsprites: display sprites from OAM\n"
                    "step [n]:    execute n operations\n"
                    "go:          execute forever\n"
                    "setb [n]:    set a breakpoint for address n\n"

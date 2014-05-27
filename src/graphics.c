@@ -233,8 +233,7 @@ Background get_background(TileType tile_type) {
     return background;
 }
 
-//TODO fix draw tile so it specifies x and
-//y co-ordinate
+
 void draw_background(TileType tile_type) {
     Background background = get_background(tile_type);
 
@@ -255,6 +254,22 @@ void draw_background_0() {
 void draw_background_1() {
     draw_background(TYPE1);
 }
+
+/*  Draw sprites/OAM from vram */
+void draw_sprites() {
+    
+    /*  Sprite pattern table 0x8000 - 0x8FFF */
+    for (int i = 0; i < 40; i++) {
+        
+        uint8_t y_pos = SPRITE_ATTRIBUTE_TABLE_START + (4*i);
+        uint8_t x_pos = SPRITE_ATTRIBUTE_TABLE_START + (4*i) + 1;
+        uint8_t tile_no =  SPRITE_ATTRIBUTE_TABLE_START + (4*i) + 2;
+        uint8_t attributes = SPRITE_ATTRIBUTE_TABLE_START + (4*i) + 3;
+
+        draw_tile_0(tile_no, x_pos, y_pos);
+    }
+}
+
 
 
 

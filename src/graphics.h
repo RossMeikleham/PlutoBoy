@@ -28,5 +28,6 @@ void draw_tile_0(uint8_t tile_no, uint8_t x, uint8_t y);
 void draw_tile_1(int8_t tile_no, uint8_t x, uint8_t y);
 void draw_background_0(void);
 void draw_background_1(void);
+void draw_sprites(void);
 
 #endif /* GRAPHICS_H */
