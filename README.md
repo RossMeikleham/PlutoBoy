@@ -1,4 +1,5 @@
 GameBoyEmulator
 ===============
 
-Gameboy emulator written in C
+Gameboy emulator in progress. Written in C.
+
