@@ -1,3 +1,4 @@
+
 /*
  * =====================================================================================
  *
@@ -16,12 +17,12 @@
  * =====================================================================================
  */
 
-#include "cpu.h"
-#include "memory.h"
-#include "disasm.h"
+#include "../core/cpu.h"
+#include "../core/memory.h"
+#include "../core/disasm.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "graphics.h"
+#include "../core/graphics.h"
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>

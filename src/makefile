@@ -2,12 +2,14 @@ CFLAGS = -g -W -Wall
 LINKS = -lSDL -lX11 
 COMPILER = clang
 
+VPATH=core:desktop
+
 all: GameBoy clean
 
 clean:
 	rm *.o
 
-GameBoy: cpu.o main.o memory.o graphics.o IO.o disasm.o
+GameBoy: cpu.o memory.o graphics.o disasm.o IO.o 
 	$(COMPILER) -o GameBoy $(CFLAGS) disasm.o cpu.o memory.o graphics.o IO.o main.o $(LINKS)
 
 cpu.o: cpu.c memory.h cpu.h
