@@ -1,5 +1,5 @@
 CFLAGS = -g -W -Wall
-LINKS = -lpthread -lSDL -lX11 
+LINKS = -lSDL -lX11 
 COMPILER = clang
 
 all: GameBoy clean
