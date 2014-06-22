@@ -21,7 +21,10 @@ typedef struct  {
 } Background;
 
 
-int init_gfx();
+typedef Screen struct screen;
+
+
+int init_gfx(Screen *);
 
 void draw_row(uint8_t row);
 void draw_tile_0(uint8_t tile_no, uint8_t x, uint8_t y);

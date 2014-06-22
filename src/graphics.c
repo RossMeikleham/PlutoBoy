@@ -25,6 +25,14 @@
 #include "IO.h"
 
 
+struct screen {
+
+    SDL_Surface *screen;
+    int pix_width;
+    int pix_height;
+}
+
+
 static Uint32 cols[4];
 static SDL_Surface *screen;
 static SDL_Event event;
@@ -40,15 +48,17 @@ uint8_t bit_mask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20
     , 0x40, 0x80};
 
 
-int init_gfx() {
+Screen init_gfx(int *result) {
 
     if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
-    	printf("Could not initialize SDL: %s.\n", SDL_GetError());
-    	return 0;
+    	fprintf(stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
+    	*result = 0;
+        return NULL;
     }
 
     SDL_WM_SetCaption("Gameboy","");
     screen = SDL_SetVideoMode(Screen_Width,Screen_Height, 32 ,SDL_DOUBLEBUF);
+    screen->
     SDL_EnableKeyRepeat(0,0);
 
     cols[0] = SDL_MapRGB(screen->format, 255, 255, 255); /* White */
@@ -56,7 +66,8 @@ int init_gfx() {
     cols[2] = SDL_MapRGB(screen->format, 85, 85, 85); /* Dark Grey */ 
     cols[3] = SDL_MapRGB(screen->format, 0, 0, 0); /*  Black */
 
-    return 1;
+    *result = 1;
+    
 }
 
 
@@ -102,7 +113,7 @@ Tile get_tile(uint8_t tile_no, TileType tile_type) {
 
 
 
-void fill_rect(int x, int y, int w, int h, Uint32 color) 
+void fill_rect(SDL_Screen *screen, int x, int y, int w, int h, Uint32 color) 
 {
     SDL_Rect rect = {x,y,w,h};
     SDL_FillRect(screen, &rect, color);
@@ -110,9 +121,9 @@ void fill_rect(int x, int y, int w, int h, Uint32 color)
 
 
 
-void draw_pix(Colour colour, int x, int y)
+void draw_pix(SDL_SCREEN *screen, Colour colour, int x, int y)
 {
-    int width_inc = Screen_Width/SCREEN_WIDTH;
+    int width_inc = /SCREEN_WIDTH;
     int height_inc = Screen_Height/SCREEN_HEIGHT;
     
     fill_rect(x*width_inc,y*height_inc,width_inc,height_inc,cols[colour]);
@@ -234,7 +245,7 @@ Background get_background(TileType tile_type) {
 }
 
 
-void draw_background(TileType tile_type) {
+void draw_background(SDL_Surface *surface, TileType tile_type) {
     Background background = get_background(tile_type);
 
     for (uint8_t y = 0; y < 32; y++) {
@@ -256,8 +267,11 @@ void draw_background_1() {
 }
 
 /*  Draw sprites/OAM from vram */
-void draw_sprites() {
-    
+SDL_Surface *draw_sprites() {
+        
+    SDL_Surface *screen;
+    screen = SDL_SetVideoMode(Screen_Width,Screen_Height, 32 ,SDL_DOUBLEBUF);
+        
     /*  Sprite pattern table 0x8000 - 0x8FFF */
     for (int i = 0; i < 40; i++) {
         
@@ -266,7 +280,7 @@ void draw_sprites() {
         uint8_t tile_no =  SPRITE_ATTRIBUTE_TABLE_START + (4*i) + 2;
         uint8_t attributes = SPRITE_ATTRIBUTE_TABLE_START + (4*i) + 3;
 
-        draw_tile_0(tile_no, x_pos, y_pos);
+        draw_tile_0(tile_no, x_pos/8, y_pos/8);
     }
 }
 
