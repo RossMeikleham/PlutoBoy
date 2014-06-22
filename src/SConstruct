@@ -11,4 +11,9 @@ allObjects = mainObject + coreObjects
 env.Program('gb',allObjects)
 
 #Test environment
+coreTestEnv = Environment(CC = 'clang')
+cpuTestObjects = env.Object( Glob('core/memory.c'))
+coreTestObject = env.Object( Glob('core/tests/cpuTests.c'))
+allObjects = cpuTestObjects + coreTestObject
 
+coreTestEnv.Program('cpuTests', allObjects)
