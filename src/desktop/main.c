@@ -20,9 +20,10 @@
 #include "../core/cpu.h"
 #include "../core/memory.h"
 #include "../core/disasm.h"
+#include "../core/graphics.h"
+#include "../core/romInfo.h"
 #include <stdint.h>
 #include <stdio.h>
-#include "../core/graphics.h"
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
