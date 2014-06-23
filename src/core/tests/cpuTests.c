@@ -18,11 +18,12 @@
 
 #include "../cpu.c"
 #include "../memory.h"
-#include "minunit.h"
+#include "minunit/minunit.h"
 #include <stdio.h>
 
 
-void before() {
+/*  Reset CPU and Memory */
+void setup() {
     reg.AF = 0;
     reg.BC = 0;
     reg.DE = 0;
@@ -36,25 +37,29 @@ void before() {
     }
 }
 
+void teardown() {
+    //Nothing
+}
+
 /*  Test loading 8 bit immediate values */
-const char *test_LD_8_IM() {
+ MU_TEST(test_LD_8_IM) {
     
     reg.PC= 1;
     set_mem(reg.PC - 1, 0xFF);
     LD_C_IM();
-    mu_assert((reg.C == 0xFF) , "Immediate value was incorrect");
-    return NULL;
+    mu_check((reg.C == 0xFF));
+}
+
+MU_TEST_SUITE(cpu_instructions) {
+    MU_SUITE_CONFIGURE(&setup, &teardown);
+
+    MU_RUN_TEST(test_LD_8_IM);
 }
 
 
-const char *all_tests() {
-    SET_BEFORE(before);
-    mu_suite_start();
 
-    mu_run_test(test_LD_8_IM);
-
-    return NULL;
+int main () {
+    MU_RUN_SUITE(cpu_instructions);
+    MU_REPORT();
+    return 0;
 }
-
-RUN_TESTS(all_tests);
-
