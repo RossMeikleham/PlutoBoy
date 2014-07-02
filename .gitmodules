@@ -1,0 +1,3 @@
+[submodule "src/core/tests/minunit"]
+	path = src/core/tests/minunit
+	url = https://github.com/RossMeikleham/minunit
