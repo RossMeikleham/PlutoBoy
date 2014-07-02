@@ -140,7 +140,7 @@ MU_TEST(test_LD_mem_reg) {
 
     reg.HL = mem_loc;
     reg.A = val;
-    LD_memHL_H();
+    LD_memHL_A();
 
     mu_assert_uint_eq(get_mem(reg.HL), val);
 }

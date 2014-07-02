@@ -201,19 +201,19 @@ void LD_L_memHL() {reg.L = get_mem(reg.HL);}
 
 /* 1 word 2 M cycles 
  * Load value from register r to mem location HL */
-void LD_memHL_A() {reg.A = get_mem(reg.HL);}
+void LD_memHL_A() {set_mem(reg.HL, reg.A);}
 
-void LD_memHL_B() {reg.B = get_mem(reg.HL);}
+void LD_memHL_B() {set_mem(reg.HL, reg.B);}
 
-void LD_memHL_C() {reg.C = get_mem(reg.HL);}
+void LD_memHL_C() {set_mem(reg.HL, reg.C);}
 
-void LD_memHL_D() {reg.D = get_mem(reg.HL);}
+void LD_memHL_D() {set_mem(reg.HL, reg.D);}
 
-void LD_memHL_E() {reg.E = get_mem(reg.HL);}
+void LD_memHL_E() {set_mem(reg.HL, reg.E);}
 
-void LD_memHL_H() {reg.H = get_mem(reg.HL);}
+void LD_memHL_H() {set_mem(reg.HL, reg.H);}
 
-void LD_memHL_L() {reg.L = get_mem(reg.HL);}
+void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
 
