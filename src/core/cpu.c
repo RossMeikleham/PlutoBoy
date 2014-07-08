@@ -9,7 +9,8 @@
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
 #define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
-
+#define SIGNED_IM_8_BIT ((IMMEDIATE_8_BIT & 127) - (IMMEDIATE_8_BIT & 128))
+#define SIGNED_IM_16_BIT ((IMMEDIATE_16_BIT & 0xFFFE) - (IMMEDIATE_16_BIT & 0xFFFF))
 
 static int halt = 0;
 static int stop = 0;
@@ -44,232 +45,152 @@ void invalid_op(){}
 
 /************* 8 Bit Load Operations ********************/
 
+
 /* Load 8 bit immediate value into specified location */
 void LD_8_IM(uint8_t *loc) { *loc = IMMEDIATE_8_BIT;}
 
 void LD_A_IM(){LD_8_IM(&reg.A);}
-
 void LD_B_IM(){LD_8_IM(&reg.B);}
-
 void LD_C_IM(){LD_8_IM(&reg.C);}
-
 void LD_D_IM(){LD_8_IM(&reg.D);}
-
 void LD_E_IM(){LD_8_IM(&reg.E);}
-
 void LD_H_IM(){LD_8_IM(&reg.H);}
-
 void LD_L_IM(){LD_8_IM(&reg.L);}
-
-
 
 /* Load register value into reg A */
 void LD_A_A() {reg.A = reg.A;}
-
 void LD_A_B() {reg.A = reg.B;}
-
 void LD_A_C() {reg.A = reg.C;}
-
 void LD_A_D() {reg.A = reg.D;}
-
 void LD_A_E() {reg.A = reg.E;}
-
 void LD_A_H() {reg.A = reg.H;}
-
 void LD_A_L() {reg.A = reg.L;}
 
 /*  Load register value into reg B */
-
 void LD_B_A() {reg.B = reg.A;}
-
 void LD_B_B() {reg.B = reg.B;}
-
 void LD_B_C() {reg.B = reg.C;}
-
 void LD_B_D() {reg.B = reg.D;}
-
 void LD_B_E() {reg.B = reg.E;}
-
 void LD_B_H() {reg.B = reg.H;}
-
 void LD_B_L() {reg.B = reg.L;}
 
 /*  Load register value into reg C */
-
 void LD_C_A() {reg.C = reg.A;}
-
 void LD_C_B() {reg.C = reg.B;}
-
 void LD_C_C() {reg.C = reg.C;}
-
 void LD_C_D() {reg.C = reg.D;}
-
 void LD_C_E() {reg.C = reg.E;}
-
 void LD_C_H() {reg.C = reg.H;}
-
 void LD_C_L() {reg.C = reg.L;}
 
 
 /* Load register value into reg D */
-
 void LD_D_A() {reg.D = reg.A;}
-
 void LD_D_B() {reg.D = reg.B;}
-
 void LD_D_C() {reg.D = reg.C;}
-
 void LD_D_D() {reg.D = reg.D;}
-
 void LD_D_E() {reg.D = reg.E;}
-
 void LD_D_H() {reg.D = reg.H;}
-
 void LD_D_L() {reg.D = reg.L;}
 
 
 /*  Load register value into reg E */
-
 void LD_E_A() {reg.E = reg.A;}
-
 void LD_E_B() {reg.E = reg.B;}
-
 void LD_E_C() {reg.E = reg.C;}
-
 void LD_E_D() {reg.E = reg.D;}
-
 void LD_E_E() {reg.E = reg.E;}
-
 void LD_E_H() {reg.E = reg.H;}
-
 void LD_E_L() {reg.E = reg.L;}
 
 
-/*  Load register value into reg H */
-
+/* Load register value into reg H */
 void LD_H_A() {reg.H = reg.A;}
-
 void LD_H_B() {reg.H = reg.B;}
-
 void LD_H_C() {reg.H = reg.C;}
-
 void LD_H_D() {reg.H = reg.D;}
-
 void LD_H_E() {reg.H = reg.E;}
-
 void LD_H_H() {reg.H = reg.H;}
-
 void LD_H_L() {reg.H = reg.L;}
 
 
-/*  Load register value into reg L */
-
+/* Load register value into reg L */
 void LD_L_A() {reg.L = reg.A;}
-
 void LD_L_B() {reg.L = reg.B;}
-
 void LD_L_C() {reg.L = reg.C;}
-
 void LD_L_D() {reg.L = reg.D;}
-
 void LD_L_E() {reg.L = reg.E;}
-
 void LD_L_H() {reg.L = reg.H;}
-
 void LD_L_L() {reg.L = reg.L;}
 
 
 
-
-/* 1 word 2 M cycles cycles
- * load value into register from address at reg HL */
+/* Load value into register from address at reg HL */
 void LD_A_memHL() {reg.A = get_mem(reg.HL);}
-
 void LD_B_memHL() {reg.B = get_mem(reg.HL);}
-
 void LD_C_memHL() {reg.C = get_mem(reg.HL);}
-
 void LD_D_memHL() {reg.D = get_mem(reg.HL);}
-
 void LD_E_memHL() {reg.E = get_mem(reg.HL);}
-
 void LD_H_memHL() {reg.H = get_mem(reg.HL);}
-
 void LD_L_memHL() {reg.L = get_mem(reg.HL);}
 
 
 
-/* 1 word 2 M cycles 
- * Load value from register r to mem location HL */
+/* Load value from register r to mem location HL */
 void LD_memHL_A() {set_mem(reg.HL, reg.A);}
-
 void LD_memHL_B() {set_mem(reg.HL, reg.B);}
-
 void LD_memHL_C() {set_mem(reg.HL, reg.C);}
-
 void LD_memHL_D() {set_mem(reg.HL, reg.D);}
-
 void LD_memHL_E() {set_mem(reg.HL, reg.E);}
-
 void LD_memHL_H() {set_mem(reg.HL, reg.H);}
-
 void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
+/* Load immediate value into memory location HL */
+void LD_memHL_n() {set_mem(reg.HL, IMMEDIATE_8_BIT);}
 
-/*  2 words 3 M cycles 
- *  Load value from 2nd word into mem location HL */
-void LD_HL_n() {set_mem(reg.HL, IMMEDIATE_8_BIT);}
-
-
-/*  1 Word 2 M Cyles */
+/*  Load value at mem address given by combined registers into A */
 void LD_A_memBC() { reg.A = get_mem(reg.BC); }
-
-/* 1 Word 2 M Cycles */
 void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 
-/*  3 Words 4 M Cycles*/
-/* Load value stored at mem location 2nd byte and 3rd byte
- * into A  */
+/* Load value at memory address given by immediate 16 bits into A */
 void LD_A_memnn() { reg.A = get_mem(IMMEDIATE_16_BIT);}
 
-/*  2 Words 2 M Cycles */
+/* Load A into memory address contained at register BC */
 void LD_memBC_A() { set_mem(reg.BC, reg.A); }
 
-
+/* Load A into memory address contained at registers DE  */
 void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
-
+/*  Load A into memory address given by immediate 16 bits */
 void LD_memnn_A() { set_mem(IMMEDIATE_16_BIT, reg.A);}
 
-/*  Put value at address HL into A
- *  decrement HL 1 word 2 m cycles*/
+/* Put value at address HL into A, then decrement HL */
 void LDD_A_HL() { reg.A = get_mem(reg.HL); reg.HL--; }
 
-/*  Put A into memory address HL 
- *  decrement HL 1 word 2 m cycles*/
+/* Put A into memory address HL, then decrement HL */
 void LDD_HL_A() { set_mem(reg.HL, reg.A); reg.HL--; }
 
-/* Put value at address HL into A,
- * increment HL 1 word 2 m cycles*/
+/* Put value at address HL into A, then increment HL */ 
 void LDI_A_HL() { reg.A = get_mem(reg.HL); reg.HL++; }
 
-/* Put A into memory address HL
- * increment HL 1 word 2 m cycles */
+/* Put A into memory address HL then increment HL */
 void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
-
 /* Put A into memory address $FF00+n*/
-/* 2 Words 3 m Cycles */
 void LDH_n_A() {  set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
 
-/*  Put memory address $FF00+n into A */
-/*  2 Words 2 m cycles*/
+/* Put memory address $FF00+n into A */
 void LDH_A_n() { reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
 
-
+/* Put memory address $FF00 + C into A */
 void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
+
+/* Put A into memory address $FF00 + C */
 void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
+
+
 
 /******************* 16 bit load operations ****************/
 
@@ -278,11 +199,8 @@ void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
 void LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT;}
 
 void LD_BC_IM() {LD_16_IM(&reg.BC);}
-
 void LD_DE_IM() {LD_16_IM(&reg.DE);}
-
 void LD_HL_IM() {LD_16_IM(&reg.HL);}
-
 void LD_SP_IM() {LD_16_IM(&reg.SP);}
 
 
@@ -290,38 +208,44 @@ void LD_SP_IM() {LD_16_IM(&reg.SP);}
 void LD_SP_HL() {reg.SP = reg.HL;}
 
 /*  Place SP + Immediate 8 bit into HL */
-void LD_HL_SP_n() {reg.HL =reg.SP + IMMEDIATE_8_BIT;}
+void LD_HL_SP_n() {
+
+    reg.Z_FLAG = 0;
+    reg.N_FLAG = 0;
+
+    int8_t s8 = SIGNED_IM_8_BIT;
+    reg.HL = reg.SP + s8;
+
+    // Set Half-Carry and Carry flags
+    if (s8 >= 0) {
+        reg.C_FLAG = ((reg.SP & 0xFF) + s8) > 0xFF; //overflow to 8 bits
+        reg.H_FLAG = ((reg.SP & 0xF) + (s8 & 0xF)) > 0xF; //from 3 to 4 bits
+    } else {
+        reg.C_FLAG = (reg.HL & 0xFF) <= (reg.SP & 0xFF); //No underflow from 0 to 7
+        reg.H_FLAG = (reg.HL & 0xF) <= (reg.SP & 0xF); //No underflow from 0 to 3 
+    }
+}
 
 
-void to_mem(uint16_t value, uint16_t mem_loc) {set_mem(mem_loc+1, value >> 8); set_mem(mem_loc, value & 0xFF);}
-
-void from_mem(uint16_t *value, uint16_t mem_loc) {*value = get_mem(mem_loc); *value |= (get_mem(mem_loc+1) << 8);}
-
-/*  SP place into memory at immediate address nn */
-void LD_nn_SP() {to_mem(reg.SP, IMMEDIATE_16_BIT); }
+/* Place SP into memory at immediate address nn */
+void LD_nn_SP() {set_mem_16(IMMEDIATE_16_BIT, reg.SP); }
 
 
-/*  Push register pair onto stack, decrement stack pointer */
-void PUSH(uint16_t r) {reg.SP-=2; to_mem(r, reg.SP);}
+/* Push register pair onto the stack */
+void PUSH(uint16_t r) {reg.SP-=2; set_mem_16(reg.SP, r);}
 
 void PUSH_AF() {PUSH(reg.AF);}
-
 void PUSH_BC() {PUSH(reg.BC);}
-
 void PUSH_DE() {PUSH(reg.DE);}
-
 void PUSH_HL() {PUSH(reg.HL);}
 
 
-/*  Pop register pair from stack, increment stack pointer */
-void POP(uint16_t *r) {from_mem(r, reg.SP); reg.SP+=2;}
+/* Pop value from stack into register pair*/
+void POP(uint16_t *r) {*r = get_mem_16(reg.SP); reg.SP+=2;}
 
 void POP_AF() {POP(&(reg.AF));}
-
 void POP_BC() {POP(&(reg.BC));}
-
 void POP_DE() {POP(&(reg.DE));}
-
 void POP_HL() {POP(&(reg.HL));}
 
 
@@ -1407,7 +1331,7 @@ static Instruction ins[UINT8_MAX+1] = {
 
     //0x30 - 0x3F
     {8, JR_NC_n}, {12, LD_SP_IM}, {8, LDD_HL_A}, {8, INC_SP},
-    {12, INC_memHL}, {12, DEC_memHL}, {12, LD_HL_n}, {4, SCF},
+    {12, INC_memHL}, {12, DEC_memHL}, {12, LD_memHL_n}, {4, SCF},
     {8, JR_C_n}, {8, ADD_HL_SP}, {8, LDD_A_HL}, {8, DEC_SP},
     {4, INC_A}, {4, DEC_A}, {8, LD_A_IM}, {4, CCF},
 
@@ -1491,7 +1415,6 @@ static Instruction ext_ins[UINT8_MAX+1] = {
     {8, RRC_B}, {8, RRC_C}, {8, RRC_D},      {8, RRC_E},
     {8, RRC_H}, {8, RRC_L}, {16, RRC_memHL}, {8, RRC_A},
 
-
     {8, RL_B}, {8, RL_C}, {8, RL_D},      {8, RL_E},
     {8, RL_H}, {8, RL_L}, {16, RL_memHL}, {8, RL_A}, 
     {8, RR_B}, {8, RR_C}, {8, RR_D},      {8, RR_E},
@@ -1568,6 +1491,7 @@ static Instruction ext_ins[UINT8_MAX+1] = {
     {8, SET_B_7}, {8, SET_C_7}, {8, SET_D_7},      {8, SET_E_7}, 
     {8, SET_H_7}, {8, SET_L_7}, {16, SET_memHL_7}, {8, SET_A_7}
 };
+
 
 /*  Number of words (bytes) per each instruction
  *  All invallid instruction opcodes are given 1 word 

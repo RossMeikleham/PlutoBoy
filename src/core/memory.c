@@ -37,13 +37,13 @@ uint8_t get_mem(uint16_t const loc) {
 
 void set_mem_16(uint16_t const loc, uint16_t const val) {
     set_mem(loc + 1, val >> 8);
-    set_mem(mem_loc, value & 0xFF);
+    set_mem(loc, val & 0xFF);
 }
 
 
 uint16_t get_mem_16(uint16_t const loc) {
-    return (get_mem(mem_loc + 1) << 8) |
-            get_mem(mem_loc);
+    return (get_mem(loc + 1) << 8) |
+            get_mem(loc);
 }
 
 

@@ -42,6 +42,11 @@ void teardown() {
 }
 
 
+#define ASSERT_FLAGS_EQ(Z,N,H,C)  {mu_assert_uint_eq(reg.Z_FLAG, Z); \
+                                  mu_assert_uint_eq(reg.N_FLAG, N);  \
+                                  mu_assert_uint_eq(reg.H_FLAG, H);  \
+                                  mu_assert_uint_eq(reg.C_FLAG, C);} 
+ 
 /*  Test combined registers */
 MU_TEST(test_combined_reg) {
 
@@ -153,7 +158,7 @@ MU_TEST(test_LD_HL_n) {
     reg.HL = mem_loc;
     reg.PC = 2;
     set_mem(reg.PC - 1, val);
-    LD_HL_n();
+    LD_memHL_n();
 
     mu_assert_uint_eq(get_mem(reg.HL), val);
 
@@ -401,10 +406,141 @@ MU_TEST(test_LDH_C_A) {
     mu_assert_uint_eq(val, get_mem(0xFF00 + reg.C));
 }
 
+/* ------------------------------------------------------- */
 
 
+/*  Test loading 16 bit immediate value into combined registers */
+MU_TEST(test_LD_16_IM) {
+    uint16_t val = 0x0F10;
+    
+    reg.PC = 0x0210;
 
-MU_TEST_SUITE(cpu_instructions) {
+    set_mem(reg.PC - 2, (val & 0xFF));
+    set_mem(reg.PC - 1, (val >> 8));
+    LD_BC_IM();
+
+    mu_assert_uint_eq(val, reg.BC);
+   
+}
+
+/*  Test loading HL into stack pointer */
+MU_TEST(test_LD_SP_HL) {
+    uint16_t val = 0xDF05;
+
+    reg.HL = val;
+    LD_SP_HL();
+
+    mu_assert_uint_eq(val, reg.SP);
+}
+
+/*  Test loading SP + 8 bit positive signed immediate into HL */
+MU_TEST(test_positive_LD_HL_SP_n) {
+    int8_t n = 0x10;
+    uint16_t val = 0xF110;
+
+    reg.PC = 0xF432;
+    set_mem(reg.PC - 1, n);
+    reg.SP = val;
+    LD_HL_SP_n();
+
+    mu_assert_uint_eq(val + n, reg.HL);
+
+}
+
+/*  Test loading SP + 8 bit negative signed immediate into HL */
+MU_TEST(test_negative_LD_HL_SP_n) {
+    int8_t n = -20;
+    uint16_t val = 0x3E75;
+
+    reg.PC = 0x0123;
+    set_mem(reg.PC - 1, (uint8_t)n);
+    reg.SP = val;
+    LD_HL_SP_n();
+
+    mu_assert_uint_eq(val + n, reg.HL);
+}
+
+//Check flag settings when adding a positive signed 8 bit
+//integer to SP
+MU_TEST(test_flags_when_positive_LD_HL_SP_n) {
+    int8_t  ims[] = {10, 17, 10, 10};
+    uint16_t sps[] = {0x3EFF, 0x43F0, 0x423F, 0x0000};
+    uint8_t expected_flags[4][4] = {{0, 0, 1, 1}, //Half + Full Carry
+                                  {0, 0, 0, 1}, //Full Carry
+                                  {0, 0, 1, 0}, // Half Carry
+                                  {0, 0, 0, 0}}; //None
+        
+    reg.PC = 0x0123;                              
+    for (unsigned long i = 0; i < sizeof (ims)/ sizeof (uint8_t); i++) {
+        set_mem(reg.PC - 1, (uint8_t)ims[i]);
+        reg.SP = sps[i];
+        LD_HL_SP_n();
+        uint8_t *flags = expected_flags[i];
+        ASSERT_FLAGS_EQ(flags[0], flags[1], flags[2], flags[3]);
+    } 
+}
+
+
+//Check flag settings when adding a negative signed 8 bit
+//integer to SP
+MU_TEST(test_flags_when_negative_LD_HL_SP_n) {
+    int8_t  ims[] = {-10, -10, -17, -10};
+    uint16_t sps[] = {0x3EFF, 0x43F0, 0x420F, 0x0000};
+    uint8_t expected_flags[4][4] = {{0, 0, 1, 1}, //Half + Full Carry
+                                  {0, 0, 0, 1}, //Full Carry
+                                  {0, 0, 1, 0}, // Half Carry
+                                  {0, 0, 0, 0}}; //None
+        
+    reg.PC = 0x0123;                              
+    for (unsigned long i = 0; i < sizeof (ims)/ sizeof (uint8_t); i++) {
+        set_mem(reg.PC - 1, (uint8_t)ims[i]);
+        reg.SP = sps[i];
+        LD_HL_SP_n();
+        uint8_t *flags = expected_flags[i];
+        ASSERT_FLAGS_EQ(flags[0], flags[1], flags[2], flags[3]);
+    }
+}
+
+MU_TEST(test_LD_nn_SP) {
+    uint16_t addr = 0x1234;
+    uint16_t val = 0x1000;
+
+    reg.SP = val;
+    reg.PC = 0x7326;
+    set_mem_16(reg.PC - 2, addr);
+
+    LD_nn_SP();
+
+    mu_assert_uint_eq(get_mem_16(addr), val);
+}
+
+MU_TEST(test_PUSH) {
+    uint16_t val = 0x1024;
+    uint16_t sp_old = 0x10;
+
+    reg.SP = sp_old;
+
+    reg.AF = val;
+    PUSH_AF();
+
+    mu_assert_uint_eq(reg.SP, sp_old - 2);
+    mu_assert_uint_eq(get_mem_16(reg.SP), val);
+}
+
+MU_TEST(test_POP) {
+    uint16_t val = 0x3421;
+    uint16_t sp_old = 0x23;
+    reg.SP = sp_old;
+
+    set_mem_16(reg.SP, val);
+    POP_HL();
+
+    mu_assert_uint_eq(reg.SP, sp_old + 2);
+    mu_assert_uint_eq(reg.HL, val);
+}
+
+
+MU_TEST_SUITE(eight_bit_load_instructions) {
     MU_SUITE_CONFIGURE(&setup, &teardown);
 
     MU_RUN_TEST(test_combined_reg);
@@ -445,10 +581,29 @@ MU_TEST_SUITE(cpu_instructions) {
     MU_RUN_TEST(test_LDH_C_A);
 }
 
+MU_TEST_SUITE(sixteen_bit_load_instructions) {
+    MU_SUITE_CONFIGURE(&setup, &teardown);
+
+    MU_RUN_TEST(test_LD_16_IM);
+
+    MU_RUN_TEST(test_LD_SP_HL);
+
+    MU_RUN_TEST(test_positive_LD_HL_SP_n);
+    MU_RUN_TEST(test_negative_LD_HL_SP_n);
+    MU_RUN_TEST(test_flags_when_positive_LD_HL_SP_n);
+    MU_RUN_TEST(test_flags_when_negative_LD_HL_SP_n);
+
+    MU_RUN_TEST(test_LD_nn_SP);
+
+    MU_RUN_TEST(test_PUSH);
+    MU_RUN_TEST(test_POP);
+}
+
 
 
 int main () {
-    MU_RUN_SUITE(cpu_instructions);
+    MU_RUN_SUITE(eight_bit_load_instructions);
+    MU_RUN_SUITE(sixteen_bit_load_instructions);
     MU_REPORT();
     return 0;
 }
