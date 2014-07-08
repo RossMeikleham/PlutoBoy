@@ -20,8 +20,7 @@
 
 static uint8_t mem[WORD_MAX];
 
-void set_mem(uint16_t const loc, uint8_t const val) 
-{
+void set_mem(uint16_t const loc, uint8_t const val) {
     mem[loc] = val;
     /*  Check if mirrored memory being written to */
     if (loc >= ECHO_RAM_START && loc <= ECHO_RAM_END) {
@@ -31,11 +30,20 @@ void set_mem(uint16_t const loc, uint8_t const val)
     }
 }
 
-uint8_t get_mem(uint16_t loc) {
+uint8_t get_mem(uint16_t const loc) {
+    return mem[loc];
+}
 
-    uint8_t result;
-    result = mem[loc];
-    return result;
+
+void set_mem_16(uint16_t const loc, uint16_t const val) {
+    set_mem(loc + 1, val >> 8);
+    set_mem(mem_loc, value & 0xFF);
+}
+
+
+uint16_t get_mem_16(uint16_t const loc) {
+    return (get_mem(mem_loc + 1) << 8) |
+            get_mem(mem_loc);
 }
 
 
