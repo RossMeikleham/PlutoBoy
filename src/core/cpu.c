@@ -14,8 +14,8 @@
 
 static int halt = 0;
 static int stop = 0;
-static int interrupts_disabled = 0;
-
+static int interrupts_enabled = 1;
+static int interrupts_enabled_timer = 0;
 
 union REGISTERS
 
@@ -27,6 +27,7 @@ union REGISTERS
   UNUSED_FLAG:1, C_FLAG:1, H_FLAG:1, N_FLAG:1, Z_FLAG:1;};
 
 } static reg;
+
 
 
 /* ***************Opcodes ********************* */
@@ -617,10 +618,12 @@ void STOP() {stop = 1;}
 
 
 /*  Disable interrupts */
-void DI() {interrupts_disabled = 1;}
+void DI() {interrupts_enabled = 0;}
 
-/*  Enable interrupts */
-void EI() {interrupts_disabled = 0;}
+/*  Enable interrupts 
+ *  interrupts enabled after the next instruction
+ *  so set a timer to let the cpu know this*/
+void EI() {interrupts_enabled_timer = 2;}
 
 
 /*  Rotates and shifts */
@@ -1219,61 +1222,34 @@ void CALL_C_nn()
 /**** Restarts ****/
 /*  Push present address onto stack
  *  Jump to addres $0000 + n */
-void RST_n(uint8_t addr)
+void restart(uint8_t addr)
 {
     PUSH(reg.PC);
     reg.PC = addr;
 }
 
+void RST_00() {restart(0x00);}
+void RST_08() {restart(0x08);}
+void RST_10() {restart(0x10);}
+void RST_18() {restart(0x18);}
+void RST_20() {restart(0x20);}
+void RST_28() {restart(0x28);}
+void RST_30() {restart(0x30);}
+void RST_38() {restart(0x38);}
 
-void RST_00() {RST_n(0x00);}
-
-void RST_08() {RST_n(0x08);}
-
-void RST_10() {RST_n(0x10);}
-
-void RST_18() {RST_n(0x18);}
-
-void RST_20() {RST_n(0x20);}
-
-void RST_28() {RST_n(0x28);}
-
-void RST_30() {RST_n(0x30);}
-
-void RST_38() {RST_n(0x38);}
 
 /**** Returns ****/
 
 /*  Pop two bytes from stack and jump to that addr */
-void RET()
-{
-    POP(&reg.PC);
-}
+void RET() { POP(&reg.PC);}
 
+// Return if flags are set
+void RET_NZ() { if(!reg.Z_FLAG) RET(); }
+void RET_Z() { if(reg.Z_FLAG) RET(); }
+void RET_NC() { if(!reg.C_FLAG) RET(); }
+void RET_C() { if(reg.C_FLAG) RET(); }
 
-void RET_NZ()
-{
-    if(!reg.Z_FLAG) RET();
-}
-
-void RET_Z()
-{
-    if(reg.Z_FLAG) RET();
-}
-
-
-void RET_NC()
-{
-    if(!reg.C_FLAG) RET();
-}
-
-
-void RET_C()
-{
-    if(reg.C_FLAG) RET();
-}
-
-
+// Return and enable master interrupts
 void RETI() 
 {
     RET();
@@ -1527,8 +1503,21 @@ static Instructions instructions = {
    
 
 
+int master_interrupts_enabled() { 
+    return interrupts_enabled;
+}
 
+void master_interrupts_disable() {
+    interrupts_enabled = 0;
+}
 
+void master_interrupts_enable() {
+    interrupts_enabled = 1;
+}
+
+void unhalt_cpu() {
+    halt = 0;
+}
 
 void reset_cpu() {
     /*  Default starting values for normal GB */
@@ -1571,6 +1560,15 @@ int exec_opcode() {
     if (opcode != 0xCB) {
         
         instructions.instruction_set[opcode].operation();
+        /* Check if timer for setting master interrupts has been set,
+         * decrement it and if it reaches 0 the timer is complete,
+         * set master interrupts on */
+        if (interrupts_enabled_timer) {
+            if ((--interrupts_enabled_timer) <= 0) {
+                interrupts_enabled = 1;
+                interrupts_enabled_timer = 0; //Unset timer
+            }
+        }
         return instructions.instruction_set[opcode].cycles;
 
     } else { /*  extended instruction */
