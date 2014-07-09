@@ -99,7 +99,7 @@ uint8_t io_get_mem(uint8_t io_addr);
 
     
 void increment_tima();
-
+void increment_div();
 void increment_ly();
 
 lcd_ctrl_t get_lcd_control();

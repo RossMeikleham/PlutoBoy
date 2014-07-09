@@ -23,6 +23,7 @@
 #include "../core/graphics.h"
 #include "../core/romInfo.h"
 #include "../core/IO.h"
+#include "../core/timers.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>

@@ -12,10 +12,12 @@
 #define SIGNED_IM_8_BIT ((IMMEDIATE_8_BIT & 127) - (IMMEDIATE_8_BIT & 128))
 #define SIGNED_IM_16_BIT ((IMMEDIATE_16_BIT & 0xFFFE) - (IMMEDIATE_16_BIT & 0xFFFF))
 
+
 static int halt = 0;
 static int stop = 0;
 static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
+
 
 union REGISTERS
 
@@ -1518,6 +1520,7 @@ void master_interrupts_enable() {
 void unhalt_cpu() {
     halt = 0;
 }
+
 
 void reset_cpu() {
     /*  Default starting values for normal GB */

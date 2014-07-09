@@ -24,6 +24,7 @@ static const Interrupt interrupts[] = {
 #define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
 
 
+
 /*  Check if any interrupts need to be handled, and handle them */
 void check_interrupts() {
 
@@ -103,10 +104,14 @@ void increment_ly() {
     }
 }
 
-/*  Increment DIV register */
+/*  Increment DIV register 
+ *  should be incremented at a frequency of 16382
+ *  (once every 256 clock cycles)*/
 void increment_div() {
-
+    io_mem[GLOBAL_TO_IO_ADDR(DIV_REG)] += 1;
 }
+
+
 
 typedef enum {RIGHT = 0x1, LEFT = 0x2, UP = 0x4, DOWN = 0x8, 
     A = 0x10, B = 0x20, SELECT = 0x40, START = 0x80} button_t;

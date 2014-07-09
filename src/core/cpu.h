@@ -3,6 +3,7 @@
 #define CPU_H
 
 #include <stdint.h>
+
 /*  Call interrupt handler code */
 void restart(uint8_t addr);
 
@@ -13,6 +14,7 @@ void master_interrupts_enable();
 
 void unhalt_cpu();
 void reset_cpu();
+
 
 /*  Executes current instruction and returns
  *  the number of machine cycles it took */
