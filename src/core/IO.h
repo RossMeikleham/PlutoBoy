@@ -1,6 +1,11 @@
 #ifndef IO_H
 #define IO_H
 
+#include <stdint.h>
+
+//Convert between local IO memory address and global address
+#define GLOBAL_TO_IO_ADDR(A) A - 0xFF00
+#define IO_TO_GLOBAL_ADDR(A) A + 0xFF00
 
 /*  -------------IO ports/registers ------------------*/
 #define P1_REG 0xFF00 /*  Register for reading joy pad info */
@@ -88,7 +93,11 @@ typedef struct {
 
 
 void check_interrupts();
-  
+
+void io_set_mem(uint8_t io_addr, uint8_t val);
+uint8_t io_get_mem(uint8_t io_addr);
+
+    
 void increment_tima();
 
 void increment_ly();

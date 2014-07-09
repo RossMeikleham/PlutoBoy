@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include "SDL/SDL.h"
 #include "memory.h"
+#include "memory_layout.h"
 #include "stdint.h"
 #include "graphics.h"
 #include "IO.h"

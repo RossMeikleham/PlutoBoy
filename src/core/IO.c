@@ -1,14 +1,17 @@
-#include "memory.h"
 #include "cpu.h"
 #include "graphics.h"
 #include "IO.h"
 #include <stdint.h>
+#include "memory_layout.h"
 
 typedef struct {
     uint8_t isr_addr; /* Interrupt Service Routine Address */
     uint8_t flag; /* bit set to compare with IF_FLAG to 
                     check if interrupt has been raised */
 } Interrupt;
+
+
+static uint8_t io_mem[(0x10000 - 0xFF00)];
 
 static const Interrupt interrupts[] = { 
     {.flag = BIT_0, .isr_addr = VBLANK_ISR_ADDR},
@@ -23,9 +26,12 @@ static const Interrupt interrupts[] = {
 
 /*  Check if any interrupts need to be handled, and handle them */
 void check_interrupts() {
+
+    #define IO_IF_FLAG GLOBAL_TO_IO_ADDR(IF_FLAG)
+    #define IO_IE_REG  GLOBAL_TO_IO_ADDR(IE_REG)
     // Get all interrupts which flag has been set and are enabled
-    uint8_t if_flag = get_mem(IF_FLAG);
-    uint8_t possible_interrupts = if_flag & get_mem(IE_REG) & 0xF;
+    uint8_t if_flag = io_mem[IO_IF_FLAG];
+    uint8_t possible_interrupts = if_flag & io_mem[IO_IE_REG] & 0xF;
  
     if (possible_interrupts != 0) {
         /* Go through each interrupt and check if it has been raised */
@@ -39,7 +45,7 @@ void check_interrupts() {
                      * unset master interrupts so interrupt handler routine
                      * isn't unecessarily interrupted and then call
                      * the interrupt handler */
-                    set_mem(IF_FLAG, if_flag & ~flag);
+                    io_mem[IO_IF_FLAG] = if_flag & ~flag;
                     master_interrupts_disable(); 
                     restart(interrupts[i].isr_addr);
                 }
@@ -51,15 +57,33 @@ void check_interrupts() {
     }
 }
 
+void io_set_mem(uint8_t io_addr, uint8_t val) {
+
+    uint16_t global_addr = IO_TO_GLOBAL_ADDR(io_addr);
+    io_mem[io_addr] = val;
+    switch (global_addr) {
+        /*  Timers */
+        case TIMA_REG : break;
+        case TMA_REG  : break;
+        case TAC_REG  : break;
+        /*  Attempting to set DIV reg resets it to 0 */
+        case DIV_REG  : io_mem[io_addr] = 0; break;
+    }
+}
+
+uint8_t io_get_mem(uint8_t io_addr) {
+    return io_mem[io_addr];
+}
 
 /*  Increments the TIMA register
  *  if causes overflow, timer interrupt is raised*/
 void increment_tima() {
-    uint8_t tima = get_mem(TIMA_REG);
-    set_mem(TIMA_REG, ++tima);
+
+    #define IO_TIMA_REG GLOBAL_TO_IO_ADDR(TIMA_REG)
+    io_mem[IO_TIMA_REG] += 1;
     /*  Overflow */
-    if (tima == 0) {
-        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_2);
+    if (io_mem[IO_TIMA_REG] == 0) {
+        io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_2;
     } 
 }
 
@@ -67,13 +91,21 @@ void increment_tima() {
  *  if LY becomes greater than 143 then
  *  VBlank interrupt is raised */
 void increment_ly() {
-    uint8_t ly = (get_mem(LY_REG)+1) % 154;
-    set_mem(LY_REG, ly);
+
+    #define IO_LY_REG GLOBAL_TO_IO_ADDR(LY_REG)
+    uint8_t ly = (io_mem[IO_LY_REG] +1) % 154;
+    io_mem[IO_LY_REG] = ly;
+
     if (ly < 144) {
-        draw_row(ly);
+        //draw_row(ly);
     } else { /*  V-Blank interrupt */
-       set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_0);
+       io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_0;
     }
+}
+
+/*  Increment DIV register */
+void increment_div() {
+
 }
 
 typedef enum {RIGHT = 0x1, LEFT = 0x2, UP = 0x4, DOWN = 0x8, 
@@ -98,14 +130,14 @@ void joypad_reset() {
 /*  Write the current joypad state
  *  to the joypad register in memory */
 void joypad_write_to_mem() {
-    set_mem(P1_REG, joypad);
+    //set_mem(P1_REG, joypad);
 }
 
 
 
-/*  Managing FF40 LCDC control reg */
+/*  Managing FF40 LCDC control reg */   
 lcd_ctrl_t get_lcd_control() {
-    uint8_t lcd_ctrl_val = get_mem(LCDC_REG);
+    uint8_t lcd_ctrl_val = io_mem[GLOBAL_TO_IO_ADDR(LCDC_REG)];
     lcd_ctrl_t lcd_ctrl;
     
     lcd_ctrl.operation = lcd_ctrl_val & BIT_7; /* 0 no display, 1 otherwise */
@@ -121,7 +153,7 @@ lcd_ctrl_t get_lcd_control() {
 }
 
 void lcd_status() {
-    uint8_t lcd_stat = get_mem(STAT_REG);
+    uint8_t lcd_stat = io_mem[GLOBAL_TO_IO_ADDR(STAT_REG)];
 
     int lyc_equals_ly_coincidence = lcd_stat & BIT_6;
     int oam_search = lcd_stat * BIT_5;
@@ -140,11 +172,11 @@ void lcd_status() {
 
 /*  Get amount of scrolling in X/Y directions */
 uint8_t get_scroll_y() {
-    return get_mem(SCROLL_Y_REG);
+    return io_mem[GLOBAL_TO_IO_ADDR(SCROLL_Y_REG)];
 }
 
 uint8_t get_scroll_x() {
-    return get_mem(SCROLL_X_REG);
+    return io_mem[GLOBAL_TO_IO_ADDR(SCROLL_X_REG)];
 }
 
 
@@ -152,63 +184,63 @@ uint8_t get_scroll_x() {
  *  to the LCD Driver- LY can take any value 0-153, 
  *  144-153 indicate V_Blank period. Writing will
  *  reset the counter */
-uint8_t get_ly() {
-    return get_mem(LY_REG);
-}
+//uint8_t get_ly() {
+//    return get_mem(LY_REG);
+//}
 
 
 
 /*  Compares with LY, if values are the same, causes STAT
  *  to set the coincidence flag */
-uint8_t get_lyc() {
-    return get_mem(LYC_REG);
-}
+//uint8_t get_lyc() {
+//    return get_mem(LYC_REG);
+//}
 
 
 /*  DMA Transfer  */
 /*  (40*28 bit) from internal ROM or RAM (0x0000-0xF19F)
  *  to the OAM (0xFE00-0xFE9F) */
-void dma() {
+//void dma() {
     
-}
+//}
 
 
-uint8_t bg_palette() {
+//uint8_t bg_palette() {
     /*  7-6 Data for Darkest colour */
     /*  5-4 Data for Dark colour */
     /*  3-2 Data for Light Colour */
     /*  1-0 Data for Lightest Colour */
-    return 0;
-}
+//    return 0;
+//}
 
 
-uint8_t OBP0() {
+//uint8_t OBP0() {
     /*  Selects colours for sprite palette 0. Works exactly as BGP
      *  (0xFF47) except 0 is transparent */
-    return 0;
-}
+//    return 0;
+//}
 
-uint8_t OBP1() {
+//uint8_t OBP1() {
    /* Selects the colours for sprite palette 1. Works exactly as OBPO
     * (0xFF48) */
-   return 0;
-}
+//   return 0;
+//}
 
 uint8_t get_win_y_pos() {
     /*  0<=WY<=143 */
-    return get_mem(WY_REG);
+    return io_mem[GLOBAL_TO_IO_ADDR(WY_REG)];
 }
 
 uint8_t get_win_x_pos() {
     /*  0<=WX<=166 */
-    return get_mem(WX_REG);
+    return io_mem[GLOBAL_TO_IO_ADDR(WX_REG)];
 }
 
 
-void interrupt_enable() {
-    uint8_t interrupt = get_mem(IE_REG);
+//void interrupt_enable() {
+//    uint8_t interrupt = get_mem(IE_REG);
 
- }
+// }
 
 
 

@@ -17,21 +17,34 @@
  */
 
 #include "memory.h"
+#include "memory_layout.h"
+#include "IO.h"
 
-static uint8_t mem[WORD_MAX];
+static uint8_t mem[WORD_MAX - 0x100];
 
 void set_mem(uint16_t const loc, uint8_t const val) {
-    mem[loc] = val;
+    if (loc < 0xFF00) {
+        mem[loc] = val;
+    }
     /*  Check if mirrored memory being written to */
     if (loc >= ECHO_RAM_START && loc <= ECHO_RAM_END) {
         mem[loc-0x2000] = val;
     } else if (loc >= ECHO_RAM_START-0x2000 && loc <= ECHO_RAM_END-0x2000) {
         mem[loc+0x2000] = val;
     }
+
+    /*  IO being written to */
+    if (loc >= 0xFF00) {
+        io_set_mem(GLOBAL_TO_IO_ADDR(loc), val);
+    }
 }
 
 uint8_t get_mem(uint16_t const loc) {
-    return mem[loc];
+    if (loc < 0xFF00) {
+        return mem[loc];
+    } else {
+        return io_get_mem(GLOBAL_TO_IO_ADDR(loc));
+    }
 }
 
 
