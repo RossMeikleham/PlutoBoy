@@ -1,50 +1,75 @@
 #include "memory.h"
+#include "cpu.c"
 #include "graphics.h"
 #include "IO.h"
 #include <stdint.h>
 
+typedef struct {
+    uint8_t handler_addr;
+    uint8_t flag;
+} Interrupt;
+
+static const Interrupt interrupts[] = { 
+    {.flag = BIT_0, .handler_addr = VBLANK_INT_ADDR},
+    {.flag = BIT_1, .handler_addr = LCDC_INT_ADDR},
+    {.flag = BIT_2, .handler_addr = TIMER_INT_ADDR},
+    {.flag = BIT_3, .handler_addr = HIGH_LOW_INT_ADDR}
+   };
+
+#define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
 
 
+/*  Check if any interrupts need to be handled, and handle them */
+void check_interrupts() {
+    // Get all interrupts which flag has been set and are enabled
+    uint8_t if_flag = get_mem(IF_FLAG);
+    uint8_t possible_interrupts = if_flag & get_mem(IE_REG) & 0xF;
+ 
+    if (possible_interrupts != 0) {
+        /* Go through each interrupt and check if it has been raised */
+        for (unsigned long i = 0; i < INTERRUPTS_LEN; i++) {
 
-int check_interrupt() {
-    uint8_t interrupt;
-    /*  Check interrupt has been raised */
-    if ((interrupt = get_mem(IF_FLAG) & 0x0F)) {
-        /*  Check VBlank first */
-        if (interrupt & BIT_0);
-        /*  Check LCDC  */
-        if (interrupt & BIT_1);
-        /*  Check Timer Overflow*/
-        if (interrupt & BIT_2) {
-            set_mem(TIMA_REG, get_mem(TMA_REG ));
+            uint8_t flag = interrupts[i].flag;
+            if (flag & possible_interrupts != 0)
+                /*  Still need to check if master override is not in place */
+                if (master_interrupts_enabled()) {
+                    /* Unset interrupt flag for interrupt being serviced
+                     * unset master interrupts so interrupt handler routine
+                     * isn't unecessarily interrupted and then call
+                     * the interrupt handler */
+                    set_mem(IF_FLAG, if_flag & ~flag);
+                    master_interrupts_disable(); 
+                    restart(interrupts[i].handler_addr);
+                }
+                /* If CPU is halted, even if MIE if off, 
+                 * interrupt unhalts the cpu*/
+                unhalt_cpu();
         }
-        /*  Check Serial I/O transfer complete */
-        if (interrupt & BIT_3);
-        /*  Check transion from high low pins */
-        if (interrupt & BIT_4);
-
-    }
-
-    return !!interrupt;
 }
+
 
 /*  Increments the TIMA register
- *  returns 1 if overflow causing timer interrupt */
-int increment_tima() {
+ *  if causes overflow, timer interrupt is raised*/
+void increment_tima() {
     uint8_t tima = get_mem(TIMA_REG);
     set_mem(TIMA_REG, ++tima);
-    return tima == 0;
+    /*  Overflow */
+    if (tima == 0) {
+        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_2);
+    } 
 }
 
-/*  Returns 0 if not in V-Blank period, 
- *  1 if in V-Blank period */
-int increment_ly() {
+/*  Increcements LY registers
+ *  if LY becomes greater than 143 then
+ *  VBlank interrupt is raised */
+void increment_ly() {
     uint8_t ly = (get_mem(LY_REG)+1) % 154;
     set_mem(LY_REG, ly);
     if (ly < 144) {
         draw_row(ly);
+    } else { /*  V-Blank interrupt */
+       set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_0);
     }
-    return ly >= 144;
 }
 
 typedef enum {RIGHT = 0x1, LEFT = 0x2, UP = 0x4, DOWN = 0x8, 
@@ -122,7 +147,7 @@ uint8_t get_scroll_x() {
 /*  Vertical line which present data transferred
  *  to the LCD Driver- LY can take any value 0-153, 
  *  144-153 indicate V_Blank period. Writing will
- *  resset the counter */
+ *  reset the counter */
 uint8_t get_ly() {
     return get_mem(LY_REG);
 }
@@ -130,7 +155,7 @@ uint8_t get_ly() {
 
 
 /*  Compares with LY, if values are the same, causes STAT
- *  to set the coincident flag */
+ *  to set the coincidence flag */
 uint8_t get_lyc() {
     return get_mem(LYC_REG);
 }
