@@ -1,19 +1,21 @@
 #include "memory.h"
-#include "cpu.c"
+#include "cpu.h"
 #include "graphics.h"
 #include "IO.h"
 #include <stdint.h>
 
 typedef struct {
-    uint8_t handler_addr;
-    uint8_t flag;
+    uint8_t isr_addr; /* Interrupt Service Routine Address */
+    uint8_t flag; /* bit set to compare with IF_FLAG to 
+                    check if interrupt has been raised */
 } Interrupt;
 
 static const Interrupt interrupts[] = { 
-    {.flag = BIT_0, .handler_addr = VBLANK_INT_ADDR},
-    {.flag = BIT_1, .handler_addr = LCDC_INT_ADDR},
-    {.flag = BIT_2, .handler_addr = TIMER_INT_ADDR},
-    {.flag = BIT_3, .handler_addr = HIGH_LOW_INT_ADDR}
+    {.flag = BIT_0, .isr_addr = VBLANK_ISR_ADDR},
+    {.flag = BIT_1, .isr_addr = LCDC_ISR_ADDR},
+    {.flag = BIT_2, .isr_addr = TIMER_ISR_ADDR},
+    {.flag = BIT_3, .isr_addr = IO_ISR_ADDR},
+    {.flag = BIT_3, .isr_addr = HIGH_LOW_ISR_ADDR}
    };
 
 #define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
@@ -30,7 +32,7 @@ void check_interrupts() {
         for (unsigned long i = 0; i < INTERRUPTS_LEN; i++) {
 
             uint8_t flag = interrupts[i].flag;
-            if (flag & possible_interrupts != 0)
+            if ((flag & possible_interrupts) != 0) {
                 /*  Still need to check if master override is not in place */
                 if (master_interrupts_enabled()) {
                     /* Unset interrupt flag for interrupt being serviced
@@ -39,12 +41,14 @@ void check_interrupts() {
                      * the interrupt handler */
                     set_mem(IF_FLAG, if_flag & ~flag);
                     master_interrupts_disable(); 
-                    restart(interrupts[i].handler_addr);
+                    restart(interrupts[i].isr_addr);
                 }
                 /* If CPU is halted, even if MIE if off, 
                  * interrupt unhalts the cpu*/
                 unhalt_cpu();
+            }
         }
+    }
 }
 
 

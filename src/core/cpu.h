@@ -2,6 +2,7 @@
 #ifndef CPU_H
 #define CPU_H
 
+#include <stdint.h>
 /*  Call interrupt handler code */
 void restart(uint8_t addr);
 

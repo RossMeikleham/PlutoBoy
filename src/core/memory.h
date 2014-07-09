@@ -6,6 +6,13 @@
 #define WORD_MAX 0xFFFF
 #define BYTE_MAX 0xFF
 
+//Interrupt service routine addresses
+#define VBLANK_ISR_ADDR 0x40
+#define LCDC_ISR_ADDR 0x48
+#define TIMER_ISR_ADDR 0x50
+#define IO_ISR_ADDR 0x58
+#define HIGH_LOW_ISR_ADDR 0x60
+
 /* Memory definitions */
 
 #define INTERRUPT_VECTORS_START 0x0000

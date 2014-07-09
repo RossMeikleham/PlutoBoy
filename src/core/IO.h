@@ -87,10 +87,11 @@ typedef struct {
 } lcd_ctrl_t;
 
 
+void check_interrupts();
   
-int increment_tima();
+void increment_tima();
 
-int increment_ly();
+void increment_ly();
 
 lcd_ctrl_t get_lcd_control();
 

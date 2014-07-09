@@ -22,6 +22,7 @@
 #include "../core/disasm.h"
 #include "../core/graphics.h"
 #include "../core/romInfo.h"
+#include "../core/IO.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -176,11 +177,11 @@ int run(long cycles) {
     int num;
     get_command();
     while(cycles > 0) {
-       // check_interrupt();
+        check_interrupts();
 
         /*  Increment lcd y line every 456 cycles */
         if(ly_cycles >= 456) {
-            //increment_ly();
+            increment_ly();
             ly_cycles = 0;
             
         }
