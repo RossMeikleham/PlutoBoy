@@ -121,19 +121,172 @@ void update_screen()
 }
 
 
-
-
-void draw_row(uint8_t row) {
-
-    uint8_t i, x_pos;
-    uint8_t y = get_win_y_pos() + row; /* overlaps if overflow */
-    uint8_t x = get_win_x_pos();
-    lcd_ctrl_t lcd_ctrl;
-    lcd_ctrl = get_lcd_control();
-    Tile tile;
-
-    uint16_t current = lcd_ctrl.bg_win_tile == 0 ? 0x9800 : 0x9C00;
+// Obtains color-id (0 - 3) of pixel number in the given 
+// line. pixel_no must be between 0 and 7
+int get_color_id(uint8_t byte0, uint8_t byte1, int pixel_no) {
     
+    int bit0 = !!(byte0 & (0x80 >> pixel_no));
+    int bit1 = !!(byte1 & (0x80 >> pixel_no));
+            
+    // Work out which bits in internal pallete to use
+    int pallete_bit_no_0 = (4 * bit_0) + (2 * bit_1) + 1;
+    int pallete_bit_no_1 = pallete_bit_0 - 1;
+
+    // Pass through internal pallete to get new bit color
+    uint8_t pallete = get_mem(BGP_REF);
+
+    int pallete_bit_0 = !!(pallete & (1 << pallete_bit_no_0));
+    int pallete_bit_1 = !!(pallete & (1 << pallete_bit_no_1));
+    
+    return (pallete_bit_0 << 1) | (pallete_bit_1);
+}
+
+void draw_sprite_row() {
+    
+    uint8_t lcd_ctrl = get_mem(LCDC_REG);
+    int extended_sprite = !!(lcd_ctrl & BIT_2);
+
+    // 40 Sprites
+    for (int i = 0; i < 40; i++) {
+        uint8_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4)) - 16;
+        uint8_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 1) - 8;
+        uint8_t tile_location = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 2);
+        uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 3);
+
+        int y_flip = attributes & BIT_6;
+        int x_flip = attributes & BIT_5;
+        uint8_t height = 8 * (1 + extended_sprite); // 8x16 if extended
+        
+        uint8_t row = get_mem(LCY_REG);
+        
+        // Part of sprite is on current row being drawn
+        if (y_pos <= row && y_pos + height >= row) {
+            
+            uint8_t line = row - y_pos;
+
+        }
+
+    }
+}
+
+
+void draw_tile_window_line(uint16_t tile_mem, uint16_t bg_mem) {
+    
+    uint8_t scroll_x = get_scroll_x();
+    uint8_t y_pos = get_mem(LY_REG) - get_win_y_pos(); // Get line 0 - 255 being drawn    
+    uint16_t tile_row = (ypos / 8); // Get row 0 - 31 of tile
+    uint8_t win_x_pos = get_win_x_pos() - 7;
+    
+    // 160 pixel row, 20 tiles, 8 pixel row per tile
+    for (unsigned int i = 0; i < 20; i++) {
+
+        uint16_t tile_col = i + scroll_x/8; //Get column 0 - 31 of tile
+        if (tile_col >= (win_x_pos/8)) {
+            tile_col -= (win_x_pos/8));
+        }
+       
+        uint8_t tile_no = get_mem(bg_mem + (tile_row * 32) + tile_col);
+        
+        // Signed tile no, need to convert to offset
+        if (tile_mem == TILE_SET_1_START) {
+            tile_no = (tile_no & 127) - (tile_no & 127) + 128;
+        }
+       
+        uint16_t tile_loc = tile_no * 16; //Location of tile in memory
+        uint8_t line_offset = (y_pos % 8) * 2; //Offset into tile of our line
+        
+        uint8_t byte0 = get_mem(tile_loc + line_offset);
+        uint8_t byte1 = get_mem(tile_loc + line_offset + 1);
+        
+        // For each pixel in the line of the tile
+        for (unsigned int j = 0; j < 8; j++) {
+            int color_id = get_color_id(byte0, byte1, j);
+
+            int x_pos = i * 8 + j + scroll_x;
+            if (x_pos >= win_x_pos) {
+                x_pos -= win_x_pos;
+            }
+            draw_pix(cols[color_id], x_pos, y_pos);
+        }   
+        
+    }     
+}
+
+
+void draw_tile_bg_line(uint16_t tile_mem, uint16_t bg_mem) {
+    
+    uint8_t scroll_x = get_scroll_x();
+    uint8_t y_pos = get_scroll_y() + get_mem(LY_REG) // Get line 0 - 255 being drawn    
+    uint16_t tile_row = (ypos / 8); // Get row 0 - 31 of tile
+    
+    // 160 pixel row, 20 tiles, 8 pixel row per tile
+    for (unsigned int i = 0; i < 20; i++) {
+        
+        uint16_t tile_col = i + scroll_x/8; //Get column 0 - 31 of tile
+        uint8_t tile_no = get_mem(bg_mem + (tile_row * 32) + tile_col);
+        
+        // Signed tile no, need to convert to offset
+        if (tile_mem == TILE_SET_1_START) {
+            tile_no = (tile_no & 127) - (tile_no & 127) + 128;
+        }
+       
+        uint16_t tile_loc = tile_no * 16; //Location of tile in memory
+        uint8_t line_offset = (y_pos % 8) * 2; //Offset into tile of our line
+        
+        uint8_t byte0 = get_mem(tile_loc + line_offset);
+        uint8_t byte1 = get_mem(tile_loc + line_offset + 1);
+        
+        // For each pixel in the line of the tile
+        for (unsigned int j = 0; j < 8; j++) {
+            int color_id = get_color_id(byte0, byte1, j);
+            draw_pix(cols[color_id], i*8 + j + scroll_x, y_pos);
+        }   
+        
+    }     
+}
+
+void draw_tile_row() {
+
+    uint8_t lcd_ctrl = get_mem(LCDC_REG);
+    
+    uint8_t win_y_pos = get_win_y_pos();
+
+    uint16_t bg_mem = BG_MAP_DATA0_START; // Either bg set 0 or 1 
+    uint16_t tile_mem = TILE_SET_1_START; // Either tile set 0 or 1
+
+    // Check if using Tile set 0 or 1 
+    if ((lcd_ctrl & BIT_4)) {
+        tile_mem = TILE_SET_0_START;
+    }
+
+    //Using Window display
+    if ((lcd_ctrl & BIT_5) && (win_y_pos <= get_mem(LY_REG)) {
+        if (lcd_ctrl & BIT_6) {
+            bg_mem = BG_MAP_DATA1_START;
+        }
+        draw_tile_window_line(tile_mem, bg_mem);
+
+    // Using BG display
+    } else {
+        if (lcd_ctrl & BIT_3) {
+            bg_mem = BG_MAP_DATA1_START;
+        }
+        draw_tile_bg_line(tile_mem, bg_mem);
+    }
+}
+
+
+
+void draw_row() {
+
+    uint8_t render_sprites = get_mem(LCDC_REG) & BIT_0;
+    if (render_sprites) {
+        draw_sprite_row();
+    } else {
+        draw_tile_row()
+    }
+    
+    uint16_t current = lcd_ctrl.bg_win_tile == 0 ? 0x9800 : 0x9C00;    
 
     for (x_pos = x; x_pos-x < SCREEN_WIDTH/8; x_pos++) {
         tile = get_tile(x , !current);
@@ -144,8 +297,6 @@ void draw_row(uint8_t row) {
 
     update_screen();
 }
-
-
 
 
 
