@@ -70,16 +70,14 @@ void update_timers(long cycles) {
     update_divider_reg(cycles);
     //Clock enabled
     if ((timer_control & BIT_2) != 0) {
-        //If timer frequency has been changed need to reset
-        //the timer and update the current frequency
-        if (timer_frequencies[(timer_control & 3)] != timer_frequency) {
-            set_timer_frequency(timer_control & 3);
-        }
+        
         timer_counter += cycles;
 
+        /* Once timer incremented, check for changes in timer frequency,
+         * and reset timer */
         if (timer_counter >= clock_speed / timer_frequency) {
             increment_tima();
-            timer_counter = 0;
+            set_timer_frequency(timer_control & 3);
         }
     }
 }
