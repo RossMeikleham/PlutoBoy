@@ -1,6 +1,7 @@
 #include "cpu.h"
 #include "graphics.h"
 #include "IO.h"
+#include "memory.h"
 #include <stdint.h>
 #include "memory_layout.h"
 
@@ -61,6 +62,17 @@ void check_interrupts() {
     }
 }
 
+
+/* Transfer 160 bytes to sprite memory starting from
+ * address XX00 */
+static inline void dma_transfer(uint8_t val) {
+    
+    uint16_t source_addr = val << 8;
+    for (int i = 0; i < 0xA0; i++) {
+        set_mem(SPRITE_ATTRIBUTE_TABLE_START + i, get_mem(source_addr + i));    
+    }
+}
+
 void io_set_mem(uint8_t io_addr, uint8_t val) {
 
     uint16_t global_addr = IO_TO_GLOBAL_ADDR(io_addr);
@@ -74,6 +86,8 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
         case DIV_REG  : io_mem[io_addr] = 0; break;
         /*  Attempting to set LY reg resets it to 0  */
         case LY_REG   : io_mem[io_addr] = 0; break;
+        /*  Performa direct memory transfe  */
+        case DMA_REG  : dma_transfer(val); break;
     }
 }
 
