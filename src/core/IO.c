@@ -24,6 +24,9 @@ static const Interrupt interrupts[] = {
 #define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
 
 
+void set_lcd_interrupt() {
+    io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_1;    
+}
 
 /*  Check if any interrupts need to be handled, and handle them */
 void check_interrupts() {
@@ -69,6 +72,8 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
         case TAC_REG  : break;
         /*  Attempting to set DIV reg resets it to 0 */
         case DIV_REG  : io_mem[io_addr] = 0; break;
+        /*  Attempting to set LY reg resets it to 0  */
+        case LY_REG   : io_mem[io_addr] = 0; break;
     }
 }
 

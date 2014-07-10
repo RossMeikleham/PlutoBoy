@@ -91,6 +91,7 @@ typedef struct {
     int bg_window_display;
 } lcd_ctrl_t;
 
+void set_lcd_interrupt();
 
 void check_interrupts();
 
