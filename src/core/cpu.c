@@ -1199,7 +1199,7 @@ void JR_C_n()
  *  then jump to address nn */
 void CALL_nn()
 {
-    PUSH(reg.PC + 3);
+    PUSH(reg.PC);
     reg.PC = IMMEDIATE_16_BIT;
 }
 
@@ -1560,7 +1560,7 @@ int exec_opcode() {
     }
     opcode = get_mem(reg.PC); /*  fetch */
     //dasm_instruction(reg.PC, stdout);
-   // printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
+   printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
