@@ -5,6 +5,7 @@
 #include "memory.h"
 #include "cpu.h"
 #include <string.h>
+#include <stdlib.h>
 #include "disasm.h"
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
@@ -17,7 +18,7 @@ static int halt = 0;
 static int stop = 0;
 static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
-
+static uint8_t opcode;
 
 union REGISTERS
 
@@ -43,7 +44,10 @@ void mem_op(uint16_t addr, void (mem_op_fn)(uint8_t *)) {
 }
 
 
-void invalid_op(){}
+void invalid_op(){
+    fprintf(stderr, "Error, unknown opcode: %x\n", opcode);
+    exit(1);
+}
 
 
 /************* 8 Bit Load Operations ********************/
@@ -1364,26 +1368,26 @@ static Instruction ins[UINT8_MAX+1] = {
     //0xC0 - 0xCF
     {8, RET_NZ}, {12, POP_BC}, {12, JP_NZ_nn}, {16, JP_nn},
     {12, CALL_NZ_nn}, {16, PUSH_BC}, {8, ADD_A_Im8}, {16, RST_00},
-    {8, RET_Z}, {16, RET}, {12, JP_Z_nn}, {0, NULL},
+    {8, RET_Z}, {16, RET}, {12, JP_Z_nn}, {0, invalid_op},
     {12, CALL_Z_nn}, {24, CALL_nn}, {8, ADC_A_Im8}, {16, RST_08},
 
     //0xD0 - 0xDF
-    {8, RET_NC}, {12, POP_DE}, {12, JP_NC_nn}, {0, NULL},
+    {8, RET_NC}, {12, POP_DE}, {12, JP_NC_nn}, {0, invalid_op},
     {12, CALL_NC_nn}, {16, PUSH_DE}, {8, SUB_A_Im8}, {16, RST_10},
-    {8, RET_C}, {8, RETI}, {16, JP_C_nn}, {0,  NULL}, 
-    {12, CALL_C_nn}, {0,  NULL}, {8,  SBC_A_Im8}, {16 ,RST_18},
+    {8, RET_C}, {8, RETI}, {16, JP_C_nn}, {0,  invalid_op}, 
+    {12, CALL_C_nn}, {0,  invalid_op}, {8,  SBC_A_Im8}, {16 ,RST_18},
 
     //0xE0 - 0xEF
-    {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, NULL},       
-    {0, NULL}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
-    {16, ADD_SP_IM8}, {4, JP_memHL}, {16, LD_memnn_A}, {0, NULL},       
-    {0, NULL}, {0, NULL}, {8, XOR_A_Im8}, {16, RST_28},
+    {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
+    {0, invalid_op}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
+    {16, ADD_SP_IM8}, {4, JP_memHL}, {16, LD_memnn_A}, {0, invalid_op},       
+    {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
     {12, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
-    {0,NULL}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
+    {0,invalid_op}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
     {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_IM}, {4, EI},
-    {0 , NULL}, {0, NULL}, {8, CP_A_Im8}, {16, RST_38}
+    {0 , invalid_op}, {0, invalid_op}, {8, CP_A_Im8}, {16, RST_38}
 };
 
 static Instruction ext_ins[UINT8_MAX+1] = {
@@ -1548,8 +1552,6 @@ void print_regs() {
  *  the amount of cycles the instruction takes */
 int exec_opcode() {
     
-    
-    uint8_t opcode;
     int i;
     //printf("pc location:%x\n", reg.PC);
     //printf("reg b %x\n", reg.B);
@@ -1561,7 +1563,7 @@ int exec_opcode() {
    // printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
-        
+         
         instructions.instruction_set[opcode].operation();
         /* Check if timer for setting master interrupts has been set,
          * decrement it and if it reaches 0 the timer is complete,
