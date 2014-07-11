@@ -418,7 +418,7 @@ void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT); }
 /*  Performs Compare operation on 2 bytes, sets flags */
 static inline void CP_8(uint8_t val1, uint8_t val2)
 {
-    reg.N_FLAG = 0;
+    reg.N_FLAG = 1;
     reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) ? 1 : 0;
     reg.C_FLAG = val1 < val2 ? 1 : 0;
     reg.Z_FLAG = val1 == val2 ? 1 : 0;
