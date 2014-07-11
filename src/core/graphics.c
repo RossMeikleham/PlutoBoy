@@ -157,10 +157,10 @@ void draw_sprite_row(uint8_t row) {
         int x_flip = attributes & BIT_5;
         uint8_t height = 8 * (1 + extended_sprite); // 8x16 if extended
         
+        printf("y pos: %u, x pos :%u tile_no : %u\n",y_pos,x_pos,tile_no);
         // Part of sprite is on current row being drawn
         if (y_pos <= row && y_pos + height >= row) {
-
-            //printf("y pos: %u, x pos :%u tile_no : %u\n",y_pos,x_pos,tile_no);
+                        
             uint16_t tile_loc = TILE_SET_0_START + (tile_no * 16);
             // Obtain row of sprite to draw, if sprite is flipped
             // need to obtain row relative to bottom of sprite
@@ -179,7 +179,7 @@ void draw_sprite_row(uint8_t row) {
 
                 // Draw if not transparent pixel
                 if (color_id != 0) {
-                    //printf("color id %d x: %u  y:%u\n",color_id, x_pos + i, y_pos);
+                    printf("color id %d x: %u  y:%u\n",color_id, x_pos + i, y_pos);
                     draw_pix(color_id, x_pos + i, y_pos);
                 }
 
@@ -188,6 +188,7 @@ void draw_sprite_row(uint8_t row) {
 
     }
     
+    printf("SPRITES DRAWN\n");
     update_screen();
 }
 
@@ -232,6 +233,7 @@ void draw_tile_window_line(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
         }   
         
     }     
+
 }
 
 
@@ -262,7 +264,8 @@ void draw_tile_bg_line(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
             draw_pix(color_id, i*8 + j + scroll_x, y_pos);
         }   
         
-    }     
+    }
+    
 }
 
 void draw_tile_row(uint8_t row) {
@@ -293,7 +296,7 @@ void draw_tile_row(uint8_t row) {
         }
         draw_tile_bg_line(tile_mem, bg_mem, row);
     }
-
+    
     update_screen();
 }
 
@@ -303,7 +306,7 @@ void draw_tile_row(uint8_t row) {
 
 void draw_sp_row(uint8_t row) {
 
-    uint8_t render_sprites = get_mem(LCDC_REG) & BIT_0;
+    uint8_t render_sprites = !(get_mem(LCDC_REG) & BIT_0);
     if (render_sprites) {
         draw_sprite_row(row);
     } else {
@@ -311,7 +314,6 @@ void draw_sp_row(uint8_t row) {
     }
     update_screen();
 
-    printf("SPRITE DRAWN\n");
 }
 
 
