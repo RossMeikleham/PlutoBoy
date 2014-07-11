@@ -117,7 +117,7 @@ void increment_ly() {
     io_mem[IO_LY_REG] = ly;
 
     if (ly < 144) {
-        //draw_row(ly);
+        draw_row();
     } else { /*  V-Blank interrupt */
        io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_0;
     }

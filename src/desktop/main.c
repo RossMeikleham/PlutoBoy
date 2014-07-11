@@ -24,6 +24,7 @@
 #include "../core/romInfo.h"
 #include "../core/IO.h"
 #include "../core/timers.h"
+#include "../core/lcd.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -82,7 +83,7 @@ void get_command() {
 
     BREAKPOINT = BREAKPOINT_OFF;
     STEP_COUNT = -1;
-
+    
     for(;;) {
    
         printf("->");
@@ -107,10 +108,16 @@ void get_command() {
                 draw_tile_1(i, (i+128)%16, (i+128)/16);
             }
         } else if (!strcmp(buf,"dumpsprites\n")) {
-            draw_sprites();
+            for (unsigned int i = 1; i < 256; i++) {
+                draw_sprite_row(i);
+            }
+            //draw_sprites();
         }
         else if (!strcmp(buf, "dumpbg0\n")) {
-            draw_background_0();
+            for (int i = 1; i < 256; i++) {
+                draw_tile_row(i);
+            }
+            //draw_background_0();
         }
         else if (!strcmp(buf, "dumpbg1\n")) {
         }
@@ -178,19 +185,16 @@ int run(long cycles) {
     int num;
     get_command();
     while(cycles > 0) {
-        check_interrupts();
-
-        /*  Increment lcd y line every 456 cycles */
-        if(ly_cycles >= 456) {
-            increment_ly();
-            ly_cycles = 0;
-            
-        }
         current_cycles = exec_opcode();
         cycles -= current_cycles;
-        ly_cycles += current_cycles;
+        
+        check_interrupts();            
+        update_timers(cycles);
+        update_graphics(cycles);
+
         //scanf("%d",&num);
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
+            printf("step count main %d\n", STEP_COUNT);
             get_command();
         }
    }
@@ -199,8 +203,6 @@ int run(long cycles) {
 }
 
 
-void timer_interrupt() {
-}
 
 int main(int argc, char* argv[]) {
 
@@ -234,7 +236,7 @@ int main(int argc, char* argv[]) {
     reset_cpu();
     
     for(;;)
-        run(100000000);
+        run(10000000000);
 
 }
 

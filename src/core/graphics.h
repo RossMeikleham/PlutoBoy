@@ -2,8 +2,8 @@
 #define GRAPHICS_H
 
 
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 144
+#define SCREEN_WIDTH 300
+#define SCREEN_HEIGHT 300
 
 typedef enum {WHITE = 0, GREY = 1, DARK_GREY = 2, BLACK = 3} Colour;
 typedef enum {TYPE0 = 0, TYPE1 = 1} TileType;
@@ -23,12 +23,16 @@ typedef struct  {
 
 int init_gfx();
 
-void draw_row(uint8_t row);
+void draw_row();
 void draw_tile_0(uint8_t tile_no, uint8_t x, uint8_t y);
 void draw_tile_1(int8_t tile_no, uint8_t x, uint8_t y);
 void draw_background_0(void);
 void draw_background_1(void);
 void draw_sprites(void);
+
+void draw_tile_row(uint8_t row);
+void draw_sprite_row(uint8_t row);
+void draw_so_row(uint8_t row);
 
 #endif /* GRAPHICS_H */
 
