@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) {
     reset_cpu();
     
     for(;;)
-        run(10000000000);
+        run(10000);
 
 }
 

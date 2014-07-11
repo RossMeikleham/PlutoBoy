@@ -311,7 +311,7 @@ void draw_sp_row(uint8_t row) {
     }
     update_screen();
 
-    printf("SPRITE DRAWN");
+    printf("SPRITE DRAWN\n");
 }
 
 
