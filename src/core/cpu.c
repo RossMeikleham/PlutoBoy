@@ -850,7 +850,10 @@ static inline void SRL_N(uint8_t *val)
 {
     reg.C_FLAG = *val & 0x1;
     *val >>= 1;
-    *val &= 0x7F;
+    reg.Z_FLAG = !*val;
+    reg.N_FLAG = 0;
+    reg.H_FLAG = 0;
+    
 }
 
 /*  8 cyles */
@@ -1320,7 +1323,7 @@ Instruction ins[UINT8_MAX + 1] = {
     //0xF0 - 0xFF                                                              
     {12, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
     {0,invalid_op}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
-    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_IM}, {4, EI},
+    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_memnn}, {4, EI},
     {0 , invalid_op}, {0, invalid_op}, {8, CP_A_Im8}, {16, RST_38}
 };
 
@@ -1444,6 +1447,7 @@ static Instructions instructions = {
 
 
 int master_interrupts_enabled() { 
+    printf("master interrupts: %d\n",interrupts_enabled);
     return interrupts_enabled;
 }
 
@@ -1486,15 +1490,11 @@ void print_regs() {
  *  the amount of cycles the instruction takes */
 int exec_opcode() {
     
-    int i;
     //printf("pc location:%x\n", reg.PC);
     //printf("reg b %x\n", reg.B);
-    for (i = 0xfff9; i < 0x10000; i++) {
-      //  printf("mem:%x\n",get_mem(i));
-    }
     opcode = get_mem(reg.PC); /*  fetch */
     //dasm_instruction(reg.PC, stdout);
-//   printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
+//    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
@@ -1512,15 +1512,10 @@ int exec_opcode() {
 
     } else { /*  extended instruction */
 
-        opcode = get_mem(IMMEDIATE_8_BIT);
+        opcode = IMMEDIATE_8_BIT;
+        printf("extended %x\n",opcode);
         instructions.ext_instruction_set[opcode].operation();
        
         return instructions.ext_instruction_set[opcode].cycles;
     }
 }
-
-
-
-
-
-
