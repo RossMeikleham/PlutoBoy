@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "disasm.h"
+#include "registers.h"
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
 #define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
@@ -20,9 +21,10 @@ static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
 static uint8_t opcode;
 
-union REGISTERS
 
-{
+//TODO preprocessor check of endian-ness of processor
+//and switch hi/lo registers for big endian processors
+union {
   struct{uint16_t AF,BC,DE,HL,SP,PC;};
   
   struct{uint8_t F,A,C,B,E,D,L,H,SPlo,SPhi,PClo,PChi;};
@@ -32,16 +34,34 @@ union REGISTERS
 } static reg;
 
 
+// Pointer to function which performs an operation
+// based on an opcode
+typedef void (*Operation)(void); 
+
+
+typedef struct {
+
+    int cycles; /*  Number of machine cycles per instruction */
+    Operation const operation; /* operation which performs the instruction */
+    
+} Instruction;
+
+extern Instruction ins[UINT8_MAX+1];
+
+/*  Information on all processor instructions 
+ *  including extended instructions  */
+typedef struct {
+
+    Instruction * instruction_set; 
+    int const * words; /*  No of words per instruction */
+    Instruction const * const ext_instruction_set; /* extended 0xCB instructions */
+
+
+} Instructions;
+
+
 
 /* ***************Opcodes ********************* */
-/*  Some opcodes directly work on memory, since we
- *  don't control memory we'll redirect the call here
- *  with the supplied operation function */
-void mem_op(uint16_t addr, void (mem_op_fn)(uint8_t *)) {
-    uint8_t temp = get_mem(addr); 
-    mem_op_fn(&temp); /*  perform modifying op on temp */
-    set_mem(addr, temp); /*  write new value temp back */
-}
 
 
 void invalid_op(){
@@ -1114,83 +1134,34 @@ void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 /**** Jumps ****/
 
 /* Jump to immediate 2 byte address */
-void JP_nn()
-{
-    reg.PC = IMMEDIATE_16_BIT;
-}
+void JP_nn() { reg.PC = IMMEDIATE_16_BIT; }
 
+/*  Jump to address n if flag condition holds */
 
-/*  Jump to address n if following condition is
- *  true */
-
-/*  Zero flag not set */
-void JP_NZ_nn() 
-{
-    if (!reg.Z_FLAG) JP_nn();
-}
-
-/*  Zero flag set */
-void JP_Z_nn()
-{
-    if(reg.Z_FLAG) JP_nn();
-}
-
-
-/*  Carry flag not set */
-void JP_NC_nn()
-{
-    if(!reg.C_FLAG) JP_nn(); 
-}
-
-/*  Carry flag set */
-void JP_C_nn()
-{
-    if(reg.C_FLAG) JP_nn();
-}
+void JP_NZ_nn() { ins[0xC2].cycles = !reg.Z_FLAG ? (JP_nn(), 16) : 12; }
+void JP_Z_nn()  { ins[0xCA].cycles =  reg.Z_FLAG ? (JP_nn(), 16) : 12; }
+void JP_NC_nn() { ins[0xD2].cycles = !reg.C_FLAG ? (JP_nn(), 16) : 12; }
+void JP_C_nn()  { ins[0xDA].cycles =  reg.C_FLAG ? (JP_nn(), 16) : 12; }
 
 
 /*  Jump to address contained in HL */
-void JP_memHL()
-{
-    reg.PC = get_mem(reg.HL);
-}
+void JP_memHL() { reg.PC = get_mem(reg.HL); }
+
+
 
 /*  Add 8 bit immediate value as signed int to current address
  *  and jump to it */
-void JR_n()
-{
-    int val = IMMEDIATE_8_BIT;
-    reg.PC  = val < 128 ? reg.PC + val : reg.PC + (val - 256);
-}
+void JR_n() { reg.PC += SIGNED_IM_8_BIT;}
 
-
-
-/*  If following conditions are true
+/*  If following flag conditions are true
  *  add 8 bit immediate to pc */
 
-/*  Zero flag not set */
-void JR_NZ_n() 
-{
-    if(!reg.Z_FLAG) JR_n();
-}
+void JR_NZ_n() { ins[0x20].cycles = !reg.Z_FLAG ? (JR_n(), 12) : 8; }
+void JR_Z_n()  { ins[0x28].cycles =  reg.Z_FLAG ? (JR_n(), 12) : 8; }
+void JR_NC_n() { ins[0x30].cycles = !reg.C_FLAG ? (JR_n(), 12) : 8; }
+void JR_C_n()  { ins[0x38].cycles =  reg.C_FLAG ? (JR_n(), 12) : 8; }
 
-/* Zero flag set */
-void JR_Z_n() 
-{
-    if(reg.Z_FLAG) JR_n(); 
-}
 
-/*  Carry flag not set */
-void JR_NC_n()
-{
-    if(!reg.C_FLAG) JR_n(); 
-}
-
-/*  Carry flag set */
-void JR_C_n()
-{
-    if(!reg.C_FLAG) JR_n(); 
-}
 
 
 /**** Calls ****/
@@ -1204,25 +1175,13 @@ void CALL_nn()
 }
 
 /*  Call if flag is set/unset */
-void CALL_NZ_nn()
-{
-    if(!reg.Z_FLAG) CALL_nn(); 
-}
+void CALL_NZ_nn() { ins[0xC4].cycles = !reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
+void CALL_Z_nn()  { ins[0xCC].cycles =  reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
+void CALL_NC_nn() { ins[0xD4].cycles = !reg.C_FLAG ? (CALL_nn(), 24) : 12; }
+void CALL_C_nn()  { ins[0xDC].cycles =  reg.C_FLAG ? (CALL_nn(), 24) : 12; }
 
-void CALL_Z_nn()
-{
-    if(reg.Z_FLAG) CALL_nn(); 
-}
 
-void CALL_NC_nn()
-{
-    if(!reg.C_FLAG) CALL_nn(); 
-}
 
-void CALL_C_nn()
-{
-    if(reg.C_FLAG) CALL_nn();
-}
 
 
 /**** Restarts ****/
@@ -1250,48 +1209,23 @@ void RST_38() {restart(0x38);}
 void RET() { POP(&reg.PC);}
 
 // Return if flags are set
-void RET_NZ() { if(!reg.Z_FLAG) RET(); }
-void RET_Z() { if(reg.Z_FLAG) RET(); }
-void RET_NC() { if(!reg.C_FLAG) RET(); }
-void RET_C() { if(reg.C_FLAG) RET(); }
+void RET_NZ() { ins[0xC0].cycles = !reg.Z_FLAG ? (RET(), 20) : 8; } 
+void RET_Z()  { ins[0xC8].cycles =  reg.Z_FLAG ? (RET(), 20) : 8; }
+void RET_NC() { ins[0xD0].cycles = !reg.C_FLAG ? (RET(), 20) : 8; }
+void RET_C()  { ins[0xD8].cycles =  reg.C_FLAG ? (RET(), 20) : 8; }
+
+
 
 // Return and enable master interrupts
-void RETI() 
-{
+void RETI() {
     RET();
     EI();
 }
 
+/* ***************************************** */
 
 
-
-
-// Pointer to function which performs an operation
-// based on an opcode
-typedef void (*Operation)(void); 
-
-
-typedef struct {
-
-    int const cycles; /*  Number of machine cycles per instruction */
-    Operation const operation; /* operation which performs the instruction */
-    
-} Instruction;
-
-
-/*  Information on all processor instructions 
- *  including extended instructions  */
-typedef struct {
-
-    Instruction const * const instruction_set; 
-    int const * words; /*  No of words per instruction */
-    Instruction const * const ext_instruction_set; /* extended 0xCB instructions */
-
-
-} Instructions;
-
-
-static Instruction ins[UINT8_MAX+1] = {
+Instruction ins[UINT8_MAX + 1] = {
     
     // 0x00 - 0x0F
     {4, NOP}, {12, LD_BC_IM}, {8, LD_memBC_A}, {8, INC_BC},     
@@ -1560,7 +1494,7 @@ int exec_opcode() {
     }
     opcode = get_mem(reg.PC); /*  fetch */
     //dasm_instruction(reg.PC, stdout);
-   printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
+//   printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
