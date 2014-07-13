@@ -339,11 +339,12 @@ void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}
 /*  Performs SUB carry operation on 2 bytes, returns result and sets flags */
 static inline uint8_t SBC_8(uint8_t val1, uint8_t val2)
 {
+    int16_t result = val1 - val2 - reg.C_FLAG;
     reg.N_FLAG = 1;
-    reg.Z_FLAG = val1 == val2 + reg.C_FLAG ? 1 : 0;
-    reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) + reg.C_FLAG ? 1 : 0;
-    reg.C_FLAG = ( val1 < val2 || (reg.C_FLAG == 1 && val1 == val2)) ? 1 : 0;
-    return val1 - val2;
+    reg.Z_FLAG = (result & 0xFF) == 0;
+    reg.H_FLAG = (val1 & 0xF) - (val2 & 0xF) - reg.C_FLAG < 0;
+    reg.C_FLAG = result < 0;
+    return result & 0xFF;
 }
 
 void SBC_A_A(){reg.A = SBC_8(reg.A, reg.A);}
@@ -354,7 +355,7 @@ void SBC_A_E(){reg.A = SBC_8(reg.A, reg.E);}
 void SBC_A_H(){reg.A = SBC_8(reg.A, reg.H);} 
 void SBC_A_L(){reg.A = SBC_8(reg.A, reg.L);} 
 void SBC_A_memHL(){reg.A = SBC_8(reg.A, get_mem(reg.HL));}
-void SBC_A_Im8(){reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT);}  
+void SBC_A_Im8() { reg.A = SBC_8(reg.A, SIGNED_IM_8_BIT);}  
 
 
 
