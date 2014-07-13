@@ -237,20 +237,14 @@ void LD_SP_HL() {reg.SP = reg.HL;}
 /*  Place SP + Immediate 8 bit into HL */
 void LD_HL_SP_n() {
 
-    reg.Z_FLAG = 0;
-    reg.N_FLAG = 0;
-
+    reg.Z_FLAG = reg.N_FLAG =  0;
     int8_t s8 = SIGNED_IM_8_BIT;
     reg.HL = reg.SP + s8;
 
-    // Set Half-Carry and Carry flags
-    if (s8 >= 0) {
-        reg.C_FLAG = ((reg.SP & 0xFF) + s8) > 0xFF; //overflow to 8 bits
-        reg.H_FLAG = ((reg.SP & 0xF) + (s8 & 0xF)) > 0xF; //from 3 to 4 bits
-    } else {
-        reg.C_FLAG = (reg.HL & 0xFF) <= (reg.SP & 0xFF); //No underflow from 0 to 7
-        reg.H_FLAG = (reg.HL & 0xF) <= (reg.SP & 0xF); //No underflow from 0 to 3 
-    }
+    //TODO find out why this works :|
+    uint16_t temp = reg.SP ^ s8 ^ reg.HL;
+    reg.C_FLAG = !!(temp & 0x100);
+    reg.H_FLAG = !!(temp & 0x10);
 }
 
 
@@ -503,8 +497,8 @@ void DEC_memHL(){set_mem(reg.HL, DEC_8(get_mem(reg.HL)));}
 static inline uint16_t ADD_16(uint16_t val1, uint16_t val2)
 {
     reg.N_FLAG = 0;
-    reg.H_FLAG = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF ? 1 : 0;
-    reg.C_FLAG = 0xFFFF - val1 < val2 ? 1 : 0;
+    reg.H_FLAG = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF;
+    reg.C_FLAG = 0xFFFF - val1 < val2;
     return val1 + val2;
 }
 
@@ -513,15 +507,16 @@ void ADD_HL_DE() {reg.HL = ADD_16(reg.HL, reg.DE);}
 void ADD_HL_HL() {reg.HL = ADD_16(reg.HL, reg.HL);}
 void ADD_HL_SP() {reg.HL = ADD_16(reg.HL, reg.SP);}
 
-void ADD_SP_IM8() 
-{
-  uint8_t im_val = IMMEDIATE_8_BIT;
-  reg.PC++;   
-  reg.Z_FLAG = 0;
-  reg.N_FLAG = 0;
-  reg.H_FLAG = (reg.SP & 0x0F) + (im_val & 0x0F) > 0x0F ? 1 : 0;
-  reg.SP += im_val;
-  reg.C_FLAG = reg.SP < im_val ? 1 : 0;
+void ADD_SP_IM8() {
+
+    reg.Z_FLAG = reg.N_FLAG = 0;
+    int8_t s8 = SIGNED_IM_8_BIT;    
+    reg.SP += s8;
+
+    //TODO find out why this works :|
+    uint16_t temp = (reg.SP - s8) ^ s8 ^ reg.SP;
+    reg.C_FLAG = !!(temp & 0x100);
+    reg.H_FLAG = !!(temp & 0x10);
 }
 
 
@@ -1499,7 +1494,7 @@ int exec_opcode() {
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
     //dasm_instruction(reg.PC, stdout);
-    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
+//    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
