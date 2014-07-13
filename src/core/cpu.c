@@ -265,6 +265,7 @@ void PUSH_HL() {PUSH(reg.HL);}
 void POP(uint16_t *r) {*r = get_mem_16(reg.SP); reg.SP+=2;}
 
 void POP_AF() {POP(&(reg.AF));}
+
 void POP_BC() {POP(&(reg.BC));}
 void POP_DE() {POP(&(reg.DE));}
 void POP_HL() {POP(&(reg.HL));}
@@ -542,7 +543,9 @@ void DEC_SP(){reg.SP--;}
 /*  Swap upper and lower nibbles of n */
 static inline void SWAP_n(uint8_t *val)
 {
-    *val = (*val >> 4) | (*val << 4);
+    *val = ((*val & 0xF) << 4) | (*val >> 4);
+    reg.Z_FLAG = !(*val); //Check if result is 0
+    reg.C_FLAG = reg.H_FLAG = reg.N_FLAG = 0;
 }
 
 void SWAP_A(){SWAP_n(&reg.A);}
@@ -658,24 +661,19 @@ void EI() {interrupts_enabled_timer = 2;}
 /* Rotate A left, Old msb to carry flag and bit 0 */
 void RLCA()
 {
-    reg.C_FLAG = (reg.A & 0x80) << 8; /*  Carry flag stores msb */
-    reg.A = reg.A << 1 | reg.C_FLAG;
-    reg.Z_FLAG = 0;// !reg.A;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
-
+    reg.C_FLAG = reg.A >> 7; /*  Carry flag stores msb */
+    reg.A = (reg.A << 1) | reg.C_FLAG;
+    reg.Z_FLAG  = reg.N_FLAG = reg.H_FLAG = 0;
     
 }
 
 /*  Rotate A left, Old C_Flag goes to bit 0, bit 7 goes to C_Flag */
 void RLA()
 {
-   unsigned int temp = (reg.A & 0x80) >> 7;
-   reg.A = reg.A << 1 | reg.C_FLAG;
+   unsigned int temp = reg.A >> 7;
+   reg.A = (reg.A << 1) | reg.C_FLAG;
    reg.C_FLAG = temp;
-   reg.Z_FLAG = 0;//!reg.A;
-   reg.N_FLAG = 0;
-   reg.H_FLAG = 0;
+   reg.Z_FLAG = reg.N_FLAG = reg.H_FLAG = 0;
 
 }
 
@@ -684,21 +682,17 @@ void RLA()
 void RRCA()
 {
     reg.C_FLAG = (reg.A & 0x01);
-    reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
-    reg.Z_FLAG = 0;//!reg.A;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0; 
+    reg.A = (reg.A >> 1) | (reg.C_FLAG << 7);
+    reg.Z_FLAG = reg.N_FLAG = reg.H_FLAG = 0; 
 }
 
 
 void RRA()
 {
     unsigned int temp = (reg.A & 0x01);
-    reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
+    reg.A = (reg.A >> 1) | (reg.C_FLAG << 7);
     reg.C_FLAG = temp;
-    reg.Z_FLAG = 0; //!reg.A;
-    reg.H_FLAG = 0;
-    reg.N_FLAG = 0;
+    reg.Z_FLAG = reg.H_FLAG = reg.N_FLAG = 0;
 }
 
 
@@ -823,14 +817,13 @@ void SLA_memHL() {mem_op(reg.HL, SLA_N);}
 
 
 
-/* Shift n left into Carry. LSB of n set to 0.*/
+/* Shift n right into Carry. MSB unchanged.*/
 static inline void SRA_N(uint8_t *val)
 {
-    reg.C_FLAG = (*val & 0x80);
-    *val <<=1;
-    reg.Z_FLAG = !*val;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
+    reg.C_FLAG = *val & 0x1;
+    *val = (*val >> 1) | (*val & 0x80);
+    reg.Z_FLAG = !(*val);
+    reg.N_FLAG = reg.H_FLAG = 0;
 }
 
 /*  4 cyles */
@@ -1233,15 +1226,15 @@ Instruction ins[UINT8_MAX + 1] = {
     
     // 0x00 - 0x0F
     {4, NOP}, {12, LD_BC_IM}, {8, LD_memBC_A}, {8, INC_BC},     
-    {4, INC_B}, {4, DEC_B}, {8, LD_B_IM}, {4, RLC_A},     
+    {4, INC_B}, {4, DEC_B}, {8, LD_B_IM}, {4, RLCA},     
     {20, LD_nn_SP}, {8, ADD_HL_BC}, {8, LD_A_memBC}, {8, DEC_BC},     
-    {4, INC_C}, {4, DEC_C}, {8, LD_C_IM}, {4, RRC_A},
+    {4, INC_C}, {4, DEC_C}, {8, LD_C_IM}, {4, RRCA},
     
     //0x10 - 0x1F
     {8, STOP}, {12, LD_DE_IM}, {8, LD_memDE_A}, {8, INC_DE},     
-    {4, INC_D}, {4, DEC_D}, {8, LD_D_IM}, {4, RL_A},
+    {4, INC_D}, {4, DEC_D}, {8, LD_D_IM}, {4, RLA},
     {12, JR_n}, {8, ADD_HL_DE}, {8, LD_A_memDE}, {8, DEC_DE},
-    {4, INC_E}, {4, DEC_E}, {8, LD_E_IM}, {4, RR_A},
+    {4, INC_E}, {4, DEC_E}, {8, LD_E_IM}, {4, RRA},
 
     //0x20 - 0x2F
     {8, JR_NZ_n}, {12, LD_HL_IM}, {8, LDI_HL_A}, {8, INC_HL},
