@@ -264,7 +264,13 @@ void PUSH_HL() {PUSH(reg.HL);}
 /* Pop value from stack into register pair*/
 void POP(uint16_t *r) {*r = get_mem_16(reg.SP); reg.SP+=2;}
 
-void POP_AF() {POP(&(reg.AF));}
+void POP_AF() {
+    POP(&(reg.AF));
+    reg.F &= 0xF0; //Lower nibble of F should always be 0
+}
+	
+
+
 
 void POP_BC() {POP(&(reg.BC));}
 void POP_DE() {POP(&(reg.DE));}
@@ -356,7 +362,7 @@ void SBC_A_E(){reg.A = SBC_8(reg.A, reg.E);}
 void SBC_A_H(){reg.A = SBC_8(reg.A, reg.H);} 
 void SBC_A_L(){reg.A = SBC_8(reg.A, reg.L);} 
 void SBC_A_memHL(){reg.A = SBC_8(reg.A, get_mem(reg.HL));}
-void SBC_A_Im8() { reg.A = SBC_8(reg.A, SIGNED_IM_8_BIT);}  
+void SBC_A_Im8() { reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
@@ -668,8 +674,7 @@ static inline void RLC_N(uint8_t *val)
    reg.C_FLAG = (*val & 0x80) >> 7;
    *val = *val << 1 | reg.C_FLAG;
    reg.Z_FLAG = !*val;
-   reg.N_FLAG = 0;
-   reg.H_FLAG = 0;
+   reg.N_FLAG = reg.H_FLAG = 0;
 
 }
 
@@ -1452,7 +1457,7 @@ int exec_opcode() {
     //printf("pc location:%x\n", reg.PC);
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
-    //dasm_instruction(reg.PC, stdout);
+//    dasm_instruction(reg.PC, stdout);
 //    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
