@@ -652,14 +652,19 @@ void DI() {interrupts_enabled = 0;}
 void EI() {interrupts_enabled_timer = 2;}
 
 
-/*  Rotates and shifts */
+/*  Rotates and shifts 
+ *  NOTE: DP Gameboy Manual states
+ *  for RLCA, RLA, RRCA and RRA the zero
+ *  flag is set if A becomes 0. All other
+ *  sources state the zero flag is reset
+ *  regardless */
 
 /* Rotate A left, Old msb to carry flag and bit 0 */
 void RLCA()
 {
     reg.C_FLAG = (reg.A & 0x80) << 8; /*  Carry flag stores msb */
     reg.A = reg.A << 1 | reg.C_FLAG;
-    reg.Z_FLAG = !reg.A;
+    reg.Z_FLAG = 0;// !reg.A;
     reg.N_FLAG = 0;
     reg.H_FLAG = 0;
 
@@ -672,7 +677,7 @@ void RLA()
    unsigned int temp = (reg.A & 0x80) >> 7;
    reg.A = reg.A << 1 | reg.C_FLAG;
    reg.C_FLAG = temp;
-   reg.Z_FLAG  = !reg.A;
+   reg.Z_FLAG = 0;//!reg.A;
    reg.N_FLAG = 0;
    reg.H_FLAG = 0;
 
@@ -684,7 +689,7 @@ void RRCA()
 {
     reg.C_FLAG = (reg.A & 0x01);
     reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
-    reg.Z_FLAG = !reg.A;
+    reg.Z_FLAG = 0;//!reg.A;
     reg.N_FLAG = 0;
     reg.H_FLAG = 0; 
 }
@@ -694,8 +699,8 @@ void RRA()
 {
     unsigned int temp = (reg.A & 0x01);
     reg.A = reg.A >> 1 | (reg.C_FLAG << 7);
-    reg.C_FLAG = temp; 
-    reg.Z_FLAG = !reg.A;
+    reg.C_FLAG = temp;
+    reg.Z_FLAG = 0; //!reg.A;
     reg.H_FLAG = 0;
     reg.N_FLAG = 0;
 }
@@ -1148,7 +1153,7 @@ void JP_C_nn()  { ins[0xDA].cycles =  reg.C_FLAG ? (JP_nn(), 16) : 12; }
 
 
 /*  Jump to address contained in HL */
-void JP_memHL() { reg.PC = get_mem(reg.HL); }
+void JP_HL() { reg.PC = reg.HL; }
 
 
 
@@ -1317,7 +1322,7 @@ Instruction ins[UINT8_MAX + 1] = {
     //0xE0 - 0xEF
     {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
     {0, invalid_op}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
-    {16, ADD_SP_IM8}, {4, JP_memHL}, {16, LD_memnn_A}, {0, invalid_op},       
+    {16, ADD_SP_IM8}, {4, JP_HL}, {16, LD_memnn_A}, {0, invalid_op},       
     {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
@@ -1494,7 +1499,7 @@ int exec_opcode() {
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
     //dasm_instruction(reg.PC, stdout);
-//    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
+    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
@@ -1513,7 +1518,6 @@ int exec_opcode() {
     } else { /*  extended instruction */
 
         opcode = IMMEDIATE_8_BIT;
-        printf("extended %x\n",opcode);
         instructions.ext_instruction_set[opcode].operation();
        
         return instructions.ext_instruction_set[opcode].cycles;
