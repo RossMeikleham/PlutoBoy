@@ -560,64 +560,29 @@ void SWAP_memHL(){mem_op(reg.HL, &SWAP_n);}
 
 /*  Decimal adjust register A so that correct 
  *  representation of  binary encoded decimal is obtained */
-void DAA()
-{
- uint8_t A_hi = (reg.A & 0xF0) >> 4;
- uint8_t A_lo = (reg.A & 0x0F);
+void DAA() {   
     
- if( reg.N_FLAG == 0) {
-     if( reg.C_FLAG == 0) {
-        if( reg.H_FLAG == 0) {
-            if(A_hi < 0xA && A_lo < 0XA) reg.C_FLAG = 0;
-            else if (A_hi < 0x9 && A_lo > 0x9) {reg.A += 0x06; reg.C_FLAG = 0;}
-            else if (A_hi > 0x9 && A_lo < 0x9) {reg.A += 0x60; reg.C_FLAG = 1;}
-            else if (A_hi > 0x8 && A_lo > 0x9) {reg.A += 0x66; reg.C_FLAG = 1;}
-
-            }
-       else if (reg.H_FLAG == 1) {
-           if(A_hi < 0xA && A_lo < 0x4) {reg.A  += 0x06; reg.C_FLAG = 0;}
-           else if(A_hi > 0x9 && A_lo < 0x4) {reg.A += 0x66; reg.C_FLAG = 1;}
-       }
-     }
-     else if( reg.C_FLAG == 1) {
-         if( reg.H_FLAG == 0) {
-             if(A_hi < 0x3 && A_lo < 0xA) {reg.A += 0x60; reg.C_FLAG =1;}
-             else {/*  error */} 
-         }
-         else if (reg.H_FLAG ==1) {
-             if(A_hi < 0x4 && A_lo < 0x4) {reg.A += 0x66; reg.C_FLAG = 1;}
-             else {/* error  */}
+    if (!reg.N_FLAG) {
+        if (reg.C_FLAG || reg.A > 0x99) {
+            reg.A += 0x60;
+            reg.C_FLAG = 1;
         }
-     }
- }
- else if (reg.N_FLAG == 1) {
-     if(reg.C_FLAG == 0) {
-        if(reg.H_FLAG == 0) {
-            if(A_lo < 0xA && A_hi < 0xA) {reg.C_FLAG = 0;}
-            else {/* error */}
+        if (reg.H_FLAG || (reg.A & 0xF) > 0x9) {
+            reg.A += 0x06;
+            reg.H_FLAG = 0;
         }
-        else if(reg.H_FLAG == 1) {
-            if(A_lo < 0x9 && A_hi > 0x5) {reg.A += 0xFA; reg.C_FLAG = 0;}
-            else {/*  error*/}
-        }
-     }
-     else if(reg.C_FLAG == 1) {
-         if(reg.H_FLAG == 0) {
-             if(A_hi > 0x06 && A_lo > 0x08) {reg.A += 0xA0; reg.C_FLAG = 1;}
-             else {/* error */}
-         }
-         else if(reg.H_FLAG == 1) {
-             if(A_hi > 0x05 && A_lo > 0x05) {reg.A += 0x9A; reg.C_FLAG =1 ;}
-             else {/* error */}
-         }
-     }     
+    } else if (reg.H_FLAG && reg.C_FLAG) {
+        reg.A += 0x9A;
+        reg.H_FLAG = 0;
+    } else if (reg.C_FLAG) {
+        reg.A += 0xA0;
+    } else if (reg.H_FLAG) {
+        reg.A += 0xFA;
+        reg.H_FLAG = 0;
+    }
+    reg.Z_FLAG = !reg.A;
+}   
 
-
- }
- else {
-     /* error */
- }
-}
 
 
 /* Flips all bits in register A */
