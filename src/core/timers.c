@@ -19,6 +19,8 @@
 #include <stdint.h>
 #include "timers.h"
 #include "IO.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define DIV_TIMER_INC_FREQUENCY 16382
 
@@ -28,7 +30,7 @@ static const long timer_frequencies[] = {4096, 262144, 65536, 16384};
 
 static long clock_speed = GB_CLOCK_SPEED_HZ;
 
-static long timer_frequency = 4096;
+static long timer_frequency = -1;
 static long timer_counter = 0;
 
 /*  Set and get the clockspeed in hz */
@@ -70,7 +72,10 @@ void update_timers(long cycles) {
     update_divider_reg(cycles);
     //Clock enabled
     if ((timer_control & BIT_2) != 0) {
-        
+
+        if (timer_frequency == -1) { // If timer not set
+            set_timer_frequency(timer_control & 3);
+        }
         timer_counter += cycles;
 
         /* Once timer incremented, check for changes in timer frequency,
