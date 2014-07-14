@@ -47,30 +47,30 @@ long timer_frequency;
 long clock_speed;
 
 
- int load_program(const char *filename)
-  {
+int load_program(const char *filename) {
    
-      uint16_t count;
-      uint8_t cur;
-      FILE *file;
+    uint16_t count;
+    uint8_t cur;
+    FILE *file;
   
-      //open file in binary read mode
-      //read byte by byte into memory
-      if(!(file = fopen(filename,"rb"))) {
-          fprintf(stderr, "Error opening file %s\n", filename);
-          return 0;
-     }
+    //open file in binary read mode
+    //read byte by byte into memory
+    if(!(file = fopen(filename,"rb"))) {
+        fprintf(stderr, "Error opening file %s\n", filename);
+        return 0;
+    }
   
-      for (count = 0; count <= 0xFFFF; count++) {
-      //Read file contents into buffer
+    for (count = 0; count < 0x8000; count++) {
+    //Read file contents into buffer
         if(!fread(&cur, 1, 1, file)) {
             break;
         }
-        set_mem(count, cur);
-      }
-      fclose(file);
-      return 1;
-  }
+            set_mem(count, cur);
+    }
+   
+   fclose(file);
+   return 1;
+}
 
 /* Performs set of debugging commands  
  * TODO seperate functionality and split
@@ -114,8 +114,9 @@ void get_command() {
             //draw_sprites();
         }
         else if (!strcmp(buf, "dumpbg0\n")) {
-            for (int i = 1; i < 256; i++) {
-                draw_tile_row(i);
+            for (int i = 0; i < 256; i++) {
+                set_mem(LY_REG, i);
+                draw_row();
             }
             //draw_background_0();
         }
@@ -156,8 +157,16 @@ void get_command() {
         }
         else if (BUFSIZE > 8 && !strncmp(buf,"showmem",7)) {
             int mem;
-            if(sscanf(buf+8, "%d", &mem) == 1 && mem >= 0 && mem <= 0xFFFF) {
-                printf("0x%X\n",get_mem(mem));
+            if(sscanf(buf+8, "%x", &mem) == 1 && mem >= 0 && mem <= 0xFFFF) {
+                printf("mem for %x:\n",mem);
+                for (int y = 0; y < 32; y++) {
+                    printf("%d: ",y);
+                    for(int x = 0; x < 32; x++) {
+                        printf("$%02X ",get_mem((32 * y) + x + mem));
+                    }
+                    printf("\n");
+                }
+                //printf("0x%X\n",get_mem(mem));
             } else {
                 printf("usage: showmem [address] (where address is between 0x0000 and 0xFFFF inclusive)\n"); 
             }
@@ -181,18 +190,23 @@ void get_command() {
 
 
 int run(long cycles) {
-    long ly_cycles = 0, current_cycles;
-    int num;
+    long current_cycles;
+    int skip_bug;
     get_command();
     while(cycles > 0) {
-        current_cycles = exec_opcode();
+        
+        if (!is_halted()) {
+            current_cycles = exec_opcode(skip_bug);
+            skip_bug = 0;
+        } else {
+            current_cycles = 4;
+        }
         cycles -= current_cycles;
         
-        check_interrupts();            
-        update_timers(cycles);
-        update_graphics(cycles);
+        update_timers(current_cycles);
+        update_graphics(current_cycles);
+        skip_bug = check_interrupts();            
 
-        //scanf("%d",&num);
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
             printf("step count main %d\n", STEP_COUNT);
             get_command();
@@ -234,9 +248,8 @@ int main(int argc, char* argv[]) {
     
     init_gfx();
     reset_cpu();
-    
     for(;;)
-        run(10000);
+        run(12500000);
 
 }
 

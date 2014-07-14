@@ -606,7 +606,7 @@ void SCF() {reg.C_FLAG = 1; reg.H_FLAG = 0; reg.N_FLAG = 0;}
 void NOP() {}
 
 
-/*  Halt CPU until interupt */
+/*  Halt CPU until interrupt */
 void HALT() {halt = 1;}
 
 /*  Halt CPU and LCD until button pressed */
@@ -1411,7 +1411,6 @@ static Instructions instructions = {
 
 
 int master_interrupts_enabled() { 
-    printf("master interrupts: %d\n",interrupts_enabled);
     return interrupts_enabled;
 }
 
@@ -1427,9 +1426,14 @@ void unhalt_cpu() {
     halt = 0;
 }
 
+int is_halted() {
+    return halt;
+}
+
 
 void reset_cpu() {
     /*  Default starting values for normal GB */
+    //TODO A is 0x01 for GB, 0x11 for CGB
     reg.AF = 0x11B0;
     reg.BC = 0x0013;
     reg.DE = 0x00D8;
@@ -1452,13 +1456,14 @@ void print_regs() {
 
 /*  Executes the next processor instruction and returns
  *  the amount of cycles the instruction takes */
-int exec_opcode() {
+int exec_opcode(int skip_bug) {
     
     //printf("pc location:%x\n", reg.PC);
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
-//    dasm_instruction(reg.PC, stdout);
-//    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
+    //dasm_instruction(reg.PC, stdout);
+    //printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
+    if (skip_bug) {reg.PC--;}
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          

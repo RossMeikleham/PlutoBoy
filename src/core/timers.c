@@ -74,7 +74,7 @@ void update_timers(long cycles) {
     if ((timer_control & BIT_2) != 0) {
 
         if (timer_frequency == -1) { // If timer not set
-            set_timer_frequency(timer_control & 3);
+           set_timer_frequency(timer_control & 3);
         }
         timer_counter += cycles;
 

@@ -93,7 +93,7 @@ typedef struct {
 
 void set_lcd_interrupt();
 
-void check_interrupts();
+int check_interrupts();
 
 void io_set_mem(uint8_t io_addr, uint8_t val);
 uint8_t io_get_mem(uint8_t io_addr);

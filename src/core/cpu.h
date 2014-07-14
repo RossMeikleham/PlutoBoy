@@ -12,13 +12,14 @@ int master_interrupts_enabled();
 void master_interrupts_disable();
 void master_interrupts_enable();
 
+int is_halted();
 void unhalt_cpu();
 void reset_cpu();
 
 
 /*  Executes current instruction and returns
  *  the number of machine cycles it took */
-int exec_opcode(void);
+int exec_opcode(int skip_bug);
 
 
 void print_regs();
