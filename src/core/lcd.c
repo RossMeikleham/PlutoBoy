@@ -131,8 +131,8 @@ void update_graphics(long cycles) {
     if (lcd_ctrl & BIT_7) { //LCD on   
         scanline_counter += cycles;
 
-        if (scanline_counter > MAX_SL_CYCLES) {
-            scanline_counter = 0;
+        while (scanline_counter > MAX_SL_CYCLES) {
+            scanline_counter -= MAX_SL_CYCLES;
             increment_ly();
         }
     }        

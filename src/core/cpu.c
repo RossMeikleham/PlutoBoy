@@ -619,7 +619,7 @@ void DI() {interrupts_enabled = 0;}
 /*  Enable interrupts 
  *  interrupts enabled after the next instruction
  *  so set a timer to let the cpu know this*/
-void EI() {interrupts_enabled_timer = 2;}
+void EI() {interrupts_enabled_timer = 1;}
 
 
 /*  Rotates and shifts 
@@ -1201,7 +1201,7 @@ Instruction ins[UINT8_MAX + 1] = {
     {4, INC_C}, {4, DEC_C}, {8, LD_C_IM}, {4, RRCA},
     
     //0x10 - 0x1F
-    {8, STOP}, {12, LD_DE_IM}, {8, LD_memDE_A}, {8, INC_DE},     
+    {0, STOP}, {12, LD_DE_IM}, {8, LD_memDE_A}, {8, INC_DE},     
     {4, INC_D}, {4, DEC_D}, {8, LD_D_IM}, {4, RLA},
     {12, JR_n}, {8, ADD_HL_DE}, {8, LD_A_memDE}, {8, DEC_DE},
     {4, INC_E}, {4, DEC_E}, {8, LD_E_IM}, {4, RRA},
@@ -1275,7 +1275,7 @@ Instruction ins[UINT8_MAX + 1] = {
     //0xD0 - 0xDF
     {8, RET_NC}, {12, POP_DE}, {12, JP_NC_nn}, {0, invalid_op},
     {12, CALL_NC_nn}, {16, PUSH_DE}, {8, SUB_A_Im8}, {16, RST_10},
-    {8, RET_C}, {8, RETI}, {16, JP_C_nn}, {0,  invalid_op}, 
+    {8, RET_C}, {16, RETI}, {16, JP_C_nn}, {0,  invalid_op}, 
     {12, CALL_C_nn}, {0,  invalid_op}, {8,  SBC_A_Im8}, {16 ,RST_18},
 
     //0xE0 - 0xEF
@@ -1396,8 +1396,8 @@ static int ins_words[UINT8_MAX+1] = {
     1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
     1,1,3,3,3,1,2,1,1,1,3,2,3,3,2,1,
     1,1,3,1,3,1,2,1,1,1,3,1,3,1,2,1,
-    2,1,2,1,1,1,2,1,2,1,3,1,1,1,2,1,
-    2,1,2,1,1,1,2,1,2,1,3,1,1,1,2,1
+    2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1,
+    2,1,1,1,1,1,2,1,2,1,3,1,1,1,2,1
 };
 
 
@@ -1458,25 +1458,22 @@ void print_regs() {
  *  the amount of cycles the instruction takes */
 int exec_opcode(int skip_bug) {
     
+    if (interrupts_enabled_timer) {
+            interrupts_enabled = 1;
+            interrupts_enabled_timer = 0; //Unset timer
+    }
+    
     //printf("pc location:%x\n", reg.PC);
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
-    //dasm_instruction(reg.PC, stdout);
-    //printf(" OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);
+ //   dasm_instruction(reg.PC, stdout);
+    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {reg.PC--;}
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
         instructions.instruction_set[opcode].operation();
-        /* Check if timer for setting master interrupts has been set,
-         * decrement it and if it reaches 0 the timer is complete,
-         * set master interrupts on */
-        if (interrupts_enabled_timer) {
-            if ((--interrupts_enabled_timer) <= 0) {
-                interrupts_enabled = 1;
-                interrupts_enabled_timer = 0; //Unset timer
-            }
-        }
+  //      printf(" cycles:%d\n",instructions.instruction_set[opcode].cycles);
         return instructions.instruction_set[opcode].cycles;
 
     } else { /*  extended instruction */

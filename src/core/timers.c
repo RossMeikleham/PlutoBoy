@@ -48,7 +48,6 @@ long get_clock_speed() {
 void set_timer_frequency(unsigned int n) {
     if (n < TIMER_FREQUENCIES_LEN) {
         timer_frequency = timer_frequencies[n];
-        timer_counter = 0; // Need to reset timer counter if timer frequency changed
     }
 }
 
@@ -59,9 +58,9 @@ void update_divider_reg(long cycles) {
     divider_counter += cycles;
 
     // Increment div at a frequency of 16382hz
-    if (divider_counter >= clock_speed / DIV_TIMER_INC_FREQUENCY) {
+    while (divider_counter >= clock_speed / DIV_TIMER_INC_FREQUENCY) {
         increment_div();
-        divider_counter = 0;
+        divider_counter -= clock_speed / DIV_TIMER_INC_FREQUENCY;
     }
 }
 
@@ -77,10 +76,10 @@ void update_timers(long cycles) {
            set_timer_frequency(timer_control & 3);
         }
         timer_counter += cycles;
-
         /* Once timer incremented, check for changes in timer frequency,
          * and reset timer */
-        if (timer_counter >= clock_speed / timer_frequency) {
+        while (timer_counter >= (clock_speed / timer_frequency)) {
+            timer_counter -= (clock_speed / timer_frequency);
             increment_tima();
             set_timer_frequency(timer_control & 3);
         }
