@@ -183,7 +183,7 @@ void LD_A_memBC() { reg.A = get_mem(reg.BC); }
 void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 
 /* Load value at memory address given by immediate 16 bits into A */
-void LD_A_memnn() { reg.A = get_mem(IMMEDIATE_16_BIT);}
+void LD_A_memnn() { update_timers(8); reg.A = get_mem(IMMEDIATE_16_BIT);}
 
 /* Load A into memory address contained at register BC */
 void LD_memBC_A() { set_mem(reg.BC, reg.A); }
@@ -210,7 +210,7 @@ void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 void LDH_n_A() { update_timers(4); set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
 
 /* Put memory address $FF00+n into A */
-void LDH_A_n() { reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
+void LDH_A_n() { update_timers(4); reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
 
 /* Put memory address $FF00 + C into A */
 void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
@@ -907,14 +907,14 @@ void BIT_L_6() {BIT_b_r(reg.L, 6);}
 void BIT_L_7() {BIT_b_r(reg.L, 7);}
 
 /*  16 cycles */
-void BIT_memHL_0() {BIT_b_r(get_mem(reg.HL),0);}
-void BIT_memHL_1() {BIT_b_r(get_mem(reg.HL),1);}
-void BIT_memHL_2() {BIT_b_r(get_mem(reg.HL),2);}
-void BIT_memHL_3() {BIT_b_r(get_mem(reg.HL),3);}
-void BIT_memHL_4() {BIT_b_r(get_mem(reg.HL),4);}
-void BIT_memHL_5() {BIT_b_r(get_mem(reg.HL),5);}
-void BIT_memHL_6() {BIT_b_r(get_mem(reg.HL),6);}
-void BIT_memHL_7() {BIT_b_r(get_mem(reg.HL),7);}
+void BIT_memHL_0() { update_timers(4); BIT_b_r(get_mem(reg.HL),0);}
+void BIT_memHL_1() { update_timers(4); BIT_b_r(get_mem(reg.HL),1);}
+void BIT_memHL_2() { update_timers(4); BIT_b_r(get_mem(reg.HL),2);}
+void BIT_memHL_3() { update_timers(4); BIT_b_r(get_mem(reg.HL),3);}
+void BIT_memHL_4() { update_timers(4); BIT_b_r(get_mem(reg.HL),4);}
+void BIT_memHL_5() { update_timers(4); BIT_b_r(get_mem(reg.HL),5);}
+void BIT_memHL_6() { update_timers(4); BIT_b_r(get_mem(reg.HL),6);}
+void BIT_memHL_7() { update_timers(4); BIT_b_r(get_mem(reg.HL),7);}
 
 
 
@@ -1286,9 +1286,9 @@ Instruction ins[UINT8_MAX + 1] = {
     {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
-    {12, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
+    {8, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
     {0,invalid_op}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
-    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_memnn}, {4, EI},
+    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {8, LD_A_memnn}, {4, EI},
     {0 , invalid_op}, {0, invalid_op}, {8, CP_A_Im8}, {16, RST_38}
 };
 
@@ -1315,24 +1315,24 @@ static Instruction ext_ins[UINT8_MAX+1] = {
     {8, SRL_H},  {8, SRL_L},  {16, SRL_memHL},  {8, SRL_A},
 
     {8, BIT_B_0}, {8, BIT_C_0}, {8, BIT_D_0},      {8, BIT_E_0},
-    {8, BIT_H_0}, {8, BIT_L_0}, {12, BIT_memHL_0}, {8, BIT_A_0},
+    {8, BIT_H_0}, {8, BIT_L_0}, {8, BIT_memHL_0}, {8, BIT_A_0},
     {8, BIT_B_1}, {8, BIT_C_1}, {8, BIT_D_1},      {8, BIT_E_1}, 
-    {8, BIT_H_1}, {8, BIT_L_1}, {12, BIT_memHL_1}, {8, BIT_A_1},
+    {8, BIT_H_1}, {8, BIT_L_1}, {8, BIT_memHL_1}, {8, BIT_A_1},
      
     {8, BIT_B_2}, {8, BIT_C_2}, {8, BIT_D_2},      {8, BIT_E_2}, 
-    {8, BIT_H_2}, {8, BIT_L_2}, {12, BIT_memHL_2}, {8, BIT_A_2}, 
+    {8, BIT_H_2}, {8, BIT_L_2}, {8, BIT_memHL_2}, {8, BIT_A_2}, 
     {8, BIT_B_3}, {8, BIT_C_3}, {8, BIT_D_3},      {8, BIT_E_3}, 
-    {8, BIT_H_3}, {8, BIT_L_3}, {12, BIT_memHL_3}, {8, BIT_A_3},
+    {8, BIT_H_3}, {8, BIT_L_3}, {8, BIT_memHL_3}, {8, BIT_A_3},
 
     {8, BIT_B_4}, {8, BIT_C_4}, {8, BIT_D_4},      {8, BIT_E_4}, 
-    {8, BIT_H_4}, {8, BIT_L_4}, {12, BIT_memHL_4}, {8, BIT_A_4},
+    {8, BIT_H_4}, {8, BIT_L_4}, {8, BIT_memHL_4}, {8, BIT_A_4},
     {8, BIT_B_5}, {8, BIT_C_5}, {8, BIT_D_5},      {8, BIT_E_5}, 
-    {8, BIT_H_5}, {8, BIT_L_5}, {12, BIT_memHL_5}, {8, BIT_A_5},
+    {8, BIT_H_5}, {8, BIT_L_5}, {8, BIT_memHL_5}, {8, BIT_A_5},
      
     {8, BIT_B_6}, {8, BIT_C_6}, {8, BIT_D_6},      {8, BIT_E_6}, 
-    {8, BIT_H_6}, {8, BIT_L_6}, {12, BIT_memHL_6}, {8, BIT_A_6}, 
+    {8, BIT_H_6}, {8, BIT_L_6}, {8, BIT_memHL_6}, {8, BIT_A_6}, 
     {8, BIT_B_7}, {8, BIT_C_7}, {8, BIT_D_7},      {8, BIT_E_7},
-    {8, BIT_H_7}, {8, BIT_L_7}, {12, BIT_memHL_7}, {8, BIT_A_7},
+    {8, BIT_H_7}, {8, BIT_L_7}, {8, BIT_memHL_7}, {8, BIT_A_7},
     
     
     {8, RES_B_0}, {8, RES_C_0}, {8, RES_D_0},      {8, RES_E_0}, 
