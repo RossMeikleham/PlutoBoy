@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include "disasm.h"
 #include "registers.h"
+#include "timers.h"
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
 #define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
@@ -175,7 +176,7 @@ void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
 /* Load immediate value into memory location HL */
-void LD_memHL_n() {set_mem(reg.HL, IMMEDIATE_8_BIT);}
+void LD_memHL_n() {update_timers(4); set_mem(reg.HL, IMMEDIATE_8_BIT);}
 
 /*  Load value at mem address given by combined registers into A */
 void LD_A_memBC() { reg.A = get_mem(reg.BC); }
@@ -191,7 +192,7 @@ void LD_memBC_A() { set_mem(reg.BC, reg.A); }
 void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
 /*  Load A into memory address given by immediate 16 bits */
-void LD_memnn_A() { set_mem(IMMEDIATE_16_BIT, reg.A);}
+void LD_memnn_A() { update_timers(8) ;set_mem(IMMEDIATE_16_BIT, reg.A);}
 
 /* Put value at address HL into A, then decrement HL */
 void LDD_A_HL() { reg.A = get_mem(reg.HL); reg.HL--; }
@@ -206,7 +207,7 @@ void LDI_A_HL() { reg.A = get_mem(reg.HL); reg.HL++; }
 void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
 /* Put A into memory address $FF00+n*/
-void LDH_n_A() {  set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
+void LDH_n_A() { update_timers(4); set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
 
 /* Put memory address $FF00+n into A */
 void LDH_A_n() { reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
@@ -1214,7 +1215,7 @@ Instruction ins[UINT8_MAX + 1] = {
 
     //0x30 - 0x3F
     {8, JR_NC_n}, {12, LD_SP_IM}, {8, LDD_HL_A}, {8, INC_SP},
-    {12, INC_memHL}, {12, DEC_memHL}, {12, LD_memHL_n}, {4, SCF},
+    {12, INC_memHL}, {12, DEC_memHL}, {8, LD_memHL_n}, {4, SCF},
     {8, JR_C_n}, {8, ADD_HL_SP}, {8, LDD_A_HL}, {8, DEC_SP},
     {4, INC_A}, {4, DEC_A}, {8, LD_A_IM}, {4, CCF},
 
@@ -1279,9 +1280,9 @@ Instruction ins[UINT8_MAX + 1] = {
     {12, CALL_C_nn}, {0,  invalid_op}, {8,  SBC_A_Im8}, {16 ,RST_18},
 
     //0xE0 - 0xEF
-    {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
+    {8, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
     {0, invalid_op}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
-    {16, ADD_SP_IM8}, {4, JP_HL}, {16, LD_memnn_A}, {0, invalid_op},       
+    {16, ADD_SP_IM8}, {4, JP_HL}, {8, LD_memnn_A}, {0, invalid_op},       
     {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
@@ -1467,7 +1468,7 @@ int exec_opcode(int skip_bug) {
     //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
  //   dasm_instruction(reg.PC, stdout);
-    printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
+ //   printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {reg.PC--;}
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
