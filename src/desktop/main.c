@@ -203,7 +203,6 @@ int run(long cycles) {
         }
         cycles -= current_cycles;
         
-        update_timers(current_cycles);
         update_graphics(current_cycles);
         skip_bug = check_interrupts();            
 
@@ -249,7 +248,7 @@ int main(int argc, char* argv[]) {
     init_gfx();
     reset_cpu();
     for(;;)
-        run(12500000);
+        run(2500000);
 
 }
 

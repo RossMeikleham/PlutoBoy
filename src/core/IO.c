@@ -88,6 +88,7 @@ int check_interrupts() {
                      * unset master interrupts so interrupt handler routine
                      * isn't unecessarily interrupted and then call
                      * the interrupt handler */
+                    printf("servicing interrupt");
                     io_mem[IO_IF_FLAG] = if_flag & ~flag;
                     master_interrupts_disable(); 
                     restart(interrupts[i].isr_addr);

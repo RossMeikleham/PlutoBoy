@@ -22,7 +22,7 @@ static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
 static uint8_t opcode;
 
-
+static int timer_cycles_passed = 0;
 //TODO preprocessor check of endian-ness of processor
 //and switch hi/lo registers for big endian processors
 union {
@@ -176,14 +176,18 @@ void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
 /* Load immediate value into memory location HL */
-void LD_memHL_n() {update_timers(4); set_mem(reg.HL, IMMEDIATE_8_BIT);}
+void LD_memHL_n() {update_timers(4); timer_cycles_passed = 4; set_mem(reg.HL, IMMEDIATE_8_BIT);}
 
 /*  Load value at mem address given by combined registers into A */
 void LD_A_memBC() { reg.A = get_mem(reg.BC); }
 void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 
 /* Load value at memory address given by immediate 16 bits into A */
-void LD_A_memnn() { update_timers(8); reg.A = get_mem(IMMEDIATE_16_BIT);}
+void LD_A_memnn() { 
+    update_timers(8); 
+    reg.A = get_mem(IMMEDIATE_16_BIT);
+    timer_cycles_passed = 8;
+}
 
 /* Load A into memory address contained at register BC */
 void LD_memBC_A() { set_mem(reg.BC, reg.A); }
@@ -192,7 +196,11 @@ void LD_memBC_A() { set_mem(reg.BC, reg.A); }
 void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
 /*  Load A into memory address given by immediate 16 bits */
-void LD_memnn_A() { update_timers(8) ;set_mem(IMMEDIATE_16_BIT, reg.A);}
+void LD_memnn_A() { 
+    update_timers(8);
+    set_mem(IMMEDIATE_16_BIT, reg.A);
+    timer_cycles_passed = 8;
+}
 
 /* Put value at address HL into A, then decrement HL */
 void LDD_A_HL() { reg.A = get_mem(reg.HL); reg.HL--; }
@@ -207,10 +215,18 @@ void LDI_A_HL() { reg.A = get_mem(reg.HL); reg.HL++; }
 void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
 /* Put A into memory address $FF00+n*/
-void LDH_n_A() { update_timers(4); set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);}
+void LDH_n_A() { 
+    update_timers(4); 
+    set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);
+    timer_cycles_passed = 4;
+}
 
 /* Put memory address $FF00+n into A */
-void LDH_A_n() { update_timers(4); reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); }
+void LDH_A_n() { 
+    update_timers(4); 
+    reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); 
+    timer_cycles_passed = 4;
+}
 
 /* Put memory address $FF00 + C into A */
 void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
@@ -475,7 +491,12 @@ void INC_D(){reg.D = INC_8(reg.D);}
 void INC_E(){reg.E = INC_8(reg.E);} 
 void INC_H(){reg.H = INC_8(reg.H);} 
 void INC_L(){reg.L = INC_8(reg.L);} 
-void INC_memHL(){set_mem(reg.HL, INC_8(get_mem(reg.HL)));}
+void INC_memHL(){ 
+    uint8_t inc = INC_8(get_mem(reg.HL));
+    update_timers(4); 
+    set_mem(reg.HL, inc);
+    timer_cycles_passed = 4;
+}
 
 
 /*  Performs Decrement operation on register, sets flags */
@@ -496,7 +517,12 @@ void DEC_D(){reg.D = DEC_8(reg.D);}
 void DEC_E(){reg.E = DEC_8(reg.E);} 
 void DEC_H(){reg.H = DEC_8(reg.H);} 
 void DEC_L(){reg.L = DEC_8(reg.L);} 
-void DEC_memHL(){set_mem(reg.HL, DEC_8(get_mem(reg.HL)));}
+void DEC_memHL(){ 
+    uint8_t dec = DEC_8(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, dec);
+    timer_cycles_passed = 4;
+}
 
 
 
@@ -548,22 +574,28 @@ void DEC_SP(){reg.SP--;}
 /*  Miscellaneous instructions */
 
 /*  Swap upper and lower nibbles of n */
-static inline void SWAP_n(uint8_t *val)
+static inline uint8_t SWAP_n(uint8_t val)
 {
-    *val = ((*val & 0xF) << 4) | (*val >> 4);
-    reg.Z_FLAG = !(*val); //Check if result is 0
+    val = ((val & 0xF) << 4) | (val >> 4);
+    reg.Z_FLAG = !val; //Check if result is 0
     reg.C_FLAG = reg.H_FLAG = reg.N_FLAG = 0;
+    return val;
 }
 
-void SWAP_A(){SWAP_n(&reg.A);}
-void SWAP_B(){SWAP_n(&reg.B);}
-void SWAP_C(){SWAP_n(&reg.C);}
-void SWAP_D(){SWAP_n(&reg.D);}
-void SWAP_E(){SWAP_n(&reg.E);}
-void SWAP_H(){SWAP_n(&reg.H);}
-void SWAP_L(){SWAP_n(&reg.L);}
-void SWAP_memHL(){mem_op(reg.HL, &SWAP_n);}
+void SWAP_A(){reg.A = SWAP_n(reg.A);}
+void SWAP_B(){reg.B = SWAP_n(reg.B);}
+void SWAP_C(){reg.C = SWAP_n(reg.C);}
+void SWAP_D(){reg.D = SWAP_n(reg.D);}
+void SWAP_E(){reg.E = SWAP_n(reg.E);}
+void SWAP_H(){reg.H = SWAP_n(reg.H);}
+void SWAP_L(){reg.L = SWAP_n(reg.L);}
 
+void SWAP_memHL() {
+    update_timers(4);
+    uint8_t result = SWAP_n(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 /*  Decimal adjust register A so that correct 
  *  representation of  binary encoded decimal is obtained */
@@ -670,167 +702,200 @@ void RRA()
 
 /* Extended instructions */
 /*Rotate n left. Old bit 7 to Carry flag*/
-static inline void RLC_N(uint8_t *val)
+static inline uint8_t RLC_N(uint8_t val)
 {
-   reg.C_FLAG = (*val & 0x80) >> 7;
-   *val = *val << 1 | reg.C_FLAG;
-   reg.Z_FLAG = !*val;
+   reg.C_FLAG = val >> 7;
+   val = val << 1 | reg.C_FLAG;
+   reg.Z_FLAG = !val;
    reg.N_FLAG = reg.H_FLAG = 0;
-
+   return val;
 }
 
 /*  8 cycles */
-void RLC_A() { RLC_N(&reg.A);}
-void RLC_B() { RLC_N(&reg.B);}
-void RLC_C() { RLC_N(&reg.C);}
-void RLC_D() { RLC_N(&reg.D);}
-void RLC_E() { RLC_N(&reg.E);}
-void RLC_H() { RLC_N(&reg.H);}
-void RLC_L() { RLC_N(&reg.L);}
+void RLC_A() { reg.A = RLC_N(reg.A);}
+void RLC_B() { reg.B = RLC_N(reg.B);}
+void RLC_C() { reg.C = RLC_N(reg.C);}
+void RLC_D() { reg.D = RLC_N(reg.D);}
+void RLC_E() { reg.E = RLC_N(reg.E);}
+void RLC_H() { reg.H = RLC_N(reg.H);}
+void RLC_L() { reg.L = RLC_N(reg.L);}
 /* 16 cycles */
-void RLC_memHL() { mem_op(reg.HL, &RLC_N);}
+void RLC_memHL() {
+    update_timers(4);
+    uint8_t res = RLC_N(get_mem(reg.HL));
+    update_timers(4); 
+    set_mem(reg.HL, res);
+}
 
 
 
 
 /*  Rotate n left through carry flag */
-static inline void RL_N(uint8_t *val) 
+static inline uint8_t RL_N(uint8_t val) 
 {
    uint8_t temp = reg.C_FLAG; 
-   reg.C_FLAG = (*val & 0x80) >> 7;
-   *val = *val << 1 | temp;
-   reg.Z_FLAG = !*val;
-   reg.N_FLAG = 0;
-   reg.H_FLAG = 0;
+   reg.C_FLAG = val >> 7;
+   val = val << 1 | temp;
+   reg.Z_FLAG = !val;
+   reg.N_FLAG = reg.H_FLAG = 0;
+   return val;
 
 }
 
-void RL_A() {RL_N(&reg.A);}
-void RL_B() {RL_N(&reg.B);}
-void RL_C() {RL_N(&reg.C);}
-void RL_D() {RL_N(&reg.D);}
-void RL_E() {RL_N(&reg.E);}
-void RL_H() {RL_N(&reg.H);}
-void RL_L() {RL_N(&reg.L);}
-/*  12 cycles */
-void RL_memHL() {mem_op(reg.HL, RL_N);}
+void RL_A() {reg.A = RL_N(reg.A);}
+void RL_B() {reg.B = RL_N(reg.B);}
+void RL_C() {reg.C = RL_N(reg.C);}
+void RL_D() {reg.D = RL_N(reg.D);}
+void RL_E() {reg.E = RL_N(reg.E);}
+void RL_H() {reg.H = RL_N(reg.H);}
+void RL_L() {reg.L = RL_N(reg.L);}
+
+void RL_memHL() {
+    update_timers(4);
+    uint8_t result = RL_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 
 /* Rotate N right, Old bit 0 to Carry flag */
-static inline void RRC_N(uint8_t *val)
+static inline uint8_t RRC_N(uint8_t val)
 {
-    reg.C_FLAG = (*val & 0x1);
-    *val >>= 1;
-    *val |= (reg.C_FLAG << 7);
-    reg.Z_FLAG = !*val;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
+    reg.C_FLAG = val & 0x1;
+    val = (val >> 1) | (reg.C_FLAG << 7);
+    reg.Z_FLAG = !val;
+    reg.N_FLAG = reg.H_FLAG = 0;
+    return val;
 }
 
 /*  4 cyles */
-void RRC_A() {RRC_N(&reg.A);}
-void RRC_B() {RRC_N(&reg.B);}
-void RRC_C() {RRC_N(&reg.C);}
-void RRC_D() {RRC_N(&reg.D);}
-void RRC_E() {RRC_N(&reg.E);}
-void RRC_H() {RRC_N(&reg.H);}
-void RRC_L() {RRC_N(&reg.L);}
+void RRC_A() {reg.A = RRC_N(reg.A);}
+void RRC_B() {reg.B = RRC_N(reg.B);}
+void RRC_C() {reg.C = RRC_N(reg.C);}
+void RRC_D() {reg.D = RRC_N(reg.D);}
+void RRC_E() {reg.E = RRC_N(reg.E);}
+void RRC_H() {reg.H = RRC_N(reg.H);}
+void RRC_L() {reg.L = RRC_N(reg.L);}
 /*  12 cycles */
-void RRC_memHL() {mem_op(reg.HL, RRC_N);}
+void RRC_memHL() {
+    update_timers(4);
+    uint8_t result = RRC_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 
 /*  Rotate N right through Carry flag */
-static inline void RR_N(uint8_t *val)
+static inline uint8_t RR_N(uint8_t val)
 {
-    uint8_t temp = (*val & 0x1);
-    *val >>= 1;
-    *val |= (reg.C_FLAG << 7);
+    uint8_t temp = val & 0x1;
+    val = (val >> 1) | (reg.C_FLAG << 7);
     reg.C_FLAG = temp;
-    reg.Z_FLAG = !*val;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
+    reg.Z_FLAG = !val;
+    reg.N_FLAG = reg.H_FLAG = 0;
+    return val;
 }
 
 /*  4 cyles */
-void RR_A() {RR_N(&reg.A);}
-void RR_B() {RR_N(&reg.B);}
-void RR_C() {RR_N(&reg.C);}
-void RR_D() {RR_N(&reg.D);}
-void RR_E() {RR_N(&reg.E);}
-void RR_H() {RR_N(&reg.H);}
-void RR_L() {RR_N(&reg.L);}
+void RR_A() {reg.A = RR_N(reg.A);}
+void RR_B() {reg.B = RR_N(reg.B);}
+void RR_C() {reg.C = RR_N(reg.C);}
+void RR_D() {reg.D = RR_N(reg.D);}
+void RR_E() {reg.E = RR_N(reg.E);}
+void RR_H() {reg.H = RR_N(reg.H);}
+void RR_L() {reg.L = RR_N(reg.L);}
 /*  12 cycles */
-void RR_memHL() {mem_op(reg.HL, RR_N);}
+void RR_memHL() {
+    update_timers(4);
+    uint8_t result = RR_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 
 
-static inline void SLA_N(uint8_t *val)
+static inline uint8_t SLA_N(uint8_t val)
 {
-    reg.C_FLAG = (*val & 0x80) >> 7;
-    *val <<= 1;
-    reg.Z_FLAG = !*val;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
+    reg.C_FLAG = val >> 7;
+    val <<= 1;
+    reg.Z_FLAG = !val;
+    reg.N_FLAG = reg.H_FLAG = 0;
+    return val;
 
 }
 
 
 /*  4 cyles */
-void SLA_A() {SLA_N(&reg.A);}
-void SLA_B() {SLA_N(&reg.B);}
-void SLA_C() {SLA_N(&reg.C);}
-void SLA_D() {SLA_N(&reg.D);}
-void SLA_E() {SLA_N(&reg.E);}
-void SLA_H() {SLA_N(&reg.H);}
-void SLA_L() {SLA_N(&reg.L);}
+void SLA_A() {reg.A = SLA_N(reg.A);}
+void SLA_B() {reg.B = SLA_N(reg.B);}
+void SLA_C() {reg.C = SLA_N(reg.C);}
+void SLA_D() {reg.D = SLA_N(reg.D);}
+void SLA_E() {reg.E = SLA_N(reg.E);}
+void SLA_H() {reg.H = SLA_N(reg.H);}
+void SLA_L() {reg.L = SLA_N(reg.L);}
 /*  12 cycles */
-void SLA_memHL() {mem_op(reg.HL, SLA_N);}
+void SLA_memHL() {
+    update_timers(4);
+    uint8_t result = SLA_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 
 
 /* Shift n right into Carry. MSB unchanged.*/
-static inline void SRA_N(uint8_t *val)
+static inline uint8_t SRA_N(uint8_t val)
 {
-    reg.C_FLAG = *val & 0x1;
-    *val = (*val >> 1) | (*val & 0x80);
-    reg.Z_FLAG = !(*val);
+    reg.C_FLAG = val & 0x1;
+    val = (val >> 1) | (val & 0x80);
+    reg.Z_FLAG = !val;
     reg.N_FLAG = reg.H_FLAG = 0;
+    return val;
 }
 
 /*  4 cyles */
-void SRA_A() {SRA_N(&reg.A);}
-void SRA_B() {SRA_N(&reg.B);}
-void SRA_C() {SRA_N(&reg.C);}
-void SRA_D() {SRA_N(&reg.D);}
-void SRA_E() {SRA_N(&reg.E);}
-void SRA_H() {SRA_N(&reg.H);}
-void SRA_L() {SRA_N(&reg.L);}
+void SRA_A() {reg.A = SRA_N(reg.A);}
+void SRA_B() {reg.B = SRA_N(reg.B);}
+void SRA_C() {reg.C = SRA_N(reg.C);}
+void SRA_D() {reg.D = SRA_N(reg.D);}
+void SRA_E() {reg.E = SRA_N(reg.E);}
+void SRA_H() {reg.H = SRA_N(reg.H);}
+void SRA_L() {reg.L = SRA_N(reg.L);}
 /*  12 cycles */
-void SRA_memHL() {mem_op(reg.HL, SRA_N);}
+void SRA_memHL() {
+    update_timers(4);
+    uint8_t result = SRA_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 
 
 /* Shift n right into Carry, MSB set to 0 */
-static inline void SRL_N(uint8_t *val)
+static inline uint8_t SRL_N(uint8_t val)
 {
-    reg.C_FLAG = *val & 0x1;
-    *val >>= 1;
-    reg.Z_FLAG = !*val;
-    reg.N_FLAG = 0;
-    reg.H_FLAG = 0;
-    
+    reg.C_FLAG = val & 0x1;
+    val >>= 1;
+    reg.Z_FLAG = !val;
+    reg.N_FLAG = reg.H_FLAG = 0;
+    return val;
 }
 
 /*  8 cyles */
-void SRL_A() {SRL_N(&reg.A);}
-void SRL_B() {SRL_N(&reg.B);}
-void SRL_C() {SRL_N(&reg.C);}
-void SRL_D() {SRL_N(&reg.D);}
-void SRL_E() {SRL_N(&reg.E);}
-void SRL_H() {SRL_N(&reg.H);}
-void SRL_L() {SRL_N(&reg.L);}
+void SRL_A() {reg.A = SRL_N(reg.A);}
+void SRL_B() {reg.B = SRL_N(reg.B);}
+void SRL_C() {reg.C = SRL_N(reg.C);}
+void SRL_D() {reg.D = SRL_N(reg.D);}
+void SRL_E() {reg.E = SRL_N(reg.E);}
+void SRL_H() {reg.H = SRL_N(reg.H);}
+void SRL_L() {reg.L = SRL_N(reg.L);}
 /*  16 cycles */
-void SRL_memHL() {mem_op(reg.HL, SRL_N);}
+void SRL_memHL() {
+    update_timers(4);
+    uint8_t result = SRL_N(get_mem(reg.HL));
+    update_timers(4);
+    set_mem(reg.HL, result);
+}
 
 /**** Bit Opcodes ****/
 
@@ -919,81 +984,82 @@ void BIT_memHL_7() { update_timers(4); BIT_b_r(get_mem(reg.HL),7);}
 
 
 /*  Set bit b in register r */
-static inline void SET_b_r(uint8_t *const val, uint8_t const bit)
+static inline uint8_t SET_b_r(uint8_t const val, uint8_t const bit)
 {
-    *val |= (0x1 << bit);
+    return val | (0x1 << bit);
 }
 
 static inline void SET_b_mem(uint16_t const addr, uint8_t const bit) {
 
-    uint8_t val = get_mem(addr);
-    SET_b_r(&val, bit);
-    set_mem(addr, val);
+    update_timers(4);
+    uint8_t result = SET_b_r(get_mem(addr), bit);
+    update_timers(4);
+    set_mem(addr, result);
 }
 
 /*  8 cyles */
-void SET_A_0() {SET_b_r(&reg.A, 0);}
-void SET_A_1() {SET_b_r(&reg.A, 1);}
-void SET_A_2() {SET_b_r(&reg.A, 2);}
-void SET_A_3() {SET_b_r(&reg.A, 3);}
-void SET_A_4() {SET_b_r(&reg.A, 4);}
-void SET_A_5() {SET_b_r(&reg.A, 5);}
-void SET_A_6() {SET_b_r(&reg.A, 6);}
-void SET_A_7() {SET_b_r(&reg.A, 7);}
+void SET_A_0() {reg.A  = SET_b_r(reg.A, 0);}
+void SET_A_1() {reg.A  = SET_b_r(reg.A, 1);}
+void SET_A_2() {reg.A  = SET_b_r(reg.A, 2);}
+void SET_A_3() {reg.A  = SET_b_r(reg.A, 3);}
+void SET_A_4() {reg.A  = SET_b_r(reg.A, 4);}
+void SET_A_5() {reg.A  = SET_b_r(reg.A, 5);}
+void SET_A_6() {reg.A  = SET_b_r(reg.A, 6);}
+void SET_A_7() {reg.A  = SET_b_r(reg.A, 7);}
 
-void SET_B_0() {SET_b_r(&reg.B, 0);}
-void SET_B_1() {SET_b_r(&reg.B, 1);}
-void SET_B_2() {SET_b_r(&reg.B, 2);}
-void SET_B_3() {SET_b_r(&reg.B, 3);}
-void SET_B_4() {SET_b_r(&reg.B, 4);}
-void SET_B_5() {SET_b_r(&reg.B, 5);}
-void SET_B_6() {SET_b_r(&reg.B, 6);}
-void SET_B_7() {SET_b_r(&reg.B, 7);}
+void SET_B_0() {reg.B  = SET_b_r(reg.B, 0);}
+void SET_B_1() {reg.B  = SET_b_r(reg.B, 1);}
+void SET_B_2() {reg.B  = SET_b_r(reg.B, 2);}
+void SET_B_3() {reg.B  = SET_b_r(reg.B, 3);}
+void SET_B_4() {reg.B  = SET_b_r(reg.B, 4);}
+void SET_B_5() {reg.B  = SET_b_r(reg.B, 5);}
+void SET_B_6() {reg.B  = SET_b_r(reg.B, 6);}
+void SET_B_7() {reg.B  = SET_b_r(reg.B, 7);}
 
-void SET_C_0() {SET_b_r(&reg.C, 0);}
-void SET_C_1() {SET_b_r(&reg.C, 1);}
-void SET_C_2() {SET_b_r(&reg.C, 2);}
-void SET_C_3() {SET_b_r(&reg.C, 3);}
-void SET_C_4() {SET_b_r(&reg.C, 4);}
-void SET_C_5() {SET_b_r(&reg.C, 5);}
-void SET_C_6() {SET_b_r(&reg.C, 6);}
-void SET_C_7() {SET_b_r(&reg.C, 7);}
+void SET_C_0() {reg.C = SET_b_r(reg.C, 0);}
+void SET_C_1() {reg.C = SET_b_r(reg.C, 1);}
+void SET_C_2() {reg.C  = SET_b_r(reg.C, 2);}
+void SET_C_3() {reg.C  = SET_b_r(reg.C, 3);}
+void SET_C_4() {reg.C  = SET_b_r(reg.C, 4);}
+void SET_C_5() {reg.C  = SET_b_r(reg.C, 5);}
+void SET_C_6() {reg.C  = SET_b_r(reg.C, 6);}
+void SET_C_7() {reg.C  = SET_b_r(reg.C, 7);}
 
-void SET_D_0() {SET_b_r(&reg.D, 0);}
-void SET_D_1() {SET_b_r(&reg.D, 1);}
-void SET_D_2() {SET_b_r(&reg.D, 2);}
-void SET_D_3() {SET_b_r(&reg.D, 3);}
-void SET_D_4() {SET_b_r(&reg.D, 4);}
-void SET_D_5() {SET_b_r(&reg.D, 5);}
-void SET_D_6() {SET_b_r(&reg.D, 6);}
-void SET_D_7() {SET_b_r(&reg.D, 7);}
+void SET_D_0() {reg.D  = SET_b_r(reg.D, 0);}
+void SET_D_1() {reg.D  = SET_b_r(reg.D, 1);}
+void SET_D_2() {reg.D  = SET_b_r(reg.D, 2);}
+void SET_D_3() {reg.D  = SET_b_r(reg.D, 3);}
+void SET_D_4() {reg.D  = SET_b_r(reg.D, 4);}
+void SET_D_5() {reg.D  = SET_b_r(reg.D, 5);}
+void SET_D_6() {reg.D  = SET_b_r(reg.D, 6);}
+void SET_D_7() {reg.D  = SET_b_r(reg.D, 7);}
 
-void SET_E_0() {SET_b_r(&reg.E, 0);}
-void SET_E_1() {SET_b_r(&reg.E, 1);}
-void SET_E_2() {SET_b_r(&reg.E, 2);}
-void SET_E_3() {SET_b_r(&reg.E, 3);}
-void SET_E_4() {SET_b_r(&reg.E, 4);}
-void SET_E_5() {SET_b_r(&reg.E, 5);}
-void SET_E_6() {SET_b_r(&reg.E, 6);}
-void SET_E_7() {SET_b_r(&reg.E, 7);}
+void SET_E_0() {reg.E  = SET_b_r(reg.E, 0);}
+void SET_E_1() {reg.E  = SET_b_r(reg.E, 1);}
+void SET_E_2() {reg.E  = SET_b_r(reg.E, 2);}
+void SET_E_3() {reg.E  = SET_b_r(reg.E, 3);}
+void SET_E_4() {reg.E  = SET_b_r(reg.E, 4);}
+void SET_E_5() {reg.E  = SET_b_r(reg.E, 5);}
+void SET_E_6() {reg.E  = SET_b_r(reg.E, 6);}
+void SET_E_7() {reg.E  = SET_b_r(reg.E, 7);}
 
-void SET_H_0() {SET_b_r(&reg.H, 0);}
-void SET_H_1() {SET_b_r(&reg.H, 1);}
-void SET_H_2() {SET_b_r(&reg.H, 2);}
-void SET_H_3() {SET_b_r(&reg.H, 3);}
-void SET_H_4() {SET_b_r(&reg.H, 4);}
-void SET_H_5() {SET_b_r(&reg.H, 5);}
-void SET_H_6() {SET_b_r(&reg.H, 6);}
-void SET_H_7() {SET_b_r(&reg.H, 7);}
+void SET_H_0() {reg.H  = SET_b_r(reg.H, 0);}
+void SET_H_1() {reg.H  = SET_b_r(reg.H, 1);}
+void SET_H_2() {reg.H  = SET_b_r(reg.H, 2);}
+void SET_H_3() {reg.H  = SET_b_r(reg.H, 3);}
+void SET_H_4() {reg.H  = SET_b_r(reg.H, 4);}
+void SET_H_5() {reg.H  = SET_b_r(reg.H, 5);}
+void SET_H_6() {reg.H  = SET_b_r(reg.H, 6);}
+void SET_H_7() {reg.H  = SET_b_r(reg.H, 7);}
 
-void SET_L_0() {SET_b_r(&reg.L, 0);}
-void SET_L_1() {SET_b_r(&reg.L, 1);}
-void SET_L_2() {SET_b_r(&reg.L, 2);}
-void SET_L_3() {SET_b_r(&reg.L, 3);}
-void SET_L_4() {SET_b_r(&reg.L, 4);}
-void SET_L_5() {SET_b_r(&reg.L, 5);}
-void SET_L_6() {SET_b_r(&reg.L, 6);}
-void SET_L_7() {SET_b_r(&reg.L, 7);}
+void SET_L_0() {reg.L = SET_b_r(reg.L, 0);}
+void SET_L_1() {reg.L = SET_b_r(reg.L, 1);}
+void SET_L_2() {reg.L = SET_b_r(reg.L, 2);}
+void SET_L_3() {reg.L = SET_b_r(reg.L, 3);}
+void SET_L_4() {reg.L = SET_b_r(reg.L, 4);}
+void SET_L_5() {reg.L = SET_b_r(reg.L, 5);}
+void SET_L_6() {reg.L = SET_b_r(reg.L, 6);}
+void SET_L_7() {reg.L = SET_b_r(reg.L, 7);}
 
 /*  16 cycles */
 void SET_memHL_0() {SET_b_mem(reg.HL,0);}
@@ -1008,83 +1074,83 @@ void SET_memHL_7() {SET_b_mem(reg.HL,7);}
 
 
 /*  Reset bit b in register r */
-static inline void RES_b_r(uint8_t *val, uint8_t bit)
+static inline uint8_t RES_b_r(uint8_t val, uint8_t bit)
 {
-    *val = *val & ~(0x1 << bit);
+    return val & ~(0x1 << bit);
 }
 
 static inline void RES_b_mem(uint16_t addr, uint8_t bit) {
 
-    uint8_t val = get_mem(addr);
-    RES_b_r(&val, bit);
-    set_mem(addr, val);
+    update_timers(4);
+    uint8_t result = RES_b_r(get_mem(addr), bit);
+    update_timers(4);
+    set_mem(addr, result);
 }
 
 
 
-/*  8 cyles */
-void RES_A_0() {RES_b_r(&reg.A, 0);}
-void RES_A_1() {RES_b_r(&reg.A, 1);}
-void RES_A_2() {RES_b_r(&reg.A, 2);}
-void RES_A_3() {RES_b_r(&reg.A, 3);}
-void RES_A_4() {RES_b_r(&reg.A, 4);}
-void RES_A_5() {RES_b_r(&reg.A, 5);}
-void RES_A_6() {RES_b_r(&reg.A, 6);}
-void RES_A_7() {RES_b_r(&reg.A, 7);}
+void RES_A_0() {reg.A = RES_b_r(reg.A, 0);}
+void RES_A_1() {reg.A = RES_b_r(reg.A, 1);}
+void RES_A_2() {reg.A = RES_b_r(reg.A, 2);}
+void RES_A_3() {reg.A = RES_b_r(reg.A, 3);}
+void RES_A_4() {reg.A = RES_b_r(reg.A, 4);}
+void RES_A_5() {reg.A = RES_b_r(reg.A, 5);}
+void RES_A_6() {reg.A = RES_b_r(reg.A, 6);}
+void RES_A_7() {reg.A = RES_b_r(reg.A, 7);}
 
-void RES_B_0() {RES_b_r(&reg.B, 0);}
-void RES_B_1() {RES_b_r(&reg.B, 1);}
-void RES_B_2() {RES_b_r(&reg.B, 2);}
-void RES_B_3() {RES_b_r(&reg.B, 3);}
-void RES_B_4() {RES_b_r(&reg.B, 4);}
-void RES_B_5() {RES_b_r(&reg.B, 5);}
-void RES_B_6() {RES_b_r(&reg.B, 6);}
-void RES_B_7() {RES_b_r(&reg.B, 7);}
+void RES_B_0() {reg.B = RES_b_r(reg.B, 0);}
+void RES_B_1() {reg.B = RES_b_r(reg.B, 1);}
+void RES_B_2() {reg.B = RES_b_r(reg.B, 2);}
+void RES_B_3() {reg.B = RES_b_r(reg.B, 3);}
+void RES_B_4() {reg.B = RES_b_r(reg.B, 4);}
+void RES_B_5() {reg.B = RES_b_r(reg.B, 5);}
+void RES_B_6() {reg.B = RES_b_r(reg.B, 6);}
+void RES_B_7() {reg.B = RES_b_r(reg.B, 7);}
 
-void RES_C_0() {RES_b_r(&reg.C, 0);}
-void RES_C_1() {RES_b_r(&reg.C, 1);}
-void RES_C_2() {RES_b_r(&reg.C, 2);}
-void RES_C_3() {RES_b_r(&reg.C, 3);}
-void RES_C_4() {RES_b_r(&reg.C, 4);}
-void RES_C_5() {RES_b_r(&reg.C, 5);}
-void RES_C_6() {RES_b_r(&reg.C, 6);}
-void RES_C_7() {RES_b_r(&reg.C, 7);}
+void RES_C_0() {reg.C = RES_b_r(reg.C, 0);}
+void RES_C_1() {reg.C = RES_b_r(reg.C, 1);}
+void RES_C_2() {reg.C = RES_b_r(reg.C, 2);}
+void RES_C_3() {reg.C = RES_b_r(reg.C, 3);}
+void RES_C_4() {reg.C = RES_b_r(reg.C, 4);}
+void RES_C_5() {reg.C = RES_b_r(reg.C, 5);}
+void RES_C_6() {reg.C = RES_b_r(reg.C, 6);}
+void RES_C_7() {reg.C = RES_b_r(reg.C, 7);}
 
-void RES_D_0() {RES_b_r(&reg.D, 0);}
-void RES_D_1() {RES_b_r(&reg.D, 1);}
-void RES_D_2() {RES_b_r(&reg.D, 2);}
-void RES_D_3() {RES_b_r(&reg.D, 3);}
-void RES_D_4() {RES_b_r(&reg.D, 4);}
-void RES_D_5() {RES_b_r(&reg.D, 5);}
-void RES_D_6() {RES_b_r(&reg.D, 6);}
-void RES_D_7() {RES_b_r(&reg.D, 7);}
+void RES_D_0() {reg.D = RES_b_r(reg.D, 0);}
+void RES_D_1() {reg.D = RES_b_r(reg.D, 1);}
+void RES_D_2() {reg.D = RES_b_r(reg.D, 2);}
+void RES_D_3() {reg.D = RES_b_r(reg.D, 3);}
+void RES_D_4() {reg.D = RES_b_r(reg.D, 4);}
+void RES_D_5() {reg.D = RES_b_r(reg.D, 5);}
+void RES_D_6() {reg.D = RES_b_r(reg.D, 6);}
+void RES_D_7() {reg.D = RES_b_r(reg.D, 7);}
 
-void RES_E_0() {RES_b_r(&reg.E, 0);}
-void RES_E_1() {RES_b_r(&reg.E, 1);}
-void RES_E_2() {RES_b_r(&reg.E, 2);}
-void RES_E_3() {RES_b_r(&reg.E, 3);}
-void RES_E_4() {RES_b_r(&reg.E, 4);}
-void RES_E_5() {RES_b_r(&reg.E, 5);}
-void RES_E_6() {RES_b_r(&reg.E, 6);}
-void RES_E_7() {RES_b_r(&reg.E, 7);}
+void RES_E_0() {reg.E = RES_b_r(reg.E, 0);}
+void RES_E_1() {reg.E = RES_b_r(reg.E, 1);}
+void RES_E_2() {reg.E = RES_b_r(reg.E, 2);}
+void RES_E_3() {reg.E = RES_b_r(reg.E, 3);}
+void RES_E_4() {reg.E = RES_b_r(reg.E, 4);}
+void RES_E_5() {reg.E = RES_b_r(reg.E, 5);}
+void RES_E_6() {reg.E = RES_b_r(reg.E, 6);}
+void RES_E_7() {reg.E = RES_b_r(reg.E, 7);}
 
-void RES_H_0() {RES_b_r(&reg.H, 0);}
-void RES_H_1() {RES_b_r(&reg.H, 1);}
-void RES_H_2() {RES_b_r(&reg.H, 2);}
-void RES_H_3() {RES_b_r(&reg.H, 3);}
-void RES_H_4() {RES_b_r(&reg.H, 4);}
-void RES_H_5() {RES_b_r(&reg.H, 5);}
-void RES_H_6() {RES_b_r(&reg.H, 6);}
-void RES_H_7() {RES_b_r(&reg.H, 7);}
+void RES_H_0() {reg.H = RES_b_r(reg.H, 0);}
+void RES_H_1() {reg.H = RES_b_r(reg.H, 1);}
+void RES_H_2() {reg.H = RES_b_r(reg.H, 2);}
+void RES_H_3() {reg.H = RES_b_r(reg.H, 3);}
+void RES_H_4() {reg.H = RES_b_r(reg.H, 4);}
+void RES_H_5() {reg.H = RES_b_r(reg.H, 5);}
+void RES_H_6() {reg.H = RES_b_r(reg.H, 6);}
+void RES_H_7() {reg.H = RES_b_r(reg.H, 7);}
 
-void RES_L_0() {RES_b_r(&reg.L, 0);}
-void RES_L_1() {RES_b_r(&reg.L, 1);}
-void RES_L_2() {RES_b_r(&reg.L, 2);}
-void RES_L_3() {RES_b_r(&reg.L, 3);}
-void RES_L_4() {RES_b_r(&reg.L, 4);}
-void RES_L_5() {RES_b_r(&reg.L, 5);}
-void RES_L_6() {RES_b_r(&reg.L, 6);}
-void RES_L_7() {RES_b_r(&reg.L, 7);}
+void RES_L_0() {reg.L = RES_b_r(reg.L, 0);}
+void RES_L_1() {reg.L = RES_b_r(reg.L, 1);}
+void RES_L_2() {reg.L = RES_b_r(reg.L, 2);}
+void RES_L_3() {reg.L = RES_b_r(reg.L, 3);}
+void RES_L_4() {reg.L = RES_b_r(reg.L, 4);}
+void RES_L_5() {reg.L = RES_b_r(reg.L, 5);}
+void RES_L_6() {reg.L = RES_b_r(reg.L, 6);}
+void RES_L_7() {reg.L = RES_b_r(reg.L, 7);}
 
 /*  16 cycles */
 void RES_memHL_0() {RES_b_mem(reg.HL,0);}
@@ -1215,7 +1281,7 @@ Instruction ins[UINT8_MAX + 1] = {
 
     //0x30 - 0x3F
     {8, JR_NC_n}, {12, LD_SP_IM}, {8, LDD_HL_A}, {8, INC_SP},
-    {12, INC_memHL}, {12, DEC_memHL}, {8, LD_memHL_n}, {4, SCF},
+    {12, INC_memHL}, {12, DEC_memHL}, {12, LD_memHL_n}, {4, SCF},
     {8, JR_C_n}, {8, ADD_HL_SP}, {8, LDD_A_HL}, {8, DEC_SP},
     {4, INC_A}, {4, DEC_A}, {8, LD_A_IM}, {4, CCF},
 
@@ -1280,96 +1346,95 @@ Instruction ins[UINT8_MAX + 1] = {
     {12, CALL_C_nn}, {0,  invalid_op}, {8,  SBC_A_Im8}, {16 ,RST_18},
 
     //0xE0 - 0xEF
-    {8, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
+    {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
     {0, invalid_op}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
-    {16, ADD_SP_IM8}, {4, JP_HL}, {8, LD_memnn_A}, {0, invalid_op},       
+    {16, ADD_SP_IM8}, {4, JP_HL}, {16, LD_memnn_A}, {0, invalid_op},       
     {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
-    {8, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
+    {12, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
     {0,invalid_op}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
-    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {8, LD_A_memnn}, {4, EI},
+    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_memnn}, {4, EI},
     {0 , invalid_op}, {0, invalid_op}, {8, CP_A_Im8}, {16, RST_38}
 };
 
 static Instruction ext_ins[UINT8_MAX+1] = {
-
+    // 0x0X
     {8, RLC_B}, {8, RLC_C}, {8, RLC_D},      {8, RLC_E}, 
     {8, RLC_H}, {8, RLC_L}, {16, RLC_memHL}, {8, RLC_A}, 
     {8, RRC_B}, {8, RRC_C}, {8, RRC_D},      {8, RRC_E},
     {8, RRC_H}, {8, RRC_L}, {16, RRC_memHL}, {8, RRC_A},
-
+    //0x1X
     {8, RL_B}, {8, RL_C}, {8, RL_D},      {8, RL_E},
     {8, RL_H}, {8, RL_L}, {16, RL_memHL}, {8, RL_A}, 
     {8, RR_B}, {8, RR_C}, {8, RR_D},      {8, RR_E},
     {8, RR_H}, {8, RR_L}, {16, RR_memHL}, {8, RR_A},
-
+    //0x2x
     {8, SLA_B}, {8, SLA_C}, {8, SLA_D},      {8, SLA_E},
     {8, SLA_H}, {8, SLA_L}, {16, SLA_memHL}, {8, SLA_A}, 
     {8, SRA_B}, {8, SRA_C}, {8, SRA_D},      {8, SRA_E},
     {8, SRA_H}, {8, SRA_L}, {16, SRA_memHL}, {8, SRA_A},
-
+    //0x3x
     {8, SWAP_B}, {8, SWAP_C}, {8, SWAP_D},      {8, SWAP_E},
     {8, SWAP_H}, {8, SWAP_L}, {16, SWAP_memHL}, {8, SWAP_A}, 
     {8, SRL_B},  {8, SRL_C},  {8, SRL_D},       {8, SRL_E},
     {8, SRL_H},  {8, SRL_L},  {16, SRL_memHL},  {8, SRL_A},
-
+    //0x4x
     {8, BIT_B_0}, {8, BIT_C_0}, {8, BIT_D_0},      {8, BIT_E_0},
-    {8, BIT_H_0}, {8, BIT_L_0}, {8, BIT_memHL_0}, {8, BIT_A_0},
+    {8, BIT_H_0}, {8, BIT_L_0}, {16, BIT_memHL_0}, {8, BIT_A_0},
     {8, BIT_B_1}, {8, BIT_C_1}, {8, BIT_D_1},      {8, BIT_E_1}, 
-    {8, BIT_H_1}, {8, BIT_L_1}, {8, BIT_memHL_1}, {8, BIT_A_1},
-     
+    {8, BIT_H_1}, {8, BIT_L_1}, {16, BIT_memHL_1}, {8, BIT_A_1},
+    //0x5x
     {8, BIT_B_2}, {8, BIT_C_2}, {8, BIT_D_2},      {8, BIT_E_2}, 
-    {8, BIT_H_2}, {8, BIT_L_2}, {8, BIT_memHL_2}, {8, BIT_A_2}, 
+    {8, BIT_H_2}, {8, BIT_L_2}, {16, BIT_memHL_2}, {8, BIT_A_2}, 
     {8, BIT_B_3}, {8, BIT_C_3}, {8, BIT_D_3},      {8, BIT_E_3}, 
-    {8, BIT_H_3}, {8, BIT_L_3}, {8, BIT_memHL_3}, {8, BIT_A_3},
-
+    {8, BIT_H_3}, {8, BIT_L_3}, {16, BIT_memHL_3}, {8, BIT_A_3},
+    //0x6x
     {8, BIT_B_4}, {8, BIT_C_4}, {8, BIT_D_4},      {8, BIT_E_4}, 
-    {8, BIT_H_4}, {8, BIT_L_4}, {8, BIT_memHL_4}, {8, BIT_A_4},
+    {8, BIT_H_4}, {8, BIT_L_4}, {16, BIT_memHL_4}, {8, BIT_A_4},
     {8, BIT_B_5}, {8, BIT_C_5}, {8, BIT_D_5},      {8, BIT_E_5}, 
-    {8, BIT_H_5}, {8, BIT_L_5}, {8, BIT_memHL_5}, {8, BIT_A_5},
-     
+    {8, BIT_H_5}, {8, BIT_L_5}, {16, BIT_memHL_5}, {8, BIT_A_5},
+    //0x7x
     {8, BIT_B_6}, {8, BIT_C_6}, {8, BIT_D_6},      {8, BIT_E_6}, 
-    {8, BIT_H_6}, {8, BIT_L_6}, {8, BIT_memHL_6}, {8, BIT_A_6}, 
+    {8, BIT_H_6}, {8, BIT_L_6}, {16, BIT_memHL_6}, {8, BIT_A_6}, 
     {8, BIT_B_7}, {8, BIT_C_7}, {8, BIT_D_7},      {8, BIT_E_7},
-    {8, BIT_H_7}, {8, BIT_L_7}, {8, BIT_memHL_7}, {8, BIT_A_7},
-    
-    
+    {8, BIT_H_7}, {8, BIT_L_7}, {16, BIT_memHL_7}, {8, BIT_A_7},
+    //0x8x
     {8, RES_B_0}, {8, RES_C_0}, {8, RES_D_0},      {8, RES_E_0}, 
     {8, RES_H_0}, {8, RES_L_0}, {16, RES_memHL_0}, {8, RES_A_0},
     {8, RES_B_1}, {8, RES_C_1}, {8, RES_D_1},      {8, RES_E_1}, 
     {8, RES_H_1}, {8, RES_L_1}, {16, RES_memHL_1}, {8, RES_A_1},
-     
+    //0x9x 
     {8, RES_B_2}, {8, RES_C_2}, {8, RES_D_2},      {8, RES_E_2}, 
     {8, RES_H_2}, {8, RES_L_2}, {16, RES_memHL_2}, {8, RES_A_2}, 
     {8, RES_B_3}, {8, RES_C_3}, {8, RES_D_3},      {8, RES_E_3}, 
     {8, RES_H_3}, {8, RES_L_3}, {16, RES_memHL_3}, {8, RES_A_3},
-
+    //0xAx
     {8, RES_B_4}, {8, RES_C_4}, {8, RES_D_4},      {8, RES_E_4}, 
     {8, RES_H_4}, {8, RES_L_4}, {16, RES_memHL_4}, {8, RES_A_4},
     {8, RES_B_5}, {8, RES_C_5}, {8, RES_D_5},      {8, RES_E_5}, 
     {8, RES_H_5}, {8, RES_L_5}, {16, RES_memHL_5}, {8, RES_A_5},
-     
+    //0xBx 
     {8, RES_B_6}, {8, RES_C_6}, {8, RES_D_6},      {8, RES_E_6},
     {8, RES_H_6}, {8, RES_L_6}, {16, RES_memHL_6}, {8, RES_A_6}, 
     {8, RES_B_7}, {8, RES_C_7}, {8, RES_D_7},      {8, RES_E_7}, 
     {8, RES_H_7}, {8, RES_L_7}, {16, RES_memHL_7}, {8, RES_A_7},      
-    
+    //0xCx
     {8, SET_B_0}, {8, SET_C_0}, {8, SET_D_0},      {8, SET_E_0}, 
     {8, SET_H_0}, {8, SET_L_0}, {16, SET_memHL_0}, {8, SET_A_0},
     {8, SET_B_1}, {8, SET_C_1}, {8, SET_D_1},      {8, SET_E_1}, 
     {8, SET_H_1}, {8, SET_L_1}, {16, SET_memHL_1}, {8, SET_A_1}, 
-
+    //0xDx
     {8, SET_B_2}, {8, SET_C_2}, {8, SET_D_2},      {8, SET_E_2}, 
     {8, SET_H_2}, {8, SET_L_2}, {16, SET_memHL_2}, {8, SET_A_2}, 
     {8, SET_B_3}, {8, SET_C_3}, {8, SET_D_3},      {8, SET_E_3}, 
     {8, SET_H_3}, {8, SET_L_3}, {16, SET_memHL_3}, {8, SET_A_3},
-
+    //0xEx
     {8, SET_B_4}, {8, SET_C_4}, {8, SET_D_4},      {8, SET_E_4}, 
     {8, SET_H_4}, {8, SET_L_4}, {16, SET_memHL_4}, {8, SET_A_4},
     {8, SET_B_5}, {8, SET_C_5}, {8, SET_D_5},      {8, SET_E_5}, 
     {8, SET_H_5}, {8, SET_L_5}, {16, SET_memHL_5}, {8, SET_A_5},
-     
+    //0xFx 
     {8, SET_B_6}, {8, SET_C_6}, {8, SET_D_6},      {8, SET_E_6}, 
     {8, SET_H_6}, {8, SET_L_6}, {16, SET_memHL_6}, {8, SET_A_6}, 
     {8, SET_B_7}, {8, SET_C_7}, {8, SET_D_7},      {8, SET_E_7}, 
@@ -1464,24 +1529,27 @@ int exec_opcode(int skip_bug) {
             interrupts_enabled_timer = 0; //Unset timer
     }
     
-    //printf("pc location:%x\n", reg.PC);
-    //printf("reg b %x\n", reg.B);
     opcode = get_mem(reg.PC); /*  fetch */
  //   dasm_instruction(reg.PC, stdout);
  //   printf("OPCODE:%X, PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
-    if (skip_bug) {reg.PC--;}
+    if (skip_bug) {
+        reg.PC--;
+    }
+
     reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
     if (opcode != 0xCB) {
          
         instructions.instruction_set[opcode].operation();
-  //      printf(" cycles:%d\n",instructions.instruction_set[opcode].cycles);
-        return instructions.instruction_set[opcode].cycles;
+        int cycles = instructions.instruction_set[opcode].cycles;
+        update_timers(cycles - timer_cycles_passed);
+        timer_cycles_passed = 0;
+        return cycles;
 
     } else { /*  extended instruction */
 
         opcode = IMMEDIATE_8_BIT;
-        instructions.ext_instruction_set[opcode].operation();
-       
+        instructions.ext_instruction_set[opcode].operation();  
+        update_timers(8);     
         return instructions.ext_instruction_set[opcode].cycles;
     }
 }

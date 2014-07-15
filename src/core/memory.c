@@ -18,9 +18,52 @@
 
 #include "memory.h"
 #include "memory_layout.h"
+#include "romInfo.h"
 #include "IO.h"
+#include <stdio.h>
 
 static uint8_t mem[WORD_MAX - 0x100];
+
+static int rom_banks = 0; //
+static int mbc_mode = 0; //memory bank mode
+
+static uint8_t RAM_banks[4][0x2000];
+static uint8_t *current_RAM_bank;
+
+// Get the memory bank mode of ROM loaded into memory
+static void setup_MBC_mode() {
+    uint8_t type = mem[CARTRIDGE_TYPE];
+
+    if  (type == 0) {
+        mbc_mode = MBC0;
+    } else if (type >=1 || type <= 3) {
+        mbc_mode = MBC1;
+    } else if (type == 5 || type == 6) {
+        mbc_mode = MBC2;
+    } else {
+        fprintf(stderr, "unknown rom memory type : %u\n",type);
+    }
+}
+
+static void setup_RAM_banks() {
+    // Only MBC1 has RAM banks
+    if (mbc_mode == MBC1) {
+        
+    }
+
+}
+/* After initial 32kb of rom read into memory
+ * mmu setup should occur */
+void setup_mmu() {
+
+    setup_MBC_mode();  
+    setup_RAM_banks();      
+    //Only MBC1 has RAM banks
+    if (mbc_mode == MBC1) {
+
+    }
+}
+
 
 void set_mem(uint16_t const loc, uint8_t const val) {
     if (loc < 0xFF00) {
