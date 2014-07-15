@@ -8,6 +8,7 @@ typedef enum {MBC0 = 0, MBC1 = 1, MBC2 = 2} MBC_MODE;
 
 void setup_mmu(MBC_MODE mbc_mode, int rom_banks);
 
+void load_rom(char *file_data);
 
 /*  Set and obtain 8 bit values from
  *  memory */

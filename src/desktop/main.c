@@ -36,7 +36,7 @@
 #define BREAKPOINT_MIN 0x0
 
 int DEBUG = 0;
-int STEP_COUNT = -1;
+long STEP_COUNT = -1;
 int BREAKPOINT = BREAKPOINT_OFF;
 
 /* Stores possible frequencies in hz of when the
@@ -52,6 +52,7 @@ int load_program(const char *filename) {
     uint16_t count;
     uint8_t cur;
     FILE *file;
+    char buffer[0x8000];
   
     //open file in binary read mode
     //read byte by byte into memory
@@ -65,11 +66,18 @@ int load_program(const char *filename) {
         if(!fread(&cur, 1, 1, file)) {
             break;
         }
-            set_mem(count, cur);
+        buffer[count] = cur;
     }
    
    fclose(file);
-   return 1;
+
+    
+   if (count < 0x7FFF) {
+       return 0;
+   } else {
+     load_rom(buffer);
+     return 1;
+  }
 }
 
 /* Performs set of debugging commands  
@@ -200,14 +208,14 @@ int run(long cycles) {
             skip_bug = 0;
         } else {
             current_cycles = 4;
+            update_timers(current_cycles);
         }
         cycles -= current_cycles;
         
         update_graphics(current_cycles);
         skip_bug = check_interrupts();            
-
+        
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
-            printf("step count main %d\n", STEP_COUNT);
             get_command();
         }
    }

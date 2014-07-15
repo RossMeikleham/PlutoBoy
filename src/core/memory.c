@@ -65,7 +65,25 @@ void setup_mmu() {
 }
 
 
+void load_rom(char *file_data) {    
+    for (unsigned long i = 0; i <= 0x7FFF; i++) {
+        mem[i] =  *file_data++;
+    }
+} 
+
 void set_mem(uint16_t const loc, uint8_t const val) {
+
+    // Can't write to ROM bank 0
+    if (loc >= 0x150 && loc <= 0x3FFF) {
+        return ;
+    }
+
+    // Other banks, TODO sort out ROM banking but
+    // for now keep as read only memory
+    if (loc >= 0x4000 && loc <= 0x7FFF) {
+        return;
+    }
+
     if (loc < 0xFF00) {
         mem[loc] = val;
     }
