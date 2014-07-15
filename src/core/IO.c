@@ -88,7 +88,6 @@ int check_interrupts() {
                      * unset master interrupts so interrupt handler routine
                      * isn't unecessarily interrupted and then call
                      * the interrupt handler */
-                    printf("servicing interrupt");
                     io_mem[IO_IF_FLAG] = if_flag & ~flag;
                     master_interrupts_disable(); 
                     restart(interrupts[i].isr_addr);
@@ -115,7 +114,6 @@ int check_interrupts() {
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
 static inline void dma_transfer(uint8_t val) {
-    
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {
         set_mem(SPRITE_ATTRIBUTE_TABLE_START + i, get_mem(source_addr + i));    
@@ -168,7 +166,7 @@ void increment_ly() {
     //io_mem[IO_LY_REG] = ly;
     if (ly < 144) {
         draw_row();
-    } else { /*  V-Blank interrupt */
+    } else if (ly == 144) { /*  V-Blank interrupt */
        io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_0;
     }
 
