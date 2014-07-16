@@ -209,10 +209,10 @@ int run(long cycles) {
         } else {
             current_cycles = 4;
             update_timers(current_cycles);
+            update_graphics(current_cycles);
         }
         cycles -= current_cycles;
         
-        update_graphics(current_cycles);
         skip_bug = check_interrupts();            
         
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
@@ -256,7 +256,7 @@ int main(int argc, char* argv[]) {
     init_gfx();
     reset_cpu();
     for(;;)
-        run(2500000);
+        run(72500000);
 
 }
 

@@ -16,20 +16,20 @@
 #include "SDL/SDL.h"
 #include "memory.h"
 #include "memory_layout.h"
-#include "stdint.h"
+#include <stdint.h>
 #include "graphics.h"
 #include "IO.h"
-
+#include <stdlib.h>
+#include <unistd.h>
 
 static Uint32 cols[4];
 static SDL_Surface *screen;
-static SDL_Event event;
 
-int VBLANK_ENABLED;
+Uint32 screen_buffer[144][160];
 
 
-int Screen_Width = SCREEN_WIDTH * 2;
-int Screen_Height = SCREEN_HEIGHT * 2;
+int Screen_Width = SCREEN_WIDTH ;
+int Screen_Height = SCREEN_HEIGHT ;
 
 
 uint8_t bit_mask[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20
@@ -48,9 +48,9 @@ int init_gfx() {
     SDL_EnableKeyRepeat(0,0);
 
     cols[0] = SDL_MapRGB(screen->format, 255, 255, 255); /* White */
-    cols[1] = SDL_MapRGB(screen->format, 0,0,255);//170, 170, 170); /* Light Grey */
-    cols[2] = SDL_MapRGB(screen->format, 0,255,0);//85, 85, 85); /* Dark Grey */
-    cols[3] = SDL_MapRGB(screen->format, 255,0,0);//0, 0, 0); /* Black */
+    cols[1] = SDL_MapRGB(screen->format, 170, 170, 170); /* Light Grey */
+    cols[2] = SDL_MapRGB(screen->format, 85, 85, 85); /* Dark Grey */
+    cols[3] = SDL_MapRGB(screen->format, 0, 0, 0); /* Black */
 
     return 1;
 }
@@ -124,21 +124,39 @@ void update_screen()
 // Obtains color-id (0 - 3) of pixel number in the given 
 // line. pixel_no must be between 0 and 7
 int get_color_id(uint8_t byte0, uint8_t byte1, int pixel_no, uint16_t pallete_mem) {
-    
+   
+   //TODO fix 
+    pixel_no = 7 - pixel_no;
     int bit_0 = !!(byte0 & (0x80 >> pixel_no));
     int bit_1 = !!(byte1 & (0x80 >> pixel_no));
-            
+    
+    // Pass through internal pallete to get new bit color
+    uint8_t pallete = get_mem(pallete_mem);
+
+    if (bit_0) {
+        if (bit_1) {
+            return pallete >> 6;
+        } else {
+            return (pallete & 0x7F) >> 4;
+        }
+    } else {
+        if (bit_1) {
+            return (pallete & 0x0F) >> 2;
+        } else {
+            return pallete & 0x3;
+        }
+    }
+    /*
     // Work out which bits in internal pallete to use
     int pallete_bit_no_0 = (4 * bit_0) + (2 * bit_1) + 1;
     int pallete_bit_no_1 = pallete_bit_no_0 - 1;
 
-    // Pass through internal pallete to get new bit color
-    uint8_t pallete = get_mem(pallete_mem);
 
     int pallete_bit_0 = !!(pallete & (1 << pallete_bit_no_0));
     int pallete_bit_1 = !!(pallete & (1 << pallete_bit_no_1));
     
     return (pallete_bit_0 << 1) | (pallete_bit_1);
+    return (bit_0 << 1) | bit_1;*/
 }
 
 
@@ -231,7 +249,7 @@ void draw_tile_window_line(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
             }
             draw_pix(color_id, x_pos, y_pos);
         }   
-        
+    printf("Window drawn\n");    
     }     
 
 }
@@ -251,7 +269,7 @@ void draw_tile_bg_line(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 127) + 128;
         }
-       
+        //printf("tile no %u\n",tile_no);
         uint16_t tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
         uint8_t line_offset = (y_pos % 8) * 2; //Offset into tile of our line
 
@@ -260,7 +278,7 @@ void draw_tile_bg_line(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
         
         // For each pixel in the line of the tile
         for (unsigned int j = 0; j < 8; j++) {
-            int color_id = get_color_id(byte0, byte1, j, BGP_REF);
+            int color_id = get_color_id(byte0, byte1, j, BGP_REF); 
             draw_pix(color_id, i*8 + j + scroll_x, y_pos);
         }   
         
@@ -279,9 +297,7 @@ void draw_tile_row(uint8_t row) {
     // Check if using Tile set 0 or 1 
     if ((lcd_ctrl & BIT_4)) {
         tile_mem = TILE_SET_0_START;
-    }
-
-    draw_tile_window_line(tile_mem, bg_mem, row);  
+    } 
     //Using Window display
     if ((lcd_ctrl & BIT_5) && (win_y_pos <= row)) {
         if (lcd_ctrl & BIT_6) {
@@ -306,19 +322,266 @@ void draw_tile_row(uint8_t row) {
 
 void draw_sp_row(uint8_t row) {
 
-    uint8_t render_sprites = !(get_mem(LCDC_REG) & BIT_0);
-    if (render_sprites) {
-        draw_sprite_row(row);
-    } else {
+    uint8_t render_sprites = (get_mem(LCDC_REG) & BIT_0);
+    uint8_t render_tiles = (get_mem(LCDC_REG) & BIT_1);
+    if (render_tiles) {
+        
         draw_tile_row(row);
+    } 
+    if (render_sprites) {
+
+        draw_sprite_row(row);
     }
     update_screen();
 
 }
 
 
-void draw_row() {
+/*  void draw_row() {
     draw_sp_row(get_mem(LY_REG));
+}*/
+
+ 
+void sprites_notmine(uint8_t lcdControl) {
+   int use8x16 = 0 ;
+   if (lcdControl & BIT_2)
+     use8x16 = 1 ;
+
+   for (int sprite = 0 ; sprite < 40; sprite++)
+   {
+     // sprite occupies 4 bytes in the sprite attributes table
+     uint8_t index = sprite*4 ;
+     uint8_t yPos = get_mem(0xFE00+index) - 16;
+     uint8_t xPos = get_mem(0xFE00+index+1)-8;
+     uint8_t tileLocation = get_mem(0xFE00+index+2) ;
+     uint8_t attributes = get_mem(0xFE00+index+3) ;
+
+     int yFlip = attributes & BIT_6 ;
+     int xFlip = attributes & BIT_5 ;
+
+     int scanline = get_mem(0xFF44);
+
+     int ysize = 8;
+     if (use8x16)
+       ysize = 16;
+
+     // does this sprite intercept with the scanline?
+     if ((scanline >= yPos) && (scanline < (yPos+ysize)))
+     {
+       int line = scanline - yPos ;
+
+       // read the sprite in backwards in the y axis
+       if (yFlip)
+       {
+         line -= ysize ;
+         line *= -1 ;
+       }
+
+       line *= 2; // same as for tiles
+       uint16_t dataAddress = (0x8000 + (tileLocation * 16)) + line ;
+       uint8_t data1 = get_mem( dataAddress ) ;
+       uint8_t data2 = get_mem( dataAddress +1 ) ;
+
+       // its easier to read in from right to left as pixel 0 is
+       // bit 7 in the colour data, pixel 1 is bit 6 etc...
+       for (int tilePixel = 7; tilePixel >= 0; tilePixel--)
+       {
+         int colourbit = tilePixel ;
+         // read the sprite in backwards for the x axis
+         if (xFlip)
+         {
+           colourbit -= 7 ;
+           colourbit *= -1 ;
+         }
+
+         // the rest is the same as for tiles
+         uint16_t colourAddress = (attributes & BIT_4)?0xFF48:0xFF49 ;
+         
+         
+         int col= get_color_id(data2, data1, colourbit, colourAddress ) ;
+
+         // white is transparent for sprites.
+         if (col == 0)
+           continue ;
+
+         int xPix = 0 - tilePixel ;
+         xPix += 7 ;
+
+         int pixel = xPos+xPix ;
+
+         // sanity check
+         if ((scanline<0)||(scanline>143)||(pixel<0)||(pixel>159))
+         {
+           continue ;
+         }
+        
+         screen_buffer[scanline][pixel] = cols[col];
+       }
+     }
+   }
+} 
+
+
+void draw_notmytiles(uint8_t lcdControl) {
+
+   uint16_t tileData = 0 ;
+   uint16_t backgroundMemory =0 ;
+   int unsig = 1 ;
+
+   // where to draw the visual area and the window
+   uint8_t scrollY = get_mem(0xFF42) ;
+   uint8_t scrollX = get_mem(0xFF43) ;
+   uint8_t windowY = get_mem(0xFF4A) ;
+   uint8_t windowX = get_mem(0xFF4B) - 7;
+   int usingWindow = 0 ;
+
+   // is the window enabled?
+   if (lcdControl & BIT_5)
+   {
+     // is the current scanline we're drawing
+     // within the windows Y pos?,
+     if (windowY <= get_mem(0xFF44))
+       usingWindow = 1 ;
+   }
+
+   // which tile data are we using?
+   if (lcdControl & BIT_4)
+   {
+     tileData = 0x8000 ;
+   }
+   else
+   {
+     // IMPORTANT: This memory region uses signed
+     // bytes as tile identifiers
+     tileData = 0x8800 ;
+     unsig= 0 ;
+   }
+   // which background mem?
+   if (!usingWindow)
+   {
+     if (lcdControl & BIT_3)
+       backgroundMemory = 0x9C00 ;
+     else
+       backgroundMemory = 0x9800 ;
+   }
+   else
+   {
+     // which window memory?
+     if (lcdControl & BIT_6)
+       backgroundMemory = 0x9C00 ;
+     else
+       backgroundMemory = 0x9800 ;
+   }
+
+   uint8_t yPos = 0 ; 
+   // yPos is used to calculate which of 32 vertical tiles the
+   // current scanline is drawing
+   if (!usingWindow)
+     yPos = scrollY + get_mem(0xFF44) ;
+   else
+     yPos = get_mem(0xFF44) - windowY;
+
+   // which of the 8 vertical pixels of the current
+   // tile is the scanline on?
+   uint16_t tileRow = (((uint8_t)(yPos/8))*32) ;
+
+   // time to start drawing the 160 horizontal pixels
+   // for this scanline
+   for (int pixel = 0 ; pixel < 160; pixel++)
+   {
+     uint8_t xPos = pixel+scrollX ;
+
+     // translate the current x pos to window space if necessary
+     if (usingWindow)
+     {
+       if (pixel >= windowX)
+         {
+           xPos = pixel - windowX ;
+         }
+     }
+
+     // which of the 32 horizontal tiles does this xPos fall within?
+     uint16_t tileCol = (xPos/8) ;
+     int16_t tileNum ;
+
+     // get the tile identity number. Remember it can be signed
+     // or unsigned
+     uint16_t tileAddrss = backgroundMemory+tileRow+tileCol;
+     if(unsig)
+       tileNum =(uint8_t)get_mem(tileAddrss);
+     else
+       tileNum =(int8_t)get_mem(tileAddrss );
+
+     // deduce where this tile identifier is in memory. Remember i
+     // shown this algorithm earlier
+     uint16_t tileLocation = tileData ;
+     
+     if (unsig) {
+       tileLocation += (tileNum * 16) ;
+     } else
+       tileLocation += ((tileNum+128) *16) ;
+
+     // find the correct vertical line we're on of the
+     // tile to get the tile data
+     //from in memory
+     uint8_t line = yPos % 8 ;
+     line *= 2; // each vertical line takes up two bytes of memory
+    
+     uint8_t data1 = get_mem(tileLocation + line) ;
+     uint8_t data2 = get_mem(tileLocation + line + 1) ;
+
+     // pixel 0 in the tile is it 7 of data 1 and data2.
+     // Pixel 1 is bit 6 etc..
+     int colourBit = xPos % 8 ;
+     colourBit -= 7 ;
+     colourBit *= -1 ;
+
+     // now we have the colour id get the actual
+     // colour from palette 0xFF47
+     int col_id = get_color_id(data2, data1, colourBit, 0xFF47) ;
+     
+     int finaly = get_mem(0xFF44) ;
+     // safety check to make sure what im about
+     // to set is int the 160x144 bounds
+     if ((finaly<0)||(finaly>143)||(pixel<0)||(pixel>159))
+     {
+       continue ;
+     }
+  
+     screen_buffer[finaly][pixel] = cols[col_id];
+    }
+}
+
+void update_entire_screen()
+{
+    int width_inc = Screen_Width/SCREEN_WIDTH;
+    int height_inc = Screen_Height/SCREEN_HEIGHT;
+    
+    for (unsigned y = 0; y < 144; y++) {
+        for (unsigned x = 0; x < 160; x++) {
+            
+            SDL_Rect rect = {x * width_inc, y * height_inc, width_inc, height_inc};
+            SDL_FillRect(screen, &rect, screen_buffer[y][x]);
+        }
+    }
+    SDL_Flip(screen);
+}
+
+void draw_row() {
+    uint8_t render_sprites = (get_mem(0xFF40) & BIT_1);
+    uint8_t render_tiles = (get_mem(0xFF40)  & BIT_0);
+    uint8_t lcdControl = get_mem(LCDC_REG);
+    if (render_tiles) {
+        draw_notmytiles(lcdControl);
+    }
+    if (render_sprites) {
+        sprites_notmine(lcdControl);
+        
+    } 
+ 
+    if (get_mem(LY_REG) == 143) {
+        update_entire_screen();
+    }
 }
 
 /* Tile type 0 supplied as unsigned int

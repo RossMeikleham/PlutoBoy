@@ -1,6 +1,6 @@
 #Release environment
 env = Environment(CC = 'clang', 
-                  CCFLAGS = '-g -W -Wall')
+                  CCFLAGS = ' -W -Wall')
 
 env.Append(LIBS = ['SDL', 'X11'])
 
@@ -8,7 +8,7 @@ coreObjects =env.Object( Glob('core/*.c'))
 mainObject = env.Object( Glob('desktop/main.c'))
 allObjects = mainObject + coreObjects
 
-env.Program('gb',allObjects)
+env.Program('gb_emu',allObjects)
 
 #Test environment
 #coreTestEnv = Environment(CC = 'clang')

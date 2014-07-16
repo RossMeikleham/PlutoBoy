@@ -406,6 +406,46 @@ MU_TEST(test_LDH_C_A) {
     mu_assert_uint_eq(val, get_mem(0xFF00 + reg.C));
 }
 
+MU_TEST_SUITE(eight_bit_load_instructions) {
+    MU_SUITE_CONFIGURE(&setup, &teardown);
+
+    MU_RUN_TEST(test_combined_reg);
+    MU_RUN_TEST(test_LD_8_IM);
+    MU_RUN_TEST(test_LD_A);
+    MU_RUN_TEST(test_LD_B);
+    MU_RUN_TEST(test_LD_C);
+    MU_RUN_TEST(test_LD_D);
+    MU_RUN_TEST(test_LD_E);
+    MU_RUN_TEST(test_LD_H);
+    MU_RUN_TEST(test_LD_L);
+
+    MU_RUN_TEST(test_LD_reg_mem);
+    MU_RUN_TEST(test_LD_mem_reg);
+    MU_RUN_TEST(test_LD_HL_n);
+
+    MU_RUN_TEST(test_LD_A_memBC);
+    MU_RUN_TEST(test_LD_A_memDE);
+    MU_RUN_TEST(test_LD_A_memnn);
+
+    MU_RUN_TEST(test_LD_memBC_A);
+    MU_RUN_TEST(test_LD_memDE_A);
+    MU_RUN_TEST(test_LD_memnn_A);
+
+    MU_RUN_TEST(test_LDD_A_HL);
+    MU_RUN_TEST(test_LDD_A_HL_underflow);
+    MU_RUN_TEST(test_LDD_HL_A);
+    MU_RUN_TEST(test_LDD_HL_A_underflow);
+
+    MU_RUN_TEST(test_LDI_A_HL);
+    MU_RUN_TEST(test_LDI_A_HL_overflow);
+    MU_RUN_TEST(test_LDI_HL_A);
+    MU_RUN_TEST(test_LDI_HL_A_overflow);
+
+    MU_RUN_TEST(test_LDH_n_A);
+    MU_RUN_TEST(test_LDH_A_n);
+    MU_RUN_TEST(test_LDH_A_C);
+    MU_RUN_TEST(test_LDH_C_A);
+}
 /* ------------------------------------------------------- */
 
 
@@ -540,47 +580,6 @@ MU_TEST(test_POP) {
 }
 
 
-MU_TEST_SUITE(eight_bit_load_instructions) {
-    MU_SUITE_CONFIGURE(&setup, &teardown);
-
-    MU_RUN_TEST(test_combined_reg);
-    MU_RUN_TEST(test_LD_8_IM);
-    MU_RUN_TEST(test_LD_A);
-    MU_RUN_TEST(test_LD_B);
-    MU_RUN_TEST(test_LD_C);
-    MU_RUN_TEST(test_LD_D);
-    MU_RUN_TEST(test_LD_E);
-    MU_RUN_TEST(test_LD_H);
-    MU_RUN_TEST(test_LD_L);
-
-    MU_RUN_TEST(test_LD_reg_mem);
-    MU_RUN_TEST(test_LD_mem_reg);
-    MU_RUN_TEST(test_LD_HL_n);
-
-    MU_RUN_TEST(test_LD_A_memBC);
-    MU_RUN_TEST(test_LD_A_memDE);
-    MU_RUN_TEST(test_LD_A_memnn);
-
-    MU_RUN_TEST(test_LD_memBC_A);
-    MU_RUN_TEST(test_LD_memDE_A);
-    MU_RUN_TEST(test_LD_memnn_A);
-
-    MU_RUN_TEST(test_LDD_A_HL);
-    MU_RUN_TEST(test_LDD_A_HL_underflow);
-    MU_RUN_TEST(test_LDD_HL_A);
-    MU_RUN_TEST(test_LDD_HL_A_underflow);
-
-    MU_RUN_TEST(test_LDI_A_HL);
-    MU_RUN_TEST(test_LDI_A_HL_overflow);
-    MU_RUN_TEST(test_LDI_HL_A);
-    MU_RUN_TEST(test_LDI_HL_A_overflow);
-
-    MU_RUN_TEST(test_LDH_n_A);
-    MU_RUN_TEST(test_LDH_A_n);
-    MU_RUN_TEST(test_LDH_A_C);
-    MU_RUN_TEST(test_LDH_C_A);
-}
-
 MU_TEST_SUITE(sixteen_bit_load_instructions) {
     MU_SUITE_CONFIGURE(&setup, &teardown);
 
@@ -599,11 +598,86 @@ MU_TEST_SUITE(sixteen_bit_load_instructions) {
     MU_RUN_TEST(test_POP);
 }
 
+/*-------------------------------------------*/
 
+
+
+MU_TEST(test_ADD_A_reg) {
+    reg.A = 0xF1;
+    reg.B = 0xD2;
+    uint8_t result = reg.A + reg.B;
+    ADD_A_B();
+    mu_assert_uint_eq(result, reg.A);
+}
+
+MU_TEST(test_ADD_A_mem) {
+    uint16_t mem = 0xAF5F;
+    uint8_t val = 0xF1;
+    reg.A = 0x01;
+    reg.HL = mem;
+    set_mem(reg.HL, val);
+
+    uint8_t result = reg.A + val;
+    ADD_A_memHL();
+    mu_assert_uint_eq(result, reg.A);
+
+}
+
+MU_TEST(test_ADD_A_immmediate) {
+    uint8_t val = 0x12;
+    reg.A = 0x32;
+    reg.PC = 0x12;
+
+    set_mem(reg.PC - 1, val);
+    uint8_t result = reg.A + val;
+    ADD_A_Im8();
+
+    mu_assert_uint_eq(result, reg.A);
+
+}
+
+MU_TEST(test_flags_ADD_A) {
+
+    uint8_t a_values[] = {0x0, 0xFF, 0x05};
+    uint8_t add_values[] = {0x0, 0x01, 0x0B};
+    uint8_t expected_flags[3][4] = {{1, 0, 0, 0},
+                                    {1, 0, 1, 1},
+                                    {0, 0, 1, 0}};
+    for (unsigned long i = 0; i < sizeof (a_values) / sizeof (uint8_t); i++) {
+        reg.A = a_values[i];
+        reg.C = add_values[i];
+
+        ADD_A_C();
+        uint8_t *flags = expected_flags[i];
+        ASSERT_FLAGS_EQ(flags[0], flags[1], flags[2], flags[3]);
+    } 
+}
+
+
+MU_TEST(test_ADC_A_no_carry) {
+}
+
+MU_TEST(test_ADC_A_carry) {
+}
+
+
+
+MU_TEST_SUITE(eight_bit_ALU_instructions) {
+    MU_SUITE_CONFIGURE(&setup, &teardown);
+
+    MU_RUN_TEST(test_ADD_A_reg);
+    MU_RUN_TEST(test_ADD_A_mem);
+    MU_RUN_TEST(test_ADD_A_immmediate);
+    MU_RUN_TEST(test_flags_ADD_A);
+
+    MU_RUN_TEST(test_ADC_A_no_carry);
+    MU_RUN_TEST(test_ADC_A_carry);
+}
 
 int main () {
     MU_RUN_SUITE(eight_bit_load_instructions);
     MU_RUN_SUITE(sixteen_bit_load_instructions);
+    MU_RUN_SUITE(eight_bit_ALU_instructions);
     MU_REPORT();
     return 0;
 }

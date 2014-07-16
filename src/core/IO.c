@@ -108,6 +108,15 @@ int check_interrupts() {
     return 0;
 }
 
+// Keypad is written to, update register with state
+// Not implemented yet, so keys set to 1 (off) for now
+void update_joypad(uint8_t val) {
+    if (val == 0x20) {
+        io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = ~0x10;
+    } else if (val == 0x10) {
+        io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = ~0x20;
+    }
+}
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
@@ -118,12 +127,14 @@ static inline void dma_transfer(uint8_t val) {
     }
 }
 
+
 void io_set_mem(uint8_t io_addr, uint8_t val) {
 
     uint16_t global_addr = IO_TO_GLOBAL_ADDR(io_addr);
     io_mem[io_addr] = val;
     switch (global_addr) {
         /*  Timers */
+        case P1_REG  : update_joypad(val); break;
         //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;
         case TIMA_REG : break;
         case TMA_REG  : break;
@@ -132,7 +143,7 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
         case DIV_REG  : io_mem[io_addr] = 0; break;
         /*  Attempting to set LY reg resets it to 0  */
         case LY_REG   : io_mem[io_addr] = 0; break;
-        /*  Performa direct memory transfe  */
+        /*  Perform direct memory transfer  */
         case DMA_REG  : dma_transfer(val); break;
     }
 }

@@ -22,7 +22,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define MAX_SL_CYCLES 452
+#define MAX_SL_CYCLES 456
 
 static long scanline_counter = 0;
 
@@ -41,12 +41,12 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
         set_lcd_interrupt();
     }
     // Set/Unset the coincidence bit in lcd_stat
-    return (lcd_stat & (0xFF - 0x4)) |  (coincidence << 2);
+    return (lcd_stat & (~0x4)) |  (coincidence << 2);
 }
 
 
 static void update_on_lcd(uint8_t lcd_stat) {
-
+    
     #define MODE2_CYCLES 80
     #define MODE3_CYCLES 172
     #define MODE0_CYCLES MAX_SL_CYCLES - MODE3_CYCLES - MODE2_CYCLES
@@ -58,7 +58,7 @@ static void update_on_lcd(uint8_t lcd_stat) {
     uint8_t ly = io_get_mem(GLOBAL_TO_IO_ADDR(LY_REG));
     int interrupt_enabled = 0; /* Check whether if mode changed and IE bit in
                                   status for that mode is set */ 
-
+    
     // V-Blank Period, need to set Mode 1
     if (ly >= 144) {
         
@@ -66,20 +66,20 @@ static void update_on_lcd(uint8_t lcd_stat) {
         lcd_stat = SET_LCD_MODE(1);       
         interrupt_enabled = lcd_stat & BIT_4;
 
-    // Currently in mode 2
+    // Currently in mode 2 (Searching)
     } else if (scanline_counter < MODE2_CYCLES) {
 
         current_mode = 2;
         lcd_stat = SET_LCD_MODE(2);
         interrupt_enabled = lcd_stat & BIT_5;
 
-    // Currently in mode 3
-    } else if (scanline_counter < MODE3_CYCLES) {
+    // Currently in mode 3 (Transferring to screen)
+    } else if (scanline_counter < (MODE2_CYCLES + MODE3_CYCLES)) {
 
         current_mode = 3;
         lcd_stat |= 3;
     
-    // Currently in mode 0
+    // Currently in mode 0 H_BLANK
     } else {
 
         current_mode = 0;
@@ -128,12 +128,13 @@ void update_graphics(long cycles) {
     update_lcd();
 
     if (lcd_ctrl & BIT_7) { //LCD on   
+        
         scanline_counter += cycles;
-
         while (scanline_counter >= MAX_SL_CYCLES) {
-            scanline_counter = 0;
+            scanline_counter -= MAX_SL_CYCLES;
             increment_ly();
         }
+  
     }
 }
 
