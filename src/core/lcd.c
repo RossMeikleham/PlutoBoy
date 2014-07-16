@@ -20,9 +20,9 @@
 #include "lcd.h"
 #include "IO.h"
 #include <stdint.h>
+#include <stdio.h>
 
-
-#define MAX_SL_CYCLES 456
+#define MAX_SL_CYCLES 452
 
 static long scanline_counter = 0;
 
@@ -37,10 +37,9 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
         io_get_mem(GLOBAL_TO_IO_ADDR(LY_REG)) == 
         io_get_mem(GLOBAL_TO_IO_ADDR(LYC_REG));
     
-    if (coincidence && ((lcd_stat & BIT_6) != 0)) {
+    if (coincidence) {
         set_lcd_interrupt();
     }
-
     // Set/Unset the coincidence bit in lcd_stat
     return (lcd_stat & (0xFF - 0x4)) |  (coincidence << 2);
 }
@@ -52,7 +51,7 @@ static void update_on_lcd(uint8_t lcd_stat) {
     #define MODE3_CYCLES 172
     #define MODE0_CYCLES MAX_SL_CYCLES - MODE3_CYCLES - MODE2_CYCLES
 
-    #define SET_LCD_MODE(x) lcd_stat & (0xFF - 0x3) | x
+    #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
                
     uint8_t lcd_mode = lcd_stat & 2;
     uint8_t current_mode = 0;
@@ -131,11 +130,11 @@ void update_graphics(long cycles) {
     if (lcd_ctrl & BIT_7) { //LCD on   
         scanline_counter += cycles;
 
-        while (scanline_counter > MAX_SL_CYCLES) {
-            scanline_counter -= MAX_SL_CYCLES;
+        while (scanline_counter >= MAX_SL_CYCLES) {
+            scanline_counter = 0;
             increment_ly();
         }
-    }        
+    }
 }
 
 

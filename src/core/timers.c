@@ -71,7 +71,6 @@ void update_timers(long cycles) {
     update_divider_reg(cycles);
     //Clock enabled
     if ((timer_control & BIT_2) != 0) {
-
         if (timer_frequency == -1) { // If timer not set
            set_timer_frequency(timer_control & 3);
         }
