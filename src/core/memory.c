@@ -51,6 +51,7 @@ static uint8_t const dmg_boot_rom[0x100] = {
   0x3e, 0x01, 0xe0, 0x50
 };
 
+// State of DMG OAM Ram on startup 
 static uint8_t const oam_dump[0xA0] = {
     0xBB, 0xD8, 0xC4, 0x04, 0xCD, 0xAC, 0xA1, 0xC7,
     0x7D, 0x85, 0x15, 0xF0, 0xAD, 0x19, 0x11, 0x6A,
@@ -78,15 +79,18 @@ static uint8_t const oam_dump[0xA0] = {
    be restored after boot room has finished */
 static uint8_t cartridge_start[0x100];
 
-static int rom_banks = 0; //
+static unsigned rom_bank_count = 0; //
 static int mbc_mode = 0; //memory bank mode
 
 static uint8_t RAM_banks[4][0x2000];
-static uint8_t *current_RAM_bank;
+static uint8_t ROM_banks[125][0x4000];// 125 16kb banks
+
+static unsigned current_RAM_bank = 0;
+static unsigned current_ROM_bank = 1;
 
 // Get the memory bank mode of ROM loaded into memory
 static void setup_MBC_mode() {
-    uint8_t type = mem[CARTRIDGE_TYPE];
+    uint8_t type = ROM_banks[0][CARTRIDGE_TYPE];
 
     if  (type == 0) {
         mbc_mode = MBC0;
@@ -119,73 +123,167 @@ void setup_mmu() {
 }
 
 
-void load_rom(char *file_data) {   
-    // Load in first 32kb of cart 
-    for (unsigned i = 0; i <= 0x7FFF; i++) {
-        mem[i] =  *file_data++;
+int load_rom(char const *file_data, size_t size) {
+    
+    if (size < CARTRIDGE_ROM_SIZE + 1) {
+        fprintf(stderr, "Error: Cartridge size is too small (%lu bytes)\n",size);
+        return 0;
     }
 
+    size_t rom_size = get_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
+
+    // Data read in doesn't match header information
+    if (size != rom_size) {
+        fprintf(stderr, "Error: Cartridge header info on its size (%lu bytes) \
+            doesn't match file size (%lu bytes)\n",rom_size, size);
+        return 0;
+    }
+
+    rom_bank_count = rom_size / 0x4000;
+
+   
+    // Fill up ROM banks     
+    for (unsigned n = 0; n < rom_bank_count; n++) {
+        printf("filling banks\n");
+        memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
+    }
+
+    /*for (unsigned j = 0; j< 4; j++) {
+    for (unsigned i = 0; i < 0x4000; i++) {
+        printf("%x ",ROM_banks[j][i]);
+    }*/
+
+    setup_MBC_mode();
     /* Copy first 100 bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
      *  it later */
-    memcpy(cartridge_start, mem,  0x100);
-    for (unsigned i = 0; i < 0x100; i++) {
-        mem[i] = dmg_boot_rom[i];
-    }
+    memcpy(cartridge_start, ROM_banks[0],  0x100);
+    memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
+    
     // Load initial Sprite/Object attribute table values
-    for (unsigned i = 0; i < 0xA0; i++) {
-        mem[SPRITE_ATTRIBUTE_TABLE_START + i] = oam_dump[i];
-    }
+    memcpy(mem + SPRITE_ATTRIBUTE_TABLE_START, oam_dump, 0xA0);
+
+    return 1;
 } 
 
 /* Restore first 255 bytes of memory
    with first 255 bytes of the cartridge */
 void unload_boot_rom() {
-    memcpy(mem, cartridge_start, 0x100);
+    memcpy(ROM_banks[0], cartridge_start, 0x100);
 }
 
-void set_mem(uint16_t const loc, uint8_t const val) {
+
+static uint8_t bank_mode =0;
+static int ram_banking = 0;
+void set_MBC1_mem(uint16_t const addr, uint8_t const val) {
+
+
+        // Setting ROM/RAM banking mode
+        if(addr <= 0x1FFF) {
+            ram_banking = (val & 0xF) == 0xA;
+        // Setting ROM bank
+        } else if((addr >= 0x2000) && (addr <= 0x3FFF)) {
+            
+             current_ROM_bank = (val & 0x1F) + ((val & 0x1F) == 0);
+           
+        } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
+            current_RAM_bank = (val & 0x3); 
+        } else if((addr >= 0x6000) && (addr <= 0x7FFF)) { 
+            bank_mode = (val & 0x1); 
+        } 
+        //Write to External RAM (0xA000 - 0xBFFF)
+         else if(((addr & 0xE000) == 0xA000)  && ram_banking) { 
+            if(bank_mode == 0) { 
+                RAM_banks[0][addr - 0xA000] = val; 
+            } else {
+                RAM_banks[current_RAM_bank][addr - 0xA000] = val; 
+            }
+        }
+}
+
+
+
+
+
+uint8_t get_MBC1_mem(uint16_t const addr) {
+
+        if (addr < 0x4000) {
+            return ROM_banks[0][addr];
+        }
+        //Read using ROM Banking 0x4000 - 0x87FFF
+        if((addr & 0xC000) == 0x4000) {
+            if (bank_mode == 0) { //RAM banks on
+                return ROM_banks[(current_RAM_bank << 5) | 
+                    current_ROM_bank][addr - 0x4000];
+            } else {
+                return ROM_banks[current_ROM_bank][addr - 0x4000];
+            }
+        }
+
+        //Read using RAM Banking 0xA000 - 0xBFFF
+        else if(((addr & 0xE000) == 0xA000) && ram_banking) {
+            if (bank_mode == 0) {
+                return RAM_banks[0][addr - 0xA000]; 
+             } else { 
+                return RAM_banks[current_RAM_bank][addr - 0xA000]; 
+             } 
+        }
+
+        return 0x0;
+}
+ 
+
+void set_mem(uint16_t const addr, uint8_t const val) {
     
-    if (loc == 0xFF50 && val == 1) {
+    if (mbc_mode == MBC1 && (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000))) {
+        set_MBC1_mem(addr, val);
+        return;
+    }
+    if (addr == 0xFF50 && val == 1) {
         printf("restoring rom header\n");
         unload_boot_rom();
+    } 
+    
+    
+
+    // Can't write to ROM banks or any memory below
+    if (addr < 0x8000) {
+        return;
     }
 
-    // Can't write to ROM bank 0 ro any memory below
-    if (loc <= 0x3FFF) {
-        return ;
+    if (addr < 0xFF00) {
+        mem[addr] = val;
     }
 
-    // Other banks, TODO sort out ROM banking but
-    // for now keep as read only memory
-    if (loc >= 0x4000 && loc <= 0x7FFF) {
-       
-         return;
-    }
-
-    if (loc < 0xFF00) {
-        mem[loc] = val;
-    }
     /*  Check if mirrored memory being written to */
-    if (loc >= ECHO_RAM_START && loc <= ECHO_RAM_END) {
-        mem[loc-0x2000] = val;
-        printf("echo1\n");
-    } else if (loc >= ECHO_RAM_START-0x2000 && loc <= ECHO_RAM_END-0x2000) {
-        mem[loc+0x2000] = val;
+    if (addr >= ECHO_RAM_START && addr <= ECHO_RAM_END) {
+        mem[addr - 0x2000] = val;
+    } else if (addr >= ECHO_RAM_START-0x2000 && addr <= ECHO_RAM_END-0x2000) {
+        mem[addr + 0x2000] = val;
         //printf("echo2 loc %x new loc %x val %x\n",loc, loc+0x2000, val);
     }
 
     /*  IO being written to */
-    if (loc >= 0xFF00) {
-        io_set_mem(GLOBAL_TO_IO_ADDR(loc), val);
+    if (addr >= 0xFF00) {
+        io_set_mem(GLOBAL_TO_IO_ADDR(addr), val);
     }
 }
 
-uint8_t get_mem(uint16_t const loc) {
-    if (loc < 0xFF00) {
-        return mem[loc];
+
+
+uint8_t get_mem(uint16_t const addr) {
+    if (mbc_mode == MBC1 && (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000))) {
+         return get_MBC1_mem(addr);
+    } else if (addr >= 0x4000 && addr <= 0x7FFF) {
+        return ROM_banks[1][addr - 0x4000];
+    } else if (addr < 0x4000) {
+        return ROM_banks[0][addr];
+    }
+
+    if (addr < 0xFF00) {
+        return mem[addr];
     } else {
-        return io_get_mem(GLOBAL_TO_IO_ADDR(loc));
+        return io_get_mem(GLOBAL_TO_IO_ADDR(addr));
     }
 }
 

@@ -2,13 +2,15 @@
 #define GB_MEM_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef enum {MBC0 = 0, MBC1 = 1, MBC2 = 2} MBC_MODE;
 
 
-void setup_mmu(MBC_MODE mbc_mode, int rom_banks);
 
-void load_rom(char *file_data);
+/* Given the ROM data, load the ROM into
+ * Gameboy memory and setup banks */
+int load_rom(char const *file_data, size_t size);
 
 /*  Set and obtain 8 bit values from
  *  memory */
