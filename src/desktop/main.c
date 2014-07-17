@@ -103,33 +103,6 @@ void get_command() {
         if(!strcmp(buf, "showregs\n")) {
             print_regs();
         }
-        else if(!strcmp(buf, "dumptile0\n")) {
-            unsigned int i;
-            for (i = 0; i < 256; i++) {
-                draw_tile_0(i,i % 16, i / 16);
-            }
-        }
-        else if(!strcmp(buf, "dumptile1\n")) {
-            int i;
-            for (i = -128; i < 128; i++) {
-                
-                draw_tile_1(i, (i+128)%16, (i+128)/16);
-            }
-        } else if (!strcmp(buf,"dumpsprites\n")) {
-            for (unsigned int i = 1; i < 256; i++) {
-                draw_sprite_row(i);
-            }
-            //draw_sprites();
-        }
-        else if (!strcmp(buf, "dumpbg0\n")) {
-            for (int i = 0; i < 256; i++) {
-                set_mem(LY_REG, i);
-                draw_row();
-            }
-            //draw_background_0();
-        }
-        else if (!strcmp(buf, "dumpbg1\n")) {
-        }
         else if (BUFSIZE > 5 && !strncmp(buf, "step ", 5)) {
             if (sscanf(buf+5, "%d", &step) && step > 0) {
                 STEP_COUNT = step;
@@ -144,11 +117,6 @@ void get_command() {
         else if (!strcmp(buf, "help\n") || !strcmp(buf, "h\n")) {
             printf("exit :      exit emulator\n"
                    "showregs:    display current contents of registers\n"
-                   "dumptile0:   display tile set 0 from vram\n"
-                   "dumptile1:   display tile set 1 from vram\n"
-                   "dumpbg0:     display background set 0 from vram\n"
-                   "dumpbg1:     display background set 1 from vram\n"
-                   "dumpsprites: display sprites from OAM\n"
                    "step [n]:    execute n operations\n"
                    "go:          execute forever\n"
                    "setb [n]:    set a breakpoint for address n\n"
@@ -242,6 +210,7 @@ int main(int argc, char* argv[]) {
     printf("Game Title:");
     for(i = ROM_NAME_START; i<= ROM_NAME_END; i++) {
         printf("%c",get_mem(i));
+
     }
    
     printf("\nLicensee: %s", get_licensee());

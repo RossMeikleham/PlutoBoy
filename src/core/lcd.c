@@ -50,7 +50,7 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
 }
 
 
-static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
+static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     #define MODE2_CYCLES 80
     #define MODE3_CYCLES 172
     #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
@@ -59,6 +59,7 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     uint8_t new_lcd_mode = current_lcd_mode;
     
     current_cycles += cycles;
+
     switch (current_lcd_mode) {
         case 0 : // H-Blank 
                 if (HBlank_entry) { // Entering H-Blank
@@ -73,7 +74,6 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
                     increment_ly();
                     lcd_stat = check_lcd_coincidence(lcd_stat); 
                     // H-Blank to V-Blank, change to mode 2
-                    // and raise a V-Blank interrupt
                     if (get_mem(LY_REG) == 144) {
                         new_lcd_mode = 1;
                     }
@@ -129,33 +129,25 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
 }
 
 
-void update_lcd(long cycles) {
 
-    uint8_t lcd_stat = io_get_mem(GLOBAL_TO_IO_ADDR(STAT_REG));
-    uint8_t lcd_ctrl = io_get_mem(GLOBAL_TO_IO_ADDR(LCDC_REG));
+
+void update_graphics(long cycles) {
+  
+    uint8_t lcd_stat = get_mem(STAT_REG);
+    uint8_t lcd_ctrl = get_mem(LCDC_REG);
+
     // Turning screen from off to on
     if (screen_off && (lcd_ctrl & BIT_7))  {
         screen_off = 0;
         current_lcd_mode = 2;
-        lcd_stat = (lcd_stat & (~3)) +  2;
-        set_mem(STAT_REG, lcd_stat);
+        lcd_stat = (lcd_stat & (~3)) +  2; // Mode 2
     } 
 
     if (!screen_off) {
         update_on_lcd(lcd_stat, lcd_ctrl, cycles);
     }
 }
-
-
-
-void update_graphics(long cycles) {
-
-    
-    update_lcd(cycles);
-
   
-    
-}
 
 
 

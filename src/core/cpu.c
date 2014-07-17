@@ -1593,8 +1593,8 @@ int exec_opcode(int skip_bug) {
     }
     
     opcode = get_mem(reg.PC); /*  fetch */
-//    dasm_instruction(reg.PC, stdout);
-//    printf("\nOPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
+    //dasm_instruction(reg.PC, stdout);
+    //printf("\nOPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {
         reg.PC--;
     }

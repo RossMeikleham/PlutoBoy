@@ -1,6 +1,6 @@
 #Release environment
 env = Environment(CC = 'clang', 
-                  CCFLAGS = ' -W -Wall')
+                  CCFLAGS = '-W -Wall')
 
 env.Append(LIBS = ['SDL', 'X11'])
 
