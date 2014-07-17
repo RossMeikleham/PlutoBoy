@@ -49,10 +49,10 @@ long clock_speed;
 
 int load_program(const char *filename) {
    
-    uint16_t count;
+    size_t count;
     uint8_t cur;
     FILE *file;
-    char buffer[0x8000];
+    char buffer[0x200000]; /*  2MB */
   
     //open file in binary read mode
     //read byte by byte into memory
@@ -61,7 +61,7 @@ int load_program(const char *filename) {
         return 0;
     }
   
-    for (count = 0; count < 0x8000; count++) {
+    for (count = 0; count < 0x200000; count++) {
     //Read file contents into buffer
         if(!fread(&cur, 1, 1, file)) {
             break;
@@ -75,7 +75,7 @@ int load_program(const char *filename) {
    if (count < 0x7FFF) {
        return 0;
    } else {
-     load_rom(buffer);
+     return load_rom(buffer, count);
      return 1;
   }
 }
