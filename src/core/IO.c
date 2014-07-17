@@ -80,7 +80,7 @@ int check_interrupts() {
            
             uint8_t flag = interrupts[i].flag;
             if ((flag & possible_interrupts) != 0) {
-                /*  Still need to check if master override is not in place */
+               /*  Still need to check if master override is not in place */
                 if (master_interrupts_enabled()) {
                     /* Unset interrupt flag for interrupt being serviced
                      * unset master interrupts so interrupt handler routine
@@ -109,7 +109,7 @@ int check_interrupts() {
 }
 
 // Keypad is written to, update register with state
-// Not implemented yet, so keys set to 1 (off) for now
+// Not implemented yet, so all keys set to 1 (off) for now
 void update_joypad(uint8_t val) {
     if (val == 0x20) {
         io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = ~0x10;
@@ -174,10 +174,7 @@ void increment_ly() {
     uint8_t ly = (io_mem[IO_LY_REG] + 1) % 154;    
     io_mem[IO_LY_REG] = ly;
 
-    //io_mem[IO_LY_REG] = ly;
-    if (ly < 144) {
-        draw_row();
-    } else if (ly == 144) { /*  V-Blank interrupt */
+    if (ly == 144) { /*  V-Blank interrupt */
        io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_0;
     }
 
