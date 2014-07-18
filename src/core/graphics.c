@@ -109,7 +109,7 @@ static void draw_sprite_row() {
         }                           
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row >= y_pos + height) {
+        if (y_pos > row || row >= y_pos + height || x_pos + 8 >= 160) {
             continue;
         } 
        
@@ -133,13 +133,13 @@ static void draw_sprite_row() {
             int bit_1 = (high_byte >> bit_pos) & 0x1;
             uint8_t color_id = (bit_0 << 1) | bit_1;
             int priority  = !(attributes & 0x80);
-
-            // draw if pixel is not transparent and either in foreground 
-            // or window disabled and 
             
-            uint8_t final_color_id = palletes[pal_no][color_id];
-            if (priority) {
-                if (screen_buffer[row][x_pos + x] != 0 && color_id != 0) {
+            // If priority bit not set but background is transparent and
+            // current pixel isn't transparent draw. Otherwise if priority set
+            // as long as pixel isn't transparent, draw it
+            uint8_t final_color_id = palletes[pal_no][color_id]; 
+            if (!priority) {
+                if (screen_buffer[row][x_pos + x] == cols[0] && color_id != 0) {
                    screen_buffer[row][x_pos + x] = cols[final_color_id];
                 }               
             } else  {
