@@ -77,8 +77,9 @@ static void draw_pix(Uint32 color, int y, int x)
 static void draw_sprite_row() {
    
     // 8x16 or 8x8
-    int height = get_mem(LCDC_REG) & 0x4 ? 16 : 8;
-    
+    int8_t lcd_ctrl = get_mem(LCDC_REG);
+    int height = lcd_ctrl & 0x4 ? 16 : 8;
+    int window_on = lcd_ctrl & BIT_5;
     uint8_t obp_0 = get_mem(OBP0_REG); 
     uint8_t obp_1 = get_mem(OBP1_REG); 
     uint8_t row = get_mem(LY_REG);
@@ -131,13 +132,21 @@ static void draw_sprite_row() {
             int bit_0 = (low_byte >> bit_pos) & 0x1;
             int bit_1 = (high_byte >> bit_pos) & 0x1;
             uint8_t color_id = (bit_0 << 1) | bit_1;
-            int background = attributes & BIT_7 ? 1 : 0;
+            int priority  = !(attributes & 0x80);
 
-            // draw if pixel is non transparent and shows over background
-            if (color_id != 0 && (!background || screen_buffer[row][x_pos + x] != 0)) {          
-                uint8_t final_color_id = palletes[pal_no][color_id];
-                screen_buffer[row][x_pos + x] = cols[final_color_id];
-            }
+            // draw if pixel is not transparent and either in foreground 
+            // or window disabled and 
+            
+            uint8_t final_color_id = palletes[pal_no][color_id];
+            if (priority) {
+                if (screen_buffer[row][x_pos + x] != 0 && color_id != 0) {
+                   screen_buffer[row][x_pos + x] = cols[final_color_id];
+                }               
+            } else  {
+                if (color_id != 0) {
+                   screen_buffer[row][x_pos + x] = cols[final_color_id];
+                }
+            }     
              
         }
     }
@@ -163,7 +172,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     // 160 pixel row, 20 tiles, 8 pixel row per tile
     for (unsigned int i = 0; i < 160; i+=8) {
        
-        uint8_t x_pos = i > win_x ? (i - win_x) : (i + scroll_x);
+        uint8_t x_pos = i >= win_x ? (i - win_x) : (i + scroll_x);
 
         uint8_t tile_col = (x_pos) >> 3;
         uint8_t tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);

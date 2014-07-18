@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define MAX_SL_CYCLES 456
+#define MAX_SL_CYCLES 452
 
 static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
