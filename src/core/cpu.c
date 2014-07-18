@@ -661,7 +661,10 @@ static inline void STOP() {stop = 1;}
 
 
 /*  Disable interrupts */
-static inline void DI() {interrupts_enabled = 0;}
+static inline void DI() {
+    interrupts_enabled_timer = 0; 
+    interrupts_enabled = 0;
+}
 
 /*  Enable interrupts 
  *  interrupts enabled after the next instruction
@@ -725,7 +728,7 @@ static inline uint8_t RLC_N(uint8_t val)
    return val;
 }
 
-/*  8 cycles */
+
 static inline void RLC_A() { reg.A = RLC_N(reg.A);}
 static inline void RLC_B() { reg.B = RLC_N(reg.B);}
 static inline void RLC_C() { reg.C = RLC_N(reg.C);}
@@ -733,7 +736,7 @@ static inline void RLC_D() { reg.D = RLC_N(reg.D);}
 static inline void RLC_E() { reg.E = RLC_N(reg.E);}
 static inline void RLC_H() { reg.H = RLC_N(reg.H);}
 static inline void RLC_L() { reg.L = RLC_N(reg.L);}
-/* 16 cycles */
+
 static inline void RLC_memHL() {
     update_timers(4);
     update_graphics(4);
@@ -1593,8 +1596,8 @@ int exec_opcode(int skip_bug) {
     }
     
     opcode = get_mem(reg.PC); /*  fetch */
-    //dasm_instruction(reg.PC, stdout);
-    //printf("\nOPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
+   // dasm_instruction(reg.PC, stdout);
+   // printf("\nOPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {
         reg.PC--;
     }

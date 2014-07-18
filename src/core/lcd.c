@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define MAX_SL_CYCLES 452
+#define MAX_SL_CYCLES 456
 
 static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
@@ -141,6 +141,7 @@ void update_graphics(long cycles) {
         screen_off = 0;
         current_lcd_mode = 2;
         lcd_stat = (lcd_stat & (~3)) +  2; // Mode 2
+        current_cycles = 6; // Turning on screen takes 6 cycles
     } 
 
     if (!screen_off) {

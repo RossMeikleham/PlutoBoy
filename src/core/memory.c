@@ -88,6 +88,8 @@ static uint8_t ROM_banks[125][0x4000];// 125 16kb banks
 static unsigned current_RAM_bank = 0;
 static unsigned current_ROM_bank = 1;
 
+static uint8_t bank_mode = 0;
+
 // Get the memory bank mode of ROM loaded into memory
 static void setup_MBC_mode() {
     uint8_t type = ROM_banks[0][CARTRIDGE_TYPE];
@@ -140,7 +142,9 @@ int load_rom(char const *file_data, size_t size) {
     }
 
     rom_bank_count = rom_size / 0x4000;
-
+    if (rom_bank_count <= 31) {
+       bank_mode = 1; 
+    }
    
     // Fill up ROM banks     
     for (unsigned n = 0; n < rom_bank_count; n++) {
@@ -173,7 +177,6 @@ void unload_boot_rom() {
 }
 
 
-static uint8_t bank_mode =0;
 static int ram_banking = 0;
 void set_MBC1_mem(uint16_t const addr, uint8_t const val) {
 
@@ -183,12 +186,13 @@ void set_MBC1_mem(uint16_t const addr, uint8_t const val) {
             ram_banking = (val & 0xF) == 0xA;
         // Setting ROM bank
         } else if((addr >= 0x2000) && (addr <= 0x3FFF)) {
-            
+             //printf("switching rom bank %d\n", current_ROM_bank); 
              current_ROM_bank = (val & 0x1F) + ((val & 0x1F) == 0);
            
         } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
             current_RAM_bank = (val & 0x3); 
         } else if((addr >= 0x6000) && (addr <= 0x7FFF)) { 
+            printf("switching bank mode: val %d new mode %d\n",val, val & 0x1);
             bank_mode = (val & 0x1); 
         } 
         //Write to External RAM (0xA000 - 0xBFFF)
@@ -212,7 +216,8 @@ uint8_t get_MBC1_mem(uint16_t const addr) {
         }
         //Read using ROM Banking 0x4000 - 0x87FFF
         if((addr & 0xC000) == 0x4000) {
-            if (bank_mode == 0) { //RAM banks on
+            if (bank_mode == 0) { //Upper 2 bits of ROM bank speciffied by ram bits 
+                //printf("Reading from bank %d\n", (current_RAM_bank << 5) | current_ROM_bank);
                 return ROM_banks[(current_RAM_bank << 5) | 
                     current_ROM_bank][addr - 0x4000];
             } else {

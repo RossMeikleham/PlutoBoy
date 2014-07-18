@@ -28,8 +28,8 @@ static SDL_Surface *screen;
 Uint32 screen_buffer[144][160];
 int old_buffer[144][160];
 
-int Screen_Width = SCREEN_WIDTH ;
-int Screen_Height = SCREEN_HEIGHT ;
+int Screen_Width = SCREEN_WIDTH * 2;
+int Screen_Height = SCREEN_HEIGHT * 2;
 
 
 
@@ -49,6 +49,15 @@ int init_gfx() {
     cols[2] = SDL_MapRGB(screen->format, 85, 85, 85); /* Dark Grey */
     cols[3] = SDL_MapRGB(screen->format, 0, 0, 0); /* Black */
 
+    cols[0] = SDL_MapRGB(screen->format, 155, 187, 14);
+    cols[1] = SDL_MapRGB(screen->format, 115, 160, 103);
+    cols[2] = SDL_MapRGB(screen->format, 53, 98, 55);
+    cols[3] = SDL_MapRGB(screen->format, 15, 56, 14);
+
+    cols[0] = SDL_MapRGB(screen->format, 255, 255, 255);
+    cols[1] = SDL_MapRGB(screen->format, 136, 192, 112);
+    cols[2] = SDL_MapRGB(screen->format, 48,  104, 80);
+    cols[3] = SDL_MapRGB(screen->format, 8, 24, 32);
     return 1;
 }
 
