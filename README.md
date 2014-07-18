@@ -7,11 +7,11 @@ Written in C.
 
 
 #Currently Implemented
----------------------
+
 - Complete instruction set of the Gameboy's modified 
   Z80 processor with correct timings with respect to 
   exectution of instructions and memory accesses.
-  (according to Blaargs test ROMs)
+  (according to Blargg's test ROMs)
 
 - Interrupt handling.
 
@@ -32,7 +32,7 @@ Written in C.
 
 
 #Still to implement:
-------------------
+
 - Joypad support from Keyboard.
 
 - Limiting FPS (Currently runs as fast as possible)
@@ -59,12 +59,12 @@ Written in C.
 
 
 
-Current Accuracy Test Tesults
------------------------------
+#Current Accuracy Test Tesults
+
 ![Instructions](/images/instrs.png?raw=true)![Instruction Timing](/images/timing.png?raw=true)![Instructions](/images/mem_timing.png?raw=true)
 
 
 
-Screenshots
------------
-![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/pokemon.png?raw=true)![Mario](/images/mario.png?raw=true)
+#Screenshots
+
+![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
