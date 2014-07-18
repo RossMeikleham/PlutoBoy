@@ -10,7 +10,7 @@ Written in C.
 
 - Complete instruction set of the Gameboy's modified 
   Z80 processor with correct timings with respect to 
-  exectution of instructions and memory accesses.
+  execution of instructions and memory accesses.
   (according to Blargg's test ROMs)
 
 - Interrupt handling.
