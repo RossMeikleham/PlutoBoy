@@ -78,7 +78,7 @@ static void draw_sprite_row() {
    
     // 8x16 or 8x8
     int8_t lcd_ctrl = get_mem(LCDC_REG);
-    int height = lcd_ctrl & 0x4 ? 16 : 8;
+    int height = lcd_ctrl & BIT_2 ? 16 : 8;
     int window_on = lcd_ctrl & BIT_5;
     uint8_t obp_0 = get_mem(OBP0_REG); 
     uint8_t obp_1 = get_mem(OBP1_REG); 
@@ -109,7 +109,7 @@ static void draw_sprite_row() {
         }                           
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row > y_pos + height) {
+        if (y_pos > row || row >= y_pos + height) {
             continue;
         } 
        
@@ -120,7 +120,7 @@ static void draw_sprite_row() {
 
         // Obtain row of sprite to draw, if sprite is flipped
         // need to obtain row relative to bottom of sprite
-        uint8_t line = (!y_flip) ? row - y_pos : y_pos - row;
+        uint8_t line = (!y_flip) ? row - y_pos  : height + y_pos - row;
         uint16_t line_offset = 2 * line;
         uint8_t high_byte = get_mem(tile_loc + line_offset);
         uint8_t low_byte =  get_mem(tile_loc + line_offset + 1);
