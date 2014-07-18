@@ -19,6 +19,7 @@
 
 #include "lcd.h"
 #include "IO.h"
+#include "timers.h"
 #include "memory.h"
 #include "graphics.h"
 #include <stdint.h>
@@ -82,13 +83,12 @@ static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles
 
         case 1 : // V-Blank
                 HBlank_entry = 1;
-                
-                if (!(lcd_ctrl & BIT_7)) { //Disable lcd
+                //Disabling LCD can only happen during V-Blank
+                if (!(lcd_ctrl & BIT_7)) { 
                     screen_off = 1;
                     set_mem(LY_REG, 0); //Reset LY by writing to it
                     lcd_stat = check_lcd_coincidence(lcd_stat);
                     new_lcd_mode = 0;
-                    current_cycles = 0;
                 } 
                 
                 else if (current_cycles >= MAX_SL_CYCLES) {
@@ -141,7 +141,8 @@ void update_graphics(long cycles) {
         screen_off = 0;
         current_lcd_mode = 2;
         lcd_stat = (lcd_stat & (~3)) +  2; // Mode 2
-        current_cycles = 6; // Turning on screen takes 6 cycles
+        current_cycles = 4;
+        update_timers(current_cycles);
     } 
 
     if (!screen_off) {
