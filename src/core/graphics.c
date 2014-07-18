@@ -26,7 +26,7 @@ static Uint32 cols[4];
 static SDL_Surface *screen;
 
 Uint32 screen_buffer[144][160];
-
+int old_buffer[144][160];
 
 int Screen_Width = SCREEN_WIDTH ;
 int Screen_Height = SCREEN_HEIGHT ;
@@ -139,12 +139,14 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!priority) {
-                if (screen_buffer[row][x_pos + x] == cols[0] && color_id != 0) {
+                if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
                    screen_buffer[row][x_pos + x] = cols[final_color_id];
+                   old_buffer[row][x_pos + x] = color_id;
                 }               
             } else  {
                 if (color_id != 0) {
                    screen_buffer[row][x_pos + x] = cols[final_color_id];
+                   old_buffer[row][x_pos + x] = color_id;
                 }
             }     
              
@@ -194,6 +196,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
             int bit_0 = (byte0 >> (7 - j)) & 0x1;
             int color_id = (bit_1 << 1) | bit_0;
             screen_buffer[row][i + j] =  cols[pallete[color_id]]; 
+            old_buffer[row][i + j] = color_id;
         }   
     }      
 
@@ -233,6 +236,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
             int bit_0 = (byte0 >> (7 - j)) & 0x1;
             int color_id = (bit_1 << 1) | bit_0;
             screen_buffer[row][i + j] =  cols[pallete[color_id]]; 
+            old_buffer[row][i + j] = color_id;
         }   
             
     }
