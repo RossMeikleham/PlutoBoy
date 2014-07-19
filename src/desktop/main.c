@@ -25,6 +25,7 @@
 #include "../core/IO.h"
 #include "../core/timers.h"
 #include "../core/lcd.h"
+#include "../core/joypad.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -71,13 +72,8 @@ int load_program(const char *filename) {
    
    fclose(file);
 
-    
-   if (count < 0x7FFF) {
-       return 0;
-   } else {
-     return load_rom(buffer, count);
-     return 1;
-  }
+   return load_rom(buffer, count);
+  
 }
 
 /* Performs set of debugging commands  
@@ -165,22 +161,34 @@ void get_command() {
 }
 
 
-int run(long cycles) {
+int run() {
     long current_cycles;
     int skip_bug;
+    long cycles = 0;
     get_command();
-    while(cycles > 0) {
+    for(;;) { 
         
-        if (!is_halted()) {
-            current_cycles = exec_opcode(skip_bug);
-            skip_bug = 0;
-        } else {
+        if (is_halted() || is_stopped()) {
             current_cycles = 4;
             update_timers(current_cycles);
-            update_graphics(current_cycles);
+
+            if (is_stopped()) {
+                key_pressed();
+            }
+            if (is_halted()) {
+                update_graphics(current_cycles);
+            }
+            
+        } else {
+            current_cycles = exec_opcode(skip_bug);
+            skip_bug = 0;
+        } 
+
+        cycles += current_cycles;
+        if (cycles > 100) {
+            update_keys();
+            cycles -= 100;
         }
-        cycles -= current_cycles;
-        
         skip_bug = check_interrupts();            
         
         if (STEP_COUNT > 0 && --STEP_COUNT == 0) {
@@ -223,9 +231,9 @@ int main(int argc, char* argv[]) {
     printf("\n");
     
     init_gfx();
+    init_joypad();
     reset_cpu();
-    for(;;)
-        run(72500000);
+    run();
 
 }
 

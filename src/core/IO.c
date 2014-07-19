@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "memory_layout.h"
 #include <stdio.h>
+#include "joypad.h"
 typedef struct {
     uint8_t isr_addr; /* Interrupt Service Routine Address */
     uint8_t flag; /* bit set to compare with IF_FLAG to 
@@ -54,7 +55,7 @@ static const Interrupt interrupts[] = {
     {.flag = BIT_1, .isr_addr = LCDC_ISR_ADDR},
     {.flag = BIT_2, .isr_addr = TIMER_ISR_ADDR},
     {.flag = BIT_3, .isr_addr = IO_ISR_ADDR},
-    {.flag = BIT_3, .isr_addr = HIGH_LOW_ISR_ADDR}
+    {.flag = BIT_4, .isr_addr = HIGH_LOW_ISR_ADDR}
    };
 
 #define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
@@ -108,14 +109,40 @@ int check_interrupts() {
     return 0;
 }
 
+void check_for_keystrokes() {
+    
+    if (key_pressed()) {
+        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_4);
+    }
+}
+
 // Keypad is written to, update register with state
 // Not implemented yet, so all keys set to 1 (off) for now
-void update_joypad(uint8_t val) {
-    if (val == 0x20) {
-        io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = ~0x10;
-    } else if (val == 0x10) {
-        io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = ~0x20;
+void joypad_write(uint8_t joypad_state) {
+    
+    joypad_state |= 0xF; // unset all keys
+
+    // Check directional keys
+    if (joypad_state & BIT_5) {
+        joypad_state &= ~(down_pressed() << 3);
+        joypad_state &= ~(up_pressed() << 2);
+        joypad_state &= ~(left_pressed() << 1);
+        joypad_state &= ~(right_pressed());
+    } 
+    // Check other 4 keys
+    else if (joypad_state & BIT_4) {
+        joypad_state &= ~(start_pressed() << 3);
+        joypad_state &= ~(select_pressed() << 2);
+        joypad_state &= ~(b_pressed() << 1);
+        joypad_state &= ~(a_pressed());
     }
+    
+    /* Raise joypad interrupt if a key
+     * was pressed */
+    if (!(joypad_state & 0xF)) {
+        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_4);
+    }
+    io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
 /* Transfer 160 bytes to sprite memory starting from
@@ -134,7 +161,7 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
     io_mem[io_addr] = val;
     switch (global_addr) {
         /*  Timers */
-        case P1_REG  : update_joypad(val); break;
+        case P1_REG  : joypad_write(val); break;
         //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;
         case TIMA_REG : break;
         case TMA_REG  : break;
@@ -188,49 +215,3 @@ void increment_div() {
     io_mem[GLOBAL_TO_IO_ADDR(DIV_REG)] += 1;
 }
 
-
-
-typedef enum {RIGHT = 0x1, LEFT = 0x2, UP = 0x4, DOWN = 0x8, 
-    A = 0x10, B = 0x20, SELECT = 0x40, START = 0x80} button_t;
-
-
-int joypad;
-uint8_t joypad_reg_value = 0x0;
-
-void joypad_pressed(button_t button) {
-    
-
-}
-
-
-/*  Reset current keys pressed */
-void joypad_reset() {
-    joypad  =0x0;
-}
-
-
-/*  Write the current joypad state
- *  to the joypad register in memory */
-void joypad_write_to_mem() {
-    //set_mem(P1_REG, joypad);
-}
-
-/*  Get amount of scrolling in X/Y directions */
-uint8_t get_scroll_y() {
-    return io_mem[GLOBAL_TO_IO_ADDR(SCROLL_Y_REG)];
-}
-
-uint8_t get_scroll_x() {
-    return io_mem[GLOBAL_TO_IO_ADDR(SCROLL_X_REG)];
-}
-
-
-uint8_t get_win_y_pos() {
-    /*  0<=WY<=143 */
-    return io_mem[GLOBAL_TO_IO_ADDR(WY_REG)];
-}
-
-uint8_t get_win_x_pos() {
-    /*  0<=WX<=166 */
-    return io_mem[GLOBAL_TO_IO_ADDR(WX_REG)];
-}

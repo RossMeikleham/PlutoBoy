@@ -1561,6 +1561,13 @@ int is_halted() {
     return halt;
 }
 
+void unstop_cpu() {
+    stop = 0;
+}
+
+int is_stopped() {
+    return stop;
+}
 
 void reset_cpu() {
     /*  Default starting values for normal GB */

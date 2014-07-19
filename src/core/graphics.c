@@ -239,10 +239,10 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     pallete[2] = (bgp >> 4) & 0x3;
     pallete[3] = (bgp >> 6) & 0x3;
 
-    uint8_t win_y = get_win_y_pos();
+    uint8_t win_y = get_mem(WY_REG);  
     uint8_t y_pos = row - win_y; // Get line 0 - 255 being drawn    
     //uint16_t tile_row = (y_pos / 8); // Get row 0 - 31 of tile
-    uint8_t win_x = get_win_x_pos() - 7;
+    uint8_t win_x = get_mem(WX_REG) - 7;
     //negative win x
     if (win_x > 248) {
         return;
@@ -299,7 +299,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
 static void draw_tile_row() {
     uint8_t lcd_ctrl = get_mem(LCDC_REG);
     uint8_t row = get_mem(LY_REG);
-    uint8_t win_y_pos = get_win_y_pos();
+    uint8_t win_y_pos = get_mem(WY_REG);
 
     uint16_t tile_mem; // Either tile set 0 or 1
 
