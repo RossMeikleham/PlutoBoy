@@ -88,7 +88,6 @@ static void draw_sprite_row() {
     // 8x16 or 8x8
     int8_t lcd_ctrl = get_mem(LCDC_REG);
     int height = lcd_ctrl & BIT_2 ? 16 : 8;
-    int window_on = lcd_ctrl & BIT_5;
     uint8_t obp_0 = get_mem(OBP0_REG); 
     uint8_t obp_1 = get_mem(OBP1_REG); 
     uint8_t row = get_mem(LY_REG);
@@ -175,15 +174,19 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     pallete[2] = (bgp >> 4) & 0x3;
     pallete[3] = (bgp >> 6) & 0x3;
 
-    uint8_t y_pos = row - get_win_y_pos(); // Get line 0 - 255 being drawn    
+    uint8_t win_y = get_win_y_pos();
+    uint8_t y_pos = row - win_y; // Get line 0 - 255 being drawn    
     uint16_t tile_row = (y_pos / 8); // Get row 0 - 31 of tile
     uint8_t win_x = get_win_x_pos() - 7;
-    uint8_t scroll_x = get_mem(SCROLL_X_REG);
 
     // 160 pixel row, 20 tiles, 8 pixel row per tile
     for (unsigned int i = 0; i < 160; i+=8) {
        
-        uint8_t x_pos = i >= win_x ? (i - win_x) : (i + scroll_x);
+        // Not on screen
+        if ( i < win_x) {
+            continue;
+        }
+        uint8_t x_pos = i - win_x;
 
         uint8_t tile_col = (x_pos) >> 3;
         uint8_t tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);
@@ -258,28 +261,20 @@ static void draw_tile_row() {
     uint8_t row = get_mem(LY_REG);
     uint8_t win_y_pos = get_win_y_pos();
 
-    uint16_t bg_mem = BG_MAP_DATA0_START; // Either bg set 0 or 1 
-    uint16_t tile_mem = TILE_SET_1_START; // Either tile set 0 or 1
+    uint16_t tile_mem; // Either tile set 0 or 1
 
     // Check if using Tile set 0 or 1 
-    if (lcd_ctrl & BIT_4) {
-        tile_mem = TILE_SET_0_START;
-    } 
-    //Using Window display
-    if ((lcd_ctrl & BIT_5) && (win_y_pos <= row)) {
-        if (lcd_ctrl & BIT_6) { //Check which bg memory to use
-            bg_mem = BG_MAP_DATA1_START; 
-        }
-        draw_tile_window_row(tile_mem, bg_mem, row);
-
-    // Using BG display
-    } else { 
-        if (lcd_ctrl & BIT_3) { //Check which bg memory to use
-            bg_mem = BG_MAP_DATA1_START;
-        }
-       draw_tile_bg_row(tile_mem, bg_mem, row);
-    }
+    tile_mem = lcd_ctrl & BIT_4 ? TILE_SET_0_START : TILE_SET_1_START;
     
+    //Draw background    
+    uint16_t bg_mem = lcd_ctrl & BIT_3 ? BG_MAP_DATA1_START : BG_MAP_DATA0_START;
+    draw_tile_bg_row(tile_mem, bg_mem, row);
+
+    //Draw Window display if it's on
+    if ((lcd_ctrl & BIT_5) && (win_y_pos <= row)) {
+        uint16_t win_bg_mem = lcd_ctrl & BIT_6 ? BG_MAP_DATA1_START :BG_MAP_DATA0_START;
+        draw_tile_window_row(tile_mem, win_bg_mem, row);
+    }    
 }
 
 //Output frame
@@ -301,7 +296,7 @@ void draw_row() {
         draw_tile_row();
     }
     if (render_sprites) {
-        draw_sprite_row();
+       draw_sprite_row();
     } 
     if (get_mem(LY_REG) == 143) {
         update_screen();
