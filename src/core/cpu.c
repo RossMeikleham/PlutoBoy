@@ -7,7 +7,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include "disasm.h"
-#include "registers.h"
 #include "timers.h"
 #include "lcd.h"
 
