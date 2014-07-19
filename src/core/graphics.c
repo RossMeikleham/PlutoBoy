@@ -30,8 +30,8 @@ int old_buffer[144][160];
 
 int Screen_Width = SCREEN_WIDTH * 2;
 int Screen_Height = SCREEN_HEIGHT * 2;
-
-
+int framerate = 60; //FPS
+Uint32 last_ticks;
 
 int init_gfx() {
 
@@ -58,6 +58,8 @@ int init_gfx() {
     cols[1] = SDL_MapRGB(screen->format, 136, 192, 112);
     cols[2] = SDL_MapRGB(screen->format, 48,  104, 80);
     cols[3] = SDL_MapRGB(screen->format, 8, 24, 32);
+
+    last_ticks = SDL_GetTicks();
     return 1;
 }
 
@@ -183,9 +185,6 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     for (unsigned int i = 0; i < 160; i+=8) {
        
         // Not on screen
-        if ( i < win_x) {
-            continue;
-        }
         uint8_t x_pos = i - win_x;
 
         uint8_t tile_col = (x_pos) >> 3;
@@ -277,6 +276,20 @@ static void draw_tile_row() {
     }    
 }
 
+
+static void adjust_framerate() {
+    Uint32 current_ticks = SDL_GetTicks();
+    Uint32 ticks_elapsed = current_ticks - last_ticks;
+    Uint32 framerate_ticks = ticks_elapsed * framerate;
+    
+// If too fast
+    if (framerate_ticks < 1000) {
+        SDL_Delay((1000/framerate) - ticks_elapsed);
+    }
+   
+    last_ticks = current_ticks;
+}
+
 //Output frame
 static void update_screen()
 { 
@@ -300,6 +313,7 @@ void draw_row() {
     } 
     if (get_mem(LY_REG) == 143) {
         update_screen();
+        adjust_framerate();
     }
 }
 
