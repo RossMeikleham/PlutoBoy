@@ -17,6 +17,8 @@ Written in C.
 
 - LCD timings and handling.
 
+- Joypad support from Keyboard.
+
 - Rendering screen contents after each scanline. After all
   scanlines have been rendered the screen is displayed/updated 
   using SDL.
@@ -32,10 +34,6 @@ Written in C.
 
 
 #Still to implement:
-
-- Joypad support from Keyboard.
-
-- Limiting FPS (Currently runs as fast as possible)
 
 - Saving SRAM to and loading SRAM from file for games
   that support it.

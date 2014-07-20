@@ -163,7 +163,7 @@ void get_command() {
 
 int run() {
     long current_cycles;
-    int skip_bug;
+    int skip_bug = 0;
     long cycles = 0;
     get_command();
     for(;;) { 
@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
    
-    if( !load_program(argv[1])){
+    if(!load_program(argv[1])){
         printf("failed");
         return 1;
     }

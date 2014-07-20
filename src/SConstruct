@@ -1,6 +1,6 @@
 #Release environment
-env = Environment(CC = 'clang', 
-                  CCFLAGS = '-W -Wall')
+env = Environment(CC = 'gcc', 
+                  CCFLAGS = '--std=c99 -O3 -W -Wall')
 
 env.Append(LIBS = ['SDL', 'X11'])
 

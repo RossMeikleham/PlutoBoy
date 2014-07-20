@@ -6,6 +6,7 @@
 #include "memory_layout.h"
 #include <stdio.h>
 #include "joypad.h"
+#include "sprite_priorities.h"
 typedef struct {
     uint8_t isr_addr; /* Interrupt Service Routine Address */
     uint8_t flag; /* bit set to compare with IF_FLAG to 
@@ -159,7 +160,16 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
 
     uint16_t global_addr = IO_TO_GLOBAL_ADDR(io_addr);
     io_mem[io_addr] = val;
+
+    /*OAM, store window x-coridinate priorities
+     * Ready for rendering */
+    if (global_addr > 0xFE00 && global_addr < 0xFEA0) {
+        if(global_addr -1 % 4 == 0) { //Byte 1 is X Position
+            update_sprite_prios((global_addr - 0xFE00) /4 ,val);
+        } 
+    }
     switch (global_addr) {
+        
         /*  Timers */
         case P1_REG  : joypad_write(val); break;
         //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;

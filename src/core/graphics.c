@@ -21,6 +21,7 @@
 #include "IO.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include "sprite_priorities.h"
 
 static Uint32 cols[4];
 static SDL_Surface *screen;
@@ -34,6 +35,8 @@ int framerate = 60; //FPS
 Uint32 last_ticks;
 
 int init_gfx() {
+    
+    init_sprite_prio_list();    
 
     if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
      printf("Could not initialize SDL: %s.\n", SDL_GetError());
@@ -106,13 +109,17 @@ static void draw_sprite_row() {
     palletes[1][2] = (obp_1 >> 4) & 0x3;
     palletes[1][3] = (obp_1 >> 6) & 0x3;
 
-    //40 Sprites
-    for(int i = 0; i < 40; i++) {
+    Sprite_Iterator si = create_sprite_iterator();
+    int sprite_no;
+    int sprite_count = 0;
 
-        uint8_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4)) - 16;
-        uint8_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 1) - 8;
-        uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 2);
-        uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (i * 4) + 3);
+    /*40 Sprites, loop through from least priority to most priority
+      limited to 10 a line */
+    while((sprite_no = sprite_iterator_next(&si)) != -1 && sprite_count < 10)  {
+        uint8_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
+        uint8_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
+        uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 2);
+        uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 3);
 
         if (height == 16) {
             tile_no &= ~0x1;
@@ -122,7 +129,9 @@ static void draw_sprite_row() {
         if (y_pos > row || row >= y_pos + height ||  x_pos >= 160) {
             continue;
         } 
-       
+        
+        sprite_count++;
+
         int x_flip = attributes & BIT_5;
         int y_flip = attributes & BIT_6;
 
