@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include "memory_layout.h"
 #include <stdio.h>
-#include "joypad.h"
+#include "../non_core/joypad.h"
 #include "sprite_priorities.h"
 typedef struct {
     uint8_t isr_addr; /* Interrupt Service Routine Address */

@@ -19,7 +19,7 @@
 
 #include "SDL/SDL.h"
 #include "stdlib.h"
-#include "joypad.h"
+#include "../../non_core/joypad.h"
 
 int keys[322];  // 322 SDL keys
 

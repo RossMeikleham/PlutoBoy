@@ -198,7 +198,7 @@ static void draw_single_win_tile(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     for (unsigned int j = start_pix; j < end_pix; j++) {
         //Not on screen, don't draw 
         if (start_x + j - start_pix < x_pos) {
-            break;
+        //    break;
         } 
         int bit_1 = (byte1 >> (7 - j)) & 0x1;
         int bit_0 = (byte0 >> (7 - j)) & 0x1;
@@ -253,13 +253,13 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     //uint16_t tile_row = (y_pos / 8); // Get row 0 - 31 of tile
     uint8_t win_x = get_mem(WX_REG) - 7;
     //negative win x
-    if (win_x > 248) {
-        return;
-    } 
+   // if (win_x > 248) {
+   //     return;
+   // } 
     uint8_t tile_skew = win_x % 8;
     
-
     if (tile_skew) {
+        printf("hm %u\n",win_x);
         draw_single_win_tile(tile_mem, bg_mem, row, 0, -win_x, y_pos, tile_skew, 8, pallete);
         draw_single_win_tile(tile_mem, bg_mem, row, 160 - tile_skew, 160 -tile_skew - win_x,  y_pos, 0, tile_skew, pallete); 
     }

@@ -5,8 +5,9 @@ env = Environment(CC = 'gcc',
 env.Append(LIBS = ['SDL', 'X11'])
 
 coreObjects =env.Object( Glob('core/*.c'))
-mainObject = env.Object( Glob('desktop/main.c'))
-allObjects = mainObject + coreObjects
+nonCoreObjects = env.Object( Glob('shared_libs/SDL/*'))
+mainObject = env.Object( Glob('platforms/standard/main.c'))
+allObjects = mainObject + coreObjects + nonCoreObjects
 
 env.Program('gb_emu',allObjects)
 

@@ -17,15 +17,16 @@
  * =====================================================================================
  */
 
-#include "../core/cpu.h"
-#include "../core/memory.h"
-#include "../core/disasm.h"
-#include "../core/graphics.h"
-#include "../core/romInfo.h"
-#include "../core/IO.h"
-#include "../core/timers.h"
-#include "../core/lcd.h"
-#include "../core/joypad.h"
+#include "../../core/cpu.h"
+#include "../../core/memory.h"
+#include "../../core/disasm.h"
+#include "../../core/graphics.h"
+#include "../../core/romInfo.h"
+#include "../../core/IO.h"
+#include "../../core/timers.h"
+#include "../../core/lcd.h"
+#include "../../non_core/joypad.h"
+//#include "files.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -209,7 +210,7 @@ int main(int argc, char* argv[]) {
     }
    
     if(!load_program(argv[1])){
-        printf("failed");
+        fprintf(stderr, "failed to load ROM\n");
         return 1;
     }
     
