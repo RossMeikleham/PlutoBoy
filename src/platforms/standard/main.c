@@ -25,8 +25,10 @@
 #include "../../core/IO.h"
 #include "../../core/timers.h"
 #include "../../core/lcd.h"
+
 #include "../../non_core/joypad.h"
-//#include "files.h"
+#include "../../non_core/files.h"
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,34 +50,6 @@ long timer_frequencies[] = {4096, 16384, 65536, 262144};
 long timer_frequency;
 long clock_speed;
 
-
-int load_program(const char *filename) {
-   
-    size_t count;
-    uint8_t cur;
-    FILE *file;
-    char buffer[0x200000]; /*  2MB */
-  
-    //open file in binary read mode
-    //read byte by byte into memory
-    if(!(file = fopen(filename,"rb"))) {
-        fprintf(stderr, "Error opening file %s\n", filename);
-        return 0;
-    }
-  
-    for (count = 0; count < 0x200000; count++) {
-    //Read file contents into buffer
-        if(!fread(&cur, 1, 1, file)) {
-            break;
-        }
-        buffer[count] = cur;
-    }
-   
-   fclose(file);
-
-   return load_rom(buffer, count);
-  
-}
 
 /* Performs set of debugging commands  
  * TODO seperate functionality and split
@@ -205,12 +179,20 @@ int run() {
 int main(int argc, char* argv[]) {
 
     if(argc < 2) {
-        printf("usage ./gb game");
+        printf("usage ./gb game\n");
         return 1;
     }
    
-    if(!load_program(argv[1])){
+    char buffer[MAX_FILE_SIZE];
+    size_t size;
+    if(!(size = load_rom_from_file(argv[1], buffer))) {
+        printf("size %lu\n", size);
         fprintf(stderr, "failed to load ROM\n");
+        return 1;
+    }
+    
+    if(!(load_rom(buffer, size))) {
+        fprintf(stderr, "failed to initialise\n");
         return 1;
     }
     

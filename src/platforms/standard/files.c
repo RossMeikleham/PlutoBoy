@@ -1,28 +1,30 @@
-#include "../../NonCoreHeaders/files.h"
+#include "../../non_core/files.h"
 #include <stdio.h>
 
-long load_rom(const char *file_path, char *data) {
+unsigned long load_rom_from_file(const char *file_path, char *data) {
  
     FILE *file;  
     /* open file in binary read mode
      * read byte by byte of ROM into memory */
     if(!(file = fopen(file_path,"rb"))) {
         fprintf(stderr, "Error opening file %s\n", file_path);
-        return -1;
+        return 0;
     }
  
-    long count; 
-    for (count = 0; count < MAX_FILE_SIZE; count++) {
-    //Read file contents into buffer
+    unsigned long count = 0; 
     char cur;
-        while(fread(&cur, 1, 1, file)) {
-            data[count] = cur;
-        }
+    //Read file contents into buffer
+    while(count < MAX_FILE_SIZE && fread(&cur, 1, 1, file)) {
+        data[count++] = cur;
     }
-   
-   fclose(file);
+
+    if (count == 0) {
+       printf(stderr, "Empty file %s\n", file_path);
+    }
+
+    fclose(file);
     
-   return count;  
+    return count;  
 }
 
 
