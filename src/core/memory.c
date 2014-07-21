@@ -150,7 +150,6 @@ int load_rom(char const *file_data, size_t size) {
    
     // Fill up ROM banks     
     for (unsigned n = 0; n < rom_bank_count; n++) {
-        printf("filling banks\n");
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
 

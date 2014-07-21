@@ -23,10 +23,10 @@
 #include <unistd.h>
 #include "sprite_priorities.h"
 
-static Uint32 cols[4];
-static SDL_Surface *screen;
+#include "../non_core/graphics_out.h"
 
-Uint32 screen_buffer[144][160];
+
+int screen_buffer[144][160];
 int old_buffer[144][160];
 
 int Screen_Width = SCREEN_WIDTH * 2;
@@ -36,55 +36,12 @@ Uint32 last_ticks;
 
 int init_gfx() {
     
+    int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
     init_sprite_prio_list();    
-
-    if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
-     printf("Could not initialize SDL: %s.\n", SDL_GetError());
-     return 0;
-    }
-
-    SDL_WM_SetCaption("Gameboy","");
-    screen = SDL_SetVideoMode(Screen_Width,Screen_Height, 32 ,SDL_DOUBLEBUF);
-    SDL_EnableKeyRepeat(0,0);
-
-    cols[0] = SDL_MapRGB(screen->format, 255, 255, 255); /* White */
-    cols[1] = SDL_MapRGB(screen->format, 170, 170, 170); /* Light Grey */
-    cols[2] = SDL_MapRGB(screen->format, 85, 85, 85); /* Dark Grey */
-    cols[3] = SDL_MapRGB(screen->format, 0, 0, 0); /* Black */
-
-    cols[0] = SDL_MapRGB(screen->format, 155, 187, 14);
-    cols[1] = SDL_MapRGB(screen->format, 115, 160, 103);
-    cols[2] = SDL_MapRGB(screen->format, 53, 98, 55);
-    cols[3] = SDL_MapRGB(screen->format, 15, 56, 14);
-
-    cols[0] = SDL_MapRGB(screen->format, 255, 255, 255);
-    cols[1] = SDL_MapRGB(screen->format, 136, 192, 112);
-    cols[2] = SDL_MapRGB(screen->format, 48,  104, 80);
-    cols[3] = SDL_MapRGB(screen->format, 8, 24, 32);
-
-    last_ticks = SDL_GetTicks();
-    return 1;
-}
-
-
-
-static void fill_rect(int x, int y, int w, int h, Uint32 color)
-{
     
-    SDL_Rect rect = {x, y, w, h};
-    SDL_FillRect(screen, &rect, color);
+    last_ticks = SDL_GetTicks();
+    return result;
 }
-
-
-
-static void draw_pix(Uint32 color, int y, int x)
-{
-    int width_inc = Screen_Width/SCREEN_WIDTH;
-    int height_inc = Screen_Height/SCREEN_HEIGHT;
-    fill_rect(x*width_inc,y*height_inc,width_inc,height_inc, color);
-        
-}
-
 
 
 
@@ -163,12 +120,12 @@ static void draw_sprite_row() {
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!priority) {
                 if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
-                   screen_buffer[row][x_pos + x] = cols[final_color_id];
+                   screen_buffer[row][x_pos + x] = final_color_id;
                    old_buffer[row][x_pos + x] = color_id;
                 }               
             } else  {
                 if (color_id != 0) {
-                   screen_buffer[row][x_pos + x] = cols[final_color_id];
+                   screen_buffer[row][x_pos + x] = final_color_id;
                    old_buffer[row][x_pos + x] = color_id;
                 }
             }     
@@ -203,7 +160,7 @@ static void draw_single_win_tile(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
         int bit_1 = (byte1 >> (7 - j)) & 0x1;
         int bit_0 = (byte0 >> (7 - j)) & 0x1;
         int color_id = (bit_1 << 1) | bit_0;
-        screen_buffer[row][start_x + j - start_pix] =  cols[pallete[color_id]]; 
+        screen_buffer[row][start_x + j - start_pix] =  pallete[color_id]; 
         old_buffer[row][start_x + j - start_pix] = color_id;
     }
 }
@@ -230,7 +187,7 @@ static void draw_single_bg_tile(uint16_t tile_mem, uint16_t bg_mem, uint8_t row,
         int bit_1 = (byte1 >> (7 - j)) & 0x1;
         int bit_0 = (byte0 >> (7 - j)) & 0x1;
         int color_id = (bit_1 << 1) | bit_0;
-        screen_buffer[row][start_x + j - start_pix] =  cols[pallete[color_id]]; 
+        screen_buffer[row][start_x + j - start_pix] =  pallete[color_id]; 
         old_buffer[row][start_x + j - start_pix] = color_id;
     }
 }
@@ -340,16 +297,6 @@ static void adjust_framerate() {
     last_ticks = current_ticks;
 }
 
-//Output frame
-static void update_screen()
-{ 
-    for (int y = 0; y < 144; y++) {
-        for (int x = 0; x < 160; x++) {          
-            draw_pix(screen_buffer[y][x], y, x);
-        }
-    }    
-    SDL_Flip(screen);
-}
 
 //Render the row number stored in the LY register
 void draw_row() {
@@ -362,7 +309,7 @@ void draw_row() {
        draw_sprite_row();
     } 
     if (get_mem(LY_REG) == 143) {
-        update_screen();
+        draw_screen();
         adjust_framerate();
     }
 }
