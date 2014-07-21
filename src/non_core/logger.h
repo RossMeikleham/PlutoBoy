@@ -7,4 +7,4 @@ void set_log_level(LogLevel ll);
 
 void log_message(LogLevel ll, const char *fmt, ...); 
 
-#endif
+#endif //LOGGER_H

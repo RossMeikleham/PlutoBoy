@@ -37,7 +37,7 @@ void set_log_level(LogLevel ll) {
 //Logs the current time to the given stream
 static void log_time(FILE *stream) {
     
-    char buffer[20];
+    char buffer[30];
     struct tm *str_time;
 
     time_t now = time (0);
@@ -57,7 +57,7 @@ void log_message(LogLevel ll, const char *fmt, ...) {
 
         log_time(stream);
         // Log message level
-        char *level_str;
+        char *level_str = "";
         switch (ll) {
             case LOG_INFO : level_str = "INFO"; break;
             case LOG_WARN : level_str = "WARN"; break;
