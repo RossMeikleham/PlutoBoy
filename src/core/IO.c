@@ -7,14 +7,11 @@
 #include "memory.h"
 #include "memory_layout.h"
 #include "sprite_priorities.h"
+#include "interrupts.h"
+#include "bits.h"
 
 #include "../non_core/joypad.h"
 
-typedef struct {
-    uint8_t isr_addr; /* Interrupt Service Routine Address */
-    uint8_t flag; /* bit set to compare with IF_FLAG to 
-                    check if interrupt has been raised */
-} Interrupt;
 
 
 static uint8_t io_mem[256]= {
@@ -53,70 +50,11 @@ static uint8_t io_mem[256]= {
     };
 
 
-
-static const Interrupt interrupts[] = { 
-    {.flag = BIT_0, .isr_addr = VBLANK_ISR_ADDR},
-    {.flag = BIT_1, .isr_addr = LCDC_ISR_ADDR},
-    {.flag = BIT_2, .isr_addr = TIMER_ISR_ADDR},
-    {.flag = BIT_3, .isr_addr = IO_ISR_ADDR},
-    {.flag = BIT_4, .isr_addr = HIGH_LOW_ISR_ADDR}
-   };
-
-#define INTERRUPTS_LEN sizeof (interrupts) / sizeof (Interrupt)
-
-
-void set_lcd_interrupt() {
-    io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_1;    
-}
-
-/*  Check if any interrupts need to be handled, and handle them 
- *  returns 1 if a PC freeze needs to take place, 0 otherwise*/
-int check_interrupts() {
-
-    #define IO_IF_FLAG GLOBAL_TO_IO_ADDR(IF_FLAG)
-    #define IO_IE_REG  GLOBAL_TO_IO_ADDR(IE_REG)
-    // Get all interrupts which flag has been set and are enabled
-    uint8_t if_flag = io_mem[IO_IF_FLAG];
-    uint8_t possible_interrupts = if_flag & io_mem[IO_IE_REG] & 0xF;
-    if (possible_interrupts != 0) {
-        
-        /* Go through each interrupt and check if it has been raised */
-        for (unsigned long i = 0; i < INTERRUPTS_LEN; i++) {
            
-            uint8_t flag = interrupts[i].flag;
-            if ((flag & possible_interrupts) != 0) {
-               /*  Still need to check if master override is not in place */
-                if (master_interrupts_enabled()) {
-                    /* Unset interrupt flag for interrupt being serviced
-                     * unset master interrupts so interrupt handler routine
-                     * isn't unecessarily interrupted and then call
-                     * the interrupt handler */
-                    io_mem[IO_IF_FLAG] = if_flag & ~flag;
-                    master_interrupts_disable(); 
-                    restart(interrupts[i].isr_addr);
-
-                    unhalt_cpu();
-                    return 0;
-                }
-                //If Gameboy, SGB or Gameboy pocket PC is halted
-                // and interrupts disabled, cpu is unhalted and
-                // bug in the original system causes the next
-                // 1st byte of instruction to be repeated
-                else if (is_halted()) {
-                    unhalt_cpu();
-                    return 1;
-                }
-            }
-        }
-    }
-
-    return 0;
-}
-
 void check_for_keystrokes() {
     
     if (key_pressed()) {
-        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_4);
+       raise_interrupt(JOYPAD_INT); 
     }
 }
 
@@ -144,7 +82,7 @@ void joypad_write(uint8_t joypad_state) {
     /* Raise joypad interrupt if a key
      * was pressed */
     if (!(joypad_state & 0xF)) {
-        set_mem(IF_FLAG, get_mem(IF_FLAG) | BIT_4);
+        raise_interrupt(JOYPAD_INT);
     }
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
@@ -201,7 +139,7 @@ void increment_tima() {
     /*  Overflow */
     if (io_mem[IO_TIMA_REG] == 0) {
         io_mem[IO_TIMA_REG] = io_mem[GLOBAL_TO_IO_ADDR(TMA_REG)];
-        io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_2;
+        raise_interrupt(TIMER_INT);
     } 
 }
 
@@ -215,7 +153,7 @@ void increment_ly() {
     io_mem[IO_LY_REG] = ly;
 
     if (ly == 144) { /*  V-Blank interrupt */
-       io_mem[GLOBAL_TO_IO_ADDR(IF_FLAG)] |= BIT_0;
+       raise_interrupt(VBLANK_INT); 
     }
 
     //io_mem[IO_LY_REG] = (ly + 1) % 154;

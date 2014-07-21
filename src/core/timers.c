@@ -1,32 +1,14 @@
-/*
- * =====================================================================================
- *
- *       Filename:  timers.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  09/07/14 20:10:04
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-#include <stdint.h>
-#include "timers.h"
 #include "IO.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "timers.h"
+#include "memory.h"
+#include "memory_layout.h"
+#include "bits.h"
 
 #define DIV_TIMER_INC_FREQUENCY 16382
 
 //Possible timer increment timer_frequencies in hz
-static const long timer_frequencies[] = {4096, 262144, 65536, 16384}; 
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
+static const long timer_frequencies[] = {4096, 262144, 65536, 16384}; 
 
 static long clock_speed = GB_CLOCK_SPEED_HZ;
 
@@ -58,15 +40,16 @@ void update_divider_reg(long cycles) {
     divider_counter += cycles;
 
     // Increment div at a frequency of 16382hz
-    while (divider_counter >= clock_speed / DIV_TIMER_INC_FREQUENCY) {
+    long max_counter = clock_speed / DIV_TIMER_INC_FREQUENCY;
+    while (divider_counter >= max_counter) {
         increment_div();
-        divider_counter -= clock_speed / DIV_TIMER_INC_FREQUENCY;
+        divider_counter -= clock_speed / max_counter;
     }
 }
 
 
 void update_timers(long cycles) { 
-    uint8_t timer_control = io_get_mem(GLOBAL_TO_IO_ADDR(TAC_REG));
+    uint8_t timer_control = get_mem(TAC_REG);
     
     update_divider_reg(cycles);
     //Clock enabled

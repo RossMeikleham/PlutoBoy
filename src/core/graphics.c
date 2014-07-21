@@ -1,16 +1,3 @@
-/*
-* ====================================================================================
-*   Filenamme: graphics.c
-*
-*   Description:
-*
-*   Created: 18/03/14 15:48:01
-*
-*   Author: Ross Meikleham
-*
-* =====================================================================================
-*/
-
 #include "cpu.h"
 #include <stdio.h>
 #include "memory.h"
@@ -21,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "sprite_priorities.h"
+#include "bits.h"
 
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"

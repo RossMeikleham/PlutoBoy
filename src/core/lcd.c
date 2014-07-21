@@ -1,29 +1,15 @@
-/*
- * =====================================================================================
- *
- *       Filename:  lcd.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  10/07/14 13:45:07
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-
 #include "lcd.h"
 #include "IO.h"
 #include "timers.h"
 #include "memory.h"
+#include "memory_layout.h"
+#include "interrupts.h"
 #include "graphics.h"
+#include "bits.h"
+
 #include <stdint.h>
 #include <stdio.h>
+
 
 #define MAX_SL_CYCLES 456
 
@@ -37,14 +23,12 @@ static int current_lcd_mode;
 // then a lcd interrupt is raised
 static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
    
-    int coincidence = //LY == LYC
-        io_get_mem(GLOBAL_TO_IO_ADDR(LY_REG)) == 
-        io_get_mem(GLOBAL_TO_IO_ADDR(LYC_REG));
+    int coincidence = (get_mem(LY_REG) == get_mem(LYC_REG));
     
     // Check interrupt flag is enabled for coincidence interrupt
     // as well as an actual coincidence
     if (coincidence && (lcd_stat & BIT_6)) {
-        set_lcd_interrupt();
+        raise_interrupt(LCD_INT);
     }
     // Set/Unset the coincidence bit in lcd_stat
     return (lcd_stat & (~0x4)) |  (coincidence << 2);
@@ -120,7 +104,7 @@ static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles
     if (new_lcd_mode != 3 && (current_lcd_mode != new_lcd_mode)) {
        
         if (lcd_stat & (1 << (new_lcd_mode + 3))) { //Check interrupt bit set
-            set_lcd_interrupt();
+            raise_interrupt(LCD_INT);
         }
     }
     lcd_stat = SET_LCD_MODE(new_lcd_mode);
