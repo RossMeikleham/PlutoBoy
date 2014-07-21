@@ -1,6 +1,6 @@
 #Release environment
 env = Environment(CC = 'gcc', 
-                  CCFLAGS = '--std=c99 -O3 -W -Wall')
+                  CCFLAGS = '--std=c99 -g -W -Wall')
 
 env.Append(LIBS = ['SDL', 'X11'])
 

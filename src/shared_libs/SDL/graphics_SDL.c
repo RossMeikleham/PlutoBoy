@@ -35,15 +35,15 @@ static int screen_height;
 /*  Initialise graphics and create win_x by win_y pixel
  *  screen. Keeps track of GB_PIXELS_Y by GB_PIXELS_X screen. 
  *  return  1 if successful, 0 otherwise */
-int init_screen(int win_x, int win_y, const int *pixels) {
+int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
        
     screen_width = win_x;
     screen_height = win_y;
 
-    screen_buffer = (int (*)[GB_PIXELS_X])pixels;
-    
+    screen_buffer = pixels;
+
     if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
-        printf("Could not initialize SDL: %s.\n", SDL_GetError());
+        fprintf(stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
     }
 
@@ -86,9 +86,10 @@ inline static void draw_pix(Uint32 color, int x, int y)
         
 }
 
+
 void draw_screen() {
-    for (int y = 0; y < screen_height; y++) {
-        for (int x = 0; x < screen_width; x++) {
+    for (int y = 0; y < GB_PIXELS_Y; y++) {
+        for (int x = 0; x < GB_PIXELS_X; x++) {
             draw_pix(colors[screen_buffer[y][x]], x, y);
         }
     } 

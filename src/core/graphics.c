@@ -13,7 +13,6 @@
 
 #include "cpu.h"
 #include <stdio.h>
-#include "SDL/SDL.h"
 #include "memory.h"
 #include "memory_layout.h"
 #include <stdint.h>
@@ -24,22 +23,17 @@
 #include "sprite_priorities.h"
 
 #include "../non_core/graphics_out.h"
-
+#include "../non_core/framerate.h"
 
 int screen_buffer[144][160];
 int old_buffer[144][160];
 
-int Screen_Width = SCREEN_WIDTH * 2;
-int Screen_Height = SCREEN_HEIGHT * 2;
-int framerate = 60; //FPS
-Uint32 last_ticks;
-
 int init_gfx() {
-    
+   
+    start_framerate(FPS_60); 
     int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
     init_sprite_prio_list();    
     
-    last_ticks = SDL_GetTicks();
     return result;
 }
 
@@ -284,18 +278,6 @@ static void draw_tile_row() {
 }
 
 
-static void adjust_framerate() {
-    Uint32 current_ticks = SDL_GetTicks();
-    Uint32 ticks_elapsed = current_ticks - last_ticks;
-    Uint32 framerate_ticks = ticks_elapsed * framerate;
-    
-// If too fast
-    if (framerate_ticks < 1000) {
-        SDL_Delay((1000/framerate) - ticks_elapsed);
-    }
-   
-    last_ticks = current_ticks;
-}
 
 
 //Render the row number stored in the LY register
@@ -310,7 +292,7 @@ void draw_row() {
     } 
     if (get_mem(LY_REG) == 143) {
         draw_screen();
-        adjust_framerate();
+        adjust_to_framerate();
     }
 }
 

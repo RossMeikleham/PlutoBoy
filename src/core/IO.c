@@ -1,12 +1,15 @@
+#include <stdint.h>
+#include <stdio.h>
+
 #include "cpu.h"
 #include "graphics.h"
 #include "IO.h"
 #include "memory.h"
-#include <stdint.h>
 #include "memory_layout.h"
-#include <stdio.h>
-#include "../non_core/joypad.h"
 #include "sprite_priorities.h"
+
+#include "../non_core/joypad.h"
+
 typedef struct {
     uint8_t isr_addr; /* Interrupt Service Routine Address */
     uint8_t flag; /* bit set to compare with IF_FLAG to 
