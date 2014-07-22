@@ -13,8 +13,8 @@
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"
 
-int screen_buffer[144][160];
-int old_buffer[144][160];
+static int screen_buffer[144][160];
+static int old_buffer[144][160];
 
 int init_gfx() {
    
@@ -266,7 +266,11 @@ static void draw_tile_row() {
 }
 
 
+void output_screen() {
+    draw_screen();
+    adjust_to_framerate();
 
+}
 
 //Render the row number stored in the LY register
 void draw_row() {
@@ -278,9 +282,5 @@ void draw_row() {
     if (render_sprites) {
        draw_sprite_row();
     } 
-    if (get_mem(LY_REG) == 143) {
-        draw_screen();
-        adjust_to_framerate();
-    }
 }
 

@@ -17,6 +17,12 @@ int load_rom(char const *file_data, size_t size);
 void set_mem(uint16_t loc, uint8_t val);
 uint8_t get_mem(uint16_t loc);
 
+/* Directly inject a value in memory without performing
+ * checks, use carefully. Used for fast access or for
+ * controllers which have direct access to that location
+ * in memory in which the CPU does not*/
+void set_mem_override(uint16_t loc, uint8_t val); 
+
 /*  Set and obtain 16 bit values from
  *  memory */
 void set_mem_16(uint16_t loc, uint16_t val);

@@ -7,9 +7,11 @@
 
 
 int init_gfx();
-
 void draw_row();
+void output_screen();
 
+void set_oam_mem(uint16_t addr, uint8_t val);
+uint8_t get_oam_mem(uint16_t addr);
 
 #endif /* GRAPHICS_H */
 

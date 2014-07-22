@@ -34,6 +34,20 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
     return (lcd_stat & (~0x4)) |  (coincidence << 2);
 }
 
+inline static void inc_ly() {
+
+    uint8_t ly = get_mem(LY_REG);
+    ly = (ly + 1) % 153; //0 <= ly <= 153
+
+    if (ly == 144) {
+        raise_interrupt(VBLANK_INT);
+        output_screen();
+
+   };
+   //Directly write ly into memory bypassing reset
+   set_mem_override(LY_REG, ly);
+}   
+
 
 static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     #define MODE2_CYCLES 80
@@ -56,7 +70,7 @@ static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles
                 if (current_cycles >= MAX_SL_CYCLES) {
                     current_cycles -= MAX_SL_CYCLES;
                     new_lcd_mode = 2;
-                    increment_ly();
+                    inc_ly();
                     lcd_stat = check_lcd_coincidence(lcd_stat); 
                     // H-Blank to V-Blank, change to mode 2
                     if (get_mem(LY_REG) == 144) {
@@ -77,7 +91,7 @@ static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles
                 
                 else if (current_cycles >= MAX_SL_CYCLES) {
                     current_cycles -= MAX_SL_CYCLES;
-                    increment_ly();
+                    inc_ly();
                     lcd_stat = check_lcd_coincidence(lcd_stat); 
                     
                     if (get_mem(LY_REG) == 0) { //V-Blank over

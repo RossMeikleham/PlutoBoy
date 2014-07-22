@@ -120,7 +120,7 @@ void io_set_mem(uint8_t io_addr, uint8_t val) {
         /*  Attempting to set DIV reg resets it to 0 */
         case DIV_REG  : io_mem[io_addr] = 0; break;
         /*  Attempting to set LY reg resets it to 0  */
-        case LY_REG   : io_mem[io_addr] = 0; break;
+        case LY_REG   : break; // io_mem[io_addr] = 0; break;
         /*  Perform direct memory transfer  */
         case DMA_REG  : dma_transfer(val); break;
     }
@@ -143,21 +143,6 @@ void increment_tima() {
     } 
 }
 
-/*  Increcements LY registers
- *  if LY becomes greater than 143 then
- *  VBlank interrupt is raised */
-void increment_ly() {
-
-    #define IO_LY_REG GLOBAL_TO_IO_ADDR(LY_REG)
-    uint8_t ly = (io_mem[IO_LY_REG] + 1) % 154;    
-    io_mem[IO_LY_REG] = ly;
-
-    if (ly == 144) { /*  V-Blank interrupt */
-       raise_interrupt(VBLANK_INT); 
-    }
-
-    //io_mem[IO_LY_REG] = (ly + 1) % 154;
-}
 
 /*  Increment DIV register 
  *  should be incremented at a frequency of 16382

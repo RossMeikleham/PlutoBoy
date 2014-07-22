@@ -1,22 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  sprite_lists.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  20/07/14 08:14:10
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-
 #include <stdint.h>
 #include "sprite_priorities.h"
 
@@ -56,7 +37,7 @@ void init_sprite_prio_list() {
 }
 
 
-static void move_after(Node *origin, Node *destination) {
+inline static void move_after(Node *origin, Node *destination) {
     // Relink either sides of node to move
     origin->prev->next = origin->next;
     origin->next->prev = origin->prev;
@@ -71,21 +52,12 @@ static void move_after(Node *origin, Node *destination) {
 
 }
 
-static void move_before(Node *origin, Node *destination) {
-    
-    origin->prev->next = origin->next;
-    origin->next->prev = origin->prev;
-    
-    origin->next = destination;
-    origin->prev = destination->prev;
-    origin->prev->next = origin;
-    origin->next->prev = origin;    
-}
 
 void update_sprite_prios(int sprite_no, uint8_t x_pos) {
 
     Node *current_node = inverse_prio_sprites + sprite_no;
-    current_node->x_pos = x_pos;    
+    // Order by x position and if equal then by sprite number
+    current_node->x_pos = (x_pos << 8) | sprite_no;    
     Node *swap_node = current_node;
 
    
@@ -94,26 +66,13 @@ void update_sprite_prios(int sprite_no, uint8_t x_pos) {
         while (swap_node->next != sentinal && x_pos < swap_node->next->x_pos) {
             swap_node = swap_node->next;
         }
-        Node *temp_node = swap_node->next;
-       // Equal X positions, lower sprite no has priority
-       
-        if (temp_node != sentinal && x_pos == temp_node->x_pos &&
-            current_node < temp_node) {
-            swap_node = temp_node;
-        } 
-        move_before(current_node, swap_node->next);
+        move_after(current_node, swap_node);
      }
     
     // Move down priorites
     else if (swap_node->prev != sentinal && x_pos > swap_node->prev->x_pos) {
         while (swap_node->prev != sentinal && x_pos > swap_node->prev->x_pos) {
             swap_node = swap_node->prev;
-        }
-        Node *temp_node = swap_node->prev;
-        //Equal X Positions, lower sprite has priority
-        if (temp_node != sentinal && x_pos == temp_node->x_pos &&
-            current_node > temp_node) {
-            swap_node = temp_node;
         }
         move_after(current_node, swap_node->prev);
     }

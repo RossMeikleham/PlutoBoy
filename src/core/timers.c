@@ -1,5 +1,5 @@
-#include "IO.h"
 #include "timers.h"
+#include "interrupts.h"
 #include "memory.h"
 #include "memory_layout.h"
 #include "bits.h"
@@ -31,6 +31,28 @@ void set_timer_frequency(unsigned int n) {
     if (n < TIMER_FREQUENCIES_LEN) {
         timer_frequency = timer_frequencies[n];
     }
+}
+
+
+/*  Increments the TIMA register
+ *  if causes overflow, timer interrupt is raised*/
+static void increment_tima() {
+
+    uint8_t tima = get_mem(TIMA_REG) + 1;
+
+    if (tima == 0) { //Overflow
+        tima = get_mem(TMA_REG);
+        raise_interrupt(TIMER_INT);
+    }
+    set_mem_override(TIMA_REG, tima);
+}
+
+
+/*  Increment DIV register 
+ *  should be incremented at a frequency of 16382
+ *  (once every 256 clock cycles)*/
+static void increment_div() {
+    set_mem_override(DIV_REG, get_mem(DIV_REG) + 1);
 }
 
 

@@ -1,20 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  debugger.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  21/07/14 16:51:29
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
 #include "../../non_core/debugger.h"
 
 #include "../../core/memory.h"
@@ -36,7 +19,7 @@ static int first_time = 1;
  * and perform debugger action */
 Command get_command() {
     #define BUFSIZE 1024
-    int flags;
+    int flags = 0;
     char buf[BUFSIZE];
     
     if (first_time) {
