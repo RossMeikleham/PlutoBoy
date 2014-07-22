@@ -1,0 +1,12 @@
+*.o
+*.s
+*.swp
+*.swo
+*.swn
+*.gb
+*.gbc
+*.GB
+*.bin
+*.inc
+*.dblite
+*.sav

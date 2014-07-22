@@ -1,21 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  memory.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  20/03/14 19:54:41
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
 #include "memory.h"
 #include "memory_layout.h"
 #include "romInfo.h"
@@ -25,7 +7,9 @@
 #include <string.h>
 
 static uint8_t mem[WORD_MAX - 0x100];
-/*  
+  
+static uint8_t oam
+  
 static uint8_t io_mem[256]= {
 		0xCF, 0x00, 0x7E, 0xFF, 0xD3, 0x00, 0x00, 0xF8,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xE1,
@@ -59,27 +43,39 @@ static uint8_t io_mem[256]= {
 		0xBA, 0xC5, 0x31, 0xF2, 0x71, 0xB4, 0xCF, 0x29,
 		0xBC, 0x7F, 0x7E, 0xD0, 0xC7, 0xC3, 0xBD, 0xCF,
 		0x59, 0xEA, 0x39, 0x01, 0x2E, 0x00, 0x69, 0x00
-    };
+};
 
 
-           
-void check_for_keystrokes() {
-    
-    if (key_pressed()) {
-       raise_interrupt(JOYPAD_INT); 
+static void io_set_mem(uint8_t addr, uint8_t val) {
+
+    io_mem[addr] = val;
+
+    /*OAM, store window x-coridinate priorities
+     * Ready for rendering */
+    if (addr > 0xFE00 && addr < 0xFEA0) {
+        if(addr -1 % 4 == 0) { //Byte 1 is X Position
+            update_sprite_prios((addr - 0xFE00) /4 ,val);
+        } 
+    }
+    switch (global_addr) {
+        
+        /*  Timers */
+        case P1_REG  : joypad_write(val); break;
+        //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;
+        case TIMA_REG : break;
+        case TMA_REG  : break;
+        case TAC_REG  : break;
+        /*  Attempting to set DIV reg resets it to 0 */
+        case DIV_REG  : io_mem[io_addr] = 0; break;
+        /*  Attempting to set LY reg resets it to 0  */
+        case LY_REG   : break; // io_mem[io_addr] = 0; break;
+        /*  Perform direct memory transfer  */
+        case DMA_REG  : dma_transfer(val); break;
     }
 }
 
-// Keypad is written to, update register with state
-// Not implemented yet, so all keys set to 1 (off) for now
-void joypad_write(uint8_t joypad_state) {
+           
     
-    joypad_state |= 0xF; // unset all keys
-
-    // Check directional keys
-    if (joypad_state & BIT_5) {
-*/
-
 
 /*  Gameboy bootstrap ROM for startup
  *  Modified from the original so that the CPU doesn't
