@@ -3,7 +3,7 @@
 #include "romInfo.h"
 #include "timers.h"
 #include "lcd.h"
-#include "memory.h"
+#include "mmu/memory.h"
 #include "interrupts.h"
 
 #include "../non_core/joypad.h"

@@ -16,9 +16,10 @@
  * =====================================================================================
  */
 
-#include "memory.h"
+#include "mmu/memory.h"
 #include "romInfo.h"
 #include "stdio.h"
+#include <stdint.h>
 /*--------  Cartridge Header info---- */
 
 typedef struct {

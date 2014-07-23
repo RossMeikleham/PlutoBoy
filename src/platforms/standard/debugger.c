@@ -1,6 +1,6 @@
 #include "../../non_core/debugger.h"
 
-#include "../../core/memory.h"
+#include "../../core/mmu/memory.h"
 #include "../../core/disasm.h"
 #include "../../core/cpu.h"
 

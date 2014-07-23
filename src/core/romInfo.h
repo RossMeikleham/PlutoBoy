@@ -1,6 +1,7 @@
 #ifndef ROM_INFO
 #define ROM_INFO
 
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"

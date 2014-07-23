@@ -1,6 +1,6 @@
 #include "lcd.h"
 #include "timers.h"
-#include "memory.h"
+#include "mmu/memory.h"
 #include "memory_layout.h"
 #include "interrupts.h"
 #include "graphics.h"

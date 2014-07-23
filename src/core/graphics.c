@@ -1,6 +1,6 @@
 #include "cpu.h"
 #include <stdio.h>
-#include "memory.h"
+#include "mmu/memory.h"
 #include "memory_layout.h"
 #include <stdint.h>
 #include "graphics.h"

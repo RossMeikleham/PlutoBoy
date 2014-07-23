@@ -1,6 +1,10 @@
 #ifndef INTERRUPTS_H
 #define INTERRUPTS_H
 
+#ifdef __cplusplus 
+extern "C" {
+#endif
+
 #define TOTAL_INTERRUPTS (JOYPAD_INT + 1)
 typedef enum {VBLANK_INT = 0, LCD_INT = 1, TIMER_INT = 2, IO_INT = 3, JOYPAD_INT = 4} InterruptCode;
 
@@ -12,5 +16,9 @@ void raise_interrupt(InterruptCode ic);
  * and call the appropriate Interrupt Routine if appropriate. 
  * Returns 1 if the HALT is triggered, 0 otherwise*/
 int handle_interrupts(); 
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

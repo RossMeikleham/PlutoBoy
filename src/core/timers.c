@@ -1,6 +1,6 @@
 #include "timers.h"
 #include "interrupts.h"
-#include "memory.h"
+#include "mmu/memory.h"
 #include "memory_layout.h"
 #include "bits.h"
 

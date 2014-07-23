@@ -1,21 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  logger.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  21/07/14 14:31:36
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
 #include "../../non_core/logger.h"
 
 #include <stdarg.h>

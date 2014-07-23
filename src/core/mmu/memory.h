@@ -4,11 +4,12 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+uint8_t mem[0xFF00 + 1 - 0x100];
+    
+typedef enum {MBC0 = 0, MBC1 = 1, MBC2 = 2} MBC_MODE;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+uint8_t RAM_banks[4][0x2000];
+uint8_t ROM_banks[125][0x4000];// 125 16kb banks
 
 
 /* Given the ROM data, load the ROM into
@@ -31,11 +32,6 @@ void set_mem_override(uint16_t loc, uint8_t val);
 void set_mem_16(uint16_t loc, uint16_t val);
 uint16_t get_mem_16(uint16_t loc);
 
-
-
-#ifdef __cplusplus
-}
-#endif
 
 
 #endif

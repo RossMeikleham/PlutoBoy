@@ -6,7 +6,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
-#include "memory.h"
+#include "mmu/memory.h"
 #include "cpu.h"
 #include <string.h>
 #include <stdlib.h>

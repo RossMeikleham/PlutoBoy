@@ -1,18 +1,20 @@
+#include "memory.h"
 #include "mbc.h"
 
-#include "../../non_core/logger.h"
+#include "../memory_layout.h"
+#include "../romInfo.h"
+#include "../graphics.h"
+#include "../sprite_priorities.h"
+#include "../interrupts.h"
+#include "../bits.h"
+
 #include "../../non_core/joypad.h"
 
-#include "../romInfo.h"
-#include "../sprite_priorities.h"
-#include "../bits.h"
-#include "../memory_layout.h"
-#include "../interrupts.h"
+#include <stdio.h>
+#include <string.h>
 
-#include <stdint.h>
-#include <cstring>
-
-using namespace std;
+  
+uint8_t mem[0xFF00 + 1 - 0x100];
 
 
 uint8_t io_mem[256]= {
@@ -50,13 +52,35 @@ uint8_t io_mem[256]= {
 		0x59, 0xEA, 0x39, 0x01, 0x2E, 0x00, 0x69, 0x00
 };
 
-
-
            
+    
+// OAM Ram
+uint8_t oam_mem[0xA0] = {
+    0xBB, 0xD8, 0xC4, 0x04, 0xCD, 0xAC, 0xA1, 0xC7,
+    0x7D, 0x85, 0x15, 0xF0, 0xAD, 0x19, 0x11, 0x6A,
+    0xBA, 0xC7, 0x76, 0xF8, 0x5C, 0xA0, 0x67, 0x0A,
+    0x7B, 0x75, 0x56, 0x3B, 0x65, 0x5C, 0x4D, 0xA3,
+    0x00, 0x05, 0xD7, 0xC9, 0x1B, 0xCA, 0x11, 0x6D,
+    0x38, 0xE7, 0x13, 0x2A, 0xB1, 0x10, 0x72, 0x4D,
+    0xA7, 0x47, 0x13, 0x89, 0x7C, 0x62, 0x5F, 0x90,
+    0x64, 0x2E, 0xD3, 0xEF, 0xAB, 0x01, 0x15, 0x85,
+    0xE8, 0x2A, 0x6E, 0x4A, 0x1F, 0xBE, 0x49, 0xB1,
+    0xE6, 0x0F, 0x93, 0xE2, 0xB6, 0x87, 0x5D, 0x35,
+    0xD8, 0xD4, 0x4A, 0x45, 0xCA, 0xB3, 0x33, 0x74,
+    0x18, 0xC1, 0x16, 0xFB, 0x8F, 0xA4, 0x8E, 0x70,
+    0xCD, 0xB4, 0x4A, 0xDC, 0xE6, 0x34, 0x32, 0x41,
+    0xF9, 0x84, 0x6A, 0x99, 0xEC, 0x92, 0xF1, 0x8B,
+    0x5D, 0xA5, 0x09, 0xCF, 0x3A, 0x93, 0xBC, 0xE0,
+    0x15, 0x19, 0xE4, 0xB6, 0x9A, 0x04, 0x3B, 0xC1,
+    0x96, 0xB7, 0x56, 0x85, 0x6A, 0xAA, 0x1E, 0x2A,
+    0x80, 0xEE, 0xE7, 0x46, 0x76, 0x8B, 0x0D, 0xBA,
+    0x24, 0x40, 0x42, 0x05, 0x0E, 0x04, 0x20, 0xA6,
+    0x5E, 0xC1, 0x97, 0x7E, 0x44, 0x05, 0x01, 0xA9
+};
 /*  Gameboy bootstrap ROM for startup
  *  Modified from the original so that the CPU doesn't
  *  hang if the ROM checksum checksum is incorrect */
-uint8_t dmg_boot_rom[0x100] = {
+static uint8_t const dmg_boot_rom[0x100] = {
   0x31, 0xfe, 0xff, 0xaf, 0x21, 0xff, 0x9f, 0x32, 0xcb, 0x7c, 0x20, 0xfb,
   0x21, 0x26, 0xff, 0x0e, 0x11, 0x3e, 0x80, 0x32, 0xe2, 0x0c, 0x3e, 0xf3,
   0xe2, 0x32, 0x3e, 0x77, 0x77, 0x3e, 0xfc, 0xe0, 0x47, 0x11, 0x04, 0x01,
@@ -81,68 +105,62 @@ uint8_t dmg_boot_rom[0x100] = {
   0x3e, 0x01, 0xe0, 0x50
 };
 
-// State of DMG OAM Ram on startup 
-static uint8_t oam_mem[0xA0] = {
-    0xBB, 0xD8, 0xC4, 0x04, 0xCD, 0xAC, 0xA1, 0xC7,
-    0x7D, 0x85, 0x15, 0xF0, 0xAD, 0x19, 0x11, 0x6A,
-    0xBA, 0xC7, 0x76, 0xF8, 0x5C, 0xA0, 0x67, 0x0A,
-    0x7B, 0x75, 0x56, 0x3B, 0x65, 0x5C, 0x4D, 0xA3,
-    0x00, 0x05, 0xD7, 0xC9, 0x1B, 0xCA, 0x11, 0x6D,
-    0x38, 0xE7, 0x13, 0x2A, 0xB1, 0x10, 0x72, 0x4D,
-    0xA7, 0x47, 0x13, 0x89, 0x7C, 0x62, 0x5F, 0x90,
-    0x64, 0x2E, 0xD3, 0xEF, 0xAB, 0x01, 0x15, 0x85,
-    0xE8, 0x2A, 0x6E, 0x4A, 0x1F, 0xBE, 0x49, 0xB1,
-    0xE6, 0x0F, 0x93, 0xE2, 0xB6, 0x87, 0x5D, 0x35,
-    0xD8, 0xD4, 0x4A, 0x45, 0xCA, 0xB3, 0x33, 0x74,
-    0x18, 0xC1, 0x16, 0xFB, 0x8F, 0xA4, 0x8E, 0x70,
-    0xCD, 0xB4, 0x4A, 0xDC, 0xE6, 0x34, 0x32, 0x41,
-    0xF9, 0x84, 0x6A, 0x99, 0xEC, 0x92, 0xF1, 0x8B,
-    0x5D, 0xA5, 0x09, 0xCF, 0x3A, 0x93, 0xBC, 0xE0,
-    0x15, 0x19, 0xE4, 0xB6, 0x9A, 0x04, 0x3B, 0xC1,
-    0x96, 0xB7, 0x56, 0x85, 0x6A, 0xAA, 0x1E, 0x2A,
-    0x80, 0xEE, 0xE7, 0x46, 0x76, 0x8B, 0x0D, 0xBA,
-    0x24, 0x40, 0x42, 0x05, 0x0E, 0x04, 0x20, 0xA6,
-    0x5E, 0xC1, 0x97, 0x7E, 0x44, 0x05, 0x01, 0xA9
-};
+
+/* Store first 255 bytes of cartridge so it can
+   be restored after boot room has finished */
+static uint8_t cartridge_start[0x100];
+
+static unsigned rom_bank_count = 0; //
+static int mbc_mode = 0; //memory bank mode
 
 
 
-
-
-MBC::MBC(unsigned char const *file_data, unsigned long rom_size) {
-
-    current_RAM_bank = 0;
-    current_ROM_bank = 1;
-    bank_mode = 0;   
-     
-    unsigned rom_bank_count = rom_size / 0x4000;
-    if (rom_bank_count <= 31) {
-       bank_mode = 1; 
+int load_rom(unsigned char const *file_data, size_t size) {
+    
+    if (size < CARTRIDGE_ROM_SIZE + 1) {
+        fprintf(stderr, "Error: Cartridge size is too small (%lu bytes)\n",size);
+        return 0;
     }
+
+    size_t rom_size = get_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
+
+    // Data read in doesn't match header information
+    if (size != rom_size) {
+        fprintf(stderr, "Error: Cartridge header info on its size (%lu bytes) \
+            doesn't match file size (%lu bytes)\n",rom_size, size);
+        return 0;
+    }
+
+    rom_bank_count = rom_size / 0x4000;
       
     for (unsigned n = 0; n < rom_bank_count; n++) {
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
+    
+    if(!setup_MBC(file_data[CARTRIDGE_TYPE])) {
+        return 0;
+    }
+
     /* Copy first 100 bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
-     * it later */
+     *  it later */
     memcpy(cartridge_start, ROM_banks[0],  0x100);
     memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
     
+    return 1;
 } 
-
 
 /* Restore first 255 bytes of memory
    with first 255 bytes of the cartridge */
-void MBC::unload_boot_rom() {
+void unload_boot_rom() {
 
     memcpy(ROM_banks[0], cartridge_start, 0x100);
 }
 
 
 
-void MBC::oam_set_mem(uint8_t addr, uint8_t val) {
+static void oam_set_mem(uint8_t addr, uint8_t val) {
     
     // Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     if (addr < 0xA0) {
@@ -155,7 +173,7 @@ void MBC::oam_set_mem(uint8_t addr, uint8_t val) {
     }// else {oam_mem[addr] = val;} 
 }
 
-uint8_t MBC::oam_get_mem(uint8_t addr) {
+static uint8_t oam_get_mem(uint8_t addr) {
     //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     return (addr < 0xA0) ? oam_mem[addr] : 0;// oam_mem[addr];//0x0;
 }
@@ -165,17 +183,16 @@ uint8_t MBC::oam_get_mem(uint8_t addr) {
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
-void MBC::dma_transfer(uint8_t val) {
+static inline void dma_transfer(uint8_t val) {
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {
-        oam_mem[i] = read_mem(source_addr + i);
+        oam_mem[i] = get_mem(source_addr + i);
     }
 }
 
-
 // Keypad is written to, update register with state
 // Not implemented yet, so all keys set to 1 (off) for now
-void MBC::joypad_write(uint8_t joypad_state) {
+static void joypad_write(uint8_t joypad_state) {
     
     joypad_state |= 0xF; // unset all keys
 
@@ -202,7 +219,7 @@ void MBC::joypad_write(uint8_t joypad_state) {
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
-void MBC::io_set_mem(uint8_t addr, uint8_t val) {
+static void io_set_mem(uint8_t addr, uint8_t val) {
 
   
     io_mem[addr] = val;
@@ -225,24 +242,28 @@ void MBC::io_set_mem(uint8_t addr, uint8_t val) {
     }
 }
 
- 
+
 /* Directly inject a value in memory without performing
  * checks, use carefully. Used for fast access or for
  * controllers which have direct access to that location
- * in memory in which the CPU does not*/ /*
+ * in memory in which the CPU does not*/
 void set_mem_override(uint16_t loc, uint8_t val) {
    if (loc >= 0xFF00) { 
        io_mem[loc - 0xFF00] = val;
    } else {
         set_mem(loc, val);
    }
-} */
+}
 
-
-void MBC::write_ordinary_mem(uint16_t addr, uint8_t val) {
-   
-    // Write to "memory (0x8000 - 0xFDFF)
-    if ((uint16_t)(addr - 0x8000) < (0xFE00 - 0x8000)) {
+void set_mem(uint16_t const addr, uint8_t const val) {
+    
+    //Check if memory bank controller chip is being accessed 
+    if (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000)) {
+        write_MBC(addr, val); 
+        return;
+    }
+    // Write to "ordinary" memory (0x8000 - 0xFDFF)
+    if (addr < 0xFE00) {
         mem[addr] = val;
         //  Check if mirrored memory being written to
 
@@ -268,26 +289,50 @@ void MBC::write_ordinary_mem(uint16_t addr, uint8_t val) {
         }
         io_set_mem(addr - 0xFF00, val);
     }
-    
 }
 
 
 
-uint8_t MBC::read_ordinary_mem(uint16_t const addr) {
+uint8_t get_mem(uint16_t const addr) {
     
+    if (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000)) {
+        return read_MBC(addr);   
+    }
+
     if (addr >= 0xFE00 && addr < 0xFF00) {
+    // 0xFE00 - 0xFEFF
+  //  if ((uint16_t)(addr - 0xFE00) < 0x100) {
         uint8_t i =  oam_get_mem(addr - 0xFE00);
         return i;
     }
     
-    if (addr < 0xFF00 && addr >= 0x8000) {
+    if (addr < 0xFF00) {
         return mem[addr];
     }
 
-    if (addr >= 0xFF00) {
-        return io_mem[addr - 0xFF00];
-    }
+    return io_mem[addr - 0xFF00];
 
-    
-    return 0x0;
 }
+
+
+void set_mem_16(uint16_t const loc, uint16_t const val) {
+    set_mem(loc + 1, val >> 8);
+    set_mem(loc, val & 0xFF);
+}
+
+
+uint16_t get_mem_16(uint16_t const loc) {
+    return (get_mem(loc + 1) << 8) |
+            get_mem(loc);
+}
+
+
+// Applies function to 8 bit value at the specified address
+void mem_op(uint16_t addr, void (mem_op_fn)(uint8_t *)) {
+    uint8_t temp = get_mem(addr); 
+    mem_op_fn(&temp); /*  perform modifying op on temp */
+    set_mem(addr, temp); /*  write new value temp back */
+}
+
+
+
