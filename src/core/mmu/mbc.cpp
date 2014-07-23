@@ -1,20 +1,21 @@
-#include "memory.h"
-#include "memory_layout.h"
-#include "romInfo.h"
-#include "graphics.h"
-#include "IO.h"
-#include "sprite_priorities.h"
-#include "interrupts.h"
-#include "bits.h"
+#include "mbc.h"
 
-#include "../non_core/joypad.h"
+#include "../../non_core/logger.h"
+#include "../../non_core/joypad.h"
 
-#include <stdio.h>
-#include <string.h>
+#include "../romInfo.h"
+#include "../sprite_priorities.h"
+#include "../bits.h"
+#include "../memory_layout.h"
+#include "../interrupts.h"
 
-static uint8_t mem[WORD_MAX + 1 - 0x100];
-  
-static uint8_t io_mem[256]= {
+#include <stdint.h>
+#include <cstring>
+
+using namespace std;
+
+
+uint8_t io_mem[256]= {
 		0xCF, 0x00, 0x7E, 0xFF, 0xD3, 0x00, 0x00, 0xF8,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xE1,
 		0x80, 0xBF, 0xF3, 0xFF, 0xBF, 0xFF, 0x3F, 0x00,
@@ -52,12 +53,10 @@ static uint8_t io_mem[256]= {
 
 
            
-    
-
 /*  Gameboy bootstrap ROM for startup
  *  Modified from the original so that the CPU doesn't
  *  hang if the ROM checksum checksum is incorrect */
-static uint8_t const dmg_boot_rom[0x100] = {
+uint8_t dmg_boot_rom[0x100] = {
   0x31, 0xfe, 0xff, 0xaf, 0x21, 0xff, 0x9f, 0x32, 0xcb, 0x7c, 0x20, 0xfb,
   0x21, 0x26, 0xff, 0x0e, 0x11, 0x3e, 0x80, 0x32, 0xe2, 0x0c, 0x3e, 0xf3,
   0xe2, 0x32, 0x3e, 0x77, 0x77, 0x3e, 0xfc, 0xe0, 0x47, 0x11, 0x04, 0x01,
@@ -106,73 +105,17 @@ static uint8_t oam_mem[0xA0] = {
     0x5E, 0xC1, 0x97, 0x7E, 0x44, 0x05, 0x01, 0xA9
 };
 
-/* Store first 255 bytes of cartridge so it can
-   be restored after boot room has finished */
-static uint8_t cartridge_start[0x100];
-
-static unsigned rom_bank_count = 0; //
-static int mbc_mode = 0; //memory bank mode
-
-static uint8_t RAM_banks[4][0x2000];
-static uint8_t ROM_banks[125][0x4000];// 125 16kb banks
-
-static unsigned current_RAM_bank = 0;
-static unsigned current_ROM_bank = 1;
-
-static uint8_t bank_mode = 0;
-
-// Get the memory bank mode of ROM loaded into memory
-static void setup_MBC_mode() {
-    uint8_t type = ROM_banks[0][CARTRIDGE_TYPE];
-
-    if  (type == 0) {
-        mbc_mode = MBC0;
-    } else if (type >=1 || type <= 3) {
-        mbc_mode = MBC1;
-    } else if (type == 5 || type == 6) {
-        mbc_mode = MBC2;
-    } else {
-        fprintf(stderr, "unknown rom memory type : %u\n",type);
-    }
-}
-
-static void setup_RAM_banks() {
-    // Only MBC1 has RAM banks
-    if (mbc_mode == MBC1) {
-        
-    }
-
-}
-/* After initial 32kb of rom read into memory
- * mmu setup should occur */
-void setup_mmu() {
-
-    setup_MBC_mode();  
-    setup_RAM_banks();      
-    //Only MBC1 has RAM banks
-    if (mbc_mode == MBC1) {
-
-    }
-}
 
 
-int load_rom(unsigned char const *file_data, size_t size) {
-    
-    if (size < CARTRIDGE_ROM_SIZE + 1) {
-        fprintf(stderr, "Error: Cartridge size is too small (%lu bytes)\n",size);
-        return 0;
-    }
 
-    size_t rom_size = get_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
 
-    // Data read in doesn't match header information
-    if (size != rom_size) {
-        fprintf(stderr, "Error: Cartridge header info on its size (%lu bytes) \
-            doesn't match file size (%lu bytes)\n",rom_size, size);
-        return 0;
-    }
+MBC::MBC(unsigned char const *file_data, unsigned long rom_size) {
 
-    rom_bank_count = rom_size / 0x4000;
+    current_RAM_bank = 0;
+    current_ROM_bank = 1;
+    bank_mode = 0;   
+     
+    unsigned rom_bank_count = rom_size / 0x4000;
     if (rom_bank_count <= 31) {
        bank_mode = 1; 
     }
@@ -181,87 +124,25 @@ int load_rom(unsigned char const *file_data, size_t size) {
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
-    setup_MBC_mode();
-
     /* Copy first 100 bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
-     *  it later */
+     * it later */
     memcpy(cartridge_start, ROM_banks[0],  0x100);
     memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
     
-    return 1;
 } 
+
 
 /* Restore first 255 bytes of memory
    with first 255 bytes of the cartridge */
-void unload_boot_rom() {
+void MBC::unload_boot_rom() {
 
     memcpy(ROM_banks[0], cartridge_start, 0x100);
 }
 
 
-static int ram_banking = 0;
-void set_MBC1_mem(uint16_t const addr, uint8_t const val) {
 
-
-        // Setting ROM/RAM banking mode
-        if(addr <= 0x1FFF) {
-            ram_banking = (val & 0xF) == 0xA;
-        // Setting ROM bank
-        } else if((addr >= 0x2000) && (addr <= 0x3FFF)) {
-             //printf("switching rom bank %d\n", current_ROM_bank); 
-             current_ROM_bank = (val & 0x1F) + ((val & 0x1F) == 0);
-           
-        } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
-            current_RAM_bank = (val & 0x3); 
-        } else if((addr >= 0x6000) && (addr <= 0x7FFF)) { 
-           // printf("switching bank mode: val %d new mode %d\n",val, val & 0x1);
-            bank_mode = (val & 0x1); 
-        } 
-        //Write to External RAM (0xA000 - 0xBFFF)
-         else if(((addr & 0xE000) == 0xA000)  && ram_banking) { 
-            if(bank_mode == 0) { 
-                RAM_banks[0][addr - 0xA000] = val; 
-            } else {
-                RAM_banks[current_RAM_bank][addr - 0xA000] = val; 
-            }
-        }
-}
-
-
-
-
-
-uint8_t get_MBC1_mem(uint16_t const addr) {
-
-        if (addr < 0x4000) {
-            return ROM_banks[0][addr];
-        }
-        //Read using ROM Banking 0x4000 - 0x87FFF
-        if((addr & 0xC000) == 0x4000) {
-            if (bank_mode == 0) { //Upper 2 bits of ROM bank speciffied by ram bits 
-                //printf("Reading from bank %d\n", (current_RAM_bank << 5) | current_ROM_bank);
-                return ROM_banks[(current_RAM_bank << 5) | 
-                    current_ROM_bank][addr - 0x4000];
-            } else {
-                return ROM_banks[current_ROM_bank][addr - 0x4000];
-            }
-        }
-
-        //Read using RAM Banking 0xA000 - 0xBFFF
-        else if(((addr & 0xE000) == 0xA000) && ram_banking) {
-            if (bank_mode == 0) {
-                return RAM_banks[0][addr - 0xA000]; 
-             } else { 
-                return RAM_banks[current_RAM_bank][addr - 0xA000]; 
-             } 
-        }
-
-        return 0x0;
-}
- 
-
-static void oam_set_mem(uint8_t addr, uint8_t val) {
+void MBC::oam_set_mem(uint8_t addr, uint8_t val) {
     
     // Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     if (addr < 0xA0) {
@@ -274,7 +155,7 @@ static void oam_set_mem(uint8_t addr, uint8_t val) {
     }// else {oam_mem[addr] = val;} 
 }
 
-static uint8_t oam_get_mem(uint8_t addr) {
+uint8_t MBC::oam_get_mem(uint8_t addr) {
     //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     return (addr < 0xA0) ? oam_mem[addr] : 0;// oam_mem[addr];//0x0;
 }
@@ -284,16 +165,17 @@ static uint8_t oam_get_mem(uint8_t addr) {
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
-static inline void dma_transfer(uint8_t val) {
+void MBC::dma_transfer(uint8_t val) {
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {
-        oam_mem[i] = get_mem(source_addr + i);
+        oam_mem[i] = read_mem(source_addr + i);
     }
 }
 
+
 // Keypad is written to, update register with state
 // Not implemented yet, so all keys set to 1 (off) for now
-static void joypad_write(uint8_t joypad_state) {
+void MBC::joypad_write(uint8_t joypad_state) {
     
     joypad_state |= 0xF; // unset all keys
 
@@ -320,7 +202,7 @@ static void joypad_write(uint8_t joypad_state) {
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
-static void io_set_mem(uint8_t addr, uint8_t val) {
+void MBC::io_set_mem(uint8_t addr, uint8_t val) {
 
   
     io_mem[addr] = val;
@@ -343,33 +225,24 @@ static void io_set_mem(uint8_t addr, uint8_t val) {
     }
 }
 
-
+ 
 /* Directly inject a value in memory without performing
  * checks, use carefully. Used for fast access or for
  * controllers which have direct access to that location
- * in memory in which the CPU does not*/
+ * in memory in which the CPU does not*/ /*
 void set_mem_override(uint16_t loc, uint8_t val) {
    if (loc >= 0xFF00) { 
        io_mem[loc - 0xFF00] = val;
    } else {
         set_mem(loc, val);
    }
-}
+} */
 
-void set_mem(uint16_t const addr, uint8_t const val) {
-    
-    //Check if memory bank controller chip is being accessed 
-    if (mbc_mode == MBC1 && (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000))) {
-        set_MBC1_mem(addr, val);
-        return;
-    }
-    // No memory bank controller with MBC0 and is impossible to write
-    // directly over ROM
-    if (mbc_mode == MBC0 && addr < 0x8000) {
-        return;
-    }
-    // Write to "ordinary" memory (0x8000 - 0xFDFF)
-    if (addr < 0xFE00) {
+
+void MBC::write_ordinary_mem(uint16_t addr, uint8_t val) {
+   
+    // Write to "memory (0x8000 - 0xFDFF)
+    if ((uint16_t)(addr - 0x8000) < (0xFE00 - 0x8000)) {
         mem[addr] = val;
         //  Check if mirrored memory being written to
 
@@ -395,54 +268,26 @@ void set_mem(uint16_t const addr, uint8_t const val) {
         }
         io_set_mem(addr - 0xFF00, val);
     }
+    
 }
 
 
 
-uint8_t get_mem(uint16_t const addr) {
+uint8_t MBC::read_ordinary_mem(uint16_t const addr) {
     
-    if (mbc_mode == MBC1 && (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000))) {
-         return get_MBC1_mem(addr);
-    } else if (addr >= 0x4000 && addr <= 0x7FFF) {
-        return ROM_banks[1][addr - 0x4000];
-    } else if (addr < 0x4000) {
-        return ROM_banks[0][addr];
-    }
-
     if (addr >= 0xFE00 && addr < 0xFF00) {
-    // 0xFE00 - 0xFEFF
-  //  if ((uint16_t)(addr - 0xFE00) < 0x100) {
         uint8_t i =  oam_get_mem(addr - 0xFE00);
         return i;
     }
     
-    if (addr < 0xFF00) {
+    if (addr < 0xFF00 && addr >= 0x8000) {
         return mem[addr];
     }
 
-    return io_mem[addr - 0xFF00];
+    if (addr >= 0xFF00) {
+        return io_mem[addr - 0xFF00];
+    }
 
+    
+    return 0x0;
 }
-
-
-void set_mem_16(uint16_t const loc, uint16_t const val) {
-    set_mem(loc + 1, val >> 8);
-    set_mem(loc, val & 0xFF);
-}
-
-
-uint16_t get_mem_16(uint16_t const loc) {
-    return (get_mem(loc + 1) << 8) |
-            get_mem(loc);
-}
-
-
-// Applies function to 8 bit value at the specified address
-void mem_op(uint16_t addr, void (mem_op_fn)(uint8_t *)) {
-    uint8_t temp = get_mem(addr); 
-    mem_op_fn(&temp); /*  perform modifying op on temp */
-    set_mem(addr, temp); /*  write new value temp back */
-}
-
-
-

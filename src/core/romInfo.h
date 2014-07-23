@@ -1,6 +1,13 @@
 #ifndef ROM_INFO
 #define ROM_INFO
 
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+
 /* Information on game rom currently loaded
  * into memory */
 
@@ -46,4 +53,9 @@ int has_sgb_features();
 int is_colour_compatible();
 
 
+#ifdef __cplusplus
+}
 #endif
+
+
+#endif // ROM_INFO_H

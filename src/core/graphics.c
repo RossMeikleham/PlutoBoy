@@ -4,7 +4,6 @@
 #include "memory_layout.h"
 #include <stdint.h>
 #include "graphics.h"
-#include "IO.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include "sprite_priorities.h"

@@ -1,5 +1,4 @@
 #include "lcd.h"
-#include "IO.h"
 #include "timers.h"
 #include "memory.h"
 #include "memory_layout.h"
