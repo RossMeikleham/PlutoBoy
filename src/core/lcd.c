@@ -37,7 +37,7 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
 inline static void inc_ly() {
 
     uint8_t ly = get_mem(LY_REG);
-    ly = (ly + 1) % 153; //0 <= ly <= 153
+    ly = (ly + 1) % 154; //0 <= ly <= 153
 
     if (ly == 144) {
         raise_interrupt(VBLANK_INT);
@@ -145,7 +145,7 @@ void update_graphics(long cycles) {
 
     if (!screen_off) {
         update_on_lcd(lcd_stat, lcd_ctrl, cycles);
-    }
+    } 
 }
   
 

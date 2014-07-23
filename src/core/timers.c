@@ -45,6 +45,7 @@ static void increment_tima() {
         raise_interrupt(TIMER_INT);
     }
     set_mem_override(TIMA_REG, tima);
+    
 }
 
 

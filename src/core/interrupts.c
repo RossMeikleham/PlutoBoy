@@ -35,7 +35,7 @@ void raise_interrupt(InterruptCode ic) {
     
     if (ic < TOTAL_INTERRUPTS) { // Set flag for interrupt
         set_mem(INTERRUPT_REG, get_mem(INTERRUPT_REG) | BIT(ic));
-    }
+    } 
 }
 
 

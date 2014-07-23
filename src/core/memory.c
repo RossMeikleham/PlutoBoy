@@ -3,12 +3,16 @@
 #include "romInfo.h"
 #include "graphics.h"
 #include "IO.h"
+#include "sprite_priorities.h"
+#include "interrupts.h"
+#include "bits.h"
+
+#include "../non_core/joypad.h"
+
 #include <stdio.h>
 #include <string.h>
 
-static uint8_t mem[WORD_MAX - 0x100];
-  
-static uint8_t oam
+static uint8_t mem[WORD_MAX + 1 - 0x100];
   
 static uint8_t io_mem[256]= {
 		0xCF, 0x00, 0x7E, 0xFF, 0xD3, 0x00, 0x00, 0xF8,
@@ -46,33 +50,6 @@ static uint8_t io_mem[256]= {
 };
 
 
-static void io_set_mem(uint8_t addr, uint8_t val) {
-
-    io_mem[addr] = val;
-
-    /*OAM, store window x-coridinate priorities
-     * Ready for rendering */
-    if (addr > 0xFE00 && addr < 0xFEA0) {
-        if(addr -1 % 4 == 0) { //Byte 1 is X Position
-            update_sprite_prios((addr - 0xFE00) /4 ,val);
-        } 
-    }
-    switch (global_addr) {
-        
-        /*  Timers */
-        case P1_REG  : joypad_write(val); break;
-        //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;
-        case TIMA_REG : break;
-        case TMA_REG  : break;
-        case TAC_REG  : break;
-        /*  Attempting to set DIV reg resets it to 0 */
-        case DIV_REG  : io_mem[io_addr] = 0; break;
-        /*  Attempting to set LY reg resets it to 0  */
-        case LY_REG   : break; // io_mem[io_addr] = 0; break;
-        /*  Perform direct memory transfer  */
-        case DMA_REG  : dma_transfer(val); break;
-    }
-}
 
            
     
@@ -106,7 +83,7 @@ static uint8_t const dmg_boot_rom[0x100] = {
 };
 
 // State of DMG OAM Ram on startup 
-static uint8_t const oam_dump[0xA0] = {
+static uint8_t oam_mem[0xA0] = {
     0xBB, 0xD8, 0xC4, 0x04, 0xCD, 0xAC, 0xA1, 0xC7,
     0x7D, 0x85, 0x15, 0xF0, 0xAD, 0x19, 0x11, 0x6A,
     0xBA, 0xC7, 0x76, 0xF8, 0x5C, 0xA0, 0x67, 0x0A,
@@ -179,7 +156,7 @@ void setup_mmu() {
 }
 
 
-int load_rom(char const *file_data, size_t size) {
+int load_rom(unsigned char const *file_data, size_t size) {
     
     if (size < CARTRIDGE_ROM_SIZE + 1) {
         fprintf(stderr, "Error: Cartridge size is too small (%lu bytes)\n",size);
@@ -199,33 +176,26 @@ int load_rom(char const *file_data, size_t size) {
     if (rom_bank_count <= 31) {
        bank_mode = 1; 
     }
-   
-    // Fill up ROM banks     
+      
     for (unsigned n = 0; n < rom_bank_count; n++) {
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
-
-    /*for (unsigned j = 0; j< 4; j++) {
-    for (unsigned i = 0; i < 0x4000; i++) {
-        printf("%x ",ROM_banks[j][i]);
-    }*/
-
+    
     setup_MBC_mode();
+
     /* Copy first 100 bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
      *  it later */
     memcpy(cartridge_start, ROM_banks[0],  0x100);
     memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
     
-    // Load initial Sprite/Object attribute table values
-    memcpy(mem + SPRITE_ATTRIBUTE_TABLE_START, oam_dump, 0xA0);
-
     return 1;
 } 
 
 /* Restore first 255 bytes of memory
    with first 255 bytes of the cartridge */
 void unload_boot_rom() {
+
     memcpy(ROM_banks[0], cartridge_start, 0x100);
 }
 
@@ -245,7 +215,7 @@ void set_MBC1_mem(uint16_t const addr, uint8_t const val) {
         } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
             current_RAM_bank = (val & 0x3); 
         } else if((addr >= 0x6000) && (addr <= 0x7FFF)) { 
-            printf("switching bank mode: val %d new mode %d\n",val, val & 0x1);
+           // printf("switching bank mode: val %d new mode %d\n",val, val & 0x1);
             bank_mode = (val & 0x1); 
         } 
         //Write to External RAM (0xA000 - 0xBFFF)
@@ -291,55 +261,146 @@ uint8_t get_MBC1_mem(uint16_t const addr) {
 }
  
 
+static void oam_set_mem(uint8_t addr, uint8_t val) {
+    
+    // Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
+    if (addr < 0xA0) {
+        oam_mem[addr] = val;
+        /* If Object X position is written to, reorganise
+         * sprite priorities for rendering */
+        if((addr - 1) % 4 == 0) {
+            update_sprite_prios(addr/4 ,val);
+        }
+    }// else {oam_mem[addr] = val;} 
+}
+
+static uint8_t oam_get_mem(uint8_t addr) {
+    //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
+    return (addr < 0xA0) ? oam_mem[addr] : 0;// oam_mem[addr];//0x0;
+}
+
+
+
+
+/* Transfer 160 bytes to sprite memory starting from
+ * address XX00 */
+static inline void dma_transfer(uint8_t val) {
+    uint16_t source_addr = val << 8;
+    for (int i = 0; i < 0xA0; i++) {
+        oam_mem[i] = get_mem(source_addr + i);
+    }
+}
+
+// Keypad is written to, update register with state
+// Not implemented yet, so all keys set to 1 (off) for now
+static void joypad_write(uint8_t joypad_state) {
+    
+    joypad_state |= 0xF; // unset all keys
+
+    // Check directional keys
+    if (joypad_state & BIT_5) {
+        joypad_state &= ~(down_pressed() << 3);
+        joypad_state &= ~(up_pressed() << 2);
+        joypad_state &= ~(left_pressed() << 1);
+        joypad_state &= ~(right_pressed());
+    } 
+    // Check other 4 keys
+    else if (joypad_state & BIT_4) {
+        joypad_state &= ~(start_pressed() << 3);
+        joypad_state &= ~(select_pressed() << 2);
+        joypad_state &= ~(b_pressed() << 1);
+        joypad_state &= ~(a_pressed());
+    }
+    
+    /* Raise joypad interrupt if a key
+     * was pressed */
+    if (!(joypad_state & 0xF)) {
+        raise_interrupt(JOYPAD_INT);
+    }
+    io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
+}
+
+static void io_set_mem(uint8_t addr, uint8_t val) {
+
+  
+    io_mem[addr] = val;
+    uint16_t global_addr = addr + 0xFF00;
+    switch (global_addr) {
+       
+        case LCDC_REG : break;// printf("updating lcdc %u\n",val); break; 
+        /*  Timers */
+        case P1_REG  : joypad_write(val); break;
+        //case SC_REG : if (val == 0x81) {printf("%c",io_mem[GLOBAL_TO_IO_ADDR(SB_REG)]);} break;
+        case TIMA_REG : break;
+        case TMA_REG  : break;
+        case TAC_REG  : break;
+        /*  Attempting to set DIV reg resets it to 0 */
+        case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
+        /*  Attempting to set LY reg resets it to 0  */
+        case LY_REG   : io_mem[addr] = 0; break;
+        /*  Perform direct memory transfer  */
+        case DMA_REG  : dma_transfer(val); break;
+    }
+}
+
+
 /* Directly inject a value in memory without performing
  * checks, use carefully. Used for fast access or for
  * controllers which have direct access to that location
  * in memory in which the CPU does not*/
 void set_mem_override(uint16_t loc, uint8_t val) {
-   // mem[loc] = val;
-   io_set_mem(GLOBAL_TO_IO_ADDR(loc), val);
+   if (loc >= 0xFF00) { 
+       io_mem[loc - 0xFF00] = val;
+   } else {
+        set_mem(loc, val);
+   }
 }
 
 void set_mem(uint16_t const addr, uint8_t const val) {
     
-    if (mbc_mode == MBC1 && (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000))) {
+    //Check if memory bank controller chip is being accessed 
+    if (mbc_mode == MBC1 && (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000))) {
         set_MBC1_mem(addr, val);
         return;
     }
-    if (addr == 0xFF50 && val == 1) {
-        printf("restoring rom header\n");
-        unload_boot_rom();
-    } 
-    
-    
-
-    // Can't write to ROM banks or any memory below
-    if (addr < 0x8000) {
+    // No memory bank controller with MBC0 and is impossible to write
+    // directly over ROM
+    if (mbc_mode == MBC0 && addr < 0x8000) {
         return;
     }
-
-
-    if (addr < 0xFF00) {
+    // Write to "ordinary" memory (0x8000 - 0xFDFF)
+    if (addr < 0xFE00) {
         mem[addr] = val;
-    }
+        //  Check if mirrored memory being written to
 
-    /*  Check if mirrored memory being written to */
-    if (addr >= ECHO_RAM_START && addr <= ECHO_RAM_END) {
-        mem[addr - 0x2000] = val;
-    } else if (addr >= ECHO_RAM_START-0x2000 && addr <= ECHO_RAM_END-0x2000) {
-        mem[addr + 0x2000] = val;
-        //printf("echo2 loc %x new loc %x val %x\n",loc, loc+0x2000, val);
+        // 0xE000 - 0xFDFF, repeat to 0xC000 - 0xDDFF
+        if ((uint16_t)(addr - ECHO_RAM_START) < 0x1DFF) { 
+            mem[addr - 0x2000] = val;
+        // 0xC000 - 0xDDFF, repeat to 0xE000 - 0xFDFF
+        } else if ((uint16_t)(addr - ECHO_RAM_START - 0x2000) < 0x1DFF) {
+            mem[addr + 0x2000] = val;
+        }
+        return;
     }
-
+    // Write to Object Attribute Table (0xFE00 - 0xFEFF)
+    if ((uint16_t)(addr - 0xFE00) < 0x100) {
+        oam_set_mem(addr - 0xFE00, val);
+        return;
+    }
     /*  IO being written to */
     if (addr >= 0xFF00) {
-        io_set_mem(GLOBAL_TO_IO_ADDR(addr), val);
+        // Boot ROM finished, reload start of cartridge
+        if (addr == 0xFF50 && val == 1) {
+            unload_boot_rom();
+        }
+        io_set_mem(addr - 0xFF00, val);
     }
 }
 
 
 
 uint8_t get_mem(uint16_t const addr) {
+    
     if (mbc_mode == MBC1 && (addr < 0x8000 || (addr >= 0xA000 && addr < 0xC000))) {
          return get_MBC1_mem(addr);
     } else if (addr >= 0x4000 && addr <= 0x7FFF) {
@@ -348,12 +409,19 @@ uint8_t get_mem(uint16_t const addr) {
         return ROM_banks[0][addr];
     }
 
+    if (addr >= 0xFE00 && addr < 0xFF00) {
+    // 0xFE00 - 0xFEFF
+  //  if ((uint16_t)(addr - 0xFE00) < 0x100) {
+        uint8_t i =  oam_get_mem(addr - 0xFE00);
+        return i;
+    }
     
     if (addr < 0xFF00) {
         return mem[addr];
-    } else {
-        return io_get_mem(GLOBAL_TO_IO_ADDR(addr));
     }
+
+    return io_mem[addr - 0xFF00];
+
 }
 
 

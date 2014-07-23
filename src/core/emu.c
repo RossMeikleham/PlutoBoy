@@ -25,7 +25,7 @@ static int breakpoint = BREAKPOINT_OFF;
  * otherwise */
 int init(const char *file_path, int debugger) {
     
-    char buffer[MAX_FILE_SIZE];
+    unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;
     if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
@@ -92,7 +92,7 @@ int run() {
         if (is_halted() || is_stopped()) {
             current_cycles = 4;
             update_timers(current_cycles);
-
+            
             if (is_stopped()) {
                 key_pressed();
             }

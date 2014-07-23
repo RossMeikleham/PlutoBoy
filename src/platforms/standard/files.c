@@ -1,7 +1,7 @@
 #include "../../non_core/files.h"
 #include <stdio.h>
 
-unsigned long load_rom_from_file(const char *file_path, char *data) {
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data) {
  
     FILE *file;  
     /* open file in binary read mode
@@ -12,14 +12,14 @@ unsigned long load_rom_from_file(const char *file_path, char *data) {
     }
  
     unsigned long count = 0; 
-    char cur;
+    unsigned char cur;
     //Read file contents into buffer
     while(count < MAX_FILE_SIZE && fread(&cur, 1, 1, file)) {
         data[count++] = cur;
     }
 
     if (count == 0) {
-       printf(stderr, "Empty file %s\n", file_path);
+       fprintf(stderr, "Empty file %s\n", file_path);
     }
 
     fclose(file);
@@ -29,12 +29,12 @@ unsigned long load_rom_from_file(const char *file_path, char *data) {
 
 
 //TODO
-long load_SRAM(const char *file_path, char *data) {
+long load_SRAM(const char *file_path, unsigned char *data) {
     return 0;
 }
  
 //TODO
-int save_SRAM(const char *file_path, const char *data, long size) {
+int save_SRAM(const char *file_path, const unsigned char *data, long size) {
     return 0;
 }
  

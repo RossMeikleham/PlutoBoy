@@ -10,7 +10,7 @@ typedef enum {MBC0 = 0, MBC1 = 1, MBC2 = 2} MBC_MODE;
 
 /* Given the ROM data, load the ROM into
  * Gameboy memory and setup banks */
-int load_rom(char const *file_data, size_t size);
+int load_rom(unsigned char const *file_data, size_t size);
 
 /*  Set and obtain 8 bit values from
  *  memory */

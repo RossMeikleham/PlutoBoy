@@ -7,10 +7,10 @@
 
 #define MAX_SRAM_SIZE 0x8000
 
-size_t load_rom_from_file(const char *file_path, char *data);
+size_t load_rom_from_file(const char *file_path, unsigned char *data);
 
-long load_SRAM(const char *file_path, char *data);
+long load_SRAM(const char *file_path, unsigned char *data);
 
-int save_SRAM(const char *file_path, const char *data, long size);
+int save_SRAM(const char *file_path, const unsigned char *data, long size);
 
 #endif //FILES_H

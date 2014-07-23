@@ -198,7 +198,6 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
     uint8_t tile_skew = win_x % 8;
     
     if (tile_skew) {
-        printf("hm %u\n",win_x);
         draw_single_win_tile(tile_mem, bg_mem, row, 0, -win_x, y_pos, tile_skew, 8, pallete);
         draw_single_win_tile(tile_mem, bg_mem, row, 160 - tile_skew, 160 -tile_skew - win_x,  y_pos, 0, tile_skew, pallete); 
     }

@@ -1,6 +1,6 @@
 #Release environment
-env = Environment(CC = 'gcc', 
-                  CCFLAGS = '-std=c99 -O2 -W -Wall')
+env = Environment(CC = 'clang', 
+                  CCFLAGS = '-std=c99 -g -W -Wall')
 
 #gcc --std=c99
 
