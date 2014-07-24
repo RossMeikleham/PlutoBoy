@@ -27,7 +27,7 @@ long get_clock_speed() {
 /* Change the timer frequency to another of the possible
  * frequencies, resets the timer_counter 
  * If frequency number selected isn't valid then nothing happens*/
-void set_timer_frequency(unsigned int n) {
+static void set_timer_frequency(unsigned int n) {
     if (n < TIMER_FREQUENCIES_LEN) {
         timer_frequency = timer_frequencies[n];
     }
@@ -44,7 +44,7 @@ static void increment_tima() {
         tima = get_mem(TMA_REG);
         raise_interrupt(TIMER_INT);
     }
-    set_mem_override(TIMA_REG, tima);
+    io_write_override(GLOBAL_TO_IO_ADDR(TIMA_REG), tima);
     
 }
 
@@ -53,7 +53,7 @@ static void increment_tima() {
  *  should be incremented at a frequency of 16382
  *  (once every 256 clock cycles)*/
 static void increment_div() {
-    set_mem_override(DIV_REG, get_mem(DIV_REG) + 1);
+    io_write_override(GLOBAL_TO_IO_ADDR(DIV_REG), get_mem(DIV_REG) + 1);
 }
 
 
@@ -71,6 +71,8 @@ void update_divider_reg(long cycles) {
 }
 
 
+/* Update internal timers given the cycles executed since
+ * the last time this function was called. */
 void update_timers(long cycles) { 
     uint8_t timer_control = get_mem(TAC_REG);
     

@@ -12,6 +12,8 @@
 void set_clock_speed(long hz);
 long get_clock_speed();
 
+/* Update internal timers given the cycles executed since
+ * the last time this function was called. */
 void update_timers(long cycles);
 
 #endif //TIMERS_H

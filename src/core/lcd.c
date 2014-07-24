@@ -48,7 +48,7 @@ static void inc_ly() {
 
    };
    //Directly write ly into memory bypassing reset
-   set_mem_override(LY_REG, ly);
+   io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly);
 }   
 
 

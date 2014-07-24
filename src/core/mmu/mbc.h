@@ -3,6 +3,9 @@
 
 #include <stdint.h>
 
+/*  Setup a memory bank controller for the given
+ *  cartridge type id. Returns 1 if successful,
+ *  0 if not implemented or invalid. */
 int setup_MBC(int no);
 
 /*  Placeholders for write/read function ptrs
@@ -12,7 +15,6 @@ typedef void   (*write_MBC_ptr)(uint16_t addr, uint8_t val);
 
 read_MBC_ptr read_MBC;
 write_MBC_ptr write_MBC; 
-
 
 
 #endif //MBC_H

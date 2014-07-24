@@ -4,12 +4,9 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-uint8_t mem[0xFF00 + 1 - 0x100];
     
-typedef enum {MBC0 = 0, MBC1 = 1, MBC2 = 2} MBC_MODE;
-
-uint8_t RAM_banks[4][0x2000];
-uint8_t ROM_banks[125][0x4000];// 125 16kb banks
+uint8_t RAM_banks[4][0x2000];  // max 4 * 8KB ram banks
+uint8_t ROM_banks[125][0x4000];// max 125 * 16KB rom banks
 
 
 /* Given the ROM data, load the ROM into
@@ -21,17 +18,22 @@ int load_rom(unsigned char const *file_data, size_t size);
 void set_mem(uint16_t loc, uint8_t val);
 uint8_t get_mem(uint16_t loc);
 
-/* Directly inject a value in memory without performing
- * checks, use carefully. Used for fast access or for
- * controllers which have direct access to that location
- * in memory in which the CPU does not*/
+/* Directly inject a value into IO memory without performing
+ * any checks or operations on the data. Should be used by
+ * controllers that have direct access to modifying this memory
+ * and not the CPU. */
+void io_write_override(uint8_t loc, uint8_t val);
+
 void set_mem_override(uint16_t loc, uint8_t val); 
 
-/*  Set and obtain 16 bit values from
- *  memory */
+/* Write 16bit value starting at the given memory address 
+ * into memory.  Written in little-endian byte order */
 void set_mem_16(uint16_t loc, uint16_t val);
-uint16_t get_mem_16(uint16_t loc);
 
+
+/* Read contents of 2 memory locations starting at the
+ * given address. Returned as little-endian byte order 16 bit value */
+uint16_t get_mem_16(uint16_t loc); 
 
 
 #endif

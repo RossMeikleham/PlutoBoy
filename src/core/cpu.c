@@ -2,7 +2,8 @@
 /* Ross Meikleham */
 
 /*TODO needs a complete rewrite, registers are endian dependent
- * and bit fields for F register are implementation dependent. */
+ * and bit fields for F register are implementation dependent.
+ * Can also speed the code up a bit */
 
 #include <stdio.h>
 #include <stdint.h>
