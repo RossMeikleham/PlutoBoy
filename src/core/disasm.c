@@ -1,21 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  disasm.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  24/05/14 19:14:53
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
 #include <stdint.h>
 #include <stdio.h>
 #include "memory.h"

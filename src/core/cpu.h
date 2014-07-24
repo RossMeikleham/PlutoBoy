@@ -14,10 +14,15 @@ void master_interrupts_enable();
 
 int is_halted();
 void unhalt_cpu();
+
+
 void reset_cpu();
 
+/* Check/Set CPU stop mode */
 int is_stopped();
 void unstop_cpu();
+
+
 /*  Executes current instruction and returns
  *  the number of machine cycles it took */
 int exec_opcode(int skip_bug);

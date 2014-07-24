@@ -1,10 +1,10 @@
 #include "cpu.h"
 #include "graphics.h"
-#include "romInfo.h"
+#include "rom_info.h"
 #include "timers.h"
 #include "lcd.h"
-#include "mmu/memory.h"
 #include "interrupts.h"
+#include "mmu/memory.h"
 
 #include "../non_core/joypad.h"
 #include "../non_core/files.h"
@@ -61,10 +61,13 @@ int init(const char *file_path, int debugger) {
 
     log_message(LOG_INFO,"Game Title: %s\n", name_buf);
     log_message(LOG_INFO,"Licensee: %s\n", get_licensee());
-    log_message(LOG_INFO,"Destination: %s\n", get_destination_code(get_mem(DESTINATION_CODE)));
-    log_message(LOG_INFO,"ROM size: %dKB\n",get_rom_size(get_mem(CARTRIDGE_ROM_SIZE)));
-    log_message(LOG_INFO,"RAM save size: %dKB\n",get_ram_save_size(get_mem(CARTRIDGE_RAM_SIZE)));
-    log_message(LOG_INFO,"Cartridge Type: %s\n",get_cartridge_type());
+    log_message(LOG_INFO,"Destination: %s\n", get_destination_code());
+    log_message(LOG_INFO,"ROM size: %dKB\n",get_rom_size());
+    log_message(LOG_INFO,"RAM save size: %dKB\n",get_ram_save_size());
+    
+    const char *c_type = get_cartridge_type();
+    log_message(LOG_INFO,"Cartridge Type: %s\n",c_type != NULL ? c_type : "Unknown");
+
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_compatible() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
     

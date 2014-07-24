@@ -7,7 +7,6 @@
 #include "bits.h"
 
 #include <stdint.h>
-#include <stdio.h>
 
 
 #define MAX_SL_CYCLES 456
@@ -16,11 +15,12 @@ static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
 static int current_lcd_mode;
 
-// Given lcd_stat returns the new lcd_stat with the coincidence bit
-// set if there is a coincidence, unset if there isn't. Also
-// if there is a coincidence and coincidence flag is set
-// then a lcd interrupt is raised
-static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
+
+/* Given lcd_stat returns the new lcd_stat with the coincidence bit
+ * set if there is a coincidence, unset if there isn't. Also
+ * if there is a coincidence and coincidence flag is set
+ * then a lcd interrupt is raised */
+static uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
    
     int coincidence = (get_mem(LY_REG) == get_mem(LYC_REG));
     
@@ -33,7 +33,11 @@ static inline uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
     return (lcd_stat & (~0x4)) |  (coincidence << 2);
 }
 
-inline static void inc_ly() {
+
+/*  Increment the Y Line Counter. If LY increments from 143
+ *  to 144 it raises a V-Blank interrupt. LY resets after
+ *  incrementing from 153. */
+static void inc_ly() {
 
     uint8_t ly = get_mem(LY_REG);
     ly = (ly + 1) % 154; //0 <= ly <= 153
@@ -48,9 +52,11 @@ inline static void inc_ly() {
 }   
 
 
-static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
-    #define MODE2_CYCLES 80
-    #define MODE3_CYCLES 172
+/* Update the turned on LCD given the number of cycles, and the current lcd
+ *status and control registers */
+static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
+    #define MODE2_CYCLES 80 // Mode 2 lasts from 0 -> 80 cycles
+    #define MODE3_CYCLES 172 // Mode 3 lasts from  80 -> (172 + 80) cycles
     #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
                
     static int HBlank_entry = 0;
@@ -126,8 +132,10 @@ static inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles
 }
 
 
-
-
+/* Given the elapsed cpu cycles since the last
+ * call to this function, updates the internal LCD
+ * modes, registers and if a Vertical Blank occurs redisplays
+ * the screen */
 void update_graphics(long cycles) {
   
     uint8_t lcd_stat = get_mem(STAT_REG);
@@ -145,8 +153,4 @@ void update_graphics(long cycles) {
     if (!screen_off) {
         update_on_lcd(lcd_stat, lcd_ctrl, cycles);
     } 
-}
-  
-
-
-
+}  

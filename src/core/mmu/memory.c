@@ -2,7 +2,7 @@
 #include "mbc.h"
 
 #include "../memory_layout.h"
-#include "../romInfo.h"
+#include "../rom_info.h"
 #include "../graphics.h"
 #include "../sprite_priorities.h"
 #include "../interrupts.h"
@@ -111,7 +111,6 @@ static uint8_t const dmg_boot_rom[0x100] = {
 static uint8_t cartridge_start[0x100];
 
 static unsigned rom_bank_count = 0; //
-static int mbc_mode = 0; //memory bank mode
 
 
 
@@ -122,7 +121,7 @@ int load_rom(unsigned char const *file_data, size_t size) {
         return 0;
     }
 
-    size_t rom_size = get_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
+    size_t rom_size = id_to_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
 
     // Data read in doesn't match header information
     if (size != rom_size) {
