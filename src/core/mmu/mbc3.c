@@ -5,76 +5,85 @@
 typedef enum {RTC, RAM} RTC_RAM_mode; 
 
 static RTC_RAM_mode rtc_ram_mode = RAM;
-static int bank_mode = 0;
-static int current_RAM_bank = 0;
+static int cur_RAM_bank = 0;
 static int current_RTC_reg = 0;
-static int current_ROM_bank = 1;
-static int ram_banking = 1;
-static int real_time_clock = 0;
+static int cur_ROM_bank = 1;
+static int rtc_ram_enabled = 0;
 static int last_latch = 0xF;
 
-uint8_t read_MBC3(uint16_t addr) {
+uint8_t read_MBC3(uint16_t const addr) {
+       
+    switch (addr & 0xF000) {
+     case 0x0000:
+     case 0x1000:
+     case 0x2000: 
+     case 0x3000: // Reading from fixed Bank 0 
+                return ROM_banks[0][addr]; 
+                break;
         
-        if (addr < 0x4000) {
-            return ROM_banks[0][addr];
-        }
-        //Read using ROM Banking 0x4000 - 0x7FFF
-        if((addr & 0xC000) == 0x4000) {
-            return ROM_banks[current_ROM_bank][addr - 0x4000];
-        }
-
-        //Read using RAM Banking 0xA000 - 0xBFFF
-        else if(((addr & 0xE000) == 0xA000) && ram_banking) {
-            if (bank_mode == 0) {
-                return RAM_banks[0][addr - 0xA000]; 
-             } else { 
-                return RAM_banks[current_RAM_bank][addr - 0xA000]; 
-             } 
-        }
-
-        return 0x0;
+     case 0x4000:
+     case 0x5000:
+     case 0x6000:
+     case 0x7000: // Reading from current ROM bank 1 
+                return ROM_banks[cur_ROM_bank][addr - 0x4000];
+                break;
+        
+     case 0xA000:
+     case 0xB000: // Read from RAM bank (if RAM banking enabled)
+                if (rtc_ram_enabled && rtc_ram_mode == RAM) {
+                   return RAM_banks[cur_RAM_bank][addr - 0xA000];
+                } //else TODO RTC read
+                break;
+    };
+    // Failed to read
+    return 0x0;
 }
 
 
 void write_MBC3(uint16_t addr, uint8_t val) {
-    
-    // Setting ROM/RAM banking mode
-    if(addr <= 0x1FFF) {
-        ram_banking = (val & 0xF) == 0xA;
-    // Setting ROM bank
-    } else if((addr >= 0x2000) && (addr <= 0x3FFF)) {
-         //printf("switching rom bank %d\n", current_ROM_bank); 
-         current_ROM_bank = (val & 0x7F) + ((val & 0x7F) == 0);
-       
-    } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
-        uint8_t nibble = val & 0xF;
-        if (nibble <= 0x3) {
-            // Set RAM bank
-            rtc_ram_mode = RAM;
-            current_RAM_bank = nibble;
+    uint8_t nibble;
 
-        } else if (nibble >= 0x8 && nibble <= 0xC) {
-            // Set Real Time Clock register
-            rtc_ram_mode = RTC;
-            current_RTC_reg = nibble - 0x8;
-        }
-        current_RAM_bank = (val & 0x3); 
-
-    } else if((addr >= 0x6000) && (addr <= 0x7FFF)) { 
-        if (rtc_ram_mode == RTC) { // Latch RTC reg
-            if (last_latch == 0x0 && (val = 0x1)) {
-                //TODO write real time to current RTC reg
-            }   
-            last_latch = val; 
-       }
-     
-    } 
-    //Write to External RAM (0xA000 - 0xBFFF)
-     else if(((addr & 0xE000) == 0xA000)  && ram_banking) { 
-        if(bank_mode == 0) { 
-            RAM_banks[0][addr - 0xA000] = val; 
-        } else {
-            RAM_banks[current_RAM_bank][addr - 0xA000] = val; 
-            }
-        }
+    switch (addr & 0xF000) {
+        case 0x0000:
+        case 0x1000: // Activate/Deactivate RAM banking/RTC
+                    rtc_ram_enabled = ((val & 0xF) == 0xA);
+                    break;
+        case 0x2000:
+        case 0x3000:/* Set ROM bank, if result is 0,
+                     * increment the bank as it cannot be used */
+                    cur_ROM_bank = (val & 0x7F) + ((val & 0x7F) == 0);
+                    break;
+        case 0x4000: 
+        case 0x5000: // Set current RAM/RTC mode and banks
+                    nibble =  val & 0xF;
+                    if (nibble <= 0x3) {
+                        // Set RAM bank
+                        rtc_ram_mode = RAM;
+                        cur_RAM_bank = nibble;
+                    // Nibble between 0x8 and 0xC
+                    } else if ((uint8_t)(nibble - 0x8) < 0x4)  {
+                        // Set Real Time Clock register
+                        rtc_ram_mode = RTC;
+                        current_RTC_reg = nibble - 0x8;
+                     }       
+                     break;
+        case 0x6000: 
+        case 0x7000: //Latch to RTC reg if 0x0 followed by 0x1 written
+                    if (rtc_ram_enabled && rtc_ram_mode == RTC) { 
+                        if (last_latch == 0x0 && (val = 0x1)) {
+                            //TODO write real time to current RTC reg
+                        }   
+                        last_latch = val; 
+                     }
+                     break;
+        case 0xA000:
+        case 0xB000: // Write to external RAM bank if RAM banking enabled 
+                    if (rtc_ram_enabled && rtc_ram_mode == RAM) {
+                        RAM_banks[cur_RAM_bank][addr - 0xA000] = val; 
+                    // Write to RTC
+                    } else if (rtc_ram_enabled && rtc_ram_mode == RTC) {
+                        //TODO RTC write
+                    }
+                    break;
+    }    
 }

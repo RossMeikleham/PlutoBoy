@@ -16,10 +16,10 @@
  * (3): ROM + RAM + SAVE : Same as (2) but saves to SRAM
 */
 
-static int bank_mode = 1;
-static int cur_RAM_bank = 0;
-static int cur_ROM_bank = 1;
-static int ram_banking = 0;
+static int bank_mode = 1; // 0: 2MB ROM mode, 1: 512KB ROM mode
+static int cur_RAM_bank = 0; // Current ROM bank 0x0 - 0x1F
+static int cur_ROM_bank = 1; // Current RAM bank 0x0 - 0x03
+static int ram_banking = 0;  // 0: RAM banking off, 1: RAM banking on
 
 static MBC1_MODE mode;
 
