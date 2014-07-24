@@ -5,8 +5,8 @@
 #include <stdlib.h>
 
     
-uint8_t RAM_banks[4][0x2000];  // max 4 * 8KB ram banks
-uint8_t ROM_banks[125][0x4000];// max 125 * 16KB rom banks
+uint8_t RAM_banks[16][0x2000];  // max 16 * 8KB ram banks (128KB)
+uint8_t ROM_banks[512][0x4000];// max 512 * 16KB rom banks (8MB)
 
 
 /* Given the ROM data, load the ROM into

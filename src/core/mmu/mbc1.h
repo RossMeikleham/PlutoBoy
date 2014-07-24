@@ -1,4 +1,5 @@
 #ifndef MBC1_H
+#define MBC1_H
 
 typedef enum {ROM_ONLY, RAM, SRAM} MBC1_MODE;
 

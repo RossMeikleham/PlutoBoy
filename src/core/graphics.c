@@ -272,13 +272,18 @@ void output_screen() {
 
 //Render the row number stored in the LY register
 void draw_row() {
-    uint8_t render_sprites = (get_mem(0xFF40) & BIT_1);
-    uint8_t render_tiles = (get_mem(0xFF40)  & BIT_0);
-    if (render_tiles) {
-        draw_tile_row();
-    }
-    if (render_sprites) {
-       draw_sprite_row();
+    uint8_t lcd_ctrl = get_mem(LCDC_REG);
+
+    //Render only if screen is on
+    if ((lcd_ctrl & BIT_7)) {
+        uint8_t render_sprites = (get_mem(LCDC_REG) & BIT_1);
+        uint8_t render_tiles = (get_mem(LCDC_REG)  & BIT_0);
+        if (render_tiles) {
+            draw_tile_row();
+        }
+        if (render_sprites) {
+            draw_sprite_row();
+        }
     } 
 }
 

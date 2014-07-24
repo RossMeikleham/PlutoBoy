@@ -27,6 +27,10 @@ int init(const char *file_path, int debugger) {
     
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;
+
+    //Start logger
+    set_log_level(LOG_INFO);
+
     if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
@@ -44,8 +48,7 @@ int init(const char *file_path, int debugger) {
 
     init_joypad();
     reset_cpu();
-    set_log_level(LOG_INFO);
-
+  
     if (debugger) {
         DEBUG = 1;
     }

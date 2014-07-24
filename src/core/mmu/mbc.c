@@ -2,6 +2,7 @@
 #include "mbc0.h"
 #include "mbc1.h"
 #include "mbc3.h"
+#include "mbc5.h"
 #include "../../non_core/logger.h"
 
 int setup_MBC(int MBC_no) {
@@ -25,8 +26,12 @@ int setup_MBC(int MBC_no) {
         read_MBC = &read_MBC3;
         write_MBC = &write_MBC3;
 
-   } else { 
-
+   } else if (MBC_no == 27) {
+        
+        read_MBC = &read_MBC5;
+        write_MBC = &write_MBC5;
+   } 
+   else{ 
        log_message(LOG_ERROR, "unimplimented MBC mode for code %d\n",MBC_no);
        return 0;
    }

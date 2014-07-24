@@ -9,8 +9,8 @@
 #include "../bits.h"
 
 #include "../../non_core/joypad.h"
+#include "../../non_core/logger.h"
 
-#include <stdio.h>
 #include <string.h>
 
   
@@ -118,7 +118,7 @@ int load_rom(unsigned char const *file_data, size_t size) {
     /* Check the file length given to us is long enough
      * to obtain what the size of the file should be */   
     if (size < CARTRIDGE_ROM_SIZE + 1) {
-        fprintf(stderr, "Error: Cartridge size is too small (%lu bytes)\n",size);
+        log_message(LOG_ERROR, "Error: Cartridge size is too small (%lu bytes)\n",size);
         return 0;
     }
 
@@ -127,7 +127,7 @@ int load_rom(unsigned char const *file_data, size_t size) {
 
     // Data read in doesn't match header information
     if (size != rom_size) {
-        fprintf(stderr, "Error: Cartridge header info on its size (%lu bytes) \
+        log_message(LOG_ERROR, "Error: Cartridge header info on its size (%lu bytes) \
             doesn't match file size (%lu bytes)\n",rom_size, size);
         return 0;
     }

@@ -2,16 +2,16 @@
 #define GRAPHICS_H
 
 
-#define SCREEN_WIDTH 160
-#define SCREEN_HEIGHT 144
-
-
+/* Initialize graphics
+ * returns 1 if successful, 0 otherwise */
 int init_gfx();
+
+//Render the current row (value in LY reg)
 void draw_row();
+
+
 void output_screen();
 
-void set_oam_mem(uint16_t addr, uint8_t val);
-uint8_t get_oam_mem(uint16_t addr);
 
 #endif /* GRAPHICS_H */
 
