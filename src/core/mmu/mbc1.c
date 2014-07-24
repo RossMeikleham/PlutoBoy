@@ -2,7 +2,7 @@
 #include "mbc1.h"
 #include "memory.h"
 
-static int bank_mode = 0;
+static int bank_mode = 1;
 static int current_RAM_bank = 0;
 static int current_ROM_bank = 1;
 static int ram_banking;
@@ -50,8 +50,9 @@ void write_MBC1(uint16_t addr, uint8_t val) {
         ram_banking = (val & 0xF) == 0xA;
     // Setting ROM bank
     } else if((addr >= 0x2000) && (addr <= 0x3FFF)) {
-         //printf("switching rom bank %d\n", current_ROM_bank); 
+
          current_ROM_bank = (val & 0x1F) + ((val & 0x1F) == 0);
+       //  if current_ROM_bank = 0x0 0x20 0x40 0x60 
        
     } else if((addr >= 0x4000) && (addr <= 0x5FFF)) { 
         current_RAM_bank = (val & 0x3); 

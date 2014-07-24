@@ -1,16 +1,15 @@
 #ifndef DEBUGGER_H
 #define DEBUGGER_H
 
-typedef enum {NONE = 0x0, STEPS_SET = 0x1, BREAKPOINT_SET = 0x2} Command;
+typedef enum {NONE = 0x0, STEPS_SET = 0x1, BREAKPOINT_SET = 0x2} Command_Flag;
 
 #define BREAKPOINT_OFF 0x0
 #define STEPS_OFF 0x0
 
-/* Get debugger command
- * and perform debugger action 
- * if steps were set and/or a breakpoint was set returns
- * the command, otherwise returns NONE*/
-Command get_command();
+/* Get debugger command(s) and perform a number
+ * of debugger actions. Returns an integer containing set/unset
+ * flags specifying the options selected. */
+int get_command();
 
 
 /* Get number of steps, 0 or below

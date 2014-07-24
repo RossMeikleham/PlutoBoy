@@ -1,30 +1,12 @@
-/*
- * =====================================================================================
- *
- *       Filename:  joypad_SDL.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  19/07/14 13:20:19
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-
 #include "SDL/SDL.h"
 #include "stdlib.h"
 #include "../../non_core/joypad.h"
 
-int keys[322];  // 322 SDL keys
+static int keys[322];  // 322 SDL keys
 
 
-
+/*  Intialize the joypad, should be called before any other
+ *  joypad functions */
 void init_joypad() {
 
     for(int i = 0; i < 322; i++) { // unset all keys
@@ -35,6 +17,8 @@ void init_joypad() {
 }
 
 
+/* Check each individual GameBoy key. Returns 1 if
+ * the specified key is being held down, 0 otherwise */
 int down_pressed()   { return keys[SDLK_DOWN];  }  
 int up_pressed()     { return keys[SDLK_UP]; }
 int left_pressed()   { return keys[SDLK_LEFT];}
@@ -44,6 +28,9 @@ int b_pressed()      { return keys[SDLK_s];}
 int start_pressed()  { return keys[SDLK_RETURN]; }
 int select_pressed() { return keys[SDLK_SPACE]; } 
 
+
+/* Returns 1 if any of the 8 GameBoy keys are being held down,
+ * 0 otherwise */
 int key_pressed() {
 
     return down_pressed() || up_pressed() || left_pressed() || right_pressed()
@@ -51,24 +38,24 @@ int key_pressed() {
 }
 
 
+/* Update current state of GameBoy keys as well as control
+ * other external actions for the emulator */
 void update_keys() {
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
-                // exit if the window is closed
-            case SDL_QUIT:
-                exit(0);
-                break;
-                // check for keypresses
-            case SDL_KEYDOWN:
-                keys[event.key.keysym.sym] = 1;
-                if (keys[SDLK_ESCAPE]) {exit(0);}
-                break;
-            case SDL_KEYUP:
-                keys[event.key.keysym.sym] = 0;
-                break;
-            default:
-                break;
+                    // exit if the window is closed
+                case SDL_QUIT:
+                            exit(0);
+                            break;
+              
+                case SDL_KEYDOWN: // Key pressed
+                            keys[event.key.keysym.sym] = 1;
+                            if (keys[SDLK_ESCAPE]) {exit(0);}
+                            break;
+                case SDL_KEYUP: //Key "unpressed"
+                            keys[event.key.keysym.sym] = 0;
+                            break;
             }
         } 
 }

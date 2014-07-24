@@ -9,10 +9,8 @@
  *  return  1 if successful, 0 otherwise */
 int init_screen(int win_x, int win_y, int (* const pixels)[GB_PIXELS_X]);
 
-/*  Update the screen given  */
+/*  Update the screen output*/
 void draw_screen();
-
-
 
 
 #endif

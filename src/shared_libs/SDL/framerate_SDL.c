@@ -1,32 +1,18 @@
-/*
- * =====================================================================================
- *
- *       Filename:  framerate_SDL.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  21/07/14 12:36:21
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
 #include "SDL/SDL.h"
 #include "../../non_core/framerate.h"
 
-Uint32 last_ticks;
-int framerate;
+static Uint32 last_ticks;
+static int framerate;
 
+
+//Assign Framerate in FPS and start counter
 void start_framerate(unsigned long f) {
     last_ticks = SDL_GetTicks();
     framerate = f;
 }
 
+/* Check time elapsed after one frame, hold up
+ * the program if not enough tim has elapsed */
 void adjust_to_framerate() {
  
     Uint32 current_ticks = SDL_GetTicks();
@@ -38,7 +24,7 @@ void adjust_to_framerate() {
         SDL_Delay((1000/framerate) - ticks_elapsed);
     }
    
-    last_ticks = current_ticks;
+    last_ticks = SDL_GetTicks();
 }
 
 

@@ -5,7 +5,12 @@
 extern "C"{
 #endif
 
+/*  Initialize the joypad, should be called before
+ *  any other joypad functions */
 void init_joypad();
+
+/* Update current state of GameBoy keys as well as control
+ * other external actions for the emulator */
 void update_keys();
 
 /* Return state of one of the 8 GameBoy keys

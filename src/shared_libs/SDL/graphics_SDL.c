@@ -1,33 +1,15 @@
-/*
- * =====================================================================================
- *
- *       Filename:  graphics_SDL.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  21/07/14 10:53:59
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-
 #include "../../non_core/graphics_out.h"
-#include "SDL/SDL.h"
+#include "../../non_core/logger.h"
 
-#include <stdio.h>
+#include "SDL/SDL.h"
 
 
 typedef int (*Int_2D )[GB_PIXELS_X];
 
-static Uint32 colors[4];
+static Uint32 colors[4]; // Store GameBoy monchrome colors
 static SDL_Surface *screen;
-static Int_2D screen_buffer;// (*screen_buffer)[GB_PIXELS_X];
+static Int_2D screen_buffer;
+
 static int screen_width;
 static int screen_height;
 
@@ -43,7 +25,7 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
     screen_buffer = pixels;
 
     if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
-        fprintf(stderr, "Could not initialize SDL: %s.\n", SDL_GetError());
+        log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
     }
 
@@ -78,6 +60,8 @@ inline static void fill_rect(int x, int y, int w, int h, Uint32 color)
 }
 
 
+/* Draw a GameBoy pixel of the given co-ordinates and of
+ * the given 32bit color */
 inline static void draw_pix(Uint32 color, int x, int y)
 {
     int width_inc = screen_width/GB_PIXELS_X;
@@ -87,6 +71,7 @@ inline static void draw_pix(Uint32 color, int x, int y)
 }
 
 
+/*  Update the screen output */
 void draw_screen() {
     for (int y = 0; y < GB_PIXELS_Y; y++) {
         for (int x = 0; x < GB_PIXELS_X; x++) {
