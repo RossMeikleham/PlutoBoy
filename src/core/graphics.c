@@ -139,12 +139,14 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
         return;
     }
     
-    uint8_t skew_left = win_x % 8;
-    uint8_t skew_right = (8 - skew_left) % 8;
+   // int skew_left = win_x % 8;
+   // int skew_right = (8 - skew_left) % 8;
+    int skew = (8 - (win_x % 8)) % 8;
+    
     // 160 pixel row, 20 tiles, 8 pixel row per tile
-    for (int i = 0 - skew_left; i < 160 + skew_right; i+=8) {
-        uint8_t pixel_x_start = 0;
-        uint8_t start_x = i;
+    for (int i = 0 - skew; i < 160 + skew; i+=8) {
+        int pixel_x_start = 0;
+        int start_x = i;
         //Part of tile offscreen
         if (start_x < win_x) { 
             if (start_x < (win_x - 7)) { // None of tile onscreen
@@ -155,20 +157,20 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
              }
         }
      
-        uint8_t x_pos = start_x - win_x;
-        uint8_t tile_col = (x_pos) >> 3;
-        uint8_t tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);
+        int x_pos = start_x - win_x;
+        int tile_col = (x_pos) >> 3;
+        int tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);
 
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 128) + 128;
         }
        
-        uint16_t tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
-        uint8_t line_offset = (y_pos % 8) * 2; //Offset into tile of our line
+        int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
+        int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
         
-        uint8_t byte0 = get_mem(tile_loc + line_offset);
-        uint8_t byte1 = get_mem(tile_loc + line_offset + 1);
+        int byte0 = get_mem(tile_loc + line_offset);
+        int byte1 = get_mem(tile_loc + line_offset + 1);
         
         // For each pixel in the line of the tile
         for (int j = pixel_x_start; j < 8; j++) {
@@ -198,27 +200,28 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
     pallete[3] = (bgp >> 6) & 0x3;
     
     uint8_t y_pos = row + get_mem(SCROLL_Y_REG);  
-    uint8_t tile_row = y_pos >> 3; // Get row 0 - 31 of tile
+    int tile_row = y_pos >> 3; // Get row 0 - 31 of tile
     uint8_t scroll_x = get_mem(SCROLL_X_REG);
    
-    uint8_t skew_left = scroll_x % 8;
-    uint8_t skew_right = (8 - skew_left) % 8;
+    int skew_left = scroll_x % 8;
+    int skew_right = (8 - skew_left) % 8;
 
     for (int i = 0 - skew_left; i < 160 + skew_right; i+= 8) {
 
         uint8_t x_pos = i + scroll_x;
-        uint8_t tile_col = x_pos >> 3;
-        uint8_t tile_no = get_mem(bg_mem + (tile_row << 5) + tile_col);
+        int tile_col = x_pos >> 3;
+        int tile_no = get_mem(bg_mem + (tile_row << 5) + tile_col);
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 128) + 128;
         }
          
-        uint16_t tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
-        uint8_t line_offset = (y_pos % 8) * 2; //Offset into tile of our line
+        int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
+        int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
 
-        uint8_t byte0 = get_mem(tile_loc + line_offset);
-        uint8_t byte1 = get_mem(tile_loc + line_offset + 1);
+        int byte0 = get_mem(tile_loc + line_offset);
+        int byte1 = get_mem(tile_loc + line_offset + 1);
+
         //Render entire tile row
         for (int j = 0; j < 8; j++) {
 
