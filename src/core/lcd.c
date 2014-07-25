@@ -14,7 +14,7 @@
 static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
 static int current_lcd_mode;
-
+static int window_off = 1;
 
 /* Given lcd_stat returns the new lcd_stat with the coincidence bit
  * set if there is a coincidence, unset if there isn't. Also
@@ -80,6 +80,7 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
                     // H-Blank to V-Blank, change to mode 2
                     if (get_mem(LY_REG) == 144) {
                         new_lcd_mode = 1;
+                        window_line = 0;
                     }
                 }
                 break;
@@ -149,6 +150,18 @@ void update_graphics(long cycles) {
         current_cycles = 4;
         update_timers(current_cycles);
     } 
+
+    /*  
+    // Window from OFF to ON 
+    if (window_off && (lcd_ctrl & BIT_6)) {
+        window_line = 144;
+        window_off = 0;
+    }
+
+    // Window from ON to OFF
+    if (!window_off && !(lcd_ctrl & BIT_6)) {
+        window_off = 1;
+    } */
 
     if (!screen_off) {
         update_on_lcd(lcd_stat, lcd_ctrl, cycles);

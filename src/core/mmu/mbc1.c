@@ -26,7 +26,7 @@ void setup_MBC1(int flags) {
     battery = (flags & BATTERY) ? 1 : 0;
     // Check for previous saves if Battery active
     if (battery) {
-        load_SRAM();
+        read_SRAM();
     }
 }
 

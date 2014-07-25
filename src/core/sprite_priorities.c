@@ -57,21 +57,22 @@ void update_sprite_prios(int sprite_no, uint8_t x_pos) {
 
     Node *current_node = inverse_prio_sprites + sprite_no;
     // Order by x position and if equal then by sprite number
-    current_node->x_pos = (x_pos << 8) | sprite_no;    
+    uint16_t val = (x_pos << 8) | sprite_no;
+    current_node->x_pos = val;
     Node *swap_node = current_node;
 
    
     // Move up priorities
-    if (swap_node->next != sentinal && x_pos < swap_node->next->x_pos) {
-        while (swap_node->next != sentinal && x_pos < swap_node->next->x_pos) {
+    if (swap_node->next != sentinal && val < swap_node->next->x_pos) {
+        while (swap_node->next != sentinal && val < swap_node->next->x_pos) {
             swap_node = swap_node->next;
         }
         move_after(current_node, swap_node);
      }
     
     // Move down priorites
-    else if (swap_node->prev != sentinal && x_pos > swap_node->prev->x_pos) {
-        while (swap_node->prev != sentinal && x_pos > swap_node->prev->x_pos) {
+    else if (swap_node->prev != sentinal && val > swap_node->prev->x_pos) {
+        while (swap_node->prev != sentinal && val > swap_node->prev->x_pos) {
             swap_node = swap_node->prev;
         }
         move_after(current_node, swap_node->prev);

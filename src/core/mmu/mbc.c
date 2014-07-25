@@ -46,7 +46,7 @@ static void create_SRAM_filename(const char *filename) {
            MAX_SRAM_FNAME_SIZE - extension_len;
     
     strncpy(SRAM_filename, filename, end_pos);
-    strcat(SRAM_filename, extension);      
+    strcat(SRAM_filename, extension); 
 }
 
 

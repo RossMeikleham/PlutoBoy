@@ -1,22 +1,3 @@
-/*
- * =====================================================================================
- *
- *       Filename:  sprite_prio_tests.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  20/07/14 10:07:25
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  YOUR NAME (), 
- *   Organization:  
- *
- * =====================================================================================
- */
-
-
 #include "../sprite_priorities.c"
 #include "minunit/minunit.h"
 #include <stdio.h>
