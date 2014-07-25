@@ -11,7 +11,7 @@ uint8_t ROM_banks[512][0x4000];// max 512 * 16KB rom banks (8MB)
 
 /* Given the ROM data, load the ROM into
  * Gameboy memory and setup banks */
-int load_rom(unsigned char const *file_data, size_t size);
+int load_rom(char const * filename, unsigned char const *file_data, size_t size);
 
 /*  Set and obtain 8 bit values from
  *  memory */

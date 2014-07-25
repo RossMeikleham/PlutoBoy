@@ -2,14 +2,25 @@
 #include "mbc3.h"
 #include "memory.h"
 
-typedef enum {RTC, RAM} RTC_RAM_mode; 
 
-static RTC_RAM_mode rtc_ram_mode = RAM;
+static int rtc_ram_mode = SRAM;
 static int cur_RAM_bank = 0;
 static int current_RTC_reg = 0;
 static int cur_ROM_bank = 1;
 static int rtc_ram_enabled = 0;
 static int last_latch = 0xF;
+
+static int battery = 0;
+static int rtc = 0;
+
+void setup_MBC3(int flags) {
+    battery = (flags & BATTERY) ? 1 : 0;
+    rtc = (flags & RTC) ? 1 : 0;
+
+    if (battery) {
+        read_SRAM();
+    }
+}
 
 uint8_t read_MBC3(uint16_t const addr) {
        
@@ -30,7 +41,7 @@ uint8_t read_MBC3(uint16_t const addr) {
         
      case 0xA000:
      case 0xB000: // Read from RAM bank (if RAM banking enabled)
-                if (rtc_ram_enabled && rtc_ram_mode == RAM) {
+                if (rtc_ram_enabled && rtc_ram_mode == SRAM) {
                    return RAM_banks[cur_RAM_bank][addr - 0xA000];
                 } //else TODO RTC read
                 break;
@@ -46,6 +57,12 @@ void write_MBC3(uint16_t addr, uint8_t val) {
     switch (addr & 0xF000) {
         case 0x0000:
         case 0x1000: // Activate/Deactivate RAM banking/RTC
+                    // From ON to OFF, save SRAM to file
+                    if (battery && rtc_ram_enabled && 
+                        rtc_ram_mode == SRAM && ((val & 0xF) == 0x0)) {
+
+                        write_SRAM();
+                    }
                     rtc_ram_enabled = ((val & 0xF) == 0xA);
                     break;
         case 0x2000:
@@ -58,7 +75,7 @@ void write_MBC3(uint16_t addr, uint8_t val) {
                     nibble =  val & 0xF;
                     if (nibble <= 0x3) {
                         // Set RAM bank
-                        rtc_ram_mode = RAM;
+                        rtc_ram_mode = SRAM;
                         cur_RAM_bank = nibble;
                     // Nibble between 0x8 and 0xC
                     } else if ((uint8_t)(nibble - 0x8) < 0x4)  {
@@ -78,7 +95,7 @@ void write_MBC3(uint16_t addr, uint8_t val) {
                      break;
         case 0xA000:
         case 0xB000: // Write to external RAM bank if RAM banking enabled 
-                    if (rtc_ram_enabled && rtc_ram_mode == RAM) {
+                    if (rtc_ram_enabled && rtc_ram_mode == SRAM) {
                         RAM_banks[cur_RAM_bank][addr - 0xA000] = val; 
                     // Write to RTC
                     } else if (rtc_ram_enabled && rtc_ram_mode == RTC) {

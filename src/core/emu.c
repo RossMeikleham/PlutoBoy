@@ -36,7 +36,7 @@ int init(const char *file_path, int debugger) {
         return 0;
     }
 
-    if (!load_rom(buffer, size)) {
+    if (!load_rom(file_path, buffer, size)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }

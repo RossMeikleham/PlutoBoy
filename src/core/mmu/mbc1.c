@@ -20,11 +20,14 @@ static int bank_mode = 1; // 0: 2MB ROM mode, 1: 512KB ROM mode
 static int cur_RAM_bank = 0; // Current ROM bank 0x0 - 0x1F
 static int cur_ROM_bank = 1; // Current RAM bank 0x0 - 0x03
 static int ram_banking = 0;  // 0: RAM banking off, 1: RAM banking on
+static int battery = 0;
 
-static MBC1_MODE mode;
-
-void setup_MBC1(MBC1_MODE m) {
-    mode = m;
+void setup_MBC1(int flags) {
+    battery = (flags & BATTERY) ? 1 : 0;
+    // Check for previous saves if Battery active
+    if (battery) {
+        load_SRAM();
+    }
 }
 
 
@@ -63,6 +66,10 @@ void write_MBC1(uint16_t addr, uint8_t val) {
     switch (addr & 0xF000) {
         case 0x0000:
         case 0x1000: // Activate/Deactivate RAM banking
+                    // If deactivating, save to file
+                    if (battery && ram_banking && ((val & 0xF) != 0xA)) {
+                        write_SRAM();
+                    }
                     ram_banking = ((val & 0xF) == 0xA);
                     break;
         case 0x2000:

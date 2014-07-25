@@ -1,4 +1,5 @@
 #include "../../non_core/files.h"
+#include "../../non_core/logger.h"
 #include <stdio.h>
 
 /*  Given a file_path and buffer to store file data in, attempts to
@@ -10,7 +11,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data) {
     /* open file in binary read mode
      * read byte by byte of ROM into memory */
     if(!(file = fopen(file_path,"rb"))) {
-        fprintf(stderr, "Error opening file %s\n", file_path);
+        log_message(LOG_ERROR, "Error opening file %s\n", file_path);
         return 0;
     }
  
@@ -22,7 +23,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data) {
     }
 
     if (count == 0) {
-       fprintf(stderr, "Empty file %s\n", file_path);
+       log_message(LOG_WARN, "Empty file %s\n", file_path);
     }
 
     fclose(file);
@@ -31,18 +32,52 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data) {
 }
 
 
-/* Given a file_path and buffer, attempts to load save data into the buffer.
- * Returns the size of the file if successful, returns 0 if unsuccessful.
- * Buffer should be at minimum of size "MAX_SRAMS_SIZE" */
-long load_SRAM(const char *file_path, unsigned char *data) {
-    //TODO
-    return 0;
+/* Given a file_path and buffer, attempts to load save data into the buffer
+ * up to the suppled size in bytes. Returns the size of the file if successful, 
+ * returns 0 if unsuccessful. Buffer should at least be of length size*/
+unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned long size) {
+    
+    FILE *file;
+    log_message(LOG_INFO, "Attempting to load SRAM for file: %s\n",file_path);
+
+    if(!(file = fopen(file_path,"rb"))) {
+        log_message(LOG_INFO, "Error opening file: %s\n SRAM not loaded",file_path);
+        return 0;
+    }
+    
+    unsigned long count = 0;
+    count = fread(data, sizeof (char), size, file);
+
+    if (count == 0) {
+        log_message(LOG_WARN, "Empty file %s\n", file_path);
+    }
+
+    fclose(file);
+
+    return count;
 }
  
 
 /* Given a file_path, save data and the size of save data, attempts to
  * save the data to the given file. Returns 1 if successful, 0 otherwise */
-int save_SRAM(const char *file_path, const unsigned char *data, long size) {
-    //TODO
-    return 0;
+int save_SRAM(const char *file_path, const unsigned char *data, unsigned long size) {
+    
+    FILE *file;
+    log_message(LOG_INFO, "Attempting to write SRAM for file: %s\n",file_path);
+    
+    if(!(file = fopen(file_path, "wb"))) {
+        log_message(LOG_ERROR, "Error attempting to open file for writing: %s\n", file_path);
+        return 0;  
+    }
+    
+    unsigned long written_count = fwrite(data, sizeof (char), size, file);
+    if (written_count == size) {
+        log_message(LOG_INFO, "%lu bytes successfully written to file\n",size);
+        return 0;
+    } else {
+        log_message(LOG_ERROR, "Only %lu of %lu bytes written\n",written_count, size);
+    }
+        
+   
+    return 1;
 }                                      

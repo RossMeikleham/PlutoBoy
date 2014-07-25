@@ -113,7 +113,7 @@ static uint8_t const dmg_boot_rom[0x100] = {
 static uint8_t cartridge_start[0x100];
 
 
-int load_rom(unsigned char const *file_data, size_t size) {
+int load_rom(char const *filename, unsigned char const *file_data, size_t size) {
 
     /* Check the file length given to us is long enough
      * to obtain what the size of the file should be */   
@@ -139,16 +139,19 @@ int load_rom(unsigned char const *file_data, size_t size) {
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
-    // Setup the memory bank controller 
-    if(!setup_MBC(file_data[CARTRIDGE_TYPE])) {
-        return 0;
-    }
-
     /* Copy first 100 bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
      *  it later */
     memcpy(cartridge_start, ROM_banks[0],  0x100);
     memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
+
+    
+    // Setup the memory bank controller 
+    if(!setup_MBC(file_data[CARTRIDGE_TYPE], 
+        (id_to_ram_save_size(file_data[CARTRIDGE_RAM_SIZE]) * 0x400) / 0x2000, 
+        filename)) {
+        return 0;
+    }
     
     return 1;
 } 
