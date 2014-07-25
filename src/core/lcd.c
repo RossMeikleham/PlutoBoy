@@ -14,7 +14,12 @@
 static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
 static int current_lcd_mode;
-static int window_off = 1;
+static int current_lcd_stat = 0;
+
+static void update_stat() {
+
+    current_lcd_stat = (get_mem(STAT_REG) & (~7)) | (current_lcd_stat & 0x7);
+}
 
 /* Given lcd_stat returns the new lcd_stat with the coincidence bit
  * set if there is a coincidence, unset if there isn't. Also
@@ -129,6 +134,7 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     }
     lcd_stat = SET_LCD_MODE(new_lcd_mode);
     set_mem(STAT_REG, lcd_stat);
+    current_lcd_stat = lcd_stat;
     current_lcd_mode = new_lcd_mode;
 }
 
@@ -139,7 +145,8 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
  * the screen */
 void update_graphics(long cycles) {
   
-    uint8_t lcd_stat = get_mem(STAT_REG);
+    update_stat();
+    uint8_t lcd_stat = current_lcd_stat;
     uint8_t lcd_ctrl = get_mem(LCDC_REG);
 
     // Turning screen from off to on
@@ -150,18 +157,6 @@ void update_graphics(long cycles) {
         current_cycles = 4;
         update_timers(current_cycles);
     } 
-
-    /*  
-    // Window from OFF to ON 
-    if (window_off && (lcd_ctrl & BIT_6)) {
-        window_line = 144;
-        window_off = 0;
-    }
-
-    // Window from ON to OFF
-    if (!window_off && !(lcd_ctrl & BIT_6)) {
-        window_off = 1;
-    } */
 
     if (!screen_off) {
         update_on_lcd(lcd_stat, lcd_ctrl, cycles);

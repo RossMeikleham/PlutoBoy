@@ -43,7 +43,7 @@ uint8_t read_MBC1(uint16_t const addr) {
      case 0x5000:
      case 0x6000:
      case 0x7000: // Reading from current ROM bank 1 
-                printf("cur rom bank %d cur_ram bank %d\n",cur_ROM_bank, cur_RAM_bank);
+              //  printf("cur rom bank %d cur_ram bank %d\n",cur_ROM_bank, cur_RAM_bank);
                 return bank_mode == 0 ?
                     ROM_banks[cur_RAM_bank << 5 | cur_ROM_bank][addr - 0x4000] :
                     ROM_banks[cur_ROM_bank][addr - 0x4000];

@@ -72,12 +72,13 @@ int save_SRAM(const char *file_path, const unsigned char *data, unsigned long si
     
     unsigned long written_count = fwrite(data, sizeof (char), size, file);
     if (written_count == size) {
+        fclose(file);
         log_message(LOG_INFO, "%lu bytes successfully written to file\n",size);
         return 0;
     } else {
         log_message(LOG_ERROR, "Only %lu of %lu bytes written\n",written_count, size);
     }
         
-   
+    fclose(file);   
     return 1;
 }                                      

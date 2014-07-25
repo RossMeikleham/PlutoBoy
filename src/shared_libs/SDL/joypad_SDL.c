@@ -1,6 +1,7 @@
 #include "SDL/SDL.h"
 #include "stdlib.h"
 #include "../../non_core/joypad.h"
+#include "../../core/mmu/mbc.h"
 
 static int keys[322];  // 322 SDL keys
 
@@ -46,12 +47,16 @@ void update_keys() {
             switch (event.type) {
                     // exit if the window is closed
                 case SDL_QUIT:
+                            write_SRAM();
                             exit(0);
                             break;
               
                 case SDL_KEYDOWN: // Key pressed
                             keys[event.key.keysym.sym] = 1;
-                            if (keys[SDLK_ESCAPE]) {exit(0);}
+                            if (keys[SDLK_ESCAPE]) {
+                                
+                            write_SRAM();
+                                exit(0);}
                             break;
                 case SDL_KEYUP: //Key "unpressed"
                             keys[event.key.keysym.sym] = 0;
