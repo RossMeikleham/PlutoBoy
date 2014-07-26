@@ -5,15 +5,14 @@
  * and bit fields for F register are implementation dependent.
  * Can also speed the code up a bit */
 
-#include <stdio.h>
 #include <stdint.h>
 #include "mmu/memory.h"
 #include "cpu.h"
-#include <string.h>
-#include <stdlib.h>
 #include "disasm.h"
 #include "timers.h"
 #include "lcd.h"
+
+#include "../non_core/logger.h"
 
 #define IMMEDIATE_8_BIT get_mem(reg.PC-1)
 #define IMMEDIATE_16_BIT (get_mem((reg.PC)-1)<< 8) | get_mem((reg.PC-2))
@@ -59,8 +58,8 @@ extern Instruction ins[UINT8_MAX+1];
  *  including extended instructions  */
 typedef struct {
 
-    Instruction * instruction_set; 
-    int const * words; /*  No of words per instruction */
+    Instruction const * const instruction_set; 
+    int * const words; /*  No of words per instruction */
     Instruction const * const ext_instruction_set; /* extended 0xCB instructions */
 
 
@@ -72,8 +71,7 @@ typedef struct {
 
 
 void invalid_op(){
-    fprintf(stderr, "Error, unknown opcode: %x\n", opcode);
-    exit(1);
+    log_message(LOG_ERROR, "Error, unknown opcode: %x\n", opcode);
 }
 
 

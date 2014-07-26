@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include "memory.h"
+#include "mmu/memory.h"
 
 static char const * const asm_instruction_set[UINT8_MAX+1] = { 
     "NOP", "LD BC,0x%X", "LD (BC),A", "INC BC", 
@@ -202,7 +202,7 @@ void dasm_instruction(uint16_t mem, FILE *stream) {
 
     } else {
 
-        char const *dasm_str = asm_instruction_set[opcode];
+        char const * const dasm_str = asm_instruction_set[opcode];
         switch (ins_words[opcode]) {
             case 1: fprintf(stream, dasm_str); break;
             case 2: fprintf(stream, dasm_str, get_mem(mem+1)); break;
