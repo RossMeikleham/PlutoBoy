@@ -5,10 +5,6 @@
 #include <stdlib.h>
 
     
-uint8_t RAM_banks[16][0x2000];  // max 16 * 8KB ram banks (128KB)
-uint8_t ROM_banks[512][0x4000];// max 512 * 16KB rom banks (8MB)
-
-
 /* Given the ROM data, load the ROM into
  * Gameboy memory and setup banks */
 int load_rom(char const * filename, unsigned char const *file_data, size_t size);
