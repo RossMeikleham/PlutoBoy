@@ -1,6 +1,9 @@
 #ifndef EMU_H
 #define EMU_H
 
+
+long cpu_time; // Current total cpu cycles elapsed
+
 /* Intialize emulator with given ROM file, and
  * specify whether or not debug mode is active
  * (0 for OFF, any other value is on) 

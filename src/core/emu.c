@@ -5,6 +5,8 @@
 #include "lcd.h"
 #include "interrupts.h"
 #include "mmu/memory.h"
+#include "sound/sound.h"
+#include "emu.h"
 
 #include "../non_core/joypad.h"
 #include "../non_core/files.h"
@@ -45,10 +47,11 @@ int init(const char *file_path, int debugger) {
         log_message(LOG_ERROR, "failed to initialize graphics\n");
         return 0;
     }
-
+    cpu_time = 0;
     init_joypad();
+    init_apu(); // Initialize sound
     reset_cpu();
-  
+     
     if (debugger) {
         DEBUG = 1;
     }
@@ -79,7 +82,7 @@ int init(const char *file_path, int debugger) {
 }
 
 //Main Fetch-Decode-Execute loop
-int run() {
+void run() {
 
     long current_cycles;
     int skip_bug = 0;
@@ -98,6 +101,7 @@ int run() {
         if (is_halted() || is_stopped()) {
             current_cycles = 4;
             update_timers(current_cycles);
+            cpu_time += current_cycles;
             
             if (is_stopped()) {
                 key_pressed();
@@ -109,6 +113,7 @@ int run() {
         } else {
             current_cycles = exec_opcode(skip_bug);
             skip_bug = 0;
+            cpu_time += current_cycles;
         } 
 
         cycles += current_cycles;
@@ -128,6 +133,5 @@ int run() {
         }
    }
 
-    return 0;
 }
 

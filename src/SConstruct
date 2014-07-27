@@ -9,7 +9,13 @@ coreObjects =env.Object( Glob('core/*.c'))
 mmuObjects = env.Object( Glob('core/mmu/*.c'))
 nonCoreObjects = env.Object( Glob('shared_libs/SDL/*.c'))
 standardObjects = env.Object( Glob('platforms/standard/*.c'))
+soundObjects = env.Object( Glob('core/sound/*.cpp'))
+soundObjects2 = env.Object( Glob('core/sound/blaarg_sound/*.cpp'))
+apuObjects = env.Object( Glob('core/sound/blaarg_sound/gb_apu/*.cpp'))
+boostObjects = env.Object( Glob('core/sound/blaarg_sound/boost/*.cpp'))
+
 allObjects = coreObjects + mmuObjects + nonCoreObjects + standardObjects
+allObjects = allObjects + soundObjects + soundObjects2 + apuObjects + boostObjects
 
 env.Program('gb_emu',allObjects)
 

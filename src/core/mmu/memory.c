@@ -8,6 +8,8 @@
 #include "../interrupts.h"
 #include "../bits.h"
 
+#include "../sound/sound.h"
+
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"
 
@@ -239,6 +241,10 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
   
     io_mem[addr] = val;
     uint16_t global_addr = addr + 0xFF00;
+    if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
+        write_apu(global_addr, val);
+        return;
+    }
     switch (global_addr) {
        
         case P1_REG  : joypad_write(val); break;
@@ -316,6 +322,9 @@ uint8_t get_mem(uint16_t const addr) {
         return oam_get_mem(addr - 0xFE00);;
     }
     // Read from IO mem
+    if (addr >= 0xFF10 && addr <= 0xFF3F) {
+        return read_apu(addr);
+    }
     return io_mem[addr - 0xFF00];
 
 }
