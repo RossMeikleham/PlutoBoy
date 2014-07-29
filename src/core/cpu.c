@@ -21,8 +21,6 @@
 #define SIGNED_IM_16_BIT ((IMMEDIATE_16_BIT & 0xFFFE) - (IMMEDIATE_16_BIT & 0xFFFF))
 
 
-static int halt = 0;
-static int stop = 0;
 static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
 static uint8_t opcode;
@@ -667,10 +665,10 @@ inline static void NOP() {}
 
 
 /*  Halt CPU until interrupt */
-inline static void HALT() {halt = 1;}
+inline static void HALT() {halted = 1;}
 
 /*  Halt CPU and LCD until button pressed */
-inline static void STOP() {stop = 1;}
+inline static void STOP() {stopped = 1;}
 
 
 /*  Disable interrupts */
@@ -1593,21 +1591,6 @@ void master_interrupts_enable() {
     interrupts_enabled = 1;
 }
 
-void unhalt_cpu() {
-    halt = 0;
-}
-
-int is_halted() {
-    return halt;
-}
-
-void unstop_cpu() {
-    stop = 0;
-}
-
-int is_stopped() {
-    return stop;
-}
 
 void reset_cpu() {
     /*  Default starting values for normal GB */
@@ -1618,6 +1601,9 @@ void reset_cpu() {
     reg.HL = 0x014D;
     reg.PC = 0x0000;
     reg.SP = 0xFFFE;
+
+    halted = 0;
+    stopped = 0;
 }
 
 

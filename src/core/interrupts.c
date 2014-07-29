@@ -65,15 +65,15 @@ int handle_interrupts() {
                     master_interrupts_disable(); 
                     restart(interrupts[i].isr_addr);
 
-                    unhalt_cpu();
+                    halted = 0;
                     return 0;
                 }
                 /* If Gameboy, SGB or Gameboy pocket PC is halted
                  * and interrupts disabled, cpu is unhalted and
                  * bug in the original system causes the next
                  * 1st byte of instruction to be repeated */
-                else if (is_halted()) {
-                    unhalt_cpu();
+                else if (halted) {
+                    halted = 0;
                     return 1;
                 }
             }

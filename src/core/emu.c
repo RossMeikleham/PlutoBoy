@@ -98,16 +98,16 @@ void run() {
 
     for(;;) { 
         
-        if (is_halted() || is_stopped()) {
+        if (halted || stopped) {
             current_cycles = 4;
             update_timers(current_cycles);
             cpu_time += current_cycles;
             
-            if (is_stopped()) {
+            if (stopped) {
                 sound_add_cycles(current_cycles);
                 key_pressed();
             }
-            if (is_halted()) {
+            if (halted) {
                 sound_add_cycles(current_cycles);
                 update_graphics(current_cycles);
             }
