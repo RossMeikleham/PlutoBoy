@@ -10,6 +10,8 @@ static Uint32 colors[4]; // Store GameBoy monchrome colors
 static SDL_Surface *screen;
 static Int_2D screen_buffer;
 
+static int previous[GB_PIXELS_Y][GB_PIXELS_X];
+
 static int screen_width;
 static int screen_height;
 
@@ -47,6 +49,12 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
     colors[2] = SDL_MapRGB(screen->format, 48,  104, 80);
     colors[3] = SDL_MapRGB(screen->format, 8, 24, 32);
 
+    for (int i = 0; i < GB_PIXELS_Y; i++) {
+        for (int j = 0; j < GB_PIXELS_X; j++) {
+            previous[i][j] = -1;           
+        }
+    }
+
     return 1;
 
 }
@@ -75,7 +83,12 @@ inline static void draw_pix(Uint32 color, int x, int y)
 void draw_screen() {
     for (int y = 0; y < GB_PIXELS_Y; y++) {
         for (int x = 0; x < GB_PIXELS_X; x++) {
-            draw_pix(colors[screen_buffer[y][x]], x, y);
+            int current_pix = screen_buffer[y][x];
+            //No need to redraw unchanged pixels
+            if (previous[y][x] != screen_buffer[y][x]) {
+                draw_pix(colors[screen_buffer[y][x]], x, y);
+                previous[y][x] = current_pix;
+            }
         }
     } 
     
