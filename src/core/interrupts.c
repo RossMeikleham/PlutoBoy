@@ -17,8 +17,8 @@
  * as well as the address in memory of their interrupt service
  * routine*/
 static const struct {
-    uint8_t isr_addr; 
     uint8_t flag; 
+    uint8_t isr_addr; 
                     
 } interrupts[] = { 
     {.flag = BIT_0, .isr_addr = VBLANK_ISR_ADDR},

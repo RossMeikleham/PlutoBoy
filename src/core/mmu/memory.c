@@ -7,8 +7,7 @@
 #include "../sprite_priorities.h"
 #include "../interrupts.h"
 #include "../bits.h"
-
-#include "../sound/sound.h"
+#include "../sound.h"
 
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"

@@ -4,7 +4,7 @@
 #define FPS_60 60
 
 //Set a framerate and start the counter
-void start_framerate();
+void start_framerate(unsigned long fps);
 
 
 /*Adjusts speed of game to the current framerate

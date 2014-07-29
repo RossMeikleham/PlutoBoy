@@ -63,9 +63,7 @@ static void draw_sprite_row() {
         if (height == 16) {
             tile_no &= ~0x1;
         }                           
-        if (row < 0) {
-            return;
-        }
+        
         //If sprite doesn't intersect current line, no need to draw
         if (y_pos > row || row >= y_pos + height || x_pos >= 160) {
             continue;

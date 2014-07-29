@@ -4,6 +4,8 @@
 extern "C" {
 #endif
 
+void sound_add_cycles(unsigned cycles);
+
 void init_apu();
 
 void write_apu(uint16_t addr, uint8_t val);

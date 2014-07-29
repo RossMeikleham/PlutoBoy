@@ -1,5 +1,5 @@
 
-// $package. http://www.slack.net/~ant/
+// Gb_Snd_Emu 0.1.4. http://www.slack.net/~ant/
 
 #include "Sound_Queue.h"
 

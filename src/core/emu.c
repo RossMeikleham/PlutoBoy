@@ -5,7 +5,7 @@
 #include "lcd.h"
 #include "interrupts.h"
 #include "mmu/memory.h"
-#include "sound/sound.h"
+#include "sound.h"
 #include "emu.h"
 
 #include "../non_core/joypad.h"
@@ -60,10 +60,10 @@ int init(const char *file_path, int debugger) {
     
     char name_buf[100]; 
     int i;
-    for(i = ROM_NAME_START; i<= ROM_NAME_END; i++) {
+    for(i = ROM_NAME_START; i <= ROM_NAME_END; i++) {
         name_buf[i - ROM_NAME_START] = get_mem(i);
     }
-    name_buf[i] = '\0';
+    name_buf[i - ROM_NAME_START] = '\0';
 
     log_message(LOG_INFO,"Game Title: %s\n", name_buf);
     log_message(LOG_INFO,"Licensee: %s\n", get_licensee());
@@ -104,9 +104,11 @@ void run() {
             cpu_time += current_cycles;
             
             if (is_stopped()) {
+                sound_add_cycles(current_cycles);
                 key_pressed();
             }
             if (is_halted()) {
+                sound_add_cycles(current_cycles);
                 update_graphics(current_cycles);
             }
             

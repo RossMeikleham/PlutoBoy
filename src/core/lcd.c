@@ -5,7 +5,6 @@
 #include "interrupts.h"
 #include "graphics.h"
 #include "bits.h"
-#include "sound/sound.h"
 #include <stdint.h>
 
 
@@ -47,7 +46,6 @@ static void inc_ly() {
     uint8_t ly = get_mem(LY_REG);
     ly = (ly + 1) % 154; //0 <= ly <= 153
     if (ly == 144) {
-        end_frame();
         raise_interrupt(VBLANK_INT);
         output_screen();
     }

@@ -6,7 +6,11 @@
 #ifndef SOUND_QUEUE_H
 #define SOUND_QUEUE_H
 
-#include "SDL/SDL.h"
+#ifdef __APPLE__
+#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
+#endif
+
+#include <SDL2/SDL.h>
 
 // Simple SDL sound wrapper that has a synchronous interface
 class Sound_Queue {
@@ -32,7 +36,7 @@ public:
 	void stop();
 	
 private:
-	enum { buf_size = 4096 };
+	enum { buf_size = 8192 };
 	enum { buf_count = 3 };
 	sample_t* volatile bufs;
 	SDL_sem* volatile free_sem;
