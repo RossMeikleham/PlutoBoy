@@ -7,9 +7,8 @@ uint8_t window_line; // Current window line
  * returns 1 if successful, 0 otherwise */
 int init_gfx();
 
-//Render the current row (value in LY reg)
+//Render the row number stored in the LY register
 void draw_row();
-
 
 void output_screen();
 

@@ -50,7 +50,9 @@ int init(const char *file_path, int debugger) {
     cpu_time = 0;
     init_joypad();
     init_apu(); // Initialize sound
+    setup_timers();
     reset_cpu();
+    
      
     if (debugger) {
         DEBUG = 1;

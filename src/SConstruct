@@ -1,10 +1,10 @@
 #Release environment
 env = Environment(CC = 'gcc', 
-                  CCFLAGS = '-O3 -pg -std=c99 -W -Wall -Wextra')
+                  CCFLAGS = '-O3 -fomit-frame-pointer -std=c99 -W -Wall -Wextra')
         #-fomit-frame-pointer
 #gcc --std=c99
 env.Append(LIBS = ['SDL', 'X11'])
-env.Append(LINKFLAGS = '-pg')
+env.Append(LINKFLAGS = '')
 
 coreObjects =env.Object( Glob('core/*.c'))
 mmuObjects = env.Object( Glob('core/mmu/*.c'))
