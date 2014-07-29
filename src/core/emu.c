@@ -15,9 +15,12 @@
 
 
 // Debug options
-static int DEBUG = 0;
-static int step_count = STEPS_OFF;
-static int breakpoint = BREAKPOINT_OFF;
+int DEBUG = 0;
+int step_count = STEPS_OFF;
+int breakpoint = BREAKPOINT_OFF;
+long current_cycles;
+int skip_bug = 0;
+long cycles = 0;
 
 /* Intialize emulator with given ROM file, and
  * specify whether or not debug mode is active
@@ -83,12 +86,14 @@ int init(const char *file_path, int debugger) {
     return 1;    
 }
 
+    
+  
 //Main Fetch-Decode-Execute loop
 void run() {
 
     long current_cycles;
-    int skip_bug = 0;
-    long cycles = 0;
+  //  int skip_bug = 0;
+  //  long cycles = 0;
 
     if (DEBUG) {
         int flags = get_command();
@@ -114,7 +119,7 @@ void run() {
                 update_graphics(current_cycles);
             }
             
-        } else {
+        } else if (!(halted || stopped)) {
             current_cycles = exec_opcode(skip_bug);
             skip_bug = 0;
             cpu_time += current_cycles;
@@ -138,4 +143,3 @@ void run() {
    }
 
 }
-
