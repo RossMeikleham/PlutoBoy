@@ -1,6 +1,7 @@
 #include "../../non_core/graphics_out.h"
 #include "../../non_core/logger.h"
 
+
 #include "SDL/SDL.h"
 
 
@@ -9,9 +10,7 @@ typedef int (*Int_2D )[GB_PIXELS_X];
 static Uint32 colors[4]; // Store GameBoy monchrome colors
 static SDL_Surface *screen;
 static Int_2D screen_buffer;
-
-static int previous[GB_PIXELS_Y][GB_PIXELS_X];
-
+static int previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
 static int screen_width;
 static int screen_height;
 

@@ -167,7 +167,7 @@ void unload_boot_rom() {
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
-inline static void dma_transfer(uint8_t val) {
+void dma_transfer(uint8_t val) {
 
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {
@@ -177,7 +177,7 @@ inline static void dma_transfer(uint8_t val) {
 
 
 /* Keypad is written to, update register with state */
-inline static void joypad_write(uint8_t joypad_state) {
+void joypad_write(uint8_t joypad_state) {
     
     joypad_state |= 0xF; // unset all keys
 
@@ -205,28 +205,6 @@ inline static void joypad_write(uint8_t joypad_state) {
 }
 
 
-/* Write to IO memory given address 0 - 0xFF */
-void io_write_mem(uint8_t addr, uint8_t val) {
-
-  
-    io_mem[addr] = val;
-    uint16_t global_addr = addr + 0xFF00;
-    if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
-        write_apu(global_addr, val);
-        return;
-    }
-    switch (global_addr) {
-       
-        case P1_REG  : joypad_write(val); break;
-
-        /*  Attempting to set DIV reg resets it to 0 */
-        case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
-        /*  Attempting to set LY reg resets it to 0  */
-        case LY_REG   : io_mem[addr] = 0; break;
-        /*  Perform direct memory transfer  */
-        case DMA_REG  : dma_transfer(val); break;
-    }
-}
 
 
 /* Directly inject a value into IO memory without performing

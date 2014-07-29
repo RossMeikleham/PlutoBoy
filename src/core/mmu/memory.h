@@ -21,7 +21,6 @@ void unload_boot_rom();
  * and not the CPU. */
 void io_write_override(uint8_t loc, uint8_t val);
 
-void io_write_mem(uint8_t addr, uint8_t val);
 
 void set_mem_override(uint16_t loc, uint8_t val); 
 
@@ -38,6 +37,34 @@ uint16_t get_mem_16(uint16_t loc);
  * Gameboy memory and setup banks */
 int load_rom(char const * filename, unsigned char const *file_data, size_t size);
 
+/* Transfer 160 bytes to sprite memory starting from
+ * address XX00 */
+void dma_transfer(uint8_t val);
+
+void joypad_write(uint8_t joypad_state);
+
+/* Write to IO memory given address 0 - 0xFF */
+inline void io_write_mem(uint8_t addr, uint8_t val) {
+
+  
+    io_mem[addr] = val;
+    uint16_t global_addr = addr + 0xFF00;
+    if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
+        write_apu(global_addr, val);
+        return;
+    }
+    switch (global_addr) {
+       
+        case P1_REG  : joypad_write(val); break;
+
+        /*  Attempting to set DIV reg resets it to 0 */
+        case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
+        /*  Attempting to set LY reg resets it to 0  */
+        case LY_REG   : io_mem[addr] = 0; break;
+        /*  Perform direct memory transfer  */
+        case DMA_REG  : dma_transfer(val); break;
+    }
+}
 
 /* Write to OAM given OAM address 0x0 - 0xA0
  * Does nothing if address > 0xA0 */

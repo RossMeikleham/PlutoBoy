@@ -27,7 +27,7 @@ int init_gfx() {
 
 
 
-static void draw_sprite_row() {
+inline static void draw_sprite_row() {
    
     // 8x16 or 8x8
     int8_t lcd_ctrl = get_mem(LCDC_REG);
@@ -118,7 +118,7 @@ static void draw_sprite_row() {
 
 
 
-static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
+inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
    
     uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
@@ -188,7 +188,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row
 }
 
 //Render the supplied row with background tiles
-static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
+inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
    uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
     //Calculate color pallete
@@ -241,7 +241,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
 
       
 
-static void draw_tile_row() {
+inline static void draw_tile_row() {
     uint8_t lcd_ctrl = get_mem(LCDC_REG);
     uint8_t row = get_mem(LY_REG);
     uint8_t win_y_pos = get_mem(WY_REG);
@@ -280,7 +280,7 @@ void draw_row() {
         if (render_tiles) {
             draw_tile_row();
         }
-        if (render_sprites) {
+        if (render_sprites) { 
             draw_sprite_row();
         }
     } 
