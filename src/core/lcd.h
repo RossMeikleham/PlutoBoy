@@ -9,6 +9,7 @@
 #include "graphics.h"
 #include "bits.h"
 #include <stdint.h>
+#include "cpu.h"
 
 #define MAX_SL_CYCLES 456
 
@@ -24,7 +25,7 @@ void inc_ly();
 
 /* Update the turned on LCD given the number of cycles, and the current lcd
  *status and control registers */
-inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
+inline static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     #define MODE2_CYCLES 80 // Mode 2 lasts from 0 -> 80 cycles
     #define MODE3_CYCLES 172 // Mode 3 lasts from  80 -> (172 + 80) cycles
     #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
@@ -107,7 +108,7 @@ inline void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
  * call to this function, updates the internal LCD
  * modes, registers and if a Vertical Blank occurs redisplays
  * the screen */
-inline void update_graphics(long cycles) {
+inline static void update_graphics(long cycles) {
  
     // Lower 3 bits of stat are read only 
     current_lcd_stat = (get_mem(STAT_REG) & (~7)) | (current_lcd_stat & 0x7);

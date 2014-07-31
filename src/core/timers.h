@@ -33,7 +33,7 @@ void increment_tima();
  * If frequency number selected isn't valid then nothing happens*/
 void set_timer_frequency(unsigned int n);
 
-inline void update_divider_reg(long cycles) {
+inline static void update_divider_reg(long cycles) {
 
     divider_counter += cycles;
     // Increment div at a frequency of 16382hz
@@ -47,7 +47,7 @@ inline void update_divider_reg(long cycles) {
 
 /* Update internal timers given the cycles executed since
  * the last time this function was called. */
-inline void update_timers(long cycles) { 
+inline static void update_timers(long cycles) { 
     uint8_t timer_control = get_mem(TAC_REG);
     
     update_divider_reg(cycles);

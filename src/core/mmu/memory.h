@@ -11,7 +11,7 @@
 
 uint8_t mem[0xFF00 + 1 - 0x100];
 uint8_t io_mem[0x100];
-uint8_t oam_mem[0xA0];
+uint8_t oam_mem[0xFF];
 
 void unload_boot_rom();
 
@@ -44,7 +44,7 @@ void dma_transfer(uint8_t val);
 void joypad_write(uint8_t joypad_state);
 
 /* Write to IO memory given address 0 - 0xFF */
-inline void io_write_mem(uint8_t addr, uint8_t val) {
+inline static void io_write_mem(uint8_t addr, uint8_t val) {
 
   
     io_mem[addr] = val;
@@ -68,7 +68,7 @@ inline void io_write_mem(uint8_t addr, uint8_t val) {
 
 /* Write to OAM given OAM address 0x0 - 0xA0
  * Does nothing if address > 0xA0 */
-inline void oam_set_mem(uint8_t addr, uint8_t val) {
+inline static void oam_set_mem(uint8_t addr, uint8_t val) {
     
     // Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     if (addr < 0xA0) {
@@ -84,14 +84,14 @@ inline void oam_set_mem(uint8_t addr, uint8_t val) {
 
 /* Read from OAM given OAM address 0 - A0
  * Returns 0x0 if addres > 0xA0 */
-inline uint8_t oam_get_mem(uint8_t addr) {
+inline static uint8_t oam_get_mem(uint8_t addr) {
     //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
-    return (addr < 0xA0) ? oam_mem[addr] : 0;
+    return oam_mem[addr];
 }
 
 
 /*  Write an 8 bit value to the given 16 bit address */
-inline void set_mem(uint16_t const addr, uint8_t const val) {
+inline static void set_mem(uint16_t const addr, uint8_t const val) {
     
     //Check if memory bank controller chip is being accessed 
     if (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000)) {
@@ -129,7 +129,7 @@ inline void set_mem(uint16_t const addr, uint8_t const val) {
 
 
 // Read contents from given 16 bit memory address
-inline uint8_t get_mem(uint16_t const addr) {
+inline static uint8_t get_mem(uint16_t const addr) {
     
     // Check if reading from Memory Bank Controller
     if (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000)) {
@@ -150,9 +150,5 @@ inline uint8_t get_mem(uint16_t const addr) {
     return io_mem[addr - 0xFF00];
 
 }
-
-
-
-
 
 #endif

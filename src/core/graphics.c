@@ -15,12 +15,14 @@
 static int screen_buffer[144][160];
 static int old_buffer[144][160];
 
+static uint8_t row;
+static uint8_t lcd_ctrl;
+
 int init_gfx() {
    
     start_framerate(FPS_60); 
     int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
     init_sprite_prio_list();    
-    window_line = 0;
         
     return result;
 }
@@ -30,11 +32,9 @@ int init_gfx() {
 inline static void draw_sprite_row() {
    
     // 8x16 or 8x8
-    int8_t lcd_ctrl = get_mem(LCDC_REG);
     int height = lcd_ctrl & BIT_2 ? 16 : 8;
     uint8_t obp_0 = get_mem(OBP0_REG); 
     uint8_t obp_1 = get_mem(OBP1_REG); 
-    uint8_t row = get_mem(LY_REG);
     int palletes[2][4];
 
     //Calculate both color palletes
@@ -118,7 +118,7 @@ inline static void draw_sprite_row() {
 
 
 
-inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
+inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
    
     uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
@@ -183,12 +183,10 @@ inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem, uint
         }   
     }      
 
-    window_line++;
-
 }
 
 //Render the supplied row with background tiles
-inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t row) {
+inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
    uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
     //Calculate color pallete
@@ -242,8 +240,7 @@ inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem, uint8_t 
       
 
 inline static void draw_tile_row() {
-    uint8_t lcd_ctrl = get_mem(LCDC_REG);
-    uint8_t row = get_mem(LY_REG);
+  
     uint8_t win_y_pos = get_mem(WY_REG);
 
     uint16_t tile_mem; // Either tile set 0 or 1
@@ -253,12 +250,12 @@ inline static void draw_tile_row() {
     
     //Draw background    
     uint16_t bg_mem = lcd_ctrl & BIT_3 ? BG_MAP_DATA1_START : BG_MAP_DATA0_START;
-    draw_tile_bg_row(tile_mem, bg_mem, row);
+    draw_tile_bg_row(tile_mem, bg_mem);
 
     //Draw Window display if it's on
     if ((lcd_ctrl & BIT_5) && (win_y_pos <= row)) {
         uint16_t win_bg_mem = lcd_ctrl & BIT_6 ? BG_MAP_DATA1_START :BG_MAP_DATA0_START;
-        draw_tile_window_row(tile_mem, win_bg_mem, row);
+        draw_tile_window_row(tile_mem, win_bg_mem);
     }    
 }
 
@@ -271,12 +268,13 @@ void output_screen() {
 
 //Render the row number stored in the LY register
 void draw_row() {
-    uint8_t lcd_ctrl = get_mem(LCDC_REG);
+    lcd_ctrl = get_mem(LCDC_REG);
+    row = get_mem(LY_REG);
 
     //Render only if screen is on
     if ((lcd_ctrl & BIT_7)) {
-        uint8_t render_sprites = (get_mem(LCDC_REG) & BIT_1);
-        uint8_t render_tiles = (get_mem(LCDC_REG)  & BIT_0);
+        uint8_t render_sprites = (lcd_ctrl & BIT_1);
+        uint8_t render_tiles = (lcd_ctrl  & BIT_0);
         if (render_tiles) {
             draw_tile_row();
         }

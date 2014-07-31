@@ -18,9 +18,6 @@
 int DEBUG = 0;
 int step_count = STEPS_OFF;
 int breakpoint = BREAKPOINT_OFF;
-long current_cycles;
-int skip_bug = 0;
-long cycles = 0;
 
 /* Intialize emulator with given ROM file, and
  * specify whether or not debug mode is active
@@ -90,8 +87,8 @@ int init(const char *file_path, int debugger) {
 void run() {
 
     long current_cycles;
-  //  int skip_bug = 0;
-  //  long cycles = 0;
+    int skip_bug = 0;
+    long cycles = 0;
 
     if (DEBUG) {
         int flags = get_command();
@@ -124,7 +121,7 @@ void run() {
         cycles += current_cycles;
         if (cycles > 10000) {
             update_keys();
-            cycles -= 10000;
+            cycles = 0;
         }
         skip_bug = handle_interrupts();
 

@@ -36,7 +36,7 @@ void raise_interrupt(InterruptCode ic);
 /* Check if any interrupts have been raised
  * and call the appropriate Interrupt Routine if appropriate. 
  * Returns 1 if the HALT is triggered, 0 otherwise*/
-inline int handle_interrupts() {
+inline static int handle_interrupts() {
 
     // Get all interrupts which flag has been set and are enabled
     uint8_t if_flags = get_mem(INTERRUPT_REG);
