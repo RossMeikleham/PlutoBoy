@@ -87,8 +87,6 @@ int init(const char *file_path, int debugger) {
 }
 
     
-  
-//Main Fetch-Decode-Execute loop
 void run() {
 
     long current_cycles;
@@ -106,39 +104,36 @@ void run() {
     for(;;) { 
         
         if (halted || stopped) {
+
             current_cycles = 4;
             update_timers(current_cycles);
+            sound_add_cycles(current_cycles);
             cpu_time += current_cycles;
-            
             if (stopped) {
-                sound_add_cycles(current_cycles);
                 key_pressed();
             }
             if (halted) {
-                sound_add_cycles(current_cycles);
                 update_graphics(current_cycles);
             }
-            
-        } else if (!(halted || stopped)) {
+        }
+        else if (!(halted || stopped)) {
             current_cycles = exec_opcode(skip_bug);
-            skip_bug = 0;
-            cpu_time += current_cycles;
-        } 
+            cpu_time += current_cycles;         
+        }
 
         cycles += current_cycles;
-        if (cycles > 100) {
+        if (cycles > 10000) {
             update_keys();
-            cycles -= 100;
+            cycles -= 10000;
         }
         skip_bug = handle_interrupts();
+
         if (DEBUG && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
 
             breakpoint =  (flags & BREAKPOINT_SET) ? 
-                get_breakpoint() : BREAKPOINT_OFF;
-         
+            get_breakpoint() : BREAKPOINT_OFF;
         }
-   }
-
+    }
 }
