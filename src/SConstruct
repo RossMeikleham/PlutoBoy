@@ -1,6 +1,6 @@
 #Release environment
 env = Environment(CC = 'gcc', 
-                  CCFLAGS = '-O3 -std=c99 -W -Wall -Wextra')
+                  CCFLAGS = '-O3 -g -std=c99 -W -Wall -Wextra')
         #-fomit-frame-pointer
 #gcc --std=c99
 env.Append(LIBS = ['SDL', 'X11'])

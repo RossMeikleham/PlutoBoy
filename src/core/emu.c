@@ -130,8 +130,7 @@ void run() {
             update_keys();
             cycles -= 100;
         }
-        skip_bug = handle_interrupts();            
-        
+        skip_bug = handle_interrupts();
         if (DEBUG && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
