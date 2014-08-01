@@ -1573,8 +1573,7 @@ static int ins_words[UINT8_MAX+1] = {
 
 
 static Instructions instructions = {
-    .instruction_set = ins, .words = ins_words, 
-    .ext_instruction_set = ext_ins, 
+    ins, ins_words, ext_ins, 
 };   
    
 

@@ -86,7 +86,8 @@ void update_sprite_prios(int sprite_no, uint8_t x_pos) {
 
 
 Sprite_Iterator create_sprite_iterator() {
-    Sprite_Iterator si = {.next = head_ptr};
+	Sprite_Iterator si;
+	si.next = head_ptr;
     return si;
  }
 

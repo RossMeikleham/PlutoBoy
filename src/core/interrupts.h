@@ -29,6 +29,8 @@ Interrupts interrupts[5];
 
 #define INTERRUPTS_LEN sizeof (interrupts) / sizeof (interrupts[0])
 
+void init_interrupts();
+
 /* Given an interrupt code, raises the interrupt.
  * does nothing if interrupt code supplied is invalid */
 void raise_interrupt(InterruptCode ic);

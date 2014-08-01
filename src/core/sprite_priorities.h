@@ -3,10 +3,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 #define MAX_SPRITES 40
 
 typedef struct node Node;
@@ -24,7 +20,4 @@ void update_sprite_prios(int sprite_no, uint8_t x_pos);
 Sprite_Iterator create_sprite_iterator();
 int sprite_iterator_next(Sprite_Iterator *si);
 #endif //SPRITE_PRIOS_H
-#ifdef __cplusplus
-}
-#endif
 

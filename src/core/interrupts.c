@@ -4,13 +4,15 @@
 #include "bits.h"
 #include "cpu.h"
 
-Interrupts interrupts[5] = { 
-    {.flag = BIT_0, .isr_addr = VBLANK_ISR_ADDR},
-    {.flag = BIT_1, .isr_addr = LCD_ISR_ADDR},
-    {.flag = BIT_2, .isr_addr = TIMER_ISR_ADDR},
-    {.flag = BIT_3, .isr_addr = IO_ISR_ADDR},
-    {.flag = BIT_4, .isr_addr = JOYPAD_ISR_ADDR}
-};
+
+
+void init_interrupts() {
+	interrupts[0] = { BIT_0, VBLANK_ISR_ADDR };
+	interrupts[1] = { BIT_1, LCD_ISR_ADDR };
+	interrupts[2] = { BIT_2, TIMER_ISR_ADDR };
+	interrupts[3] = { BIT_3, IO_ISR_ADDR };
+	interrupts[4] = { BIT_4, JOYPAD_ISR_ADDR };
+}
 
 /* Given an interrupt code, raises the interrupt.
  * does nothing if interrupt code supplied is invalid */

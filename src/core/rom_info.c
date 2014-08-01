@@ -57,7 +57,7 @@ static rom_size rom_sizes[] = {{0x0, 32}, {0x1, 64}, {0x2, 128}, {0x3, 256}, {0x
     {0x5, 1024}, {0x6, 2048}, {0x7, 4096}, {0x52, 1152}, {0x53, 1280}, {0x54, 1536}};
 
 static cartridge_type cartridge_types[] = {{0x00 ,"ROM"}, {0x01, "ROM+MBC1"},
- {.id = 0x02, "ROM+MBC1+RAM"}, {0x03, "ROM+MBC1+RAM+BATTERY"}, {0x05, "ROM+MBC2"}, 
+ {0x02, "ROM+MBC1+RAM"}, {0x03, "ROM+MBC1+RAM+BATTERY"}, {0x05, "ROM+MBC2"}, 
  {0x06, "ROM+MBC2+BATTERY"}, {0x08, "ROM+RAM"},
     {0x09, "ROM+RAM+BATTERY"}, {0x0B, "ROM+MMM01"}, {0x0C, "ROM+MMM01+SRAM"}, {0x0D, "ROM+MMM01+SRAM+BATTERY"},
     {0x0F, "ROM+MBC3+TIMER+BATTERY"}, {0x10, "ROM+MBC3+TIMER+RAM+BATTERY"}, {0x11, "ROM+MBC3"},

@@ -1,22 +1,3 @@
-
-/*
- * =====================================================================================
- *
- *       Filename:  main.c
- *
- *    Description:  
- *
- *        Version:  1.0
- *        Created:  01/02/14 13:29:55
- *       Revision:  none
- *       Compiler:  gcc
- *
- *         Author:  Ross Meikleham, 
- *   Organization:  
- *
- * =====================================================================================
- */
-
 #include "../../core/emu.h"
 
 #include <stdio.h>
@@ -27,7 +8,7 @@
 int main(int argc, char* argv[]) {
     
     int debug = 0;
-    char *file_name;
+    char *file_name = NULL;
 
     switch (argc) {
       case 3: if (argv[2][0] != '-' && argv[2][1] != 'd') {
