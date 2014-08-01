@@ -7,10 +7,9 @@
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
 static const long timer_frequencies[] = {4096, 262144, 65536, 16384}; 
 
-long divider_counter = 0;
-long clock_speed = GB_CLOCK_SPEED_HZ;
-long timer_frequency = -1;
-long timer_counter = 0;
+static long clock_speed = GB_CLOCK_SPEED_HZ;
+static long timer_frequency = -1;
+static long timer_counter = 0;
 
 
 /*  Set and get the clockspeed in hz */
@@ -56,6 +55,8 @@ void increment_div() {
 
 
 void update_divider_reg(long cycles) {
+    
+    static long divider_counter = 0;
 
 	divider_counter += cycles;
 	// Increment div at a frequency of 16382hz

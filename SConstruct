@@ -2,6 +2,7 @@
 env = Environment(CC = 'clang', 
                   CCFLAGS = ' -O3 -fomit-frame-pointer -W -Wall -Wextra')
 
+env.Append(CPPPATH = ['/usr/include/SDL'])
 env.Append(LIBS = ['SDL'])
 env.Append(LINKFLAGS = '')
 

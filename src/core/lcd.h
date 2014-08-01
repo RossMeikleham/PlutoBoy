@@ -11,9 +11,6 @@
 #include <stdint.h>
 #include "cpu.h"
 
-uint8_t check_lcd_coincidence(uint8_t const lcd_stat);
-void inc_ly();
-
 /* Given the elapsed cpu cycles since the last
 * call to this function, updates the internal LCD
 * modes, registers and if a Vertical Blank occurs redisplays

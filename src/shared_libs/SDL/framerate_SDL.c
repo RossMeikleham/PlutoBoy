@@ -32,7 +32,7 @@ void adjust_to_framerate() {
     current_ticks = SDL_GetTicks();
     count = (count + 1) % 60;
     if (count == 0) {
-        Uint32 fps = 1000 / (current_ticks - last_ticks);
+        double fps = 1000 / (current_ticks - last_ticks);
         sprintf(title_buf, "Gameboy fps:%.2f",fps);
         SDL_WM_SetCaption(title_buf,"");
     }
