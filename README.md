@@ -23,7 +23,7 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 
 - Saving SRAM to and loading SRAM from file for games that support it.
 
-- Sound using Blaarg's C++ sound library 
+- Sound using Blaarg's C++ sound library which was further edited  by [drhelius]( https://github.com/drhelius). Source files for audio used in this emulator came from his emulator [here](https://github.com/drhelius/Gearboy/tree/master/src/audio)
 
 - Simple debugger which can:  
    - Step through instructions,
