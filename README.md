@@ -52,15 +52,9 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 - Save/Load ROM states
 
 #Using 
-Windows command line: 
-```
-gb_emu.exe "game_file" [-d]
-```
+Windows command line: `gb_emu.exe "game_file" [-d]`
 <br>
-Unix shell:
-```
-./gb_emu "game_file" [-d]
-```
+Unix shell: `./gb_emu "game_file" [-d]`
 <br>
 The -d flag starts the emulator in debugging mode.
 
@@ -77,9 +71,7 @@ The -d flag starts the emulator in debugging mode.
 
 ### How To Build:
 - Navigate to the project build/Unix folder.
-- Enter the command 
-```./scons
-```
+- Enter the command `./scons`
 
 ## Windows
 
@@ -89,33 +81,21 @@ The -d flag starts the emulator in debugging mode.
 
 ### How To Build:
 
-- Navigate to the project 
-```
-build/Windows 
-```folder.
-- Open ```
-Windows GB.sdf
-```
-- Navigate to 
-```
-Project->Properties->VC++ Directories
-```
-- Edit Include directories to include the "include" directory of the downloaded SDL libraries. 
-```
-SDL-1.2.15/include
-```
-- Edit Library directories to include a library directory of the downloaded SDL libraries. 
-```
-SDL-1.2.15/lib/x86
-``` 
+- Navigate to the project `build/Windows` folder.
+
+- Open `Windows GB.sdf`
+
+- Navigate to `Project->Properties->VC++ Directories`
+
+- Edit Include directories to include the "include" directory of the downloaded SDL libraries. `SDL-1.2.15/include`
+
+- Edit Library directories to include a library directory of the downloaded SDL libraries. `SDL-1.2.15/lib/x86`
+
 - Press "OK" to close Project Properties dialogue.
 - Now navigate to "Build" and select the "Build Solution" option.
 - The Windows folder should now contain a release folder containing the emulator executable.
 
-> ***Note*** if SDL.dll from the 
-```
-lib/x86
-``` SDL folder isn't in your path either add it or copy it to the Release folder
+> ***Note*** if SDL.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder
 
 #Current Accuracy Test Tesults
 
