@@ -1,9 +1,8 @@
 GameBoyEmulator
 ==============
 
-Gameboy emulator in progress.
-Written in C.
-
+Gameboy emulator for Windows and Unix based systems.
+Uses SDL for input/output but can easily be expanded to include other frameworks.
 
 
 #Currently Implemented
@@ -23,7 +22,11 @@ Written in C.
   scanlines have been rendered the screen is displayed/updated 
   using SDL.
 
-- Support for basic 32kb and MBC1 chip ROMs
+- Support for regular 32kb, MBC1, MBC3, and MBC5 chip ROMs. (Not including Real Time Clock or Rumble)
+
+- Saving SRAM to and loading SRAM from file for games that support it.
+
+- Sound using Blaarg's C++ sound library 
 
 - Simple debugger which can:  
    - Step through instructions,
@@ -35,13 +38,8 @@ Written in C.
 
 #Still to implement:
 
-- Saving SRAM to and loading SRAM from file for games
-  that support it.
-
-- Support for all other MBC ROM chips.
-
-- Correct Sprite priorities when overlapping occurs 
-  as well as limiting 10 sprites to a line.
+- Support for Real Time Clock for MBC3, rumble for MBC5, and basic support 
+  for other MBC ROM chips.
 
 - Serial data transfer handling.
 
@@ -51,47 +49,71 @@ Written in C.
 
 - OAM Sprite bug behaviour
 
-- Sound
-
 - Save/Load ROM states
 
 #Using 
-From windows command line: 
+Windows command line: 
+```
 gb_emu.exe "game_file" [-d]
-
+```<br>
 Unix shell:
+```
 ./gb_emu "game_file" [-d]
-
+```<br>
 The -d flag starts the emulator in debugging mode.
 
 
 #Build Instructions
 
-#Unix based systems
+## Unix based systems
 
-Required: (All these should be easily installed using your package manager)
--SDL 1.2 libraries
--Scons 
--Clang compiler 
+### Required: (All these should be easily installed using your package manager)
 
-Navigate to the project build/Unix folder.
-Enter the command "./scons"
+- SDL 1.2 libraries
+- Scons 
+- Clang compiler 
 
+### How To Build:
+- Navigate to the project build/Unix folder.
+- Enter the command 
+```./scons
+```
 
-#Windows
-Required:
--Visual C++
--SDL 1.2 Visual C++ development libraries (can be found here https://www.libsdl.org/download-1.2.php)
+## Windows
 
-Navigate to the project build/Windows folder.
-Open "Windows GB.sdf".
-Navigate to Project->Properties->VC++ Directories
-Edit Include directories to include the "include" directory of the downloaded SDL libraries. (SDL-1.2.15/include)
-Edit Library directories to include a library directory of the downloaded SDL libraries. (SDL-1.2.15/lib/x86) 
-Press "OK" to close Project Properties dialogue.
-Now navigate to "Build" and select the "Build Solution" option.
-The Windows folder should now contain a release folder containing the emulator executable.
-(Note if SDL.dll from either the lib/x86 SDL folder isn't in your path either add it or copy it to the Release folder)
+### Required:
+- Visual C++/ Visual Studio
+- SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
+
+### How To Build:
+
+- Navigate to the project 
+```
+build/Windows 
+```folder.
+- Open ```
+Windows GB.sdf
+```
+- Navigate to 
+```
+Project->Properties->VC++ Directories
+```
+- Edit Include directories to include the "include" directory of the downloaded SDL libraries. 
+```
+SDL-1.2.15/include
+```
+- Edit Library directories to include a library directory of the downloaded SDL libraries. 
+```
+SDL-1.2.15/lib/x86
+``` 
+- Press "OK" to close Project Properties dialogue.
+- Now navigate to "Build" and select the "Build Solution" option.
+- The Windows folder should now contain a release folder containing the emulator executable.
+
+> ***Note*** if SDL.dll from the 
+```
+lib/x86
+``` SDL folder isn't in your path either add it or copy it to the Release folder
 
 #Current Accuracy Test Tesults
 
