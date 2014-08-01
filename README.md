@@ -1,6 +1,3 @@
-GameBoyEmulator
-==============
-
 Gameboy emulator for Windows and Unix based systems.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
