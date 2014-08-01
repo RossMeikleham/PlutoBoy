@@ -55,7 +55,43 @@ Written in C.
 
 - Save/Load ROM states
 
+#Using 
+From windows command line: 
+gb_emu.exe "game_file" [-d]
 
+Unix shell:
+./gb_emu "game_file" [-d]
+
+The -d flag starts the emulator in debugging mode.
+
+
+#Build Instructions
+
+#Unix based systems
+
+Required: (All these should be easily installed using your package manager)
+-SDL 1.2 libraries
+-Scons 
+-Clang compiler 
+
+Navigate to the project build/Unix folder.
+Enter the command "./scons"
+
+
+#Windows
+Required:
+-Visual C++
+-SDL 1.2 Visual C++ development libraries (can be found here https://www.libsdl.org/download-1.2.php)
+
+Navigate to the project build/Windows folder.
+Open "Windows GB.sdf".
+Navigate to Project->Properties->VC++ Directories
+Edit Include directories to include the "include" directory of the downloaded SDL libraries. (SDL-1.2.15/include)
+Edit Library directories to include a library directory of the downloaded SDL libraries. (SDL-1.2.15/lib/x86) 
+Press "OK" to close Project Properties dialogue.
+Now navigate to "Build" and select the "Build Solution" option.
+The Windows folder should now contain a release folder containing the emulator executable.
+(Note if SDL.dll from either the lib/x86 SDL folder isn't in your path either add it or copy it to the Release folder)
 
 #Current Accuracy Test Tesults
 
