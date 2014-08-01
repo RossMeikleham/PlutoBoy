@@ -55,11 +55,13 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 Windows command line: 
 ```
 gb_emu.exe "game_file" [-d]
-```<br>
+```
+<br>
 Unix shell:
 ```
 ./gb_emu "game_file" [-d]
-```<br>
+```
+<br>
 The -d flag starts the emulator in debugging mode.
 
 
