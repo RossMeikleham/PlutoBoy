@@ -1,4 +1,4 @@
-#include "SDL/SDL.h"
+#include "SDL.h"
 #include "stdlib.h"
 #include "../../non_core/framerate.h"
 
@@ -26,14 +26,14 @@ void adjust_to_framerate() {
     
     // If too fast
     if (framerate_ticks < 1000) {
-        SDL_Delay((1000.0/framerate) - ticks_elapsed);
+        SDL_Delay((1000/framerate) - ticks_elapsed);
     } 
    
     current_ticks = SDL_GetTicks();
     count = (count + 1) % 60;
     if (count == 0) {
-        double fps = 1000.0 / (current_ticks - last_ticks);
-        snprintf(title_buf, 100, "Gameboy fps:%.2f",fps);
+        Uint32 fps = 1000 / (current_ticks - last_ticks);
+        sprintf(title_buf, "Gameboy fps:%.2f",fps);
         SDL_WM_SetCaption(title_buf,"");
     }
     last_ticks = current_ticks;

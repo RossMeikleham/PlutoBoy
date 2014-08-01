@@ -1,10 +1,6 @@
 #ifndef JOYPAD_H
 #define JOYPAD_H
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 /*  Initialize the joypad, should be called before
  *  any other joypad functions */
 void init_joypad();
@@ -28,11 +24,6 @@ int select_pressed();
 /* Returns 1 if any of the 8 GameBoy keys 
  * are pressed, 0 otherwise */
 int key_pressed();
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif //JOYPAD_H
 

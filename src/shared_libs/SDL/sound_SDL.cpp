@@ -1,7 +1,7 @@
 #include "../../core/sound.h"
 
 #include <cstdio>
-#include "SDL/SDL.h"
+#include "SDL.h"
 
 #include "audio/Gb_Apu.h"
 #include "audio/Sound_Queue.h"

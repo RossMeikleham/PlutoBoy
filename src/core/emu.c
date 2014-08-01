@@ -7,6 +7,7 @@
 #include "mmu/memory.h"
 #include "sound.h"
 #include "emu.h"
+#include <stdio.h>
 
 #include "../non_core/joypad.h"
 #include "../non_core/files.h"
@@ -26,7 +27,8 @@ int breakpoint = BREAKPOINT_OFF;
  * returns 1 if successfully initialized, 0
  * otherwise */
 int init(const char *file_path, int debugger) {
-    
+	printf("hello\n");
+
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;
 
@@ -34,6 +36,7 @@ int init(const char *file_path, int debugger) {
     set_log_level(LOG_INFO);
 
     if (!(size = load_rom_from_file(file_path, buffer))) {
+
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
     }
@@ -47,10 +50,9 @@ int init(const char *file_path, int debugger) {
         log_message(LOG_ERROR, "failed to initialize graphics\n");
         return 0;
     }
-    cpu_time = 0;
+
     init_joypad();
     init_apu(); // Initialize sound
-    setup_timers();
     reset_cpu();
     
      
@@ -105,7 +107,7 @@ void run() {
             current_cycles = 4;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
-            cpu_time += current_cycles;
+            
             if (stopped) {
                 key_pressed();
             }
@@ -115,7 +117,7 @@ void run() {
         }
         else if (!(halted || stopped)) {
             current_cycles = exec_opcode(skip_bug);
-            cpu_time += current_cycles;         
+                   
         }
 
         cycles += current_cycles;

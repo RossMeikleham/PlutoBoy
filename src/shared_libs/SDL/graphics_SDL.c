@@ -2,7 +2,7 @@
 #include "../../non_core/logger.h"
 
 
-#include "SDL/SDL.h"
+#include "SDL.h"
 
 
 typedef int (*Int_2D )[GB_PIXELS_X];
@@ -59,7 +59,7 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
 }
 
 
-inline static void fill_rect(int x, int y, int w, int h, Uint32 color)
+static void fill_rect(int x, int y, int w, int h, Uint32 color)
 {
     
     SDL_Rect rect = {x, y, w, h};
@@ -69,7 +69,7 @@ inline static void fill_rect(int x, int y, int w, int h, Uint32 color)
 
 /* Draw a GameBoy pixel of the given co-ordinates and of
  * the given 32bit color */
-inline static void draw_pix(Uint32 color, int x, int y)
+static void draw_pix(Uint32 color, int x, int y)
 {
     int width_inc = screen_width/GB_PIXELS_X;
     int height_inc = screen_height/GB_PIXELS_Y;

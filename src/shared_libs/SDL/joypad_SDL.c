@@ -1,4 +1,4 @@
-#include "SDL/SDL.h"
+#include "SDL.h"
 #include "stdlib.h"
 #include "../../non_core/joypad.h"
 #include "../../core/mmu/mbc.h"

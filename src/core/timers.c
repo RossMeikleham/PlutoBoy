@@ -7,13 +7,11 @@
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
 static const long timer_frequencies[] = {4096, 262144, 65536, 16384}; 
 
+long divider_counter = 0;
+long clock_speed = GB_CLOCK_SPEED_HZ;
+long timer_frequency = -1;
+long timer_counter = 0;
 
-void setup_timers() {
-    divider_counter = 0;
-    clock_speed = GB_CLOCK_SPEED_HZ;
-    timer_frequency = -1;
-    timer_counter = 0;
-}
 
 /*  Set and get the clockspeed in hz */
 void set_clock_speed(long hz) {
@@ -54,5 +52,40 @@ void increment_tima() {
  *  (once every 256 clock cycles)*/
 void increment_div() {
     io_write_override(GLOBAL_TO_IO_ADDR(DIV_REG), get_mem(DIV_REG) + 1);
+}
+
+
+void update_divider_reg(long cycles) {
+
+	divider_counter += cycles;
+	// Increment div at a frequency of 16382hz
+	long max_counter = clock_speed / DIV_TIMER_INC_FREQUENCY;
+	while (divider_counter >= max_counter) {
+		increment_div();
+		divider_counter -= clock_speed / max_counter;
+	}
+}
+
+
+/* Update internal timers given the cycles executed since
+* the last time this function was called. */
+void update_timers(long cycles) {
+	uint8_t timer_control = get_mem(TAC_REG);
+
+	update_divider_reg(cycles);
+	//Clock enabled
+	if ((timer_control & BIT_2) != 0) {
+		if (timer_frequency == -1) { // If timer not set
+			set_timer_frequency(timer_control & 3);
+		}
+		timer_counter += cycles;
+		/* Once timer incremented, check for changes in timer frequency,
+		* and reset timer */
+		while (timer_counter >= (clock_speed / timer_frequency)) {
+			timer_counter -= (clock_speed / timer_frequency);
+			increment_tima();
+			set_timer_frequency(timer_control & 3);
+		}
+	}
 }
 

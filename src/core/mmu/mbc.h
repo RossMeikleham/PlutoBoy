@@ -26,6 +26,4 @@ read_MBC_ptr read_MBC;
 write_MBC_ptr write_MBC; 
 
 
-
-
 #endif //MBC_H

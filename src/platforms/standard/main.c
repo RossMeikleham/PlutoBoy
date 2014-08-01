@@ -1,5 +1,5 @@
 #include "../../core/emu.h"
-
+#include "SDL.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,8 +18,8 @@ int main(int argc, char* argv[]) {
       case 2: file_name = argv[1];
       case 1: if (argc < 2) {ARG_ERR;} break;
       default: ARG_ERR;
-    }
-        
+    } 
+
     if (!init(file_name, debug)) {
         return 1;
     }

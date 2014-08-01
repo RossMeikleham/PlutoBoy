@@ -78,108 +78,108 @@ void invalid_op(){
 
 
 /* Load 8 bit immediate value into specified location */
-inline static void LD_8_IM(uint8_t *loc) { *loc = IMMEDIATE_8_BIT;}
+ static void LD_8_IM(uint8_t *loc) { *loc = IMMEDIATE_8_BIT;}
 
-inline static void LD_A_IM(){LD_8_IM(&reg.A);}
-inline static void LD_B_IM(){LD_8_IM(&reg.B);}
-inline static void LD_C_IM(){LD_8_IM(&reg.C);}
-inline static void LD_D_IM(){LD_8_IM(&reg.D);}
-inline static void LD_E_IM(){LD_8_IM(&reg.E);}
-inline static void LD_H_IM(){LD_8_IM(&reg.H);}
-inline static void LD_L_IM(){LD_8_IM(&reg.L);}
+ static void LD_A_IM(){LD_8_IM(&reg.A);}
+ static void LD_B_IM(){LD_8_IM(&reg.B);}
+ static void LD_C_IM(){LD_8_IM(&reg.C);}
+ static void LD_D_IM(){LD_8_IM(&reg.D);}
+ static void LD_E_IM(){LD_8_IM(&reg.E);}
+ static void LD_H_IM(){LD_8_IM(&reg.H);}
+ static void LD_L_IM(){LD_8_IM(&reg.L);}
 
 /* Load register value into reg A */
-inline static void LD_A_A() {reg.A = reg.A;}
-inline static void LD_A_B() {reg.A = reg.B;}
-inline static void LD_A_C() {reg.A = reg.C;}
-inline static void LD_A_D() {reg.A = reg.D;}
-inline static void LD_A_E() {reg.A = reg.E;}
-inline static void LD_A_H() {reg.A = reg.H;}
-inline static void LD_A_L() {reg.A = reg.L;}
+ static void LD_A_A() {reg.A = reg.A;}
+ static void LD_A_B() {reg.A = reg.B;}
+ static void LD_A_C() {reg.A = reg.C;}
+ static void LD_A_D() {reg.A = reg.D;}
+ static void LD_A_E() {reg.A = reg.E;}
+ static void LD_A_H() {reg.A = reg.H;}
+ static void LD_A_L() {reg.A = reg.L;}
 
 /*  Load register value into reg B */
-inline static void LD_B_A() {reg.B = reg.A;}
-inline static void LD_B_B() {reg.B = reg.B;}
-inline static void LD_B_C() {reg.B = reg.C;}
-inline static void LD_B_D() {reg.B = reg.D;}
-inline static void LD_B_E() {reg.B = reg.E;}
-inline static void LD_B_H() {reg.B = reg.H;}
-inline static void LD_B_L() {reg.B = reg.L;}
+ static void LD_B_A() {reg.B = reg.A;}
+ static void LD_B_B() {reg.B = reg.B;}
+ static void LD_B_C() {reg.B = reg.C;}
+ static void LD_B_D() {reg.B = reg.D;}
+ static void LD_B_E() {reg.B = reg.E;}
+ static void LD_B_H() {reg.B = reg.H;}
+ static void LD_B_L() {reg.B = reg.L;}
 
 /*  Load register value into reg C */
-inline static void LD_C_A() {reg.C = reg.A;}
-inline static void LD_C_B() {reg.C = reg.B;}
-inline static void LD_C_C() {reg.C = reg.C;}
-inline static void LD_C_D() {reg.C = reg.D;}
-inline static void LD_C_E() {reg.C = reg.E;}
-inline static void LD_C_H() {reg.C = reg.H;}
-inline static void LD_C_L() {reg.C = reg.L;}
+ static void LD_C_A() {reg.C = reg.A;}
+ static void LD_C_B() {reg.C = reg.B;}
+ static void LD_C_C() {reg.C = reg.C;}
+ static void LD_C_D() {reg.C = reg.D;}
+ static void LD_C_E() {reg.C = reg.E;}
+ static void LD_C_H() {reg.C = reg.H;}
+ static void LD_C_L() {reg.C = reg.L;}
 
 
 /* Load register value into reg D */
-inline static void LD_D_A() {reg.D = reg.A;}
-inline static void LD_D_B() {reg.D = reg.B;}
-inline static void LD_D_C() {reg.D = reg.C;}
-inline static void LD_D_D() {reg.D = reg.D;}
-inline static void LD_D_E() {reg.D = reg.E;}
-inline static void LD_D_H() {reg.D = reg.H;}
-inline static void LD_D_L() {reg.D = reg.L;}
+ static void LD_D_A() {reg.D = reg.A;}
+ static void LD_D_B() {reg.D = reg.B;}
+ static void LD_D_C() {reg.D = reg.C;}
+ static void LD_D_D() {reg.D = reg.D;}
+ static void LD_D_E() {reg.D = reg.E;}
+ static void LD_D_H() {reg.D = reg.H;}
+ static void LD_D_L() {reg.D = reg.L;}
 
 
 /*  Load register value into reg E */
-inline static void LD_E_A() {reg.E = reg.A;}
-inline static void LD_E_B() {reg.E = reg.B;}
-inline static void LD_E_C() {reg.E = reg.C;}
-inline static void LD_E_D() {reg.E = reg.D;}
-inline static void LD_E_E() {reg.E = reg.E;}
-inline static void LD_E_H() {reg.E = reg.H;}
-inline static void LD_E_L() {reg.E = reg.L;}
+ static void LD_E_A() {reg.E = reg.A;}
+ static void LD_E_B() {reg.E = reg.B;}
+ static void LD_E_C() {reg.E = reg.C;}
+ static void LD_E_D() {reg.E = reg.D;}
+ static void LD_E_E() {reg.E = reg.E;}
+ static void LD_E_H() {reg.E = reg.H;}
+ static void LD_E_L() {reg.E = reg.L;}
 
 
 /* Load register value into reg H */
-inline static void LD_H_A() {reg.H = reg.A;}
-inline static void LD_H_B() {reg.H = reg.B;}
-inline static void LD_H_C() {reg.H = reg.C;}
-inline static void LD_H_D() {reg.H = reg.D;}
-inline static void LD_H_E() {reg.H = reg.E;}
-inline static void LD_H_H() {reg.H = reg.H;}
-inline static void LD_H_L() {reg.H = reg.L;}
+ static void LD_H_A() {reg.H = reg.A;}
+ static void LD_H_B() {reg.H = reg.B;}
+ static void LD_H_C() {reg.H = reg.C;}
+ static void LD_H_D() {reg.H = reg.D;}
+ static void LD_H_E() {reg.H = reg.E;}
+ static void LD_H_H() {reg.H = reg.H;}
+ static void LD_H_L() {reg.H = reg.L;}
 
 
 /* Load register value into reg L */
-inline static void LD_L_A() {reg.L = reg.A;}
-inline static void LD_L_B() {reg.L = reg.B;}
-inline static void LD_L_C() {reg.L = reg.C;}
-inline static void LD_L_D() {reg.L = reg.D;}
-inline static void LD_L_E() {reg.L = reg.E;}
-inline static void LD_L_H() {reg.L = reg.H;}
-inline static void LD_L_L() {reg.L = reg.L;}
+ static void LD_L_A() {reg.L = reg.A;}
+ static void LD_L_B() {reg.L = reg.B;}
+ static void LD_L_C() {reg.L = reg.C;}
+ static void LD_L_D() {reg.L = reg.D;}
+ static void LD_L_E() {reg.L = reg.E;}
+ static void LD_L_H() {reg.L = reg.H;}
+ static void LD_L_L() {reg.L = reg.L;}
 
 
 
 /* Load value into register from address at reg HL */
-inline static void LD_A_memHL() {reg.A = get_mem(reg.HL);}
-inline static void LD_B_memHL() {reg.B = get_mem(reg.HL);}
-inline static void LD_C_memHL() {reg.C = get_mem(reg.HL);}
-inline static void LD_D_memHL() {reg.D = get_mem(reg.HL);}
-inline static void LD_E_memHL() {reg.E = get_mem(reg.HL);}
-inline static void LD_H_memHL() {reg.H = get_mem(reg.HL);}
-inline static void LD_L_memHL() {reg.L = get_mem(reg.HL);}
+ static void LD_A_memHL() {reg.A = get_mem(reg.HL);}
+ static void LD_B_memHL() {reg.B = get_mem(reg.HL);}
+ static void LD_C_memHL() {reg.C = get_mem(reg.HL);}
+ static void LD_D_memHL() {reg.D = get_mem(reg.HL);}
+ static void LD_E_memHL() {reg.E = get_mem(reg.HL);}
+ static void LD_H_memHL() {reg.H = get_mem(reg.HL);}
+ static void LD_L_memHL() {reg.L = get_mem(reg.HL);}
 
 
 
 /* Load value from register r to mem location HL */
-inline static void LD_memHL_A() {set_mem(reg.HL, reg.A);}
-inline static void LD_memHL_B() {set_mem(reg.HL, reg.B);}
-inline static void LD_memHL_C() {set_mem(reg.HL, reg.C);}
-inline static void LD_memHL_D() {set_mem(reg.HL, reg.D);}
-inline static void LD_memHL_E() {set_mem(reg.HL, reg.E);}
-inline static void LD_memHL_H() {set_mem(reg.HL, reg.H);}
-inline static void LD_memHL_L() {set_mem(reg.HL, reg.L);}
+ static void LD_memHL_A() {set_mem(reg.HL, reg.A);}
+ static void LD_memHL_B() {set_mem(reg.HL, reg.B);}
+ static void LD_memHL_C() {set_mem(reg.HL, reg.C);}
+ static void LD_memHL_D() {set_mem(reg.HL, reg.D);}
+ static void LD_memHL_E() {set_mem(reg.HL, reg.E);}
+ static void LD_memHL_H() {set_mem(reg.HL, reg.H);}
+ static void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
 /* Load immediate value into memory location HL */
-inline static void LD_memHL_n() {
+ static void LD_memHL_n() {
     update_timers(4); 
     update_graphics(4); 
     sound_add_cycles(4);
@@ -188,11 +188,11 @@ inline static void LD_memHL_n() {
 }
 
 /*  Load value at mem address given by combined registers into A */
-inline static void LD_A_memBC() { reg.A = get_mem(reg.BC); }
-inline static void LD_A_memDE() { reg.A = get_mem(reg.DE); }
+ static void LD_A_memBC() { reg.A = get_mem(reg.BC); }
+ static void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 
 /* Load value at memory address given by immediate 16 bits into A */
-inline static void LD_A_memnn() { 
+ static void LD_A_memnn() { 
     update_timers(8); 
     update_graphics(8);
     sound_add_cycles(8);
@@ -201,13 +201,13 @@ inline static void LD_A_memnn() {
 }
 
 /* Load A into memory address contained at register BC */
-inline static void LD_memBC_A() { set_mem(reg.BC, reg.A); }
+ static void LD_memBC_A() { set_mem(reg.BC, reg.A); }
 
 /* Load A into memory address contained at registers DE  */
-inline static void LD_memDE_A() { set_mem(reg.DE, reg.A); }
+ static void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
 /*  Load A into memory address given by immediate 16 bits */
-inline static void LD_memnn_A() { 
+ static void LD_memnn_A() { 
     update_timers(8);
     update_graphics(8);
     sound_add_cycles(8);
@@ -216,19 +216,19 @@ inline static void LD_memnn_A() {
 }
 
 /* Put value at address HL into A, then decrement HL */
-inline static void LDD_A_HL() { reg.A = get_mem(reg.HL); reg.HL--; }
+ static void LDD_A_HL() { reg.A = get_mem(reg.HL); reg.HL--; }
 
 /* Put A into memory address HL, then decrement HL */
-inline static void LDD_HL_A() { set_mem(reg.HL, reg.A); reg.HL--; }
+ static void LDD_HL_A() { set_mem(reg.HL, reg.A); reg.HL--; }
 
 /* Put value at address HL into A, then increment HL */ 
-inline static void LDI_A_HL() { reg.A = get_mem(reg.HL); reg.HL++; }
+ static void LDI_A_HL() { reg.A = get_mem(reg.HL); reg.HL++; }
 
 /* Put A into memory address HL then increment HL */
-inline static void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
+ static void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
 /* Put A into memory address $FF00+n*/
-inline static void LDH_n_A() { 
+ static void LDH_n_A() { 
     update_timers(4);
     update_graphics(4); 
     sound_add_cycles(4);
@@ -237,7 +237,7 @@ inline static void LDH_n_A() {
 }
 
 /* Put memory address $FF00+n into A */
-inline static void LDH_A_n() { 
+ static void LDH_A_n() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
@@ -246,10 +246,10 @@ inline static void LDH_A_n() {
 }
 
 /* Put memory address $FF00 + C into A */
-inline static void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
+ static void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
 
 /* Put A into memory address $FF00 + C */
-inline static void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
+ static void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
 
 
 
@@ -257,19 +257,19 @@ inline static void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
 
 
 /*  Load 16 bit immediate value into combined reg */
-inline static void LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT;}
+ static void LD_16_IM(uint16_t *r){*r = IMMEDIATE_16_BIT;}
 
-inline static void LD_BC_IM() {LD_16_IM(&reg.BC);}
-inline static void LD_DE_IM() {LD_16_IM(&reg.DE);}
-inline static void LD_HL_IM() {LD_16_IM(&reg.HL);}
-inline static void LD_SP_IM() {LD_16_IM(&reg.SP);}
+ static void LD_BC_IM() {LD_16_IM(&reg.BC);}
+ static void LD_DE_IM() {LD_16_IM(&reg.DE);}
+ static void LD_HL_IM() {LD_16_IM(&reg.HL);}
+ static void LD_SP_IM() {LD_16_IM(&reg.SP);}
 
 
 /*  Load HL into stack pointer */
-inline static void LD_SP_HL() {reg.SP = reg.HL;}
+ static void LD_SP_HL() {reg.SP = reg.HL;}
 
 /*  Place SP + Immediate 8 bit into HL */
-inline static void LD_HL_SP_n() {
+ static void LD_HL_SP_n() {
 
     reg.Z_FLAG = reg.N_FLAG =  0;
     int8_t s8 = SIGNED_IM_8_BIT;
@@ -283,22 +283,22 @@ inline static void LD_HL_SP_n() {
 
 
 /* Place SP into memory at immediate address nn */
-inline static void LD_nn_SP() {set_mem_16(IMMEDIATE_16_BIT, reg.SP); }
+ static void LD_nn_SP() {set_mem_16(IMMEDIATE_16_BIT, reg.SP); }
 
 
 /* Push register pair onto the stack */
-inline static void PUSH(uint16_t r) {reg.SP-=2; set_mem_16(reg.SP, r);}
+ static void PUSH(uint16_t r) {reg.SP-=2; set_mem_16(reg.SP, r);}
 
-inline static void PUSH_AF() {PUSH(reg.AF);}
-inline static void PUSH_BC() {PUSH(reg.BC);}
-inline static void PUSH_DE() {PUSH(reg.DE);}
-inline static void PUSH_HL() {PUSH(reg.HL);}
+ static void PUSH_AF() {PUSH(reg.AF);}
+ static void PUSH_BC() {PUSH(reg.BC);}
+ static void PUSH_DE() {PUSH(reg.DE);}
+ static void PUSH_HL() {PUSH(reg.HL);}
 
 
 /* Pop value from stack into register pair*/
-inline static void POP(uint16_t *r) {*r = get_mem_16(reg.SP); reg.SP+=2;}
+ static void POP(uint16_t *r) {*r = get_mem_16(reg.SP); reg.SP+=2;}
 
-inline static void POP_AF() {
+ static void POP_AF() {
     POP(&(reg.AF));
     reg.F &= 0xF0; //Lower nibble of F should always be 0
 }
@@ -306,15 +306,15 @@ inline static void POP_AF() {
 
 
 
-inline static void POP_BC() {POP(&(reg.BC));}
-inline static void POP_DE() {POP(&(reg.DE));}
-inline static void POP_HL() {POP(&(reg.HL));}
+ static void POP_BC() {POP(&(reg.BC));}
+ static void POP_DE() {POP(&(reg.DE));}
+ static void POP_HL() {POP(&(reg.HL));}
 
 
 /**********************  8 bit ALU *****************/
 
 /* Reset flags, add value2 to value1, set appropriate flags */
-inline static uint8_t ADD_8(uint8_t val1, uint8_t val2) 
+ static uint8_t ADD_8(uint8_t val1, uint8_t val2) 
 { 
     reg.N_FLAG = 0;
     reg.H_FLAG = ((val1 & 0xF) + (val2 & 0xF)) > 0xF ? 1 : 0; 
@@ -325,17 +325,17 @@ inline static uint8_t ADD_8(uint8_t val1, uint8_t val2)
 }
 
 
-inline static void ADD_A_A(){reg.A = ADD_8(reg.A, reg.A);}
-inline static void ADD_A_B(){reg.A = ADD_8(reg.A, reg.B);}
-inline static void ADD_A_C(){reg.A = ADD_8(reg.A, reg.C);}
-inline static void ADD_A_D(){reg.A = ADD_8(reg.A, reg.D);} 
-inline static void ADD_A_E(){reg.A = ADD_8(reg.A, reg.E);} 
-inline static void ADD_A_H(){reg.A = ADD_8(reg.A, reg.H);} 
-inline static void ADD_A_L(){reg.A = ADD_8(reg.A, reg.L);} 
-inline static void ADD_A_memHL(){reg.A = ADD_8(reg.A, get_mem(reg.HL));}
-inline static void ADD_A_Im8(){reg.A = ADD_8(reg.A, IMMEDIATE_8_BIT);}    
+ static void ADD_A_A(){reg.A = ADD_8(reg.A, reg.A);}
+ static void ADD_A_B(){reg.A = ADD_8(reg.A, reg.B);}
+ static void ADD_A_C(){reg.A = ADD_8(reg.A, reg.C);}
+ static void ADD_A_D(){reg.A = ADD_8(reg.A, reg.D);} 
+ static void ADD_A_E(){reg.A = ADD_8(reg.A, reg.E);} 
+ static void ADD_A_H(){reg.A = ADD_8(reg.A, reg.H);} 
+ static void ADD_A_L(){reg.A = ADD_8(reg.A, reg.L);} 
+ static void ADD_A_memHL(){reg.A = ADD_8(reg.A, get_mem(reg.HL));}
+ static void ADD_A_Im8(){reg.A = ADD_8(reg.A, IMMEDIATE_8_BIT);}    
 
-inline static uint8_t ADC_8(uint8_t val1, uint8_t val2)
+ static uint8_t ADC_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 0;
     reg.H_FLAG = (val1 & 0xF) + (val2 & 0xF) + reg.C_FLAG > 0xF ? 1 : 0;
@@ -346,18 +346,18 @@ inline static uint8_t ADC_8(uint8_t val1, uint8_t val2)
     
 }
 
-inline static void ADC_A_A(){reg.A = ADC_8(reg.A, reg.A);}
-inline static void ADC_A_B(){reg.A = ADC_8(reg.A, reg.B);}
-inline static void ADC_A_C(){reg.A = ADC_8(reg.A, reg.C);}
-inline static void ADC_A_D(){reg.A = ADC_8(reg.A, reg.D);} 
-inline static void ADC_A_E(){reg.A = ADC_8(reg.A, reg.E);} 
-inline static void ADC_A_H(){reg.A = ADC_8(reg.A, reg.H);} 
-inline static void ADC_A_L(){reg.A = ADC_8(reg.A, reg.L);} 
-inline static void ADC_A_memHL(){reg.A = ADC_8(reg.A, get_mem(reg.HL));}
-inline static void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT);}    
+ static void ADC_A_A(){reg.A = ADC_8(reg.A, reg.A);}
+ static void ADC_A_B(){reg.A = ADC_8(reg.A, reg.B);}
+ static void ADC_A_C(){reg.A = ADC_8(reg.A, reg.C);}
+ static void ADC_A_D(){reg.A = ADC_8(reg.A, reg.D);} 
+ static void ADC_A_E(){reg.A = ADC_8(reg.A, reg.E);} 
+ static void ADC_A_H(){reg.A = ADC_8(reg.A, reg.H);} 
+ static void ADC_A_L(){reg.A = ADC_8(reg.A, reg.L);} 
+ static void ADC_A_memHL(){reg.A = ADC_8(reg.A, get_mem(reg.HL));}
+ static void ADC_A_Im8(){reg.A = ADC_8(reg.A, IMMEDIATE_8_BIT);}    
 
 
-inline static uint8_t SUB_8(uint8_t val1, uint8_t val2)
+ static uint8_t SUB_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 1;
     reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) ? 1 : 0;
@@ -366,19 +366,19 @@ inline static uint8_t SUB_8(uint8_t val1, uint8_t val2)
     return val1 - val2;
 }
 
-inline static void SUB_A_A(){reg.A = SUB_8(reg.A, reg.A);}
-inline static void SUB_A_B(){reg.A = SUB_8(reg.A, reg.B);}
-inline static void SUB_A_C(){reg.A = SUB_8(reg.A, reg.C);}
-inline static void SUB_A_D(){reg.A = SUB_8(reg.A, reg.D);} 
-inline static void SUB_A_E(){reg.A = SUB_8(reg.A, reg.E);} 
-inline static void SUB_A_H(){reg.A = SUB_8(reg.A, reg.H);} 
-inline static void SUB_A_L(){reg.A = SUB_8(reg.A, reg.L);} 
-inline static void SUB_A_memHL(){reg.A = SUB_8(reg.A, get_mem(reg.HL));}
-inline static void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}  
+ static void SUB_A_A(){reg.A = SUB_8(reg.A, reg.A);}
+ static void SUB_A_B(){reg.A = SUB_8(reg.A, reg.B);}
+ static void SUB_A_C(){reg.A = SUB_8(reg.A, reg.C);}
+ static void SUB_A_D(){reg.A = SUB_8(reg.A, reg.D);} 
+ static void SUB_A_E(){reg.A = SUB_8(reg.A, reg.E);} 
+ static void SUB_A_H(){reg.A = SUB_8(reg.A, reg.H);} 
+ static void SUB_A_L(){reg.A = SUB_8(reg.A, reg.L);} 
+ static void SUB_A_memHL(){reg.A = SUB_8(reg.A, get_mem(reg.HL));}
+ static void SUB_A_Im8(){reg.A = SUB_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs SUB carry operation on 2 bytes, returns result and sets flags */
-inline static uint8_t SBC_8(uint8_t val1, uint8_t val2)
+ static uint8_t SBC_8(uint8_t val1, uint8_t val2)
 {
     int16_t result = val1 - val2 - reg.C_FLAG;
     reg.N_FLAG = 1;
@@ -388,22 +388,22 @@ inline static uint8_t SBC_8(uint8_t val1, uint8_t val2)
     return result & 0xFF;
 }
 
-inline static void SBC_A_A(){reg.A = SBC_8(reg.A, reg.A);}
-inline static void SBC_A_B(){reg.A = SBC_8(reg.A, reg.B);}
-inline static void SBC_A_C(){reg.A = SBC_8(reg.A, reg.C);}
-inline static void SBC_A_D(){reg.A = SBC_8(reg.A, reg.D);} 
-inline static void SBC_A_E(){reg.A = SBC_8(reg.A, reg.E);} 
-inline static void SBC_A_H(){reg.A = SBC_8(reg.A, reg.H);} 
-inline static void SBC_A_L(){reg.A = SBC_8(reg.A, reg.L);} 
-inline static void SBC_A_memHL(){reg.A = SBC_8(reg.A, get_mem(reg.HL));}
-inline static void SBC_A_Im8() { reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT);}  
+ static void SBC_A_A(){reg.A = SBC_8(reg.A, reg.A);}
+ static void SBC_A_B(){reg.A = SBC_8(reg.A, reg.B);}
+ static void SBC_A_C(){reg.A = SBC_8(reg.A, reg.C);}
+ static void SBC_A_D(){reg.A = SBC_8(reg.A, reg.D);} 
+ static void SBC_A_E(){reg.A = SBC_8(reg.A, reg.E);} 
+ static void SBC_A_H(){reg.A = SBC_8(reg.A, reg.H);} 
+ static void SBC_A_L(){reg.A = SBC_8(reg.A, reg.L);} 
+ static void SBC_A_memHL(){reg.A = SBC_8(reg.A, get_mem(reg.HL));}
+ static void SBC_A_Im8() { reg.A = SBC_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
 
 
 /* Performs AND operation on 2 bytes, returns result and sets flags */
-inline static uint8_t AND_8(uint8_t val1, uint8_t val2)
+ static uint8_t AND_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 0;
     reg.H_FLAG = 1;
@@ -413,21 +413,21 @@ inline static uint8_t AND_8(uint8_t val1, uint8_t val2)
     return val1;
 }
 
-inline static void AND_A_A(){reg.A = AND_8(reg.A, reg.A);}
-inline static void AND_A_B(){reg.A = AND_8(reg.A, reg.B);}
-inline static void AND_A_C(){reg.A = AND_8(reg.A, reg.C);}
-inline static void AND_A_D(){reg.A = AND_8(reg.A, reg.D);} 
-inline static void AND_A_E(){reg.A = AND_8(reg.A, reg.E);} 
-inline static void AND_A_H(){reg.A = AND_8(reg.A, reg.H);} 
-inline static void AND_A_L(){reg.A = AND_8(reg.A, reg.L);} 
-inline static void AND_A_memHL(){reg.A = AND_8(reg.A, get_mem(reg.HL));}
-inline static void AND_A_Im8(){reg.A = AND_8(reg.A, IMMEDIATE_8_BIT);}  
+ static void AND_A_A(){reg.A = AND_8(reg.A, reg.A);}
+ static void AND_A_B(){reg.A = AND_8(reg.A, reg.B);}
+ static void AND_A_C(){reg.A = AND_8(reg.A, reg.C);}
+ static void AND_A_D(){reg.A = AND_8(reg.A, reg.D);} 
+ static void AND_A_E(){reg.A = AND_8(reg.A, reg.E);} 
+ static void AND_A_H(){reg.A = AND_8(reg.A, reg.H);} 
+ static void AND_A_L(){reg.A = AND_8(reg.A, reg.L);} 
+ static void AND_A_memHL(){reg.A = AND_8(reg.A, get_mem(reg.HL));}
+ static void AND_A_Im8(){reg.A = AND_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 
 /*  Performs OR operation on 2 bytes, returns result and sets flags */
 
-inline static uint8_t OR_8(uint8_t val1, uint8_t val2)
+ static uint8_t OR_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 0;
     reg.H_FLAG = 0;
@@ -437,19 +437,19 @@ inline static uint8_t OR_8(uint8_t val1, uint8_t val2)
     return val1;
 }
 
-inline static void OR_A_A(){reg.A = OR_8(reg.A, reg.A);}
-inline static void OR_A_B(){reg.A = OR_8(reg.A, reg.B);}
-inline static void OR_A_C(){reg.A = OR_8(reg.A, reg.C);}
-inline static void OR_A_D(){reg.A = OR_8(reg.A, reg.D);} 
-inline static void OR_A_E(){reg.A = OR_8(reg.A, reg.E);} 
-inline static void OR_A_H(){reg.A = OR_8(reg.A, reg.H);} 
-inline static void OR_A_L(){reg.A = OR_8(reg.A, reg.L);} 
-inline static void OR_A_memHL(){reg.A = OR_8(reg.A, get_mem(reg.HL));}
-inline static void OR_A_Im8(){reg.A = OR_8(reg.A, IMMEDIATE_8_BIT);}  
+ static void OR_A_A(){reg.A = OR_8(reg.A, reg.A);}
+ static void OR_A_B(){reg.A = OR_8(reg.A, reg.B);}
+ static void OR_A_C(){reg.A = OR_8(reg.A, reg.C);}
+ static void OR_A_D(){reg.A = OR_8(reg.A, reg.D);} 
+ static void OR_A_E(){reg.A = OR_8(reg.A, reg.E);} 
+ static void OR_A_H(){reg.A = OR_8(reg.A, reg.H);} 
+ static void OR_A_L(){reg.A = OR_8(reg.A, reg.L);} 
+ static void OR_A_memHL(){reg.A = OR_8(reg.A, get_mem(reg.HL));}
+ static void OR_A_Im8(){reg.A = OR_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs XOR operation on 2 bytes, returns result and sets flags */
-inline static uint8_t XOR_8(uint8_t val1, uint8_t val2) 
+ static uint8_t XOR_8(uint8_t val1, uint8_t val2) 
 {
     reg.N_FLAG = 0;
     reg.H_FLAG = 0;
@@ -460,19 +460,19 @@ inline static uint8_t XOR_8(uint8_t val1, uint8_t val2)
 
 }
 
-inline static void XOR_A_A(){reg.A = XOR_8(reg.A, reg.A);}
-inline static void XOR_A_B(){reg.A = XOR_8(reg.A, reg.B);}
-inline static void XOR_A_C(){reg.A = XOR_8(reg.A, reg.C);}
-inline static void XOR_A_D(){reg.A = XOR_8(reg.A, reg.D);} 
-inline static void XOR_A_E(){reg.A = XOR_8(reg.A, reg.E);} 
-inline static void XOR_A_H(){reg.A = XOR_8(reg.A, reg.H);} 
-inline static void XOR_A_L(){reg.A = XOR_8(reg.A, reg.L);} 
-inline static void XOR_A_memHL(){reg.A = XOR_8(reg.A, get_mem(reg.HL));}
-inline static void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT); }  
+ static void XOR_A_A(){reg.A = XOR_8(reg.A, reg.A);}
+ static void XOR_A_B(){reg.A = XOR_8(reg.A, reg.B);}
+ static void XOR_A_C(){reg.A = XOR_8(reg.A, reg.C);}
+ static void XOR_A_D(){reg.A = XOR_8(reg.A, reg.D);} 
+ static void XOR_A_E(){reg.A = XOR_8(reg.A, reg.E);} 
+ static void XOR_A_H(){reg.A = XOR_8(reg.A, reg.H);} 
+ static void XOR_A_L(){reg.A = XOR_8(reg.A, reg.L);} 
+ static void XOR_A_memHL(){reg.A = XOR_8(reg.A, get_mem(reg.HL));}
+ static void XOR_A_Im8(){reg.A = XOR_8(reg.A, IMMEDIATE_8_BIT); }  
 
 
 /*  Performs Compare operation on 2 bytes, sets flags */
-inline static void CP_8(uint8_t val1, uint8_t val2)
+ static void CP_8(uint8_t val1, uint8_t val2)
 {
     reg.N_FLAG = 1;
     reg.H_FLAG = (val1 & 0xF) < (val2 & 0xF) ? 1 : 0;
@@ -480,19 +480,19 @@ inline static void CP_8(uint8_t val1, uint8_t val2)
     reg.Z_FLAG = val1 == val2 ? 1 : 0;
 }
 
-inline static void CP_A_A(){ CP_8(reg.A, reg.A);}
-inline static void CP_A_B(){ CP_8(reg.A, reg.B);}
-inline static void CP_A_C(){ CP_8(reg.A, reg.C);}
-inline static void CP_A_D(){ CP_8(reg.A, reg.D);} 
-inline static void CP_A_E(){ CP_8(reg.A, reg.E);} 
-inline static void CP_A_H(){ CP_8(reg.A, reg.H);} 
-inline static void CP_A_L(){CP_8(reg.A, reg.L);} 
-inline static void CP_A_memHL(){ CP_8(reg.A, get_mem(reg.HL));}
-inline static void CP_A_Im8(){CP_8(reg.A, IMMEDIATE_8_BIT);}  
+ static void CP_A_A(){ CP_8(reg.A, reg.A);}
+ static void CP_A_B(){ CP_8(reg.A, reg.B);}
+ static void CP_A_C(){ CP_8(reg.A, reg.C);}
+ static void CP_A_D(){ CP_8(reg.A, reg.D);} 
+ static void CP_A_E(){ CP_8(reg.A, reg.E);} 
+ static void CP_A_H(){ CP_8(reg.A, reg.H);} 
+ static void CP_A_L(){CP_8(reg.A, reg.L);} 
+ static void CP_A_memHL(){ CP_8(reg.A, get_mem(reg.HL));}
+ static void CP_A_Im8(){CP_8(reg.A, IMMEDIATE_8_BIT);}  
 
 
 /*  Performs Increment operation on register, sets flags */
-inline static uint8_t INC_8(uint8_t val)
+ static uint8_t INC_8(uint8_t val)
 {
     val++; 
     reg.N_FLAG = 0;
@@ -501,14 +501,14 @@ inline static uint8_t INC_8(uint8_t val)
     return val;
 }
 
-inline static void INC_A(){reg.A = INC_8(reg.A);}
-inline static void INC_B(){reg.B = INC_8(reg.B);}
-inline static void INC_C(){reg.C = INC_8(reg.C);}
-inline static void INC_D(){reg.D = INC_8(reg.D);} 
-inline static void INC_E(){reg.E = INC_8(reg.E);} 
-inline static void INC_H(){reg.H = INC_8(reg.H);} 
-inline static void INC_L(){reg.L = INC_8(reg.L);} 
-inline static void INC_memHL(){ 
+ static void INC_A(){reg.A = INC_8(reg.A);}
+ static void INC_B(){reg.B = INC_8(reg.B);}
+ static void INC_C(){reg.C = INC_8(reg.C);}
+ static void INC_D(){reg.D = INC_8(reg.D);} 
+ static void INC_E(){reg.E = INC_8(reg.E);} 
+ static void INC_H(){reg.H = INC_8(reg.H);} 
+ static void INC_L(){reg.L = INC_8(reg.L);} 
+ static void INC_memHL(){ 
     uint8_t inc = INC_8(get_mem(reg.HL));
     update_timers(4); 
     update_graphics(4);
@@ -519,7 +519,7 @@ inline static void INC_memHL(){
 
 
 /*  Performs Decrement operation on register, sets flags */
-inline static uint8_t DEC_8(uint8_t val)
+ static uint8_t DEC_8(uint8_t val)
 {
     val--;
     reg.N_FLAG = 1;
@@ -529,14 +529,14 @@ inline static uint8_t DEC_8(uint8_t val)
 }
 
 
-inline static void DEC_A(){reg.A = DEC_8(reg.A);}
-inline static void DEC_B(){reg.B = DEC_8(reg.B);}
-inline static void DEC_C(){reg.C = DEC_8(reg.C);}
-inline static void DEC_D(){reg.D = DEC_8(reg.D);} 
-inline static void DEC_E(){reg.E = DEC_8(reg.E);} 
-inline static void DEC_H(){reg.H = DEC_8(reg.H);} 
-inline static void DEC_L(){reg.L = DEC_8(reg.L);} 
-inline static void DEC_memHL(){ 
+ static void DEC_A(){reg.A = DEC_8(reg.A);}
+ static void DEC_B(){reg.B = DEC_8(reg.B);}
+ static void DEC_C(){reg.C = DEC_8(reg.C);}
+ static void DEC_D(){reg.D = DEC_8(reg.D);} 
+ static void DEC_E(){reg.E = DEC_8(reg.E);} 
+ static void DEC_H(){reg.H = DEC_8(reg.H);} 
+ static void DEC_L(){reg.L = DEC_8(reg.L);} 
+ static void DEC_memHL(){ 
     uint8_t dec = DEC_8(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
@@ -550,7 +550,7 @@ inline static void DEC_memHL(){
 /**********************  16 bit ALU *****************/
 
 /*  Performs Add for 2 16bit values, sets flags */
-inline static uint16_t ADD_16(uint16_t val1, uint16_t val2)
+ static uint16_t ADD_16(uint16_t val1, uint16_t val2)
 {
     reg.N_FLAG = 0;
     reg.H_FLAG = (val1 & 0x0FFF) + (val2 & 0x0FFF) > 0x0FFF;
@@ -558,12 +558,12 @@ inline static uint16_t ADD_16(uint16_t val1, uint16_t val2)
     return val1 + val2;
 }
 
-inline static void ADD_HL_BC() {reg.HL = ADD_16(reg.HL, reg.BC);}
-inline static void ADD_HL_DE() {reg.HL = ADD_16(reg.HL, reg.DE);}
-inline static void ADD_HL_HL() {reg.HL = ADD_16(reg.HL, reg.HL);}
-inline static void ADD_HL_SP() {reg.HL = ADD_16(reg.HL, reg.SP);}
+ static void ADD_HL_BC() {reg.HL = ADD_16(reg.HL, reg.BC);}
+ static void ADD_HL_DE() {reg.HL = ADD_16(reg.HL, reg.DE);}
+ static void ADD_HL_HL() {reg.HL = ADD_16(reg.HL, reg.HL);}
+ static void ADD_HL_SP() {reg.HL = ADD_16(reg.HL, reg.SP);}
 
-inline static void ADD_SP_IM8() {
+ static void ADD_SP_IM8() {
 
     reg.Z_FLAG = reg.N_FLAG = 0;
     int8_t s8 = SIGNED_IM_8_BIT;    
@@ -578,24 +578,24 @@ inline static void ADD_SP_IM8() {
 
 /* 16 bit register Increments */
 
-inline static void INC_BC(){reg.BC++;}
-inline static void INC_DE(){reg.DE++;}
-inline static void INC_HL(){reg.HL++;}
-inline static void INC_SP(){reg.SP++;}
+ static void INC_BC(){reg.BC++;}
+ static void INC_DE(){reg.DE++;}
+ static void INC_HL(){reg.HL++;}
+ static void INC_SP(){reg.SP++;}
 
 /* 16 bit register Decrements */
 
-inline static void DEC_BC(){reg.BC--;}
-inline static void DEC_DE(){reg.DE--;}
-inline static void DEC_HL(){reg.HL--;}
-inline static void DEC_SP(){reg.SP--;}
+ static void DEC_BC(){reg.BC--;}
+ static void DEC_DE(){reg.DE--;}
+ static void DEC_HL(){reg.HL--;}
+ static void DEC_SP(){reg.SP--;}
 
 
 
 /*  Miscellaneous instructions */
 
 /*  Swap upper and lower nibbles of n */
-inline static uint8_t SWAP_n(uint8_t val)
+ static uint8_t SWAP_n(uint8_t val)
 {
     val = ((val & 0xF) << 4) | (val >> 4);
     reg.Z_FLAG = !val; //Check if result is 0
@@ -603,15 +603,15 @@ inline static uint8_t SWAP_n(uint8_t val)
     return val;
 }
 
-inline static void SWAP_A(){reg.A = SWAP_n(reg.A);}
-inline static void SWAP_B(){reg.B = SWAP_n(reg.B);}
-inline static void SWAP_C(){reg.C = SWAP_n(reg.C);}
-inline static void SWAP_D(){reg.D = SWAP_n(reg.D);}
-inline static void SWAP_E(){reg.E = SWAP_n(reg.E);}
-inline static void SWAP_H(){reg.H = SWAP_n(reg.H);}
-inline static void SWAP_L(){reg.L = SWAP_n(reg.L);}
+ static void SWAP_A(){reg.A = SWAP_n(reg.A);}
+ static void SWAP_B(){reg.B = SWAP_n(reg.B);}
+ static void SWAP_C(){reg.C = SWAP_n(reg.C);}
+ static void SWAP_D(){reg.D = SWAP_n(reg.D);}
+ static void SWAP_E(){reg.E = SWAP_n(reg.E);}
+ static void SWAP_H(){reg.H = SWAP_n(reg.H);}
+ static void SWAP_L(){reg.L = SWAP_n(reg.L);}
 
-inline static void SWAP_memHL() {
+ static void SWAP_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -624,7 +624,7 @@ inline static void SWAP_memHL() {
 
 /*  Decimal adjust register A so that correct 
  *  representation of  binary encoded decimal is obtained */
-inline static void DAA() {   
+ static void DAA() {   
     
     if (!reg.N_FLAG) {
         if (reg.C_FLAG || reg.A > 0x99) {
@@ -650,29 +650,29 @@ inline static void DAA() {
 
 
 /* Flips all bits in register A */
-inline static void CPL() {reg.A = ~reg.A; reg.N_FLAG = 1; reg.H_FLAG = 1;}
+ static void CPL() {reg.A = ~reg.A; reg.N_FLAG = 1; reg.H_FLAG = 1;}
 
 
 /*  Flips carry flag  */
-inline static void CCF() {reg.C_FLAG = !reg.C_FLAG; reg.H_FLAG = 0; reg.N_FLAG = 0;}
+ static void CCF() {reg.C_FLAG = !reg.C_FLAG; reg.H_FLAG = 0; reg.N_FLAG = 0;}
 
 /*  Sets carry flag */
-inline static void SCF() {reg.C_FLAG = 1; reg.H_FLAG = 0; reg.N_FLAG = 0;}
+ static void SCF() {reg.C_FLAG = 1; reg.H_FLAG = 0; reg.N_FLAG = 0;}
 
 
 /*No operation */
-inline static void NOP() {}
+ static void NOP() {}
 
 
 /*  Halt CPU until interrupt */
-inline static void HALT() {halted = 1;}
+ static void HALT() {halted = 1;}
 
 /*  Halt CPU and LCD until button pressed */
-inline static void STOP() {stopped = 1;}
+ static void STOP() {stopped = 1;}
 
 
 /*  Disable interrupts */
-inline static void DI() {
+ static void DI() {
     interrupts_enabled_timer = 0; 
     interrupts_enabled = 0;
 }
@@ -680,7 +680,7 @@ inline static void DI() {
 /*  Enable interrupts 
  *  interrupts enabled after the next instruction
  *  so set a timer to let the cpu know this*/
-inline static void EI() {interrupts_enabled_timer = 1;}
+ static void EI() {interrupts_enabled_timer = 1;}
 
 
 /*  Rotates and shifts 
@@ -691,7 +691,7 @@ inline static void EI() {interrupts_enabled_timer = 1;}
  *  regardless */
 
 /* Rotate A left, Old msb to carry flag and bit 0 */
-inline static void RLCA()
+ static void RLCA()
 {
     reg.C_FLAG = reg.A >> 7; /*  Carry flag stores msb */
     reg.A = (reg.A << 1) | reg.C_FLAG;
@@ -700,7 +700,7 @@ inline static void RLCA()
 }
 
 /*  Rotate A left, Old C_Flag goes to bit 0, bit 7 goes to C_Flag */
-inline static void RLA()
+ static void RLA()
 {
    unsigned int temp = reg.A >> 7;
    reg.A = (reg.A << 1) | reg.C_FLAG;
@@ -711,7 +711,7 @@ inline static void RLA()
 
 
 /*  Rotate A right, old bit 0 goes to carry flag and bit 7*/
-inline static void RRCA()
+ static void RRCA()
 {
     reg.C_FLAG = (reg.A & 0x01);
     reg.A = (reg.A >> 1) | (reg.C_FLAG << 7);
@@ -719,7 +719,7 @@ inline static void RRCA()
 }
 
 
-inline static void RRA()
+ static void RRA()
 {
     unsigned int temp = (reg.A & 0x01);
     reg.A = (reg.A >> 1) | (reg.C_FLAG << 7);
@@ -730,7 +730,7 @@ inline static void RRA()
 
 /* Extended instructions */
 /*Rotate n left. Old bit 7 to Carry flag*/
-inline static uint8_t RLC_N(uint8_t val)
+ static uint8_t RLC_N(uint8_t val)
 {
    reg.C_FLAG = val >> 7;
    val = val << 1 | reg.C_FLAG;
@@ -740,15 +740,15 @@ inline static uint8_t RLC_N(uint8_t val)
 }
 
 
-inline static void RLC_A() { reg.A = RLC_N(reg.A);}
-inline static void RLC_B() { reg.B = RLC_N(reg.B);}
-inline static void RLC_C() { reg.C = RLC_N(reg.C);}
-inline static void RLC_D() { reg.D = RLC_N(reg.D);}
-inline static void RLC_E() { reg.E = RLC_N(reg.E);}
-inline static void RLC_H() { reg.H = RLC_N(reg.H);}
-inline static void RLC_L() { reg.L = RLC_N(reg.L);}
+ static void RLC_A() { reg.A = RLC_N(reg.A);}
+ static void RLC_B() { reg.B = RLC_N(reg.B);}
+ static void RLC_C() { reg.C = RLC_N(reg.C);}
+ static void RLC_D() { reg.D = RLC_N(reg.D);}
+ static void RLC_E() { reg.E = RLC_N(reg.E);}
+ static void RLC_H() { reg.H = RLC_N(reg.H);}
+ static void RLC_L() { reg.L = RLC_N(reg.L);}
 
-inline static void RLC_memHL() {
+ static void RLC_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -763,7 +763,7 @@ inline static void RLC_memHL() {
 
 
 /*  Rotate n left through carry flag */
-inline static uint8_t RL_N(uint8_t val) 
+ static uint8_t RL_N(uint8_t val) 
 {
    uint8_t temp = reg.C_FLAG; 
    reg.C_FLAG = val >> 7;
@@ -774,15 +774,15 @@ inline static uint8_t RL_N(uint8_t val)
 
 }
 
-inline static void RL_A() {reg.A = RL_N(reg.A);}
-inline static void RL_B() {reg.B = RL_N(reg.B);}
-inline static void RL_C() {reg.C = RL_N(reg.C);}
-inline static void RL_D() {reg.D = RL_N(reg.D);}
-inline static void RL_E() {reg.E = RL_N(reg.E);}
-inline static void RL_H() {reg.H = RL_N(reg.H);}
-inline static void RL_L() {reg.L = RL_N(reg.L);}
+ static void RL_A() {reg.A = RL_N(reg.A);}
+ static void RL_B() {reg.B = RL_N(reg.B);}
+ static void RL_C() {reg.C = RL_N(reg.C);}
+ static void RL_D() {reg.D = RL_N(reg.D);}
+ static void RL_E() {reg.E = RL_N(reg.E);}
+ static void RL_H() {reg.H = RL_N(reg.H);}
+ static void RL_L() {reg.L = RL_N(reg.L);}
 
-inline static void RL_memHL() {
+ static void RL_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -795,7 +795,7 @@ inline static void RL_memHL() {
 
 
 /* Rotate N right, Old bit 0 to Carry flag */
-inline static uint8_t RRC_N(uint8_t val)
+ static uint8_t RRC_N(uint8_t val)
 {
     reg.C_FLAG = val & 0x1;
     val = (val >> 1) | (reg.C_FLAG << 7);
@@ -805,15 +805,15 @@ inline static uint8_t RRC_N(uint8_t val)
 }
 
 /*  4 cyles */
-inline static void RRC_A() {reg.A = RRC_N(reg.A);}
-inline static void RRC_B() {reg.B = RRC_N(reg.B);}
-inline static void RRC_C() {reg.C = RRC_N(reg.C);}
-inline static void RRC_D() {reg.D = RRC_N(reg.D);}
-inline static void RRC_E() {reg.E = RRC_N(reg.E);}
-inline static void RRC_H() {reg.H = RRC_N(reg.H);}
-inline static void RRC_L() {reg.L = RRC_N(reg.L);}
+ static void RRC_A() {reg.A = RRC_N(reg.A);}
+ static void RRC_B() {reg.B = RRC_N(reg.B);}
+ static void RRC_C() {reg.C = RRC_N(reg.C);}
+ static void RRC_D() {reg.D = RRC_N(reg.D);}
+ static void RRC_E() {reg.E = RRC_N(reg.E);}
+ static void RRC_H() {reg.H = RRC_N(reg.H);}
+ static void RRC_L() {reg.L = RRC_N(reg.L);}
 /*  12 cycles */
-inline static void RRC_memHL() {
+ static void RRC_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -826,7 +826,7 @@ inline static void RRC_memHL() {
 
 
 /*  Rotate N right through Carry flag */
-inline static uint8_t RR_N(uint8_t val)
+ static uint8_t RR_N(uint8_t val)
 {
     uint8_t temp = val & 0x1;
     val = (val >> 1) | (reg.C_FLAG << 7);
@@ -837,15 +837,15 @@ inline static uint8_t RR_N(uint8_t val)
 }
 
 /*  4 cyles */
-inline static void RR_A() {reg.A = RR_N(reg.A);}
-inline static void RR_B() {reg.B = RR_N(reg.B);}
-inline static void RR_C() {reg.C = RR_N(reg.C);}
-inline static void RR_D() {reg.D = RR_N(reg.D);}
-inline static void RR_E() {reg.E = RR_N(reg.E);}
-inline static void RR_H() {reg.H = RR_N(reg.H);}
-inline static void RR_L() {reg.L = RR_N(reg.L);}
+ static void RR_A() {reg.A = RR_N(reg.A);}
+ static void RR_B() {reg.B = RR_N(reg.B);}
+ static void RR_C() {reg.C = RR_N(reg.C);}
+ static void RR_D() {reg.D = RR_N(reg.D);}
+ static void RR_E() {reg.E = RR_N(reg.E);}
+ static void RR_H() {reg.H = RR_N(reg.H);}
+ static void RR_L() {reg.L = RR_N(reg.L);}
 /*  12 cycles */
-inline static void RR_memHL() {
+ static void RR_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -858,7 +858,7 @@ inline static void RR_memHL() {
 
 
 
-inline static uint8_t SLA_N(uint8_t val)
+ static uint8_t SLA_N(uint8_t val)
 {
     reg.C_FLAG = val > 0x7F;
     val <<= 1;
@@ -870,15 +870,15 @@ inline static uint8_t SLA_N(uint8_t val)
 
 
 /*  4 cyles */
-inline static void SLA_A() {reg.A = SLA_N(reg.A);}
-inline static void SLA_B() {reg.B = SLA_N(reg.B);}
-inline static void SLA_C() {reg.C = SLA_N(reg.C);}
-inline static void SLA_D() {reg.D = SLA_N(reg.D);}
-inline static void SLA_E() {reg.E = SLA_N(reg.E);}
-inline static void SLA_H() {reg.H = SLA_N(reg.H);}
-inline static void SLA_L() {reg.L = SLA_N(reg.L);}
+ static void SLA_A() {reg.A = SLA_N(reg.A);}
+ static void SLA_B() {reg.B = SLA_N(reg.B);}
+ static void SLA_C() {reg.C = SLA_N(reg.C);}
+ static void SLA_D() {reg.D = SLA_N(reg.D);}
+ static void SLA_E() {reg.E = SLA_N(reg.E);}
+ static void SLA_H() {reg.H = SLA_N(reg.H);}
+ static void SLA_L() {reg.L = SLA_N(reg.L);}
 /*  12 cycles */
-inline static void SLA_memHL() {
+ static void SLA_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -892,7 +892,7 @@ inline static void SLA_memHL() {
 
 
 /* Shift n right into Carry. MSB unchanged.*/
-inline static uint8_t SRA_N(uint8_t val)
+ static uint8_t SRA_N(uint8_t val)
 {
     reg.C_FLAG = val & 0x1;
     val = (val >> 1) | (val & 0x80);
@@ -902,15 +902,15 @@ inline static uint8_t SRA_N(uint8_t val)
 }
 
 /*  4 cyles */
-inline static void SRA_A() {reg.A = SRA_N(reg.A);}
-inline static void SRA_B() {reg.B = SRA_N(reg.B);}
-inline static void SRA_C() {reg.C = SRA_N(reg.C);}
-inline static void SRA_D() {reg.D = SRA_N(reg.D);}
-inline static void SRA_E() {reg.E = SRA_N(reg.E);}
-inline static void SRA_H() {reg.H = SRA_N(reg.H);}
-inline static void SRA_L() {reg.L = SRA_N(reg.L);}
+ static void SRA_A() {reg.A = SRA_N(reg.A);}
+ static void SRA_B() {reg.B = SRA_N(reg.B);}
+ static void SRA_C() {reg.C = SRA_N(reg.C);}
+ static void SRA_D() {reg.D = SRA_N(reg.D);}
+ static void SRA_E() {reg.E = SRA_N(reg.E);}
+ static void SRA_H() {reg.H = SRA_N(reg.H);}
+ static void SRA_L() {reg.L = SRA_N(reg.L);}
 /*  12 cycles */
-inline static void SRA_memHL() {
+ static void SRA_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -924,7 +924,7 @@ inline static void SRA_memHL() {
 
 
 /* Shift n right into Carry, MSB set to 0 */
-inline static uint8_t SRL_N(uint8_t val)
+ static uint8_t SRL_N(uint8_t val)
 {
     reg.C_FLAG = val & 0x1;
     val >>= 1;
@@ -934,15 +934,15 @@ inline static uint8_t SRL_N(uint8_t val)
 }
 
 /*  8 cyles */
-inline static void SRL_A() {reg.A = SRL_N(reg.A);}
-inline static void SRL_B() {reg.B = SRL_N(reg.B);}
-inline static void SRL_C() {reg.C = SRL_N(reg.C);}
-inline static void SRL_D() {reg.D = SRL_N(reg.D);}
-inline static void SRL_E() {reg.E = SRL_N(reg.E);}
-inline static void SRL_H() {reg.H = SRL_N(reg.H);}
-inline static void SRL_L() {reg.L = SRL_N(reg.L);}
+ static void SRL_A() {reg.A = SRL_N(reg.A);}
+ static void SRL_B() {reg.B = SRL_N(reg.B);}
+ static void SRL_C() {reg.C = SRL_N(reg.C);}
+ static void SRL_D() {reg.D = SRL_N(reg.D);}
+ static void SRL_E() {reg.E = SRL_N(reg.E);}
+ static void SRL_H() {reg.H = SRL_N(reg.H);}
+ static void SRL_L() {reg.L = SRL_N(reg.L);}
 /*  16 cycles */
-inline static void SRL_memHL() {
+ static void SRL_memHL() {
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
@@ -956,7 +956,7 @@ inline static void SRL_memHL() {
 /**** Bit Opcodes ****/
 
 /* TODO Test bit b in register r */
-inline static void BIT_b_r(uint8_t val, uint8_t bit)
+ static void BIT_b_r(uint8_t val, uint8_t bit)
 {
     reg.H_FLAG = 1;
     reg.N_FLAG = 0;
@@ -964,113 +964,113 @@ inline static void BIT_b_r(uint8_t val, uint8_t bit)
 }
 
 /*  8 cyles */
-inline static void BIT_A_0() {BIT_b_r(reg.A, 0);}
-inline static void BIT_A_1() {BIT_b_r(reg.A, 1);}
-inline static void BIT_A_2() {BIT_b_r(reg.A, 2);}
-inline static void BIT_A_3() {BIT_b_r(reg.A, 3);}
-inline static void BIT_A_4() {BIT_b_r(reg.A, 4);}
-inline static void BIT_A_5() {BIT_b_r(reg.A, 5);}
-inline static void BIT_A_6() {BIT_b_r(reg.A, 6);}
-inline static void BIT_A_7() {BIT_b_r(reg.A, 7);}
+ static void BIT_A_0() {BIT_b_r(reg.A, 0);}
+ static void BIT_A_1() {BIT_b_r(reg.A, 1);}
+ static void BIT_A_2() {BIT_b_r(reg.A, 2);}
+ static void BIT_A_3() {BIT_b_r(reg.A, 3);}
+ static void BIT_A_4() {BIT_b_r(reg.A, 4);}
+ static void BIT_A_5() {BIT_b_r(reg.A, 5);}
+ static void BIT_A_6() {BIT_b_r(reg.A, 6);}
+ static void BIT_A_7() {BIT_b_r(reg.A, 7);}
 
-inline static void BIT_B_0() {BIT_b_r(reg.B, 0);}
-inline static void BIT_B_1() {BIT_b_r(reg.B, 1);}
-inline static void BIT_B_2() {BIT_b_r(reg.B, 2);}
-inline static void BIT_B_3() {BIT_b_r(reg.B, 3);}
-inline static void BIT_B_4() {BIT_b_r(reg.B, 4);}
-inline static void BIT_B_5() {BIT_b_r(reg.B, 5);}
-inline static void BIT_B_6() {BIT_b_r(reg.B, 6);}
-inline static void BIT_B_7() {BIT_b_r(reg.B, 7);}
+ static void BIT_B_0() {BIT_b_r(reg.B, 0);}
+ static void BIT_B_1() {BIT_b_r(reg.B, 1);}
+ static void BIT_B_2() {BIT_b_r(reg.B, 2);}
+ static void BIT_B_3() {BIT_b_r(reg.B, 3);}
+ static void BIT_B_4() {BIT_b_r(reg.B, 4);}
+ static void BIT_B_5() {BIT_b_r(reg.B, 5);}
+ static void BIT_B_6() {BIT_b_r(reg.B, 6);}
+ static void BIT_B_7() {BIT_b_r(reg.B, 7);}
 
-inline static void BIT_C_0() {BIT_b_r(reg.C, 0);}
-inline static void BIT_C_1() {BIT_b_r(reg.C, 1);}
-inline static void BIT_C_2() {BIT_b_r(reg.C, 2);}
-inline static void BIT_C_3() {BIT_b_r(reg.C, 3);}
-inline static void BIT_C_4() {BIT_b_r(reg.C, 4);}
-inline static void BIT_C_5() {BIT_b_r(reg.C, 5);}
-inline static void BIT_C_6() {BIT_b_r(reg.C, 6);}
-inline static void BIT_C_7() {BIT_b_r(reg.C, 7);}
+ static void BIT_C_0() {BIT_b_r(reg.C, 0);}
+ static void BIT_C_1() {BIT_b_r(reg.C, 1);}
+ static void BIT_C_2() {BIT_b_r(reg.C, 2);}
+ static void BIT_C_3() {BIT_b_r(reg.C, 3);}
+ static void BIT_C_4() {BIT_b_r(reg.C, 4);}
+ static void BIT_C_5() {BIT_b_r(reg.C, 5);}
+ static void BIT_C_6() {BIT_b_r(reg.C, 6);}
+ static void BIT_C_7() {BIT_b_r(reg.C, 7);}
 
-inline static void BIT_D_0() {BIT_b_r(reg.D, 0);}
-inline static void BIT_D_1() {BIT_b_r(reg.D, 1);}
-inline static void BIT_D_2() {BIT_b_r(reg.D, 2);}
-inline static void BIT_D_3() {BIT_b_r(reg.D, 3);}
-inline static void BIT_D_4() {BIT_b_r(reg.D, 4);}
-inline static void BIT_D_5() {BIT_b_r(reg.D, 5);}
-inline static void BIT_D_6() {BIT_b_r(reg.D, 6);}
-inline static void BIT_D_7() {BIT_b_r(reg.D, 7);}
+ static void BIT_D_0() {BIT_b_r(reg.D, 0);}
+ static void BIT_D_1() {BIT_b_r(reg.D, 1);}
+ static void BIT_D_2() {BIT_b_r(reg.D, 2);}
+ static void BIT_D_3() {BIT_b_r(reg.D, 3);}
+ static void BIT_D_4() {BIT_b_r(reg.D, 4);}
+ static void BIT_D_5() {BIT_b_r(reg.D, 5);}
+ static void BIT_D_6() {BIT_b_r(reg.D, 6);}
+ static void BIT_D_7() {BIT_b_r(reg.D, 7);}
 
-inline static void BIT_E_0() {BIT_b_r(reg.E, 0);}
-inline static void BIT_E_1() {BIT_b_r(reg.E, 1);}
-inline static void BIT_E_2() {BIT_b_r(reg.E, 2);}
-inline static void BIT_E_3() {BIT_b_r(reg.E, 3);}
-inline static void BIT_E_4() {BIT_b_r(reg.E, 4);}
-inline static void BIT_E_5() {BIT_b_r(reg.E, 5);}
-inline static void BIT_E_6() {BIT_b_r(reg.E, 6);}
-inline static void BIT_E_7() {BIT_b_r(reg.E, 7);}
+ static void BIT_E_0() {BIT_b_r(reg.E, 0);}
+ static void BIT_E_1() {BIT_b_r(reg.E, 1);}
+ static void BIT_E_2() {BIT_b_r(reg.E, 2);}
+ static void BIT_E_3() {BIT_b_r(reg.E, 3);}
+ static void BIT_E_4() {BIT_b_r(reg.E, 4);}
+ static void BIT_E_5() {BIT_b_r(reg.E, 5);}
+ static void BIT_E_6() {BIT_b_r(reg.E, 6);}
+ static void BIT_E_7() {BIT_b_r(reg.E, 7);}
 
-inline static void BIT_H_0() {BIT_b_r(reg.H, 0);}
-inline static void BIT_H_1() {BIT_b_r(reg.H, 1);}
-inline static void BIT_H_2() {BIT_b_r(reg.H, 2);}
-inline static void BIT_H_3() {BIT_b_r(reg.H, 3);}
-inline static void BIT_H_4() {BIT_b_r(reg.H, 4);}
-inline static void BIT_H_5() {BIT_b_r(reg.H, 5);}
-inline static void BIT_H_6() {BIT_b_r(reg.H, 6);}
-inline static void BIT_H_7() {BIT_b_r(reg.H, 7);}
+ static void BIT_H_0() {BIT_b_r(reg.H, 0);}
+ static void BIT_H_1() {BIT_b_r(reg.H, 1);}
+ static void BIT_H_2() {BIT_b_r(reg.H, 2);}
+ static void BIT_H_3() {BIT_b_r(reg.H, 3);}
+ static void BIT_H_4() {BIT_b_r(reg.H, 4);}
+ static void BIT_H_5() {BIT_b_r(reg.H, 5);}
+ static void BIT_H_6() {BIT_b_r(reg.H, 6);}
+ static void BIT_H_7() {BIT_b_r(reg.H, 7);}
 
-inline static void BIT_L_0() {BIT_b_r(reg.L, 0);}
-inline static void BIT_L_1() {BIT_b_r(reg.L, 1);}
-inline static void BIT_L_2() {BIT_b_r(reg.L, 2);}
-inline static void BIT_L_3() {BIT_b_r(reg.L, 3);}
-inline static void BIT_L_4() {BIT_b_r(reg.L, 4);}
-inline static void BIT_L_5() {BIT_b_r(reg.L, 5);}
-inline static void BIT_L_6() {BIT_b_r(reg.L, 6);}
-inline static void BIT_L_7() {BIT_b_r(reg.L, 7);}
+ static void BIT_L_0() {BIT_b_r(reg.L, 0);}
+ static void BIT_L_1() {BIT_b_r(reg.L, 1);}
+ static void BIT_L_2() {BIT_b_r(reg.L, 2);}
+ static void BIT_L_3() {BIT_b_r(reg.L, 3);}
+ static void BIT_L_4() {BIT_b_r(reg.L, 4);}
+ static void BIT_L_5() {BIT_b_r(reg.L, 5);}
+ static void BIT_L_6() {BIT_b_r(reg.L, 6);}
+ static void BIT_L_7() {BIT_b_r(reg.L, 7);}
 
 /*  16 cycles */
-inline static void BIT_memHL_0() { 
+ static void BIT_memHL_0() { 
     update_timers(4); 
     sound_add_cycles(4);
     update_graphics(4);
     BIT_b_r(get_mem(reg.HL),0);
 }
-inline static void BIT_memHL_1() { 
+ static void BIT_memHL_1() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),1);
 }
-inline static void BIT_memHL_2() { 
+ static void BIT_memHL_2() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),2);
 }
-inline static void BIT_memHL_3() { 
+ static void BIT_memHL_3() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),3);
 }
-inline static void BIT_memHL_4() { 
+ static void BIT_memHL_4() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),4);
 }
-inline static void BIT_memHL_5() { 
+ static void BIT_memHL_5() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),5);
 }
-inline static void BIT_memHL_6() { 
+ static void BIT_memHL_6() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
     BIT_b_r(get_mem(reg.HL),6);
 }
-inline static void BIT_memHL_7() { 
+ static void BIT_memHL_7() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
@@ -1080,12 +1080,12 @@ inline static void BIT_memHL_7() {
 
 
 /*  Set bit b in register r */
-inline static uint8_t SET_b_r(uint8_t const val, uint8_t const bit)
+ static uint8_t SET_b_r(uint8_t const val, uint8_t const bit)
 {
     return val | (0x1 << bit);
 }
 
-inline static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
+ static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
 
     update_timers(4);
     update_graphics(4);
@@ -1098,88 +1098,88 @@ inline static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
 }
 
 /*  8 cyles */
-inline static void SET_A_0() {reg.A  = SET_b_r(reg.A, 0);}
-inline static void SET_A_1() {reg.A  = SET_b_r(reg.A, 1);}
-inline static void SET_A_2() {reg.A  = SET_b_r(reg.A, 2);}
-inline static void SET_A_3() {reg.A  = SET_b_r(reg.A, 3);}
-inline static void SET_A_4() {reg.A  = SET_b_r(reg.A, 4);}
-inline static void SET_A_5() {reg.A  = SET_b_r(reg.A, 5);}
-inline static void SET_A_6() {reg.A  = SET_b_r(reg.A, 6);}
-inline static void SET_A_7() {reg.A  = SET_b_r(reg.A, 7);}
+ static void SET_A_0() {reg.A  = SET_b_r(reg.A, 0);}
+ static void SET_A_1() {reg.A  = SET_b_r(reg.A, 1);}
+ static void SET_A_2() {reg.A  = SET_b_r(reg.A, 2);}
+ static void SET_A_3() {reg.A  = SET_b_r(reg.A, 3);}
+ static void SET_A_4() {reg.A  = SET_b_r(reg.A, 4);}
+ static void SET_A_5() {reg.A  = SET_b_r(reg.A, 5);}
+ static void SET_A_6() {reg.A  = SET_b_r(reg.A, 6);}
+ static void SET_A_7() {reg.A  = SET_b_r(reg.A, 7);}
 
-inline static void SET_B_0() {reg.B  = SET_b_r(reg.B, 0);}
-inline static void SET_B_1() {reg.B  = SET_b_r(reg.B, 1);}
-inline static void SET_B_2() {reg.B  = SET_b_r(reg.B, 2);}
-inline static void SET_B_3() {reg.B  = SET_b_r(reg.B, 3);}
-inline static void SET_B_4() {reg.B  = SET_b_r(reg.B, 4);}
-inline static void SET_B_5() {reg.B  = SET_b_r(reg.B, 5);}
-inline static void SET_B_6() {reg.B  = SET_b_r(reg.B, 6);}
-inline static void SET_B_7() {reg.B  = SET_b_r(reg.B, 7);}
+ static void SET_B_0() {reg.B  = SET_b_r(reg.B, 0);}
+ static void SET_B_1() {reg.B  = SET_b_r(reg.B, 1);}
+ static void SET_B_2() {reg.B  = SET_b_r(reg.B, 2);}
+ static void SET_B_3() {reg.B  = SET_b_r(reg.B, 3);}
+ static void SET_B_4() {reg.B  = SET_b_r(reg.B, 4);}
+ static void SET_B_5() {reg.B  = SET_b_r(reg.B, 5);}
+ static void SET_B_6() {reg.B  = SET_b_r(reg.B, 6);}
+ static void SET_B_7() {reg.B  = SET_b_r(reg.B, 7);}
 
-inline static void SET_C_0() {reg.C = SET_b_r(reg.C, 0);}
-inline static void SET_C_1() {reg.C = SET_b_r(reg.C, 1);}
-inline static void SET_C_2() {reg.C  = SET_b_r(reg.C, 2);}
-inline static void SET_C_3() {reg.C  = SET_b_r(reg.C, 3);}
-inline static void SET_C_4() {reg.C  = SET_b_r(reg.C, 4);}
-inline static void SET_C_5() {reg.C  = SET_b_r(reg.C, 5);}
-inline static void SET_C_6() {reg.C  = SET_b_r(reg.C, 6);}
-inline static void SET_C_7() {reg.C  = SET_b_r(reg.C, 7);}
+ static void SET_C_0() {reg.C = SET_b_r(reg.C, 0);}
+ static void SET_C_1() {reg.C = SET_b_r(reg.C, 1);}
+ static void SET_C_2() {reg.C  = SET_b_r(reg.C, 2);}
+ static void SET_C_3() {reg.C  = SET_b_r(reg.C, 3);}
+ static void SET_C_4() {reg.C  = SET_b_r(reg.C, 4);}
+ static void SET_C_5() {reg.C  = SET_b_r(reg.C, 5);}
+ static void SET_C_6() {reg.C  = SET_b_r(reg.C, 6);}
+ static void SET_C_7() {reg.C  = SET_b_r(reg.C, 7);}
 
-inline static void SET_D_0() {reg.D  = SET_b_r(reg.D, 0);}
-inline static void SET_D_1() {reg.D  = SET_b_r(reg.D, 1);}
-inline static void SET_D_2() {reg.D  = SET_b_r(reg.D, 2);}
-inline static void SET_D_3() {reg.D  = SET_b_r(reg.D, 3);}
-inline static void SET_D_4() {reg.D  = SET_b_r(reg.D, 4);}
-inline static void SET_D_5() {reg.D  = SET_b_r(reg.D, 5);}
-inline static void SET_D_6() {reg.D  = SET_b_r(reg.D, 6);}
-inline static void SET_D_7() {reg.D  = SET_b_r(reg.D, 7);}
+ static void SET_D_0() {reg.D  = SET_b_r(reg.D, 0);}
+ static void SET_D_1() {reg.D  = SET_b_r(reg.D, 1);}
+ static void SET_D_2() {reg.D  = SET_b_r(reg.D, 2);}
+ static void SET_D_3() {reg.D  = SET_b_r(reg.D, 3);}
+ static void SET_D_4() {reg.D  = SET_b_r(reg.D, 4);}
+ static void SET_D_5() {reg.D  = SET_b_r(reg.D, 5);}
+ static void SET_D_6() {reg.D  = SET_b_r(reg.D, 6);}
+ static void SET_D_7() {reg.D  = SET_b_r(reg.D, 7);}
 
-inline static void SET_E_0() {reg.E  = SET_b_r(reg.E, 0);}
-inline static void SET_E_1() {reg.E  = SET_b_r(reg.E, 1);}
-inline static void SET_E_2() {reg.E  = SET_b_r(reg.E, 2);}
-inline static void SET_E_3() {reg.E  = SET_b_r(reg.E, 3);}
-inline static void SET_E_4() {reg.E  = SET_b_r(reg.E, 4);}
-inline static void SET_E_5() {reg.E  = SET_b_r(reg.E, 5);}
-inline static void SET_E_6() {reg.E  = SET_b_r(reg.E, 6);}
-inline static void SET_E_7() {reg.E  = SET_b_r(reg.E, 7);}
+ static void SET_E_0() {reg.E  = SET_b_r(reg.E, 0);}
+ static void SET_E_1() {reg.E  = SET_b_r(reg.E, 1);}
+ static void SET_E_2() {reg.E  = SET_b_r(reg.E, 2);}
+ static void SET_E_3() {reg.E  = SET_b_r(reg.E, 3);}
+ static void SET_E_4() {reg.E  = SET_b_r(reg.E, 4);}
+ static void SET_E_5() {reg.E  = SET_b_r(reg.E, 5);}
+ static void SET_E_6() {reg.E  = SET_b_r(reg.E, 6);}
+ static void SET_E_7() {reg.E  = SET_b_r(reg.E, 7);}
 
-inline static void SET_H_0() {reg.H  = SET_b_r(reg.H, 0);}
-inline static void SET_H_1() {reg.H  = SET_b_r(reg.H, 1);}
-inline static void SET_H_2() {reg.H  = SET_b_r(reg.H, 2);}
-inline static void SET_H_3() {reg.H  = SET_b_r(reg.H, 3);}
-inline static void SET_H_4() {reg.H  = SET_b_r(reg.H, 4);}
-inline static void SET_H_5() {reg.H  = SET_b_r(reg.H, 5);}
-inline static void SET_H_6() {reg.H  = SET_b_r(reg.H, 6);}
-inline static void SET_H_7() {reg.H  = SET_b_r(reg.H, 7);}
+ static void SET_H_0() {reg.H  = SET_b_r(reg.H, 0);}
+ static void SET_H_1() {reg.H  = SET_b_r(reg.H, 1);}
+ static void SET_H_2() {reg.H  = SET_b_r(reg.H, 2);}
+ static void SET_H_3() {reg.H  = SET_b_r(reg.H, 3);}
+ static void SET_H_4() {reg.H  = SET_b_r(reg.H, 4);}
+ static void SET_H_5() {reg.H  = SET_b_r(reg.H, 5);}
+ static void SET_H_6() {reg.H  = SET_b_r(reg.H, 6);}
+ static void SET_H_7() {reg.H  = SET_b_r(reg.H, 7);}
 
-inline static void SET_L_0() {reg.L = SET_b_r(reg.L, 0);}
-inline static void SET_L_1() {reg.L = SET_b_r(reg.L, 1);}
-inline static void SET_L_2() {reg.L = SET_b_r(reg.L, 2);}
-inline static void SET_L_3() {reg.L = SET_b_r(reg.L, 3);}
-inline static void SET_L_4() {reg.L = SET_b_r(reg.L, 4);}
-inline static void SET_L_5() {reg.L = SET_b_r(reg.L, 5);}
-inline static void SET_L_6() {reg.L = SET_b_r(reg.L, 6);}
-inline static void SET_L_7() {reg.L = SET_b_r(reg.L, 7);}
+ static void SET_L_0() {reg.L = SET_b_r(reg.L, 0);}
+ static void SET_L_1() {reg.L = SET_b_r(reg.L, 1);}
+ static void SET_L_2() {reg.L = SET_b_r(reg.L, 2);}
+ static void SET_L_3() {reg.L = SET_b_r(reg.L, 3);}
+ static void SET_L_4() {reg.L = SET_b_r(reg.L, 4);}
+ static void SET_L_5() {reg.L = SET_b_r(reg.L, 5);}
+ static void SET_L_6() {reg.L = SET_b_r(reg.L, 6);}
+ static void SET_L_7() {reg.L = SET_b_r(reg.L, 7);}
 
 /*  16 cycles */
-inline static void SET_memHL_0() {SET_b_mem(reg.HL,0);}
-inline static void SET_memHL_1() {SET_b_mem(reg.HL,1);}
-inline static void SET_memHL_2() {SET_b_mem(reg.HL,2);}
-inline static void SET_memHL_3() {SET_b_mem(reg.HL,3);}
-inline static void SET_memHL_4() {SET_b_mem(reg.HL,4);}
-inline static void SET_memHL_5() {SET_b_mem(reg.HL,5);}
-inline static void SET_memHL_6() {SET_b_mem(reg.HL,6);}
-inline static void SET_memHL_7() {SET_b_mem(reg.HL,7);}
+ static void SET_memHL_0() {SET_b_mem(reg.HL,0);}
+ static void SET_memHL_1() {SET_b_mem(reg.HL,1);}
+ static void SET_memHL_2() {SET_b_mem(reg.HL,2);}
+ static void SET_memHL_3() {SET_b_mem(reg.HL,3);}
+ static void SET_memHL_4() {SET_b_mem(reg.HL,4);}
+ static void SET_memHL_5() {SET_b_mem(reg.HL,5);}
+ static void SET_memHL_6() {SET_b_mem(reg.HL,6);}
+ static void SET_memHL_7() {SET_b_mem(reg.HL,7);}
 
 
 
 /*  Reset bit b in register r */
-inline static uint8_t RES_b_r(uint8_t val, uint8_t bit)
+ static uint8_t RES_b_r(uint8_t val, uint8_t bit)
 {
     return val & ~(0x1 << bit);
 }
 
-inline static void RES_b_mem(uint16_t addr, uint8_t bit) {
+ static void RES_b_mem(uint16_t addr, uint8_t bit) {
 
     update_timers(4);
     update_graphics(4);
@@ -1193,78 +1193,78 @@ inline static void RES_b_mem(uint16_t addr, uint8_t bit) {
 
 
 
-inline static void RES_A_0() {reg.A = RES_b_r(reg.A, 0);}
-inline static void RES_A_1() {reg.A = RES_b_r(reg.A, 1);}
-inline static void RES_A_2() {reg.A = RES_b_r(reg.A, 2);}
-inline static void RES_A_3() {reg.A = RES_b_r(reg.A, 3);}
-inline static void RES_A_4() {reg.A = RES_b_r(reg.A, 4);}
-inline static void RES_A_5() {reg.A = RES_b_r(reg.A, 5);}
-inline static void RES_A_6() {reg.A = RES_b_r(reg.A, 6);}
-inline static void RES_A_7() {reg.A = RES_b_r(reg.A, 7);}
+ static void RES_A_0() {reg.A = RES_b_r(reg.A, 0);}
+ static void RES_A_1() {reg.A = RES_b_r(reg.A, 1);}
+ static void RES_A_2() {reg.A = RES_b_r(reg.A, 2);}
+ static void RES_A_3() {reg.A = RES_b_r(reg.A, 3);}
+ static void RES_A_4() {reg.A = RES_b_r(reg.A, 4);}
+ static void RES_A_5() {reg.A = RES_b_r(reg.A, 5);}
+ static void RES_A_6() {reg.A = RES_b_r(reg.A, 6);}
+ static void RES_A_7() {reg.A = RES_b_r(reg.A, 7);}
 
-inline static void RES_B_0() {reg.B = RES_b_r(reg.B, 0);}
-inline static void RES_B_1() {reg.B = RES_b_r(reg.B, 1);}
-inline static void RES_B_2() {reg.B = RES_b_r(reg.B, 2);}
-inline static void RES_B_3() {reg.B = RES_b_r(reg.B, 3);}
-inline static void RES_B_4() {reg.B = RES_b_r(reg.B, 4);}
-inline static void RES_B_5() {reg.B = RES_b_r(reg.B, 5);}
-inline static void RES_B_6() {reg.B = RES_b_r(reg.B, 6);}
-inline static void RES_B_7() {reg.B = RES_b_r(reg.B, 7);}
+ static void RES_B_0() {reg.B = RES_b_r(reg.B, 0);}
+ static void RES_B_1() {reg.B = RES_b_r(reg.B, 1);}
+ static void RES_B_2() {reg.B = RES_b_r(reg.B, 2);}
+ static void RES_B_3() {reg.B = RES_b_r(reg.B, 3);}
+ static void RES_B_4() {reg.B = RES_b_r(reg.B, 4);}
+ static void RES_B_5() {reg.B = RES_b_r(reg.B, 5);}
+ static void RES_B_6() {reg.B = RES_b_r(reg.B, 6);}
+ static void RES_B_7() {reg.B = RES_b_r(reg.B, 7);}
 
-inline static void RES_C_0() {reg.C = RES_b_r(reg.C, 0);}
-inline static void RES_C_1() {reg.C = RES_b_r(reg.C, 1);}
-inline static void RES_C_2() {reg.C = RES_b_r(reg.C, 2);}
-inline static void RES_C_3() {reg.C = RES_b_r(reg.C, 3);}
-inline static void RES_C_4() {reg.C = RES_b_r(reg.C, 4);}
-inline static void RES_C_5() {reg.C = RES_b_r(reg.C, 5);}
-inline static void RES_C_6() {reg.C = RES_b_r(reg.C, 6);}
-inline static void RES_C_7() {reg.C = RES_b_r(reg.C, 7);}
+ static void RES_C_0() {reg.C = RES_b_r(reg.C, 0);}
+ static void RES_C_1() {reg.C = RES_b_r(reg.C, 1);}
+ static void RES_C_2() {reg.C = RES_b_r(reg.C, 2);}
+ static void RES_C_3() {reg.C = RES_b_r(reg.C, 3);}
+ static void RES_C_4() {reg.C = RES_b_r(reg.C, 4);}
+ static void RES_C_5() {reg.C = RES_b_r(reg.C, 5);}
+ static void RES_C_6() {reg.C = RES_b_r(reg.C, 6);}
+ static void RES_C_7() {reg.C = RES_b_r(reg.C, 7);}
 
-inline static void RES_D_0() {reg.D = RES_b_r(reg.D, 0);}
-inline static void RES_D_1() {reg.D = RES_b_r(reg.D, 1);}
-inline static void RES_D_2() {reg.D = RES_b_r(reg.D, 2);}
-inline static void RES_D_3() {reg.D = RES_b_r(reg.D, 3);}
-inline static void RES_D_4() {reg.D = RES_b_r(reg.D, 4);}
-inline static void RES_D_5() {reg.D = RES_b_r(reg.D, 5);}
-inline static void RES_D_6() {reg.D = RES_b_r(reg.D, 6);}
-inline static void RES_D_7() {reg.D = RES_b_r(reg.D, 7);}
+ static void RES_D_0() {reg.D = RES_b_r(reg.D, 0);}
+ static void RES_D_1() {reg.D = RES_b_r(reg.D, 1);}
+ static void RES_D_2() {reg.D = RES_b_r(reg.D, 2);}
+ static void RES_D_3() {reg.D = RES_b_r(reg.D, 3);}
+ static void RES_D_4() {reg.D = RES_b_r(reg.D, 4);}
+ static void RES_D_5() {reg.D = RES_b_r(reg.D, 5);}
+ static void RES_D_6() {reg.D = RES_b_r(reg.D, 6);}
+ static void RES_D_7() {reg.D = RES_b_r(reg.D, 7);}
 
-inline static void RES_E_0() {reg.E = RES_b_r(reg.E, 0);}
-inline static void RES_E_1() {reg.E = RES_b_r(reg.E, 1);}
-inline static void RES_E_2() {reg.E = RES_b_r(reg.E, 2);}
-inline static void RES_E_3() {reg.E = RES_b_r(reg.E, 3);}
-inline static void RES_E_4() {reg.E = RES_b_r(reg.E, 4);}
-inline static void RES_E_5() {reg.E = RES_b_r(reg.E, 5);}
-inline static void RES_E_6() {reg.E = RES_b_r(reg.E, 6);}
-inline static void RES_E_7() {reg.E = RES_b_r(reg.E, 7);}
+ static void RES_E_0() {reg.E = RES_b_r(reg.E, 0);}
+ static void RES_E_1() {reg.E = RES_b_r(reg.E, 1);}
+ static void RES_E_2() {reg.E = RES_b_r(reg.E, 2);}
+ static void RES_E_3() {reg.E = RES_b_r(reg.E, 3);}
+ static void RES_E_4() {reg.E = RES_b_r(reg.E, 4);}
+ static void RES_E_5() {reg.E = RES_b_r(reg.E, 5);}
+ static void RES_E_6() {reg.E = RES_b_r(reg.E, 6);}
+ static void RES_E_7() {reg.E = RES_b_r(reg.E, 7);}
 
-inline static void RES_H_0() {reg.H = RES_b_r(reg.H, 0);}
-inline static void RES_H_1() {reg.H = RES_b_r(reg.H, 1);}
-inline static void RES_H_2() {reg.H = RES_b_r(reg.H, 2);}
-inline static void RES_H_3() {reg.H = RES_b_r(reg.H, 3);}
-inline static void RES_H_4() {reg.H = RES_b_r(reg.H, 4);}
-inline static void RES_H_5() {reg.H = RES_b_r(reg.H, 5);}
-inline static void RES_H_6() {reg.H = RES_b_r(reg.H, 6);}
-inline static void RES_H_7() {reg.H = RES_b_r(reg.H, 7);}
+ static void RES_H_0() {reg.H = RES_b_r(reg.H, 0);}
+ static void RES_H_1() {reg.H = RES_b_r(reg.H, 1);}
+ static void RES_H_2() {reg.H = RES_b_r(reg.H, 2);}
+ static void RES_H_3() {reg.H = RES_b_r(reg.H, 3);}
+ static void RES_H_4() {reg.H = RES_b_r(reg.H, 4);}
+ static void RES_H_5() {reg.H = RES_b_r(reg.H, 5);}
+ static void RES_H_6() {reg.H = RES_b_r(reg.H, 6);}
+ static void RES_H_7() {reg.H = RES_b_r(reg.H, 7);}
 
-inline static void RES_L_0() {reg.L = RES_b_r(reg.L, 0);}
-inline static void RES_L_1() {reg.L = RES_b_r(reg.L, 1);}
-inline static void RES_L_2() {reg.L = RES_b_r(reg.L, 2);}
-inline static void RES_L_3() {reg.L = RES_b_r(reg.L, 3);}
-inline static void RES_L_4() {reg.L = RES_b_r(reg.L, 4);}
-inline static void RES_L_5() {reg.L = RES_b_r(reg.L, 5);}
-inline static void RES_L_6() {reg.L = RES_b_r(reg.L, 6);}
-inline static void RES_L_7() {reg.L = RES_b_r(reg.L, 7);}
+ static void RES_L_0() {reg.L = RES_b_r(reg.L, 0);}
+ static void RES_L_1() {reg.L = RES_b_r(reg.L, 1);}
+ static void RES_L_2() {reg.L = RES_b_r(reg.L, 2);}
+ static void RES_L_3() {reg.L = RES_b_r(reg.L, 3);}
+ static void RES_L_4() {reg.L = RES_b_r(reg.L, 4);}
+ static void RES_L_5() {reg.L = RES_b_r(reg.L, 5);}
+ static void RES_L_6() {reg.L = RES_b_r(reg.L, 6);}
+ static void RES_L_7() {reg.L = RES_b_r(reg.L, 7);}
 
 /*  16 cycles */
-inline static void RES_memHL_0() {RES_b_mem(reg.HL,0);}
-inline static void RES_memHL_1() {RES_b_mem(reg.HL,1);}
-inline static void RES_memHL_2() {RES_b_mem(reg.HL,2);}
-inline static void RES_memHL_3() {RES_b_mem(reg.HL,3);}
-inline static void RES_memHL_4() {RES_b_mem(reg.HL,4);}
-inline static void RES_memHL_5() {RES_b_mem(reg.HL,5);}
-inline static void RES_memHL_6() {RES_b_mem(reg.HL,6);}
-inline static void RES_memHL_7() {RES_b_mem(reg.HL,7);}
+ static void RES_memHL_0() {RES_b_mem(reg.HL,0);}
+ static void RES_memHL_1() {RES_b_mem(reg.HL,1);}
+ static void RES_memHL_2() {RES_b_mem(reg.HL,2);}
+ static void RES_memHL_3() {RES_b_mem(reg.HL,3);}
+ static void RES_memHL_4() {RES_b_mem(reg.HL,4);}
+ static void RES_memHL_5() {RES_b_mem(reg.HL,5);}
+ static void RES_memHL_6() {RES_b_mem(reg.HL,6);}
+ static void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 
 
 
@@ -1272,32 +1272,32 @@ inline static void RES_memHL_7() {RES_b_mem(reg.HL,7);}
 /**** Jumps ****/
 
 /* Jump to immediate 2 byte address */
-inline static void JP_nn() { reg.PC = IMMEDIATE_16_BIT; }
+ static void JP_nn() { reg.PC = IMMEDIATE_16_BIT; }
 
 /*  Jump to address n if flag condition holds */
 
-inline static void JP_NZ_nn() { ins[0xC2].cycles = !reg.Z_FLAG ? (JP_nn(), 16) : 12; }
-inline static void JP_Z_nn()  { ins[0xCA].cycles =  reg.Z_FLAG ? (JP_nn(), 16) : 12; }
-inline static void JP_NC_nn() { ins[0xD2].cycles = !reg.C_FLAG ? (JP_nn(), 16) : 12; }
-inline static void JP_C_nn()  { ins[0xDA].cycles =  reg.C_FLAG ? (JP_nn(), 16) : 12; }
+ static void JP_NZ_nn() { ins[0xC2].cycles = !reg.Z_FLAG ? (JP_nn(), 16) : 12; }
+ static void JP_Z_nn()  { ins[0xCA].cycles =  reg.Z_FLAG ? (JP_nn(), 16) : 12; }
+ static void JP_NC_nn() { ins[0xD2].cycles = !reg.C_FLAG ? (JP_nn(), 16) : 12; }
+ static void JP_C_nn()  { ins[0xDA].cycles =  reg.C_FLAG ? (JP_nn(), 16) : 12; }
 
 
 /*  Jump to address contained in HL */
-inline static void JP_HL() { reg.PC = reg.HL; }
+ static void JP_HL() { reg.PC = reg.HL; }
 
 
 
 /*  Add 8 bit immediate value as signed int to current address
  *  and jump to it */
-inline static void JR_n() { reg.PC += SIGNED_IM_8_BIT;}
+ static void JR_n() { reg.PC += SIGNED_IM_8_BIT;}
 
 /*  If following flag conditions are true
  *  add 8 bit immediate to pc */
 
-inline static void JR_NZ_n() { ins[0x20].cycles = !reg.Z_FLAG ? (JR_n(), 12) : 8; }
-inline static void JR_Z_n()  { ins[0x28].cycles =  reg.Z_FLAG ? (JR_n(), 12) : 8; }
-inline static void JR_NC_n() { ins[0x30].cycles = !reg.C_FLAG ? (JR_n(), 12) : 8; }
-inline static void JR_C_n()  { ins[0x38].cycles =  reg.C_FLAG ? (JR_n(), 12) : 8; }
+ static void JR_NZ_n() { ins[0x20].cycles = !reg.Z_FLAG ? (JR_n(), 12) : 8; }
+ static void JR_Z_n()  { ins[0x28].cycles =  reg.Z_FLAG ? (JR_n(), 12) : 8; }
+ static void JR_NC_n() { ins[0x30].cycles = !reg.C_FLAG ? (JR_n(), 12) : 8; }
+ static void JR_C_n()  { ins[0x38].cycles =  reg.C_FLAG ? (JR_n(), 12) : 8; }
 
 
 
@@ -1305,17 +1305,17 @@ inline static void JR_C_n()  { ins[0x38].cycles =  reg.C_FLAG ? (JR_n(), 12) : 8
 /**** Calls ****/
 /*  Push address of next instruction onto stack
  *  then jump to address nn */
-inline static void CALL_nn()
+ static void CALL_nn()
 {
     PUSH(reg.PC);
     reg.PC = IMMEDIATE_16_BIT;
 }
 
 /*  Call if flag is set/unset */
-inline static void CALL_NZ_nn() { ins[0xC4].cycles = !reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
-inline static void CALL_Z_nn()  { ins[0xCC].cycles =  reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
-inline static void CALL_NC_nn() { ins[0xD4].cycles = !reg.C_FLAG ? (CALL_nn(), 24) : 12; }
-inline static void CALL_C_nn()  { ins[0xDC].cycles =  reg.C_FLAG ? (CALL_nn(), 24) : 12; }
+ static void CALL_NZ_nn() { ins[0xC4].cycles = !reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
+ static void CALL_Z_nn()  { ins[0xCC].cycles =  reg.Z_FLAG ? (CALL_nn(), 24) : 12; }
+ static void CALL_NC_nn() { ins[0xD4].cycles = !reg.C_FLAG ? (CALL_nn(), 24) : 12; }
+ static void CALL_C_nn()  { ins[0xDC].cycles =  reg.C_FLAG ? (CALL_nn(), 24) : 12; }
 
 
 
@@ -1330,31 +1330,31 @@ void restart(uint8_t addr)
     reg.PC = addr;
 }
 
-inline static void RST_00() {restart(0x00);}
-inline static void RST_08() {restart(0x08);}
-inline static void RST_10() {restart(0x10);}
-inline static void RST_18() {restart(0x18);}
-inline static void RST_20() {restart(0x20);}
-inline static void RST_28() {restart(0x28);}
-inline static void RST_30() {restart(0x30);}
-inline static void RST_38() {restart(0x38);}
+ static void RST_00() {restart(0x00);}
+ static void RST_08() {restart(0x08);}
+ static void RST_10() {restart(0x10);}
+ static void RST_18() {restart(0x18);}
+ static void RST_20() {restart(0x20);}
+ static void RST_28() {restart(0x28);}
+ static void RST_30() {restart(0x30);}
+ static void RST_38() {restart(0x38);}
 
 
 /**** Returns ****/
 
 /*  Pop two bytes from stack and jump to that addr */
-inline static void RET() { POP(&reg.PC);}
+ static void RET() { POP(&reg.PC);}
 
 // Return if flags are set
-inline static void RET_NZ() { ins[0xC0].cycles = !reg.Z_FLAG ? (RET(), 20) : 8; } 
-inline static void RET_Z()  { ins[0xC8].cycles =  reg.Z_FLAG ? (RET(), 20) : 8; }
-inline static void RET_NC() { ins[0xD0].cycles = !reg.C_FLAG ? (RET(), 20) : 8; }
-inline static void RET_C()  { ins[0xD8].cycles =  reg.C_FLAG ? (RET(), 20) : 8; }
+ static void RET_NZ() { ins[0xC0].cycles = !reg.Z_FLAG ? (RET(), 20) : 8; } 
+ static void RET_Z()  { ins[0xC8].cycles =  reg.Z_FLAG ? (RET(), 20) : 8; }
+ static void RET_NC() { ins[0xD0].cycles = !reg.C_FLAG ? (RET(), 20) : 8; }
+ static void RET_C()  { ins[0xD8].cycles =  reg.C_FLAG ? (RET(), 20) : 8; }
 
 
 
 // Return and enable master interrupts
-inline static void RETI() {
+ static void RETI() {
     RET();
     EI();
 }

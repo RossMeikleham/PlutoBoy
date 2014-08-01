@@ -1,10 +1,12 @@
 #include "cpu.h"
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
 #include "mmu/memory.h"
 #include "memory_layout.h"
-#include <stdint.h>
 #include "graphics.h"
-#include <stdlib.h>
 #include "sprite_priorities.h"
 #include "bits.h"
 
@@ -28,7 +30,7 @@ int init_gfx() {
 
 
 
-inline static void draw_sprite_row() {
+static void draw_sprite_row() {
    
     // 8x16 or 8x8
     int height = lcd_ctrl & BIT_2 ? 16 : 8;
@@ -117,7 +119,7 @@ inline static void draw_sprite_row() {
 
 
 
-inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
+static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
    
     uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
@@ -132,7 +134,7 @@ inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
     uint16_t tile_row = (y_pos >> 3); // Get row 0 - 31 of tile
     int16_t win_x = get_mem(WX_REG) - 7;
     
-    if (win_x > 159 || get_mem(WY_REG) > 143 || window_line > 143 || row < win_y) {
+    if (win_x > 159 || get_mem(WY_REG) > 143 || row < win_y) {
         return;
     }
     
@@ -185,7 +187,7 @@ inline static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
 }
 
 //Render the supplied row with background tiles
-inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
+static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
    uint8_t bgp = get_mem(BGP_REF);
     int pallete[4];
     //Calculate color pallete
@@ -238,7 +240,7 @@ inline static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
       
 
-inline static void draw_tile_row() {
+static void draw_tile_row() {
   
     uint8_t win_y_pos = get_mem(WY_REG);
 

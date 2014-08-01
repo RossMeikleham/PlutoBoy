@@ -37,7 +37,7 @@ void init_sprite_prio_list() {
 }
 
 
-inline static void move_after(Node *origin, Node *destination) {
+static void move_after(Node *origin, Node *destination) {
     // Relink either sides of node to move
     origin->prev->next = origin->next;
     origin->next->prev = origin->prev;
