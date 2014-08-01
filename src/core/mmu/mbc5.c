@@ -20,7 +20,7 @@ void setup_MBC5(int flags) {
     }
 }
 
-uint8_t read_MBC5(uint16_t const addr) {
+uint8_t read_MBC5(uint16_t addr) {
        
     switch (addr & 0xF000) {
      case 0x0000:

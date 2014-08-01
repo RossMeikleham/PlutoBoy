@@ -195,7 +195,7 @@ static uint8_t oam_get_mem(uint8_t addr) {
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
-static inline void dma_transfer(uint8_t val) {
+static void dma_transfer(uint8_t val) {
 
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {

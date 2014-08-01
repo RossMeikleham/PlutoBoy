@@ -22,7 +22,7 @@ void setup_MBC3(int flags) {
     }
 }
 
-uint8_t read_MBC3(uint16_t const addr) {
+uint8_t read_MBC3(uint16_t addr) {
        
     switch (addr & 0xF000) {
      case 0x0000:

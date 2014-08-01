@@ -31,7 +31,7 @@ void setup_MBC1(int flags) {
 }
 
 
-uint8_t read_MBC1(uint16_t const addr) {
+uint8_t read_MBC1(uint16_t addr) {
        
     switch (addr & 0xF000) {
      case 0x0000:
