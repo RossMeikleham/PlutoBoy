@@ -80,7 +80,7 @@ The -d flag starts the emulator in debugging mode.
 - Scons
 
 ### How To Build:
--- Same as for Linux, navigate to the project `build/Unix` folder and enter the command `./scons`
+- Same as for Linux, navigate to the project `build/Unix` folder and enter the command `./scons`
 
 ## Windows
 
