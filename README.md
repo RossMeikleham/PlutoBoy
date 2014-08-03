@@ -1,4 +1,4 @@
-Gameboy emulator for Windows and Unix based systems.
+Gameboy emulator for Windows, OSX and Linux/Unix based systems.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
 
@@ -58,7 +58,7 @@ The -d flag starts the emulator in debugging mode.
 
 #Build Instructions
 
-## Unix based systems
+## Linux
 
 ### Required: (All these should be easily installed using your package manager)
 
@@ -67,8 +67,20 @@ The -d flag starts the emulator in debugging mode.
 - Clang compiler 
 
 ### How To Build:
-- Navigate to the project build/Unix folder.
+- Navigate to the project `build/Unix` folder.
 - Enter the command `./scons`
+
+
+## OSX
+
+### Required: (All these can be easily installed using the homebrew package manager)
+
+- SDL 1.2 libraries
+- XCode + XCode Command Line tools 
+- Scons
+
+### How To Build:
+-- Same as for Linux, navigate to the project `build/Unix` folder and enter the command `./scons`
 
 ## Windows
 
