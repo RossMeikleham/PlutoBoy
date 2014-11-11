@@ -6,7 +6,7 @@ env = Environment(CC = 'clang',
 
 env.Append(CPPPATH = ['/usr/include/SDL'])
 env.Append(CPPPATH = ['/usr/local/include/SDL'])
-env.Append(LIBS = ['SDL'])
+env.Append(LIBS = ['SDL','SDL_net'])
 env.Append(LINKFLAGS = '')
 
 #SDL for OSX uses Cocoa

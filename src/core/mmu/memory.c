@@ -8,6 +8,7 @@
 #include "../interrupts.h"
 #include "../bits.h"
 #include "../sound.h"
+#include "../serial_io.h"
 
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"
@@ -244,15 +245,16 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         return;
     }
     switch (global_addr) {
-       
+        /* Check Joypad values */
         case P1_REG  : joypad_write(val); break;
-
         /*  Attempting to set DIV reg resets it to 0 */
         case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
         /*  Attempting to set LY reg resets it to 0  */
         case LY_REG   : io_mem[addr] = 0; break;
         /*  Perform direct memory transfer  */
         case DMA_REG  : dma_transfer(val); break;
+        /*  Check if serial transfer starting*/
+        case SC_REG : start_transfer(&(io_mem[SC_REG- 0xFF00]), &(io_mem[SB_REG - 0xFF00])); break;
     }
 }
 

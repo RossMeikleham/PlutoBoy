@@ -7,6 +7,7 @@
 #include "mmu/memory.h"
 #include "sound.h"
 #include "emu.h"
+#include "serial_io.h"
 #include <stdio.h>
 
 #include "../non_core/joypad.h"
@@ -26,7 +27,7 @@ int breakpoint = BREAKPOINT_OFF;
  *
  * returns 1 if successfully initialized, 0
  * otherwise */
-int init(const char *file_path, int debugger) {
+int init(const char *file_path, int debugger, ClientOrServer cs) {
 	printf("hello\n");
 
     unsigned char buffer[MAX_FILE_SIZE];
@@ -51,6 +52,9 @@ int init(const char *file_path, int debugger) {
         return 0;
     }
 
+    if (!setup_serial_io(cs, 5000)) {
+        log_message(LOG_INFO, "No client or server created\n");
+    }
     init_joypad();
     init_apu(); // Initialize sound
     reset_cpu();
