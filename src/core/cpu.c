@@ -12,6 +12,7 @@
 #include "timers.h"
 #include "lcd.h"
 #include "sound.h"
+#include "serial_io.h"
 
 #include "../non_core/logger.h"
 
@@ -183,6 +184,7 @@ void invalid_op(){
     update_timers(4); 
     update_graphics(4); 
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     timer_cycles_passed = 4; 
     set_mem(reg.HL, IMMEDIATE_8_BIT);
 }
@@ -196,6 +198,7 @@ void invalid_op(){
     update_timers(8); 
     update_graphics(8);
     sound_add_cycles(8);
+    inc_serial_cycles(8);
     reg.A = get_mem(IMMEDIATE_16_BIT);
     timer_cycles_passed = 8;
 }
@@ -211,6 +214,7 @@ void invalid_op(){
     update_timers(8);
     update_graphics(8);
     sound_add_cycles(8);
+    inc_serial_cycles(8);
     set_mem(IMMEDIATE_16_BIT, reg.A);
     timer_cycles_passed = 8;
 }
@@ -232,6 +236,7 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4); 
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);
     timer_cycles_passed = 4;
 }
@@ -241,6 +246,7 @@ void invalid_op(){
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); 
     timer_cycles_passed = 4;
 }
@@ -513,6 +519,7 @@ void invalid_op(){
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, inc);
     timer_cycles_passed = 4;
 }
@@ -541,6 +548,7 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, dec);
     timer_cycles_passed = 4;
 }
@@ -615,10 +623,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = SWAP_n(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -752,10 +762,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t res = RLC_N(get_mem(reg.HL));
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, res);
 }
 
@@ -786,10 +798,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = RL_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -817,10 +831,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = RRC_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -849,10 +865,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = RR_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -882,10 +900,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = SLA_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -914,10 +934,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = SRA_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -946,10 +968,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = SRL_N(get_mem(reg.HL));
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -1032,48 +1056,56 @@ void invalid_op(){
     update_timers(4); 
     sound_add_cycles(4);
     update_graphics(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),0);
 }
  static void BIT_memHL_1() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),1);
 }
  static void BIT_memHL_2() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),2);
 }
  static void BIT_memHL_3() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),3);
 }
  static void BIT_memHL_4() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),4);
 }
  static void BIT_memHL_5() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),5);
 }
  static void BIT_memHL_6() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),6);
 }
  static void BIT_memHL_7() { 
     update_timers(4); 
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     BIT_b_r(get_mem(reg.HL),7);
 }  
 
@@ -1090,10 +1122,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = SET_b_r(get_mem(addr), bit);
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(addr, result);
 }
 
@@ -1184,10 +1218,12 @@ void invalid_op(){
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     uint8_t result = RES_b_r(get_mem(addr), bit);
     update_timers(4);
     update_graphics(4);
     sound_add_cycles(4);
+    inc_serial_cycles(4);
     set_mem(addr, result);
 }
 
@@ -1640,6 +1676,7 @@ int exec_opcode(int skip_bug) {
         update_timers(cycles - timer_cycles_passed);
         update_graphics(cycles - timer_cycles_passed);
         sound_add_cycles(cycles - timer_cycles_passed);
+        inc_serial_cycles(cycles - timer_cycles_passed);
         timer_cycles_passed = 0;
         return cycles;
 
@@ -1650,6 +1687,7 @@ int exec_opcode(int skip_bug) {
         update_timers(8);   
         update_graphics(8);  
         sound_add_cycles(8);
+        inc_serial_cycles(8);
         return instructions.ext_instruction_set[opcode].cycles;
     }
 }

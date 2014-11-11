@@ -73,7 +73,7 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     }
     name_buf[i - ROM_NAME_START] = '\0';
 
-    log_message(LOG_INFO,"\nGame Title: %s\n", name_buf);
+    log_message(LOG_INFO,"Game Title: %s\n", name_buf);
     log_message(LOG_INFO,"Licensee: %s\n", get_licensee());
     log_message(LOG_INFO,"Destination: %s\n", get_destination_code());
     log_message(LOG_INFO,"ROM size: %dKB\n",get_rom_size());
@@ -111,6 +111,7 @@ void run() {
             current_cycles = 4;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
+            inc_serial_cycles(current_cycles);
             
             if (stopped) {
                 key_pressed();

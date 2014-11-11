@@ -21,21 +21,29 @@ int setup_serial_io(ClientOrServer cs, unsigned port) {
         return setup_client(port);
     } else if (cs == SERVER) {
         return setup_server(port);
-    } else {
-        return 0;
-    }
+    } else return 0;
 }
 
 /* Start a serial transfer, given then control signals
  * and byte of data to send, as well as a pointer of
  * where to store a recieved byte */
 void start_transfer(uint8_t *control, uint8_t *data) {
+    
+    return;
+
     data_to_send = *data;
     recieved_location = data;
     if (*control & 0x80) {
         transfer_in_progress = 1;
     }
     internal_clock = *control & 0x1;
+    // Using external clock, need to wait for it
+    if (!internal_clock && transfer_in_progress) {
+           *recieved_location = transfer(data_to_send);
+           raise_interrupt(IO_INT); 
+           *control &= (0x7F); 
+           transfer_in_progress = 0; 
+    }
 }
 
 /* Add cycles to the serial transfer,
@@ -48,6 +56,7 @@ void inc_serial_cycles(unsigned cycles) {
            *recieved_location = transfer(data_to_send);
            raise_interrupt(IO_INT); 
            *control &= (0x7F);     
+           transfer_in_progress = 0;
         }     
     }
 
