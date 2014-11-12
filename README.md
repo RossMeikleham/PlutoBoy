@@ -15,6 +15,9 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 
 - Joypad support from Keyboard.
 
+- Serial I/O transfer implemented in TCP to emulate transfer of
+  data through the link port. (Experimental) 
+
 - Rendering screen contents after each scanline. After all
   scanlines have been rendered the screen is displayed/updated 
   using SDL.
@@ -38,8 +41,6 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 - Support for Real Time Clock for MBC3, rumble for MBC5, and basic support 
   for other MBC ROM chips.
 
-- Serial data transfer handling.
-
 - Updating screen information during the scan line instead
   of all at once when H-Blank occurs. 
   (Needed for some games to render correctly such as Prehistorik Man)
@@ -49,9 +50,9 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 - Save/Load ROM states
 
 #Using 
-Windows command line: `gb_emu.exe "game_file" [-d]`
+Windows command line: `gb_emu.exe "game_file" [-d] [client/server]`
 <br>
-Unix shell: `./gb_emu "game_file" [-d]`
+Unix shell: `./gb_emu "game_file" [-d] [client/server]` 
 <br>
 The -d flag starts the emulator in debugging mode.
 
@@ -63,6 +64,7 @@ The -d flag starts the emulator in debugging mode.
 ### Required: (All these should be easily installed using your package manager)
 
 - SDL 1.2 libraries
+- SDL_net library
 - Scons 
 - Clang compiler 
 
@@ -76,6 +78,7 @@ The -d flag starts the emulator in debugging mode.
 ### Required: (All these can be easily installed using the homebrew package manager)
 
 - SDL 1.2 libraries
+- SDL_net library
 - XCode + XCode Command Line tools 
 - Scons
 
@@ -87,7 +90,7 @@ The -d flag starts the emulator in debugging mode.
 ### Required:
 - Visual C++/ Visual Studio
 - SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
-
+- SDL_net Visual C++ development library (can be found [here](https://www.libsdl.org/projects/SDL_net/))
 ### How To Build:
 
 - Navigate to the project `build/Windows` folder.
@@ -97,14 +100,31 @@ The -d flag starts the emulator in debugging mode.
 - Navigate to `Project->Properties->VC++ Directories`
 
 - Edit Include directories to include the "include" directory of the downloaded SDL libraries. `SDL-1.2.15/include`
+  and `SDL2_net-2.0.0/include`
 
-- Edit Library directories to include a library directory of the downloaded SDL libraries. `SDL-1.2.15/lib/x86`
+- Edit Library directories to include a library directory of each the downloaded SDL libraries. `SDL-1.2.15/lib/x86`
+  and `SDL2_net-2.0.0/lib/x86`. Can instead include /x64 directory if you wish.
 
 - Press "OK" to close Project Properties dialogue.
 - Now navigate to "Build" and select the "Build Solution" option.
 - The Windows folder should now contain a release folder containing the emulator executable.
 
-> ***Note*** if SDL.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder
+> ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder 
+
+#Link Cable guide
+Currently serial I/O implementation is rather buggy with regards to a few
+games, it works perfectly fine with others. It currently only works with
+2 emulators on the same machine (localhost), but it's trivial to adjust the ports and the server
+the client connects to by editing the server address in the serial SDL file, and recompiling.
+I hope to fix the bugs and improve this feature at a later date.
+
+First run an emulator instance as server `gb game [-d] server`, then 
+run another emulator instance as a client `gb game [-d] client`.
+
+Each instance of the emulator should now act like it is connected by a link cable,
+and you should be able to play some multiplayer games.
+
+
 
 #Current Accuracy Test Tesults
 
