@@ -124,7 +124,7 @@ run another emulator instance as a client `gb game [-d] client`.
 Each instance of the emulator should now act like it is connected by a link cable,
 and you should be able to play some multiplayer games.
 
-
+![2Player](/images/linkcable.png?raw=true)
 
 #Current Accuracy Test Tesults
 
