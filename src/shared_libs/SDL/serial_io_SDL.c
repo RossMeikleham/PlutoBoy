@@ -73,10 +73,11 @@ int setup_server(unsigned port) {
 }
 
 /*  Send and Recieved byte */
-int transfer(uint8_t data, uint8_t *recv) {
+int transfer(uint8_t data, uint8_t *recv, int ext) {
     
     log_message(LOG_INFO, "Sending byte %x\n", data);
-    if (is_server) {
+    if ((is_server || is_client) && !ext) {
+        printf("using internal clock\n");    
         if (SDLNet_TCP_Send(client, &data, 1) != 1){
             log_message(LOG_ERROR, "Error sending byte to client: %s\n",SDLNet_GetError());
             return 1;
@@ -86,19 +87,26 @@ int transfer(uint8_t data, uint8_t *recv) {
             return 1;
         } else {log_message(LOG_INFO, "Recieved byte %x\n", *recv);}
 
-    } else if (is_client) {
+        return 0;
+
+    } else if ((is_client || is_server) && ext) {
+        printf("using external clock\n");
         int res;
         if ((res = SDLNet_TCP_Recv(client, recv, 1)) != 1){
             log_message(LOG_ERROR, "Error recieving data from the server: %d %s\n",
                 res,  SDLNet_GetError());
             return 1;
 
-        } else {log_message(LOG_INFO, "Recieved byte %x\n", *recv);}
-
+        } else {
+            log_message(LOG_INFO, "Recieved byte %x\n", *recv);
+        }
+        
         if (SDLNet_TCP_Send(client, &data, 1) != 1) {
             log_message(LOG_ERROR, "Error sending data back to server: %s\n", SDLNet_GetError());
             return 1;
         }
+
+        return 0;
     } else {return 1;} // No networking enabled
     
     
@@ -118,7 +126,7 @@ int transfer_ext(uint8_t data, uint8_t *recv) {
          (SDLNet_CheckSockets(socketset, 0) > 0) &&
          (SDLNet_SocketReady(client) > 0)) {
         
-        return !transfer(data, recv);        
+        return !transfer(data, recv, 1);        
     }
     return 0;
 }
@@ -127,7 +135,7 @@ int transfer_ext(uint8_t data, uint8_t *recv) {
 // returns 0xFF if no external GB found
 uint8_t transfer_int(uint8_t data) {
     uint8_t res;
-    if (transfer(data, &res)) {
+    if (transfer(data, &res, 0)) {
         return 0xFF;
     } else {
         return res;

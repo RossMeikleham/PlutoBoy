@@ -28,12 +28,13 @@ int setup_serial_io(ClientOrServer cs, unsigned port) {
  * and byte of data to send, as well as a pointer of
  * where to store a recieved byte */
 void start_transfer(uint8_t *ctl, uint8_t *data) {
-    
+   printf("start sending %x\n", *data); 
     data_to_send = *data;
     control = ctl;
     recieved_location = data;
     transfer_in_progress = !!(*control & 0x80);
     internal_clock = *control & 0x1;
+    cur_cycles = 0;
 }
 
 /* Add cycles to the serial transfer,
@@ -42,12 +43,13 @@ void start_transfer(uint8_t *ctl, uint8_t *data) {
 void inc_serial_cycles(unsigned cycles) {
     if (transfer_in_progress && internal_clock) {
         cur_cycles += cycles;
-        if (cur_cycles >=  GB_CLOCK_SPEED_HZ / gb_io_freq) {
+        if (cur_cycles >=  (GB_CLOCK_SPEED_HZ / gb_io_freq)) {
            cur_cycles = 0;
            *recieved_location = transfer_int(data_to_send);
            raise_interrupt(IO_INT); 
            *control &= (0x7F);     
            transfer_in_progress = 0;
+           internal_clock = 0;
         }     
     }
 
