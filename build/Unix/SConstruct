@@ -2,7 +2,7 @@ import sys
 
 #Release environment
 env = Environment(CC = 'clang', 
-                  CCFLAGS = '-O3 -fomit-frame-pointer -W -Wall -Wextra')
+                  CCFLAGS = '-g -fomit-frame-pointer -W -Wall -Wextra')
 
 env.Append(CPPPATH = ['/usr/include/SDL'])
 env.Append(CPPPATH = ['/usr/local/include/SDL'])

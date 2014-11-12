@@ -5,6 +5,7 @@
 
 #include <SDL/SDL.h>
 #include "SDL_net.h"
+#include <string.h>
 
 static int is_client = 0;
 static int is_server = 0;
@@ -29,6 +30,12 @@ int setup_client(unsigned port) {
 
     client =  SDLNet_TCP_Open(&ip);
     socketset = SDLNet_AllocSocketSet(1); 
+    char buf[100];
+    int i = SDLNet_TCP_Recv(client, buf, 100);
+    for (int j = 0; j < i; j++) {
+        printf("%c",buf[j]);
+    }
+    printf("\n");
     SDLNet_TCP_AddSocket(socketset, client);
     connection_up = 1;
     return 1;
@@ -56,7 +63,8 @@ int setup_server(unsigned port) {
         client = SDLNet_TCP_Accept(server);
         SDL_Delay(1000);
     }
-
+    const char * message = "Welcome to GB server";
+    SDLNet_TCP_Send(client, message, strlen(message) + 1);
     log_message(LOG_INFO, "Client successfully connected\n");
     socketset = SDLNet_AllocSocketSet(1); 
     SDLNet_TCP_AddSocket(socketset, client);
@@ -66,7 +74,7 @@ int setup_server(unsigned port) {
 
 /*  Send and Recieved byte */
 int transfer(uint8_t data, uint8_t *recv) {
-
+    
     log_message(LOG_INFO, "Sending byte %x\n", data);
     if (is_server) {
         if (SDLNet_TCP_Send(client, &data, 1) != 1){
@@ -92,8 +100,8 @@ int transfer(uint8_t data, uint8_t *recv) {
             return 1;
         }
     } else {return 1;} // No networking enabled
-
-
+    
+    
     return 0;
 }
 
@@ -112,20 +120,17 @@ int transfer_ext(uint8_t data, uint8_t *recv) {
         
         return !transfer(data, recv);        
     }
-    ///if (SDLNet_CheckSockets(socketset, 0) > 0) {printf("external ready\n");}
-    //if (SDLNEt_SocketReady(client) != 0) {printf("external ready\n");}
     return 0;
 }
 
 // Transfer when current GB is using internal clock
 // returns 0xFF if no external GB found
 uint8_t transfer_int(uint8_t data) {
-   printf("internal\n"); 
-    uint8_t *res = NULL;
-    if (transfer(data, res)) {
+    uint8_t res;
+    if (transfer(data, &res)) {
         return 0xFF;
     } else {
-        return *res;
+        return res;
     }
 }
 
