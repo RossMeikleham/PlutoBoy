@@ -255,7 +255,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         /*  Perform direct memory transfer  */
         case DMA_REG  : dma_transfer(val); break;
         /*  Check if serial transfer starting*/
-        case SC_REG :start_transfer(&(io_mem[SC_REG- 0xFF00]), &(io_mem[SB_REG - 0xFF00])); break;
+        case SC_REG :start_transfer(&(io_mem[0x2]), &(io_mem[0x1])); break;
     }
 }
 

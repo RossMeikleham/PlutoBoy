@@ -29,21 +29,11 @@ int setup_serial_io(ClientOrServer cs, unsigned port) {
  * where to store a recieved byte */
 void start_transfer(uint8_t *control, uint8_t *data) {
     
-    return;
-
     data_to_send = *data;
     recieved_location = data;
-    if (*control & 0x80) {
-        transfer_in_progress = 1;
-    }
+    transfer_in_progress = !!(*control & 0x80);
     internal_clock = *control & 0x1;
-    // Using external clock, need to wait for it
-    if (!internal_clock && transfer_in_progress) {
-           *recieved_location = transfer(data_to_send);
-           raise_interrupt(IO_INT); 
-           *control &= (0x7F); 
-           transfer_in_progress = 0; 
-    }
+    if (internal_clock) {printf("yay\n");}
 }
 
 /* Add cycles to the serial transfer,
@@ -51,13 +41,27 @@ void start_transfer(uint8_t *control, uint8_t *data) {
  * data is transfered at the correct clock speed */
 void inc_serial_cycles(unsigned cycles) {
     if (transfer_in_progress && internal_clock) {
-        cycles += cur_cycles;
-        if (cycles >=  GB_CLOCK_SPEED_HZ / gb_io_freq) {
-           *recieved_location = transfer(data_to_send);
+        cur_cycles += cycles;
+        if (cur_cycles >=  GB_CLOCK_SPEED_HZ / gb_io_freq) {
+           cur_cycles = 0;
+           printf("transferring\n");
+           *recieved_location = transfer_int(data_to_send);
            raise_interrupt(IO_INT); 
            *control &= (0x7F);     
            transfer_in_progress = 0;
         }     
+    }
+
+    // Poll external transfer
+    if (transfer_in_progress && !internal_clock) {
+        uint8_t *result = NULL;
+        int complete;
+        if ((complete = transfer_ext(data_to_send, result))) {
+            *recieved_location = *result;
+            raise_interrupt(IO_INT);
+            *control &= (0x7F);
+            transfer_in_progress = 0;
+        } 
     }
 
 }

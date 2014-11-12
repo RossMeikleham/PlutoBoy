@@ -11,7 +11,7 @@ static int is_server = 0;
 static int connection_up = 0;
 static TCPsocket client = NULL;
 static TCPsocket server = NULL;
-
+static SDLNet_SocketSet socketset;   
 /* Setup TCP Client, and attempt to connect
  * to the server */
 int setup_client(unsigned port) {
@@ -28,6 +28,8 @@ int setup_client(unsigned port) {
     SDLNet_ResolveHost(&ip, "localhost", port);
 
     client =  SDLNet_TCP_Open(&ip);
+    socketset = SDLNet_AllocSocketSet(1); 
+    SDLNet_TCP_AddSocket(socketset, client);
     connection_up = 1;
     return 1;
 }
@@ -56,35 +58,43 @@ int setup_server(unsigned port) {
     }
 
     log_message(LOG_INFO, "Client successfully connected\n");
+    socketset = SDLNet_AllocSocketSet(1); 
+    SDLNet_TCP_AddSocket(socketset, client);
     connection_up = 1;
     return 1;
 }
 
 /*  Send and Recieved byte */
-uint8_t transfer(uint8_t data) {
+int transfer(uint8_t data, uint8_t *recv) {
 
-    uint8_t recieve;
     log_message(LOG_INFO, "Sending byte %x\n", data);
     if (is_server) {
         if (SDLNet_TCP_Send(client, &data, 1) != 1){
-            log_message(LOG_ERROR, "Error sending byte to client\n");
+            log_message(LOG_ERROR, "Error sending byte to client: %s\n",SDLNet_GetError());
+            return 1;
         } 
-        if (SDLNet_TCP_Recv(server, &recieve, 1) != 1) {
-            log_message(LOG_ERROR, "Error recieving data back from client\n");
-        } else {log_message(LOG_INFO, "Recieved byte %x\n", recieve);}
+        if (SDLNet_TCP_Recv(client, recv, 1) != 1) {
+            log_message(LOG_ERROR, "Error recieving data back from client: %s\n", SDLNet_GetError());
+            return 1;
+        } else {log_message(LOG_INFO, "Recieved byte %x\n", *recv);}
 
     } else if (is_client) {
-        if (SDLNet_TCP_Recv(client, &recieve, 1) != 1){
-            log_message(LOG_ERROR, "Error recieving data from the server\n");
-        } else {log_message(LOG_INFO, "Recieved byte %x\n", recieve);}
+        int res;
+        if ((res = SDLNet_TCP_Recv(client, recv, 1)) != 1){
+            log_message(LOG_ERROR, "Error recieving data from the server: %d %s\n",
+                res,  SDLNet_GetError());
+            return 1;
+
+        } else {log_message(LOG_INFO, "Recieved byte %x\n", *recv);}
 
         if (SDLNet_TCP_Send(client, &data, 1) != 1) {
-            log_message(LOG_ERROR, "Error sending data back to server\n");
+            log_message(LOG_ERROR, "Error sending data back to server: %s\n", SDLNet_GetError());
+            return 1;
         }
-    }
+    } else {return 1;} // No networking enabled
 
 
-    return recieve;
+    return 0;
 }
 
 
@@ -93,3 +103,29 @@ void quit_io() {
     server = NULL;
     SDLNet_Quit();
 }
+// Transfer when current GB is using external clock
+// returns 1 if there is data to be recieved, 0 otherwise
+int transfer_ext(uint8_t data, uint8_t *recv) {
+    if ( (is_client || is_server) &&
+         (SDLNet_CheckSockets(socketset, 0) > 0) &&
+         (SDLNet_SocketReady(client) > 0)) {
+        
+        return !transfer(data, recv);        
+    }
+    ///if (SDLNet_CheckSockets(socketset, 0) > 0) {printf("external ready\n");}
+    //if (SDLNEt_SocketReady(client) != 0) {printf("external ready\n");}
+    return 0;
+}
+
+// Transfer when current GB is using internal clock
+// returns 0xFF if no external GB found
+uint8_t transfer_int(uint8_t data) {
+   printf("internal\n"); 
+    uint8_t *res = NULL;
+    if (transfer(data, res)) {
+        return 0xFF;
+    } else {
+        return *res;
+    }
+}
+
