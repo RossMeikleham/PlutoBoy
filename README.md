@@ -91,6 +91,7 @@ The -d flag starts the emulator in debugging mode.
 - Visual C++/ Visual Studio
 - SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
 - SDL_net Visual C++ development library (can be found [here](https://www.libsdl.org/projects/SDL_net/))
+- SDL2.dll (can be found [here] (https://www.libsdl.org/download-2.0.php) Download the VC zip file for Windows.
 ### How To Build:
 
 - Navigate to the project `build/Windows` folder.
@@ -109,7 +110,7 @@ The -d flag starts the emulator in debugging mode.
 - Now navigate to "Build" and select the "Build Solution" option.
 - The Windows folder should now contain a release folder containing the emulator executable.
 
-> ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder 
+> ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
 #Link Cable guide
 Currently serial I/O implementation is rather buggy with regards to a few
