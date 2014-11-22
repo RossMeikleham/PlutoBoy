@@ -3,7 +3,7 @@
 #include "../../non_core/serial_io_transfer.h"
 #include "../../non_core/logger.h"
 
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "SDL_net.h"
 #include <string.h>
 
