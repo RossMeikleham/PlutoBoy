@@ -41,6 +41,7 @@
     <ClInclude Include="..\..\..\src\shared_libs\SDL\audio\Gb_Oscs.h" />
     <ClInclude Include="..\..\..\src\shared_libs\SDL\audio\Multi_Buffer.h" />
     <ClInclude Include="..\..\..\src\shared_libs\SDL\audio\Sound_Queue.h" />
+    <ClInclude Include="..\..\..\src\core\serial_io.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\core\cpu.c" />
@@ -73,5 +74,7 @@
     <ClCompile Include="..\..\..\src\shared_libs\SDL\audio\Gb_Oscs.cpp" />
     <ClCompile Include="..\..\..\src\shared_libs\SDL\audio\Multi_Buffer.cpp" />
     <ClCompile Include="..\..\..\src\shared_libs\SDL\audio\Sound_Queue.cpp" />
+    <ClCompile Include="..\..\..\src\shared_libs\SDL\serial_io_SDL.c" />
+    <ClCompile Include="..\..\..\src\core\serial_io.c" />
   </ItemGroup>
 </Project>
