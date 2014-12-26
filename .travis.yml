@@ -25,6 +25,7 @@ install:
     - brew install scons
     - brew install sdl
     - brew install sdl2
+    - brew install sdl_net
 
 script:
     - cd build/Unix
