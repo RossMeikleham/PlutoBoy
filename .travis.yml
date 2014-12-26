@@ -1,9 +1,9 @@
 #Linux build
 
 install:
-    - sudo apt-get scons
-    - sudo apt-get sdl
-    - sudo apt-get sdl_net
+    - sudo apt-get install scons
+    - sudo apt-get install sdl
+    - sudo apt-get install sdl_net
 
 script:
     - cd build/Unix
