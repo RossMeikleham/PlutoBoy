@@ -2,8 +2,8 @@
 
 install:
     - sudo apt-get install scons
-    - sudo apt-get install sdl
-    - sudo apt-get install sdl_net
+    - sudo apt-get install libsdl1.2-dev
+    - sudo apt-get install libsdl-net1.2-dev
 
 script:
     - cd build/Unix
