@@ -1,0 +1,32 @@
+#OSX build
+language:
+    - objective-c
+
+#env:
+#    - TOOLCHAIN=default TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=default TEST="--test" CONFIG=Debug
+#    - TOOLCHAIN=libcxx TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=libcxx TEST="--test" CONFIG=Debug
+#    - TOOLCHAIN=clang-libstdcxx TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=clang-libstdcxx TEST="--test" CONFIG=Debug
+#    - TOOLCHAIN=xcode TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=xcode TEST="--test" CONFIG=Debug
+#    - TOOLCHAIN=gcc TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=gcc TEST="--test" CONFIG=Debug
+#    - TOOLCHAIN=ios-nocodesign EXTRA="--iossim" CONFIG=Release
+#    - TOOLCHAIN=ios-nocodesign EXTRA="--iossim" CONFIG=Debug
+        # Extra cmake modules needed for iOS testing:
+        # * https://github.com/ruslo/sugar/tree/master/cmake/core#sugar_add_ios_gtest
+#    - TOOLCHAIN=analyze TEST="--test" CONFIG=Release
+#    - TOOLCHAIN=analyze TEST="--test" CONFIG=Debug
+
+install:
+    - brew install cmake
+    - brew install python3
+    - brew install scons
+    - brew install sdl
+    - brew install sdl2
+
+script:
+    - cd build/Unix
+    - scons build.py --toolchain ${TOOLCHAIN} --config ${CONFIG} --verbose ${TEST} ${EXTRA}
