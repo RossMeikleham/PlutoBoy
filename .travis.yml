@@ -22,6 +22,7 @@ language:
 
 
 install:
+    - brew install scons
     - brew install sdl
     - brew install sdl2
 
