@@ -20,13 +20,11 @@ language:
 #    - TOOLCHAIN=analyze TEST="--test" CONFIG=Release
 #    - TOOLCHAIN=analyze TEST="--test" CONFIG=Debug
 
+
 install:
-    - brew install cmake
-    - brew install python3
-    - brew install scons
     - brew install sdl
     - brew install sdl2
 
 script:
     - cd build/Unix
-    - scons build.py --toolchain ${TOOLCHAIN} --config ${CONFIG} --verbose ${TEST} ${EXTRA}
+    - scons
