@@ -21,7 +21,7 @@ sourceObjs = env.Object( Glob('../../src/core/*.c'))\
            + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))
 
 #OSX needs to link SDLmain.m to be able to work with SDL
-if sys.platform == 'darwin':
-	sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/OSX/*.m'))
+#if sys.platform == 'darwin':
+#	sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/OSX/*.m'))
 
 env.Program('gb_emu',sourceObjs)
