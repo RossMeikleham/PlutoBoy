@@ -1,0 +1,16 @@
+import sys
+
+#Release environment
+env = Environment(CC = 'clang', 
+                  CCFLAGS = '-g -fomit-frame-pointer -W -Wall -Wextra')
+
+env.Append(LINKFLAGS = '')
+
+sourceObjs = env.Object( Glob('../../src/core/*.c'))\
+           + env.Object( Glob('../../src/core/mmu/*.c'))\
+           + env.Object( Glob('../../src/shared_libs/PSP/*.c'))\
+           + env.Object( Glob('../../src/platforms/PSP/*.c'))\
+           + env.Object( Glob('../../src/shared_libs/PSP/*.cpp'))\
+
+
+env.Program('gb_emu',sourceObjs)
