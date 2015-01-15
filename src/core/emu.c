@@ -28,7 +28,6 @@ int breakpoint = BREAKPOINT_OFF;
  * returns 1 if successfully initialized, 0
  * otherwise */
 int init(const char *file_path, int debugger, ClientOrServer cs) {
-	printf("hello\n");
 
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;

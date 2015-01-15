@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include "mmu/memory.h"
+#include "memory_layout.h"
 #include "cpu.h"
 #include "disasm.h"
 #include "timers.h"
@@ -1644,15 +1645,14 @@ void reset_cpu() {
 
 
 void print_regs() {
-    printf("AF:%x-%x\n",reg.A,reg.F);
-    printf("BC:%x-%x\n",reg.B,reg.C);
-    printf("DE:%x-%x\n",reg.D,reg.E);
-    printf("HL:%x-%x\n",reg.H,reg.L);
-    printf("PC:%x\n",reg.PC);
-    printf("SP:%x\n",reg.SP);
+   // printf("AF:%x-%x\n",reg.A,reg.F);
+   // printf("BC:%x-%x\n",reg.B,reg.C);
+   // printf("DE:%x-%x\n",reg.D,reg.E);
+   // printf("HL:%x-%x\n",reg.H,reg.L);
+   // printf("PC:%x\n",reg.PC);
+   // printf("SP:%x\n",reg.SP);
 }
 
-#include "memory_layout.h"
 /*  Executes the next processor instruction and returns
  *  the amount of cycles the instruction takes */
 int exec_opcode(int skip_bug) {

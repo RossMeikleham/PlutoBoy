@@ -28,7 +28,6 @@ int setup_serial_io(ClientOrServer cs, unsigned port) {
  * and byte of data to send, as well as a pointer of
  * where to store a recieved byte */
 void start_transfer(uint8_t *ctl, uint8_t *data) {
-   printf("start sending %x\n", *data); 
     data_to_send = *data;
     control = ctl;
     recieved_location = data;
