@@ -4,7 +4,7 @@
 | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=master)](https://travis-ci.org/RossMeikleham/GB-Emu-C) | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=OSX)](https://travis-ci.org/RossMeikleham/GB-Emu-C) |
 
 
-Gameboy emulator for Windows, OSX and Linux/Unix based systems.
+Gameboy emulator for Windows, OSX, Linux/Unix based systems, and PSP.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
 
@@ -117,6 +117,19 @@ The -d flag starts the emulator in debugging mode.
 - The Windows folder should now contain a release folder containing the emulator executable.
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
+
+## PSP (Currently in development, builds but is missing implementation of most IO required to run)
+
+### Required:
+
+- PSP ToolChain (can be found [here](https://github.com/pspdev/psptoolchain)
+  Follow the instructions to install, and ensure all environment variables are set
+
+### How To Build:
+- Navigate to the `build/PSP` folder
+- Enter the command `make`
+- `Eboot.pbp` file should be generated in the folder, copy this file onto your PSP and run it from there
+> ***Note*** Will need to be built on a Linux/OSX machine or Windows with Cygwin
 
 #Link Cable guide
 Currently serial I/O implementation is rather buggy with regards to a few
