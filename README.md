@@ -5,6 +5,10 @@
 
 
 Gameboy emulator for Windows, OSX, PSP, and Linux/Unix based systems.
+=======
+[![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=OSX)](https://travis-ci.org/RossMeikleham/GB-Emu-C)
+
+Gameboy emulator for Windows, OSX and Linux/Unix based systems.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
 
