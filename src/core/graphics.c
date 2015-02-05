@@ -21,7 +21,7 @@ static uint8_t lcd_ctrl;
 
 int init_gfx() {
    
-    start_framerate(FPS_60); 
+    start_framerate(DEFAULT_FPS); 
     int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
     init_sprite_prio_list();    
         

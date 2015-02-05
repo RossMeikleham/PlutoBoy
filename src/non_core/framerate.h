@@ -1,10 +1,10 @@
 #ifndef FRAMERATE_H
 #define FRAMERATE_H
 
-#define FPS_60 60
+#define DEFAULT_FPS 59.7
 
 //Set a framerate and start the counter
-void start_framerate(unsigned long fps);
+void start_framerate(float fps);
 
 
 /*Adjusts speed of game to the current framerate
