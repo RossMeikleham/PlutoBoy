@@ -5,6 +5,8 @@
 
 static int keys[322];  // 322 SDL keys
 
+typedef enum {TRIANGLE, CIRCLE, CROSS, SQUARE, LTRIGGER, RTRIGGER,
+             DOWN, LEFT, UP, RIGHT, SELECT, START, HOME, CTRL_HOLD} PSP_Button;
 
 /*  Intialize the joypad, should be called before any other
  *  joypad functions */
@@ -17,7 +19,7 @@ void init_joypad() {
     SDL_EnableKeyRepeat(0,0);
 }
 
-
+#ifndef PSP
 /* Check each individual GameBoy key. Returns 1 if
  * the specified key is being held down, 0 otherwise */
 int down_pressed()   { return keys[SDLK_DOWN];  }  
@@ -28,7 +30,19 @@ int a_pressed()      { return keys[SDLK_a]; }
 int b_pressed()      { return keys[SDLK_s];}
 int start_pressed()  { return keys[SDLK_RETURN]; }
 int select_pressed() { return keys[SDLK_SPACE]; } 
+#endif
 
+#ifdef PSP
+int down_pressed()   { return keys[DOWN]; }  
+int up_pressed()     { return keys[UP]; }
+int left_pressed()   { return keys[LEFT]; }
+int right_pressed()  { return keys[RIGHT]; } 
+int a_pressed()      { return keys[CROSS]; }
+int b_pressed()      { return keys[CIRCLE]; }
+int start_pressed()  { return keys[START]; }
+int select_pressed() { return keys[SELECT]; } 
+
+#endif
 
 /* Returns 1 if any of the 8 GameBoy keys are being held down,
  * 0 otherwise */
@@ -43,25 +57,36 @@ int key_pressed() {
  * other external actions for the emulator */
 void update_keys() {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
+        if (SDL_PollEvent(&event)) {
             switch (event.type) {
                     // exit if the window is closed
                 case SDL_QUIT:
                             write_SRAM();
                             exit(0);
                             break;
-              
+#ifndef PSP
                 case SDL_KEYDOWN: // Key pressed
-                            keys[event.key.keysym.sym] = 1;
-                            if (keys[SDLK_ESCAPE]) {
-                                
-                            write_SRAM();
-                                exit(0);}
-                            break;
+                    keys[event.key.keysym.sym] = 1;
+                    if (keys[SDLK_ESCAPE]) {
+                        write_SRAM();
+                        exit(0);}
+                        break;
                 case SDL_KEYUP: //Key "unpressed"
-                            keys[event.key.keysym.sym] = 0;
-                            break;
-            }
+                    keys[event.key.keysym.sym] = 0;
+                    break;
+#endif
+
+#ifdef PSP
+                  
+                case SDL_JOYBUTTONDOWN:
+                    keys[event.jbutton.button] = 1; 
+                    break;
+                case SDL_JOYBUTTONUP:
+                    keys[event.jbutton.button] = 0;
+                    break;
+#endif
+                
+             }
         } 
 }
 

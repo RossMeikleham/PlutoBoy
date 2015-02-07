@@ -1,8 +1,33 @@
 import sys
 
 #Release environment
-env = Environment(CC = 'clang', 
-                  CCFLAGS = '-O3 -fomit-frame-pointer -W -Wall -Wextra')
+release_env = Environment(CC = 'clang', 
+                  CCFLAGS = '-O3 -fomit-frame-pointer -W -Wall -Wextra'
+		 )
+
+#Profile environment
+profile_env = Environment(CC = 'clang',
+		  CCFLAGS = '-pg -O2 -W -Wall -Wextra',
+		  LINKFLAGS = '-pg'
+                 )
+
+#Debug environment
+debug_env = Environment(CC = 'clang',
+		  CCFLAGS = '-g -O1 -W -Wall -Wextra'
+		  )
+
+env = Environment()
+
+debug = ARGUMENTS.get('debug',0)
+prof  = ARGUMENTS.get('prof',0)
+
+if int(debug):
+	env = debug_env
+elif int(prof):
+	env = profile_env
+else:
+	env = release_env 
+
 
 env.Append(CPPPATH = ['/usr/include/SDL'])
 env.Append(CPPPATH = ['/usr/local/include/SDL'])
