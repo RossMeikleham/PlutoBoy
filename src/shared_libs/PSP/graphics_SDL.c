@@ -27,7 +27,7 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
     if((SDL_Init(SDL_INIT_VIDEO)==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
-    }
+     }
 
     SDL_WM_SetCaption("Gameboy","");
     screen = SDL_SetVideoMode(screen_width, screen_height, 0 ,0);

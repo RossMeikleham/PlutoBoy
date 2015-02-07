@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
     if (!init(file_name, debug, cs)) {
         return 1;
     }
-        
+
     run();
     return 0;
 }

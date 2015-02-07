@@ -19,6 +19,9 @@ OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES)))
 TARGET		= gameboy
 OBJS		= $(OBJ_FILES)
 
+#Compile for PSP Kernel 6.60
+PSP_FW_VERSION = 660
+
 #callback.o:
 #	$(CC) $(CFLAGS) $(MAIN_DIR)/common/callback.c
  
@@ -27,7 +30,8 @@ PSPBIN = $(PSPSDK)/../bin
 CFLAGS		= -std=c99 -G4 -Wall -O2
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
- 
+OUTDIR = Gameboy
+
 
 LIBDIR		=
 LDFLAGS	=
@@ -42,4 +46,12 @@ EXTRA_TARGETS	= EBOOT.PBP
 PSP_EBOOT_TITLE= Gameboy
  
 PSPSDK	= $(shell psp-config --pspsdk-path)
+
 include $(PSPSDK)/lib/build.mak
+
+
+directory:
+	mkdir -p  $(OUTDIR)
+	mkdir -p $(OUTDIR)/games
+	cp -r "Resources" $(OUTDIR)
+	cp "EBOOT.PBP" $(OUTDIR)

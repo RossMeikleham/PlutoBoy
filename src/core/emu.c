@@ -34,7 +34,8 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
 
     //Start logger
     set_log_level(LOG_INFO);
-
+    
+    
     if (!(size = load_rom_from_file(file_path, buffer))) {
 
         log_message(LOG_ERROR, "failed to load ROM\n");

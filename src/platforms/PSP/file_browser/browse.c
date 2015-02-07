@@ -23,12 +23,12 @@ int get_gb_file(char *file_name) {
 	SDL_JoystickEventState(SDL_ENABLE);
 
 
-	the_font = SDL_InitFont("arial.mxf");
+	the_font = SDL_InitFont("Resources/arial.mxf");
 	SDL_FillRect(front, 0, 0);
 	SDL_PrintText(front, the_font, 0,0,SDL_MapRGB(front->format, 255, 0, 0), "Loading...");
 	SDL_UpdateRect(front, 0,0,640,480);
 
-	bg = SDL_LoadBMP("background.bmp");
+	//bg = SDL_LoadBMP("background.bmp");
 
 
 	fprintf(stderr, "starting to browse\n");
@@ -73,6 +73,9 @@ int get_gb_file(char *file_name) {
 							if(b.cur_i+b.max_col < b.length)
 								b.cur_i += b.max_col;
 							break;
+                        case 10:
+                            active = 0;
+                            break;
 						case 0:
 						case 1:
 						case 2:
