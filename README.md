@@ -79,6 +79,13 @@ The -d flag starts the emulator in debugging mode.
 ### How To Build:
 - Navigate to the project `build/Unix` folder.
 - Enter the command `./scons`
+ 
+Raspberry Pi 1
+ - Overclock the Pi to 1 Ghz to be able to run at full speed
+ 
+Raspberry Pi 2
+ - Works fine at base cpu speed of 900mhz, if wanting to run more programs at the same time
+   and retain full emulation speed, consider overclocking to at least 1Ghz
 
 
 ## OSX
@@ -131,10 +138,10 @@ The -d flag starts the emulator in debugging mode.
 - Navigate to the `build/PSP` folder
 - Enter the command `make` then `make directory`
 
-##If running on PPSSPP emulator
+If running on PPSSPP emulator
 - copy ROMS into the Gameboy folder generated or a subfolder of it. Navigate to the Gameboy folder from PPSSPP and run the program.
 
-##If running on an actual PSP
+If running on an actual PSP
 - Copy the Gameboy folder to PSP/GAME folder on the PSP memory stick.
 - Upgrade to kernel/firmware version 6.60 or 6.61
 - Copy/run the Pro update for either version to run homebrew
