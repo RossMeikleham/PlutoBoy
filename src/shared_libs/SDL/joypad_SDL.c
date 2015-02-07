@@ -57,14 +57,14 @@ int key_pressed() {
  * other external actions for the emulator */
 void update_keys() {
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
+        if (SDL_PollEvent(&event)) {
             switch (event.type) {
                     // exit if the window is closed
                 case SDL_QUIT:
                             write_SRAM();
                             exit(0);
                             break;
-                #ifndef PSP
+#ifndef PSP
                 case SDL_KEYDOWN: // Key pressed
                     keys[event.key.keysym.sym] = 1;
                     if (keys[SDLK_ESCAPE]) {
@@ -74,17 +74,17 @@ void update_keys() {
                 case SDL_KEYUP: //Key "unpressed"
                     keys[event.key.keysym.sym] = 0;
                     break;
-                #endif
+#endif
 
-                #ifdef PSP
-                /*  
+#ifdef PSP
+                  
                 case SDL_JOYBUTTONDOWN:
                     keys[event.jbutton.button] = 1; 
                     break;
                 case SDL_JOYBUTTONUP:
                     keys[event.jbutton.button] = 0;
-                    break*/;
-                #endif
+                    break;
+#endif
                 
              }
         } 
