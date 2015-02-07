@@ -1,8 +1,7 @@
 #include "../../non_core/graphics_out.h"
 #include "../../non_core/logger.h"
 
-
-#include "SDL.h"
+#include <SDL.h>
 
 
 typedef int (*Int_2D )[GB_PIXELS_X];
@@ -13,25 +12,35 @@ static Int_2D screen_buffer;
 static int previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
 static int screen_width;
 static int screen_height;
-
+static SDL_Joystick *stick;
 
 /*  Initialise graphics and create win_x by win_y pixel
  *  screen. Keeps track of GB_PIXELS_Y by GB_PIXELS_X screen. 
  *  return  1 if successful, 0 otherwise */
 int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
-       
+    
     screen_width = win_x;
     screen_height = win_y;
 
+#ifdef PSP
+    screen_width = 640;
+    screen_height = 480;
+#endif
+
     screen_buffer = pixels;
 
-    if((SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO)==-1)) {
+    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK )==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
-    }
+     }
+
+#ifdef PSP
+	stick = SDL_JoystickOpen(0);
+	SDL_JoystickEventState(SDL_ENABLE);
+#endif
 
     SDL_WM_SetCaption("Gameboy","");
-    screen = SDL_SetVideoMode(screen_width, screen_height, 32 ,SDL_DOUBLEBUF);
+    screen = SDL_SetVideoMode(screen_width, screen_height, 0 ,0);
 
    // cols[0] = SDL_MapRGB(screen->format, 255, 255, 255); /* White */
    // cols[1] = SDL_MapRGB(screen->format, 170, 170, 170); /* Light Grey */
@@ -93,7 +102,3 @@ void draw_screen() {
     
     SDL_Flip(screen);   
 }
-
-
-
-

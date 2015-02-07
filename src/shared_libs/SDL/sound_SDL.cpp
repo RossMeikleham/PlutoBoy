@@ -23,7 +23,7 @@ static blip_sample_t sample_buffer[BUF_SIZE];
 
 
 void init_apu() {
-
+#ifndef PSP
     if ( SDL_Init( SDL_INIT_AUDIO ) < 0 )
     {
         atexit( SDL_Quit );
@@ -36,31 +36,39 @@ void init_apu() {
     stereo_buf.bass_freq(100);
     apu.set_output( stereo_buf.center(), stereo_buf.left(), stereo_buf.right() );
     sound.start(SAMPLE_RATE, 2); 
-    
+#endif    
 }
     
 void sound_add_cycles(unsigned c) {
-  
+#ifndef PSP  
     cycles += c;
     if (cycles >= MAX_CYCLES) {
         cycles -= MAX_CYCLES;
         end_frame();
     }
+#endif
 }
 
 void write_apu(uint16_t addr, uint8_t val) {
+#ifndef PSP
     apu.write_register(cycles, addr, val);
+#endif
 }
 
 
 uint8_t read_apu(uint16_t addr) {
+#ifndef PSP
    return apu.read_register(cycles, addr);
+#else 
+   return 0x0;
+#endif
 }
 
 
                            
 
 void end_frame() {
+#ifndef PSP
 	    apu.end_frame(MAX_CYCLES);
         stereo_buf.end_frame(MAX_CYCLES);
 			
@@ -69,6 +77,7 @@ void end_frame() {
             size_t count = stereo_buf.read_samples(sample_buffer, BUF_SIZE );
             sound.write(sample_buffer, count );
         }
+#endif
 }                           
 
 

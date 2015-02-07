@@ -1,22 +1,29 @@
-
 #include <stdint.h>
+#include <string.h>
+
 #include "../../non_core/serial_io_transfer.h"
 #include "../../non_core/logger.h"
 
 #include "SDL.h"
+
+#ifndef PSP
 #include "SDL_net.h"
-#include <string.h>
+#endif
 
 static int is_client = 0;
 static int is_server = 0;
 static int connection_up = 0;
+
+#ifndef PSP
 static TCPsocket client = NULL;
 static TCPsocket server = NULL;
-static SDLNet_SocketSet socketset;   
+static SDLNet_SocketSet socketset; 
+#endif  
 /* Setup TCP Client, and attempt to connect
  * to the server */
 int setup_client(unsigned port) {
-    
+
+#ifndef PSP    
     is_client = 1;
 
     log_message(LOG_INFO, "Attempting to connect to server on port %u\n",port);
@@ -39,12 +46,16 @@ int setup_client(unsigned port) {
     SDLNet_TCP_AddSocket(socketset, client);
     connection_up = 1;
     return 1;
+#endif
+    return 0;
+
 }
 
 /*  Setup TCP Server, and wait for a single
  *  client to connect */
 int setup_server(unsigned port) { 
- 
+
+#ifndef PSP 
     is_server = 1;
 
     log_message(LOG_INFO, "Starting server on port %u\n",port);
@@ -70,10 +81,14 @@ int setup_server(unsigned port) {
     SDLNet_TCP_AddSocket(socketset, client);
     connection_up = 1;
     return 1;
+#endif
+    return 0;
 }
 
 /*  Send and Recieved byte */
 int transfer(uint8_t data, uint8_t *recv, int ext) {
+
+#ifndef PSP
     
     log_message(LOG_INFO, "Sending byte %x\n", data);
     if ((is_server || is_client) && !ext) {
@@ -109,36 +124,44 @@ int transfer(uint8_t data, uint8_t *recv, int ext) {
         return 0;
     } else {return 1;} // No networking enabled
     
-    
+#endif    
     return 0;
 }
 
 
 void quit_io() {
+#ifndef PSP
     client = NULL;
     server = NULL;
     SDLNet_Quit();
+#endif
 }
 // Transfer when current GB is using external clock
 // returns 1 if there is data to be recieved, 0 otherwise
 int transfer_ext(uint8_t data, uint8_t *recv) {
+#ifndef PSP
     if ( (is_client || is_server) &&
          (SDLNet_CheckSockets(socketset, 0) > 0) &&
          (SDLNet_SocketReady(client) > 0)) {
         
         return !transfer(data, recv, 1);        
     }
+#endif
     return 0;
 }
 
 // Transfer when current GB is using internal clock
 // returns 0xFF if no external GB found
 uint8_t transfer_int(uint8_t data) {
+
+#ifndef PSP
     uint8_t res;
     if (transfer(data, &res, 0)) {
         return 0xFF;
     } else {
         return res;
     }
+#endif
+    return 0xFF;
 }
 
