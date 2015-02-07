@@ -157,3 +157,7 @@ and you should be able to play some multiplayer games.
 #Screenshots
 
 ![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
+
+
+Running on PPSSPP on Android:
+![psp](/images/pok.png?raw=true)
