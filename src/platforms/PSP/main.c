@@ -5,7 +5,6 @@
 
 #include <pspkernel.h>
 #include <pspdebug.h>
-#include "common/callback.h"
 #include <pspctrl.h>
 #include <pspdisplay.h>
 
