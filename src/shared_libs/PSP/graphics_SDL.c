@@ -12,7 +12,7 @@ static Int_2D screen_buffer;
 static int previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
 static int screen_width = 640;
 static int screen_height = 480;
-
+static SDL_Joystick *stick;
 
 /*  Initialise graphics and create win_x by win_y pixel
  *  screen. Keeps track of GB_PIXELS_Y by GB_PIXELS_X screen. 
@@ -24,10 +24,14 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
 
     screen_buffer = pixels;
 
-    if((SDL_Init(SDL_INIT_VIDEO)==-1)) {
+    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK )==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
      }
+
+
+	stick = SDL_JoystickOpen(0);
+	SDL_JoystickEventState(SDL_ENABLE);
 
     SDL_WM_SetCaption("Gameboy","");
     screen = SDL_SetVideoMode(screen_width, screen_height, 0 ,0);

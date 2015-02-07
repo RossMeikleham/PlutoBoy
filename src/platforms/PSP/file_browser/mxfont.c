@@ -90,6 +90,7 @@ int SDL_PrintText(struct SDL_Surface *surf, struct SDL_Font *fnt, int x, int y, 
 	int offset_x = prev_x, offset_y = y;
 	int width = 0, height = 0;
 	int i,z,p;
+    color = SDL_MapRGB(surf->format, 255, 255, 255);
 
 	void *pbuf = lock(surf, surf->format->BitsPerPixel);
 
