@@ -8,8 +8,7 @@
 //{
 //#endif
 
-
-int cgb; // Whether currently loaded ROM is for the Gameboy color
+int cgb;
 
 /* Information on game rom currently loaded
  * into memory */
@@ -82,6 +81,9 @@ int has_sgb_features();
  * 0 otherwise */  
 int is_colour_compatible();
 
+/* Returns 1 if loaded ROM can only be ran on a Gameboy Color system 
+   0 otherwise*/
+int is_colour_only();
 
 //#ifdef __cplusplus
 //}

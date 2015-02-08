@@ -127,7 +127,7 @@ static uint8_t const dmg_boot_rom[0x100] = {
 };
 
 /*  Gameboy Color bootstrap ROM */
-static uint8_t const cgb_boot_rom[0x800] = {
+static uint8_t const cgb_boot_rom[] = {
     0x31, 0xfe, 0xff, 0x3e, 0x02, 0xc3, 0x7c, 0x00, 0xd3, 0x00, 0x98, 0xa0, 0x12, 0xd3, 0x00, 0x80,
     0x00, 0x40, 0x1e, 0x53, 0xd0, 0x00, 0x1f, 0x42, 0x1c, 0x00, 0x14, 0x2a, 0x4d, 0x19, 0x8c, 0x7e,
     0x00, 0x7c, 0x31, 0x6e, 0x4a, 0x45, 0x52, 0x4a, 0x00, 0x00, 0xff, 0x53, 0x1f, 0x7c, 0xff, 0x03,
@@ -296,11 +296,11 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
      * it is overwritten by the boot rom so we can restore
      *  it later */
     if (cgb) {
-        memcpy(cartridge_start, ROM_banks[0],  0x800);
-        memcpy(ROM_banks[0], cgb_boot_rom, 0x800);
+        memcpy(cartridge_start, ROM_banks[0],  sizeof (cgb_boot_rom));
+        memcpy(ROM_banks[0], cgb_boot_rom, sizeof (cgb_boot_rom));
     } else {
-        memcpy(cartridge_start, ROM_banks[0],  0x100);
-        memcpy(ROM_banks[0], dmg_boot_rom, 0x100);
+        memcpy(cartridge_start, ROM_banks[0],  sizeof (dmg_boot_rom));
+        memcpy(ROM_banks[0], dmg_boot_rom, sizeof (dmg_boot_rom));
     }
 
     
@@ -320,9 +320,9 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
 void unload_boot_rom() {
 
     if (cgb) {
-        memcpy(ROM_banks[0], cartridge_start, 0x800);
+        memcpy(ROM_banks[0], cartridge_start, sizeof (cgb_boot_rom));
     } else {
-        memcpy(ROM_banks[0], cartridge_start, 0x100);
+        memcpy(ROM_banks[0], cartridge_start, sizeof (dmg_boot_rom));
     }
 }
 
@@ -459,6 +459,15 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
                     }
                     break;
+
+        case SRAM_BANK: if (cgb) {
+         //TODO   
+        }
+
+        // Can only set bit 0 to Prepare for a Transfer
+        case KEY1_REG: if (cgb) {
+            io_mem[addr] = val & 0x1;
+        }
     }
     
 }

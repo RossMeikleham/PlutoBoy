@@ -72,7 +72,7 @@ static Uint32 upscale_15_bit(int c) {
     int green = (((c >> 5) & 0x1F) * 255) / 31;
     int blue =  (((c >> 10) & 0x1F)* 255) / 31;
 
-    printf("red:%x green:%x blue:%x\n",c, green, blue); 
+    //printf("red:%x green:%x blue:%x\n",c, green, blue); 
     return SDL_MapRGB(screen->format, red, green, blue);
 }
 

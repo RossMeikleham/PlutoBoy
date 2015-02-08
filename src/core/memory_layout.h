@@ -129,12 +129,16 @@
 #define WY_REG 0xFF4A /*  Window Y Position; 0 <= WY <= 143*/
 #define WX_REG 0xFF4B /*  Window X Position; 0 <= WX <= 166 */
 
+#define KEY1_REG 0xFF4D /* Prepare Speed switch for Gameboy Color, used to switch clock speed */
+
 #define VBANK_REG 0xFF4F /* Select which VRAM bank to use in Gameboy color */
 
 #define BGPI 0xFF68 // Background Palette index for Gameboy Color
-#define BGPD 0xFF69 // Background Palette data for Gameboy color
-#define SPPI 0xFF6A // Sprite Palette index
-#define SPPD 0xFF6B // Sprite Palette data
+#define BGPD 0xFF69 // Background Palette data for Gameboy Color
+#define SPPI 0xFF6A // Sprite Palette index for Gameboy Color
+#define SPPD 0xFF6B // Sprite Palette data for Gameboy Color
+
+#define SRAM_BANK 0xFF70 // Register to select internal RAM banks for Gameboy Color
 
 #define INTERRUPT_ENABLE_REG 0xFFFF /*  Interrupt Enable Register */
 

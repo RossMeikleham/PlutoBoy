@@ -14,6 +14,7 @@
 #include "lcd.h"
 #include "sound.h"
 #include "serial_io.h"
+#include "rom_info.h"
 
 #include "../non_core/logger.h"
 
@@ -679,7 +680,19 @@ void invalid_op(){
  static void HALT() {halted = 1;}
 
 /*  Halt CPU and LCD until button pressed */
- static void STOP() {stopped = 1;}
+ static void STOP() {
+    stopped = 1;
+
+    /* If in Gameboy Color mode and a speed switch has been prepared
+     *  switch the processor speed and unset bit 0 and set bit 7 if new speed is double
+     *  speed or 0 otherwise in the KEY1 Register */
+    if (cgb) {
+        int speed = get_mem(KEY1_REG);
+        long new_clock_speed = speed ? CGB_CLOCK_SPEED_HZ : GB_CLOCK_SPEED_HZ; 
+        set_clock_speed(new_clock_speed);
+        io_write_override(KEY1_REG - 0xFF00, speed ? 0x80 : 0x00);
+    }
+}
 
 
 /*  Disable interrupts */

@@ -83,7 +83,8 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     log_message(LOG_INFO,"Cartridge Type: %s\n",c_type != NULL ? c_type : "Unknown");
 
     cgb = is_colour_compatible();
-    log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_compatible() ? "Yes":"No");
+    log_message(LOG_INFO, "Has Gameboy Color features: %s\n", is_colour_compatible() || is_colour_only() ? "Yes":"No");
+    log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
     
     
