@@ -82,10 +82,17 @@ static uint8_t io_mem[0x100]= {
 /* The Gameboy color has 2 VRAM banks, stores
  * either 1 for VRAM bank 1 or 0 for VRAM bank 1
  * VRAM is located at memory 0x8000 - 0x97FF */
-static int cgb_vram_bank;
+static int cgb_vram_bank = 1;
 
 /* Holds secondary VRAM for cgb */
 static uint8_t vram_bank_1[0x1800]; 
+
+/* Gameboy colour has 8 internal RAM banks, bank 0 is from 0xC000 - 0xCFFF and is
+ * fixed in both color gameboy and original gameboy. Banks 1-7 are switchable in 0xD000 - 0xDFFF in 
+ * Colour gameboy but is fixed to bank 1 on the original gameboy */
+static uint8_t cgb_ram_bank = 0;
+
+static uint8_t cgb_ram_banks[6][0x1000];
 
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 difference background palettes, each with 4 colors.
@@ -97,6 +104,7 @@ static uint8_t bg_palette_mem[0x40];
  * (color 0 is always transparent)
  * Each color is represented by 2 bytes */
 static uint8_t sprite_palette_mem[0x40];
+
 
 /*  Gameboy bootstrap ROM for startup.
  *  Modified from the original so that the CPU doesn't
@@ -461,7 +469,11 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SRAM_BANK: if (cgb) {
-         //TODO   
+            if (val == 0) {
+                val = 1;
+            }
+            cgb_ram_bank = val;
+
         }
 
         // Can only set bit 0 to Prepare for a Transfer
@@ -501,9 +513,14 @@ void set_mem(uint16_t addr, uint8_t const val) {
         }
 
         // Check if writting to alternative VRAM with Gameboy Color
-        if(cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
+        if (cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
             vram_bank_1[addr - TILE_SET_0_START] = val;
             return;
+        }
+
+        if (cgb && cgb_ram_bank > 1 && addr >= 0xD000 && addr <= 0xDFFF) {
+           cgb_ram_banks[cgb_ram_bank - 1][addr - 0xD000] = val;
+           return;
         }
 
         mem[addr - 0x8000] = val;
@@ -548,6 +565,10 @@ uint8_t get_mem(uint16_t addr) {
         if(cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
             return vram_bank_1[addr - TILE_SET_0_START];
          }
+        
+        if (cgb && cgb_ram_bank > 1 && addr >= 0xD000 && addr <= 0xDFFF) {
+           return cgb_ram_banks[cgb_ram_bank - 1][addr - 0xD000];
+        }
 
 	if (addr > 0xE000) {
 	    addr -= 0x2000;	
