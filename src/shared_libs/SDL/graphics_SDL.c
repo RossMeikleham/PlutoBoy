@@ -6,7 +6,6 @@
 
 typedef int (*Int_2D )[GB_PIXELS_X];
 
-static Uint32 colors[4]; // Store GameBoy monchrome colors
 static SDL_Surface *screen;
 static Int_2D screen_buffer;
 static int previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
@@ -52,10 +51,10 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
    // cols[2] = SDL_MapRGB(screen->format, 53, 98, 55);
    // cols[3] = SDL_MapRGB(screen->format, 15, 56, 14);
 
-    colors[0] = SDL_MapRGB(screen->format, 255, 255, 255);
-    colors[1] = SDL_MapRGB(screen->format, 136, 192, 112);
-    colors[2] = SDL_MapRGB(screen->format, 48,  104, 80);
-    colors[3] = SDL_MapRGB(screen->format, 8, 24, 32);
+   // colors[0] = SDL_MapRGB(screen->format, 255, 255, 255);
+   // colors[1] = SDL_MapRGB(screen->format, 136, 192, 112);
+   // colors[2] = SDL_MapRGB(screen->format, 48,  104, 80);
+   // colors[3] = SDL_MapRGB(screen->format, 8, 24, 32);
 
     for (int i = 0; i < GB_PIXELS_Y; i++) {
         for (int j = 0; j < GB_PIXELS_X; j++) {
@@ -67,6 +66,15 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
 
 }
 
+
+static Uint32 upscale_15_bit(int c) {
+    int red =   ((c & 0x1F) * 255) / 31;
+    int green = (((c >> 5) & 0x1F) * 255) / 31;
+    int blue =  (((c >> 10) & 0x1F)* 255) / 31;
+
+    printf("red:%x green:%x blue:%x\n",c, green, blue); 
+    return SDL_MapRGB(screen->format, red, green, blue);
+}
 
 static void fill_rect(int x, int y, int w, int h, Uint32 color)
 {
@@ -94,7 +102,7 @@ void draw_screen() {
             int current_pix = screen_buffer[y][x];
             //No need to redraw unchanged pixels
             if (previous[y][x] != screen_buffer[y][x]) {
-                draw_pix(colors[screen_buffer[y][x]], x, y);
+                draw_pix(upscale_15_bit(screen_buffer[y][x]), x, y);
                 previous[y][x] = current_pix;
             }
         }

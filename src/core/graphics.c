@@ -9,15 +9,20 @@
 #include "graphics.h"
 #include "sprite_priorities.h"
 #include "bits.h"
+#include "rom_info.h"
 
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"
 
+// Store 5 bit color to output
 static int screen_buffer[144][160];
 static int old_buffer[144][160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
+
+/*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
+typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 
 int init_gfx() {
    
@@ -29,6 +34,38 @@ int init_gfx() {
 }
 
 
+// Convert dot matrix gameboy's 2 bit color into a 15bit color
+static uint16_t get_dmg_col(int c) {
+    switch (c) {
+        case 0: return 0x7FFF;
+        case 1: return 0x56B5;
+        case 2: return 0x294A;
+        case 3: return 0x0000;
+        default : return 0x0;
+    }
+}
+
+
+// Obtain 15 bit gameboy color for sprite palette
+static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
+
+    int base = palette_no * 8;
+    uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
+    uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
+
+    return byte0 || ((byte1 & 0x7F) << 8);
+}
+
+// Obtain 15 bit gameboy color for background palette
+static uint16_t get_cgb_bg_col(int palette_no, int color_no) {
+    
+    int base = palette_no * 8;
+    uint8_t byte0 = read_bg_color_palette(base + (color_no * 2));
+    uint8_t byte1 = read_bg_color_palette(base + (color_no * 2) + 1);
+
+    return byte0 || ((byte1 & 0x7F) << 8);
+
+}
 
 static void draw_sprite_row() {
    
@@ -73,15 +110,23 @@ static void draw_sprite_row() {
         sprite_count++;
         int x_flip = attributes & BIT_5;
         int y_flip = attributes & BIT_6;
+        
+        int v_bank = 0;
+        int cgb_palette_number = 0;
+        if (cgb) {
+            v_bank = attributes & BIT_3; // Check which bank to read the tile from
+           cgb_palette_number = attributes & 0x7;
+        }
 
         uint16_t tile_loc = TILE_SET_0_START + (tile_no * 16);
-
+        
         // Obtain row of sprite to draw, if sprite is flipped
         // need to obtain row relative to bottom of sprite
         uint8_t line =  (!y_flip) ? row - y_pos  : height + y_pos - row -1;
         uint16_t line_offset = 2 * line;
-        uint8_t high_byte = get_mem(tile_loc + line_offset);
-        uint8_t low_byte =  get_mem(tile_loc + line_offset + 1);
+        uint8_t high_byte = get_vram(tile_loc + line_offset, v_bank);
+        uint8_t low_byte =  get_vram(tile_loc + line_offset + 1, v_bank);
+
         int pal_no = (attributes & BIT_4) ? 1 : 0;
         
         // Draw all pixels in current line of sprite
@@ -101,14 +146,24 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!priority) {
-                if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
-                   screen_buffer[row][x_pos + x] = final_color_id;
-                   old_buffer[row][x_pos + x] = color_id;
+                if (old_buffer[row][x_pos + x] == 0x7FFF && color_id != 0) {
+                   if (!cgb) {
+                       screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
+                       old_buffer[row][x_pos + x] = get_dmg_col(color_id);
+                   } else {                        
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
+                       old_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                   }
                 }               
             } else  {
                 if (color_id != 0) {
-                   screen_buffer[row][x_pos + x] = final_color_id;
-                   old_buffer[row][x_pos + x] = color_id;
+                   if (!cgb) {
+                       screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
+                       old_buffer[row][x_pos + x] = get_dmg_col(color_id);
+                   } else {
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
+                       old_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                   }
                 }
             }     
              
@@ -178,8 +233,8 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 int bit_1 = (byte1 >> (7 - j)) & 0x1;
                 int bit_0 = (byte0 >> (7 - j)) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
-                screen_buffer[row][start_x + j] =  pallete[color_id]; 
-                old_buffer[row][start_x + j] = color_id;
+                screen_buffer[row][start_x + j] =  get_dmg_col(pallete[color_id]); 
+                old_buffer[row][start_x + j] = get_dmg_col(color_id);
             }
         }   
     }      
@@ -207,7 +262,18 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
         uint8_t x_pos = i + scroll_x;
         int tile_col = x_pos >> 3;
-        int tile_no = get_mem(bg_mem + (tile_row << 5) + tile_col);
+        int tile_no = get_vram(bg_mem + (tile_row << 5) + tile_col, 0);
+
+        int tile_attributes;
+        int palette_no;
+        int tile_vram_bank_no = 0;
+
+        if (cgb) {
+            tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
+            palette_no = tile_attributes & 0x7;
+            tile_vram_bank_no = tile_attributes & BIT_3;
+        }
+
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 128) + 128;
@@ -216,8 +282,8 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
         int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
 
-        int byte0 = get_mem(tile_loc + line_offset);
-        int byte1 = get_mem(tile_loc + line_offset + 1);
+        int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
+        int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
 
         //Render entire tile row
         for (int j = 0; j < 8; j++) {
@@ -227,8 +293,14 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                 int bit_1 = (byte1 >> (7 - j)) & 0x1;
                 int bit_0 = (byte0 >> (7 - j)) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
-                screen_buffer[row][i + j] =  pallete[color_id]; 
-                old_buffer[row][i + j] = color_id;
+
+                if (!cgb) {
+                    screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
+                    old_buffer[row][i + j] = get_dmg_col(color_id);
+                } else {
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
+                    old_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                }
             }
         }   
             

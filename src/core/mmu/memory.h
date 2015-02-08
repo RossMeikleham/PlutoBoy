@@ -13,6 +13,9 @@ void io_write_override(uint8_t loc, uint8_t val);
 
 void set_mem_override(uint16_t loc, uint8_t val); 
 
+// Read a value from a VRAM bank
+uint8_t get_vram(uint16_t addr, int bank);
+
 // Read contents from given 16 bit memory address
 uint8_t get_mem(uint16_t const addr);
 
@@ -32,5 +35,11 @@ uint16_t get_mem_16(uint16_t loc);
  * Gameboy memory and setup banks */
 int load_rom(char const * filename, unsigned char const *file_data, size_t size);
 
+
+// read a value from gameboy color background palette RAM
+uint8_t read_bg_color_palette(int addr);
+
+// Read a vlue from gameboy color sprite palette RAM
+uint8_t read_sprite_color_palette(int addr);
 
 #endif

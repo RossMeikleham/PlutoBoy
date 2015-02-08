@@ -79,9 +79,24 @@ static uint8_t io_mem[0x100]= {
 		0x59, 0xEA, 0x39, 0x01, 0x2E, 0x00, 0x69, 0x00
 };
 
-           
-    
+/* The Gameboy color has 2 VRAM banks, stores
+ * either 1 for VRAM bank 1 or 0 for VRAM bank 1
+ * VRAM is located at memory 0x8000 - 0x97FF */
+static int cgb_vram_bank;
 
+/* Holds secondary VRAM for cgb */
+static uint8_t vram_bank_1[0x1800]; 
+
+/* 64 Bytes of background palette memory (Gameboy Color only)
+ * Holds 8 difference background palettes, each with 4 colors.
+ * Each color is represented by 2 bytes */
+static uint8_t bg_palette_mem[0x40];           
+    
+/* 64 Bytes of background palette memory (Gameboy Color only)
+ * Holds 8 difference background palettes, each with 3 colors. 
+ * (color 0 is always transparent)
+ * Each color is represented by 2 bytes */
+static uint8_t sprite_palette_mem[0x40];
 
 /*  Gameboy bootstrap ROM for startup.
  *  Modified from the original so that the CPU doesn't
@@ -257,7 +272,52 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         case DMA_REG  : dma_transfer(val); break;
         /*  Check if serial transfer starting*/
         case SC_REG :start_transfer(&(io_mem[0x2]), &(io_mem[0x1])); break;
+
+        /* Color Gameboy registers */
+        
+        case VBANK_REG : if(cgb) {
+                            // Select VRAM bank 0 or 1
+                            cgb_vram_bank = !!val;                       
+                         }
+                         break;
+
+        case BGPD : if (cgb) {
+                        /* Write data to Gameboy background palette.
+                         * Use the Background Palette Index to select the location
+                         * to write the value to in Background Palette memory */
+                        uint8_t bgpi = io_mem[BGPI - 0xFF00];
+                        uint8_t index = bgpi & 0x3F;
+                        bg_palette_mem[index] = val;
+
+                        /* Check if Auto Increment bit is set in Background Palette Index,
+                           and increment the index if so. Index is between 0x0 and 0x3F */
+                        if (bgpi & 0x80) {
+                            bgpi = 0x80 | ((index + 1) & 0x3F);
+                            io_mem[BGPI - 0xFF00] = bgpi;
+                        }
+
+                    }
+                    break;
+
+        case SPPD : if (cgb) {
+                        /* Write data to Gameboy sprite palette.
+                         * Use the Sprite Palette Index to select the location
+                         * to write the value to in Sprite Palette memory */
+                        uint8_t sppi = io_mem[SPPI - 0xFF00];
+                        uint8_t index = sppi & 0x3F;
+                        sprite_palette_mem[index] = val;
+
+                        /* Check if Auto Increment bit is set in Sprite Palette Index,
+                           and increment the index if so. Index is between 0x0 and 0x3F */
+                        if (sppi & 0x80) {
+                            sppi = 0x80 | ((index + 1) & 0x3F);
+                            io_mem[SPPI - 0xFF00] = sppi;
+                        }
+
+                    }
+                    break;
     }
+    
 }
 
 
@@ -288,6 +348,12 @@ void set_mem(uint16_t addr, uint8_t const val) {
 	    addr -= 0x2000;
         }
 
+        // Check if writting to alternative VRAM with Gameboy Color
+        if(cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
+            vram_bank_1[addr - TILE_SET_0_START] = val;
+            return;
+        }
+
         mem[addr - 0x8000] = val;
         return;
     }
@@ -308,6 +374,14 @@ void set_mem(uint16_t addr, uint8_t const val) {
 }
 
 
+uint8_t get_vram(uint16_t addr, int bank) {
+    if (cgb && bank) {
+        return vram_bank_1[addr - TILE_SET_0_START];
+    } else {
+        return mem[addr - TILE_SET_0_START];
+    }
+}
+
 // Read contents from given 16 bit memory address
 uint8_t get_mem(uint16_t addr) {
     
@@ -317,6 +391,12 @@ uint8_t get_mem(uint16_t addr) {
     }
     // Read from "ordinary" memory (0x8000 - 0xFDFF)
     if (addr < 0xFE00) {
+
+        // Check if reading from alternative VRAM with Gameboy Color
+        if(cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
+            return vram_bank_1[addr - TILE_SET_0_START];
+         }
+
 	if (addr > 0xE000) {
 	    addr -= 0x2000;	
 	}
@@ -334,6 +414,7 @@ uint8_t get_mem(uint16_t addr) {
 
 }
 
+
 /* Write 16bit value starting at the given memory address 
  * into memory.  Written in little-endian byte order */
 void set_mem_16(uint16_t const loc, uint16_t const val) {
@@ -348,3 +429,15 @@ uint16_t get_mem_16(uint16_t const loc) {
     return (get_mem(loc + 1) << 8) |
             get_mem(loc);
 }
+
+
+// read a value from gameboy color background palette RAM
+uint8_t read_bg_color_palette(int addr) {
+    return bg_palette_mem[addr];
+}
+
+// Read a vlue from gameboy color sprite palette RAM
+uint8_t read_sprite_color_palette(int addr) {
+    return sprite_palette_mem[addr];
+}
+
