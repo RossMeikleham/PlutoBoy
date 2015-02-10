@@ -7,7 +7,7 @@
 Gameboy emulator for Windows, OSX, PSP, and Linux/Unix based systems.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
-The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS to be run on those platforms.
+The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
 
 #Currently Implemented
