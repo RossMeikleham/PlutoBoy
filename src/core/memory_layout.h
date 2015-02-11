@@ -133,6 +133,8 @@
 
 #define VBANK_REG 0xFF4F /* Select which VRAM bank to use in Gameboy color */
 
+#define INFRARED_REG 0xFF56 /* Infrared Communications Port for Gameboy Color */
+
 #define BGPI 0xFF68 // Background Palette index for Gameboy Color
 #define BGPD 0xFF69 // Background Palette data for Gameboy Color
 #define SPPI 0xFF6A // Sprite Palette index for Gameboy Color
