@@ -35,13 +35,16 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     //Start logger
     set_log_level(LOG_INFO);
     
-    
-    if (!(size = load_rom_from_file(file_path, buffer))) {
+    log_message(LOG_INFO, "About to open file %s\n", file_path);
 
+    if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
     }
+    log_message(LOG_INFO, "File loaded %s\n", file_path);
 
+    load_rom(file_path, buffer, size);
+    
     if (!load_rom(file_path, buffer, size)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
