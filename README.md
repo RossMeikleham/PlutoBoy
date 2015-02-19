@@ -176,6 +176,8 @@ and you should be able to play some multiplayer games.
 
 ![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
 
+PSP version running on PSP hardware:
+![psp](/images/psp.jpg?raw=true)
 
-Running on PPSSPP on Android:
+PSP version Running on PPSSPP emulator on Android:
 ![psp](/images/pok.png?raw=true)
