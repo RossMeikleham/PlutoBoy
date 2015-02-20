@@ -141,7 +141,8 @@ Raspberry Pi 2
   as the gameboy.js and gameboy.html files, and open gameboy.html with a web browser.
 
 ### Compatibility
-So far tested in Firefox and Chrome.
+Works in Firefox, but Chrome doesn't like the way the rom file is loaded.
+File loading will be improved in the future.
 
 
 ## PSP

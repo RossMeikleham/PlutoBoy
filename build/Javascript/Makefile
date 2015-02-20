@@ -19,7 +19,6 @@ C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILE
 
 CPP_FILES = $(IO_DIR_FILES2) 
 
-
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES))) $(addsuffix .o, $(basename $(CPP_FILES)))
 
 TARGET		= gameboy.html
@@ -39,3 +38,4 @@ all:
 clean:
 	rm -rf *.o
 	rm $(TARGET)
+	rm gameboy.js
