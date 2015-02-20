@@ -7,6 +7,8 @@
 Gameboy emulator for Windows, OSX, PSP, and Linux/Unix based systems.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
+The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
+
 
 #Currently Implemented
 
@@ -77,6 +79,13 @@ The -d flag starts the emulator in debugging mode.
 ### How To Build:
 - Navigate to the project `build/Unix` folder.
 - Enter the command `./scons`
+ 
+Raspberry Pi 1
+ - Overclock the Pi to 1 Ghz to be able to run at full speed
+ 
+Raspberry Pi 2
+ - Works fine at base cpu speed of 900mhz, if wanting to run more programs at the same time
+   and retain full emulation speed, consider overclocking to at least 1Ghz
 
 
 ## OSX
@@ -118,20 +127,29 @@ The -d flag starts the emulator in debugging mode.
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
-## PSP (Currently in development, builds but is missing implementation of most IO features required to run games)
+## PSP
 
 ### Required:
 
 - PSP ToolChain (can be found [here](https://github.com/pspdev/psptoolchain)
-  Follow the instructions to install, and ensure all environment variables are set
+- Follow the instructions to install, and ensure all environment variables are set
 
 ### How To Build:
 - Navigate to the `build/PSP` folder
-- Enter the command `make`
-- `Eboot.pbp` file should be generated in the folder, copy this file onto your PSP and run it from there
+- Enter the command `make` then `make directory`
+
+If running on PPSSPP emulator
+- copy ROMS into the Gameboy folder generated or a subfolder of it. Navigate to the Gameboy folder from PPSSPP and run the program.
+
+If running on an actual PSP
+- Copy the Gameboy folder to PSP/GAME folder on the PSP memory stick.
+- Upgrade to kernel/firmware version 6.60 or 6.61
+- Copy/run the Pro update for either version to run homebrew
+- Run the emulator from the PSP
 
 
-> ***Note*** Will need to be built on a Linux/OSX machine or Windows with Cygwin
+
+> ***Note*** Psp version will need to be built on a Linux/OSX machine or Windows with Cygwin. Sound is currently disabled in the PSP version, when enabled it temporarily works but freezes after a couple of minutes. 
 
 #Link Cable guide
 Currently serial I/O implementation is rather buggy with regards to a few
@@ -157,3 +175,9 @@ and you should be able to play some multiplayer games.
 #Screenshots
 
 ![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
+
+PSP version running on PSP hardware:
+![psp](/images/psp.jpg?raw=true)
+
+PSP version Running on PPSSPP emulator on Android:
+![psp](/images/pok.png?raw=true)
