@@ -14,6 +14,7 @@ static long current_cycles = 0;
 static int screen_off = 1; //Stores whether screen is on or off
 static int current_lcd_mode;
 static int current_lcd_stat = 0;
+int frame_drawn = 0;
 
 static void update_stat() {
 
@@ -48,6 +49,9 @@ static void inc_ly() {
     if (ly == 144) {
         raise_interrupt(VBLANK_INT);
         output_screen();
+        frame_drawn = 1;
+    } else {
+        frame_drawn = 0;
     }
       
    //Directly write ly into memory bypassing reset
@@ -139,7 +143,8 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
 /* Given the elapsed cpu cycles since the last
  * call to this function, updates the internal LCD
  * modes, registers and if a Vertical Blank occurs redisplays
- * the screen */
+ * the screen. Returns 1 if an entire frame has finished drawing,
+ * 0 otherwise. */
 void update_graphics(long cycles) {
   
     update_stat();
