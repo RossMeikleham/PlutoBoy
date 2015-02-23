@@ -9,6 +9,7 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 
 The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
+Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/).
 
 #Currently Implemented
 
@@ -135,14 +136,15 @@ Raspberry Pi 2
 
 ### How to Build:
 - Navigate to the `build/Javascript` folder
+- Place the rom you want to run in the same folder with the name "rom.gb"
 - Enter the command `make`
 - gameboy.js and gameboy.html files should be generated.
-- To run games, place a gameboy rom with the name "rom.gb" in the same folder
-  as the gameboy.js and gameboy.html files, and open gameboy.html with a web browser.
+- To run games, open gameboy.html with a web browser.
 
-### Compatibility
-Works in Firefox, but Chrome doesn't like the way rom files are loaded.
-File loading will be improved in the future.
+### TODO
+  - Need to make a way for the user to enter the address of a rom and attempt to load
+    it rather than hard coding one at compile time. Also need to add sound.
+
 
 
 ## PSP
