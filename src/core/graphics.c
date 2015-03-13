@@ -52,7 +52,7 @@ static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
     int base = palette_no * 8;
     uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
     uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
-
+    
     return byte0 || ((byte1 & 0x7F) << 8);
 }
 

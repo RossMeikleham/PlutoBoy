@@ -129,6 +129,13 @@
 #define WY_REG 0xFF4A /*  Window Y Position; 0 <= WY <= 143*/
 #define WX_REG 0xFF4B /*  Window X Position; 0 <= WX <= 166 */
 
+/* DMA tranfer for Gameboy Color */
+#define HDMA1_REG 0xFF51
+#define HDMA2_REG 0xFF52
+#define HDMA3_REG 0xFF53
+#define HDMA4_REG 0xFF54
+#define HDMA5_REG 0xFF55
+
 #define KEY1_REG 0xFF4D /* Prepare Speed switch for Gameboy Color, used to switch clock speed */
 
 #define VBANK_REG 0xFF4F /* Select which VRAM bank to use in Gameboy color */

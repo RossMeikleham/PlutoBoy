@@ -300,10 +300,12 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
+    cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
+
     /* Copy bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
      *  it later */
-    if (cgb) {
+     if (cgb) {
         memcpy(cartridge_start, ROM_banks[0],  sizeof (cgb_boot_rom));
         memcpy(ROM_banks[0], cgb_boot_rom, sizeof (cgb_boot_rom));
     } else {
@@ -353,7 +355,7 @@ static void oam_set_mem(uint8_t addr, uint8_t val) {
 
 
 /* Read from OAM given OAM address 0 - A0
- * Returns 0x0 if addres > 0xA0 */
+ * Returns 0x0 if address > 0xA0 */
 static uint8_t oam_get_mem(uint8_t addr) {
     //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     return (addr < 0xA0) ? oam_mem[addr] : 0;
@@ -407,6 +409,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
   
     io_mem[addr] = val;
+    
     uint16_t global_addr = addr + 0xFF00;
     if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
         write_apu(global_addr, val);
@@ -425,14 +428,41 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         case SC_REG :start_transfer(&(io_mem[0x2]), &(io_mem[0x1])); break;
 
         /* Color Gameboy registers */
-        
+        case HDMA1_REG : if (cgb) {
+            printf("HDMA1\n");
+        }
+        break;
+
+        case HDMA2_REG : if (cgb) {
+            printf("HDMA2\n");
+        }
+        break;
+
+        case HDMA3_REG : if (cgb) {
+            printf("HDMA3\n");
+        }
+        break;
+
+        case HDMA4_REG : if (cgb) {
+            printf("HDMA4\n");
+        }
+        break;
+
+        case HDMA5_REG : if (cgb) {
+            printf("HDMA5\n");
+        }
+        break;
+
+
         case VBANK_REG : if(cgb) {
+            printf("VBANK_REG\n");
                             // Select VRAM bank 0 or 1
                             cgb_vram_bank = !!val;                       
                          }
                          break;
-
+        
         case BGPD : if (cgb) {
+            printf("BGPD\n");
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
@@ -451,6 +481,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SPPD : if (cgb) {
+            printf("SPPD\n");
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
@@ -469,17 +500,21 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SRAM_BANK: if (cgb) {
+            val &= 0x7;
+            io_mem[SRAM_BANK - 0xFF00] = val;
             if (val == 0) {
                 val = 1;
             }
             cgb_ram_bank = val;
-
-        }
+            }
+            break;
 
         // Can only set bit 0 to Prepare for a Transfer
         case KEY1_REG: if (cgb) {
+            printf("KEY1_REG\n");
             io_mem[addr] = val & 0x1;
-        }
+            }
+            break;
     }
     
 }
@@ -564,7 +599,7 @@ uint8_t get_mem(uint16_t addr) {
         // Check if reading from alternative VRAM with Gameboy Color
         if(cgb && cgb_vram_bank && addr >= TILE_SET_0_START && addr <= TILE_SET_1_END) {
             return vram_bank_1[addr - TILE_SET_0_START];
-         }
+        }
         
         if (cgb && cgb_ram_bank > 1 && addr >= 0xD000 && addr <= 0xDFFF) {
            return cgb_ram_banks[cgb_ram_bank - 1][addr - 0xD000];
