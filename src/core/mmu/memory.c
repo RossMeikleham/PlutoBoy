@@ -84,20 +84,20 @@ static uint8_t io_mem[0x100]= {
  * Colour gameboy but is fixed to bank 1 on the original gameboy */
 static uint8_t cgb_ram_bank = 1;
 
-static uint8_t cgb_ram_banks[6][0x1000] = {{0}};
+static uint8_t cgb_ram_banks[6][0x1000];
 
 /* The Gameboy color has 2 VRAM banks, stores
  * either 1 for VRAM bank 1 or 0 for VRAM bank 1
  * VRAM is located at memory 0x8000 - 0x97FF */
-static int cgb_vram_bank = 0;
+static int cgb_vram_bank;
 
 /* Holds secondary VRAM for cgb */
-static uint8_t vram_bank_1[0x2000] = {0}; 
+static uint8_t vram_bank_1[0x2000]; 
 
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 different background palettes, each with 4 colors.
  * Each color is represented by 2 bytes, initially set to white */
-static uint8_t bg_palette_mem[0x40] =
+static uint8_t bg_palette_mem[0x40] = 
  {0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
@@ -111,7 +111,7 @@ static uint8_t bg_palette_mem[0x40] =
  * Holds 8 difference background palettes, each with 3 colors. 
  * (color 0 is always transparent)
  * Each color is represented by 2 bytes */
-static uint8_t sprite_palette_mem[0x40] ={0xFF};
+static uint8_t sprite_palette_mem[0x40];
 
 
 /*  Gameboy bootstrap ROM for startup.
@@ -604,8 +604,20 @@ void set_mem(uint16_t addr, uint8_t const val) {
 }
 
 
+uint8_t get_vram1(uint16_t addr) {
+    return vram_bank_1[addr - 0x8000];
+}
+
 uint8_t get_vram(uint16_t addr, int bank) {
-    if (cgb && (bank || cgb_vram_bank)) {
+    if (cgb && (cgb_vram_bank || bank)) {
+        return vram_bank_1[addr - 0x8000];
+    } else {
+        return mem[addr - 0x8000];
+    }
+}
+
+uint8_t get_current_vram(uint16_t addr) {
+    if (cgb && cgb_vram_bank) {
         return vram_bank_1[addr - 0x8000];
     } else {
         return mem[addr - 0x8000];

@@ -286,7 +286,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_vram_bank_no = 0;
 
         if (cgb) {
-            tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
+            tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
             palette_no = tile_attributes & 0x7;
             tile_vram_bank_no = tile_attributes & BIT_3;
         }
