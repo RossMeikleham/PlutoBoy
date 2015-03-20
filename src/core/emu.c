@@ -27,7 +27,7 @@ int breakpoint = BREAKPOINT_OFF;
  *
  * returns 1 if successfully initialized, 0
  * otherwise */
-int init(const char *file_path, int debugger, ClientOrServer cs) {
+int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;
@@ -43,9 +43,7 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     }
     log_message(LOG_INFO, "File loaded %s\n", file_path);
 
-    load_rom(file_path, buffer, size);
-    
-    if (!load_rom(file_path, buffer, size)) {
+    if (!load_rom(file_path, buffer, size, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }

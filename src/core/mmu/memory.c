@@ -320,7 +320,7 @@ static uint8_t cgb_boot_rom[] = {
 // 1 if gameboy is booting up, 0 otherwise
 static int booting = 0; 
 
-int load_rom(char const *filename, unsigned char const *file_data, size_t size) {
+int load_rom(char const *filename, unsigned char const *file_data, size_t size, int const dmg_mode) {
 
     /* Check the file length given to us is long enough
      * to obtain what the size of the file should be */   
@@ -346,7 +346,7 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
-    cgb = 1;
+    cgb = !dmg_mode;
     //cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
 
     // Setup the memory bank controller 
