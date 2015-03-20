@@ -249,7 +249,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                     screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
                     old_buffer[row][i + j] = color_id;
                 } else {
-                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
                 }
             }
@@ -315,7 +315,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                     screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
                     old_buffer[row][i + j] = color_id;
                 } else {
-                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
                 }
             }
