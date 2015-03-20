@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
 	
     log_message(LOG_INFO, "loading file %s\n", file_name);
 
-    if (!init(file_name, debug, cs)) {
+    if (!init(file_name, debug, dmg_mode, cs)) {
         return 1;
     }
 
