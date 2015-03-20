@@ -214,6 +214,16 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
         int x_pos = start_x - win_x;
         int tile_col = (x_pos) >> 3;
         int tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);
+        
+        int tile_attributes;
+        int palette_no;
+        int tile_vram_bank_no = 0;
+
+        if (cgb) {
+            tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
+            palette_no = tile_attributes & 0x7;
+            tile_vram_bank_no = tile_attributes & BIT_3;
+        }
 
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
@@ -223,8 +233,9 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
         int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
         
-        int byte0 = get_mem(tile_loc + line_offset);
-        int byte1 = get_mem(tile_loc + line_offset + 1);
+
+        int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
+        int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
         
         // For each pixel in the line of the tile
         for (int j = pixel_x_start; j < 8; j++) {
@@ -240,6 +251,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
                     old_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                }
             }
         }   
     }      
