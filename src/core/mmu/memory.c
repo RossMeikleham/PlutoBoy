@@ -92,7 +92,7 @@ static uint8_t vram_bank_1[0x1800];
  * Colour gameboy but is fixed to bank 1 on the original gameboy */
 static uint8_t cgb_ram_bank = 0;
 
-static uint8_t cgb_ram_banks[6][0x1000];
+static uint8_t cgb_ram_banks[7][0x1000];
 
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 difference background palettes, each with 4 colors.
@@ -134,7 +134,10 @@ static uint8_t const dmg_boot_rom[0x100] = {
   0x3e, 0x01, 0xe0, 0x50
 };
 
-/*  Gameboy Color bootstrap ROM */
+/*  Gameboy Color bootstrap ROM 
+ *  this actually consists of 2 roms, 
+ *  The first 256 bytes are mapped to locations 0x00 - 0xFF
+ *  and the last 1792 bytes are mapped to location 0x200 - 0x8FF */
 static uint8_t const cgb_boot_rom[] = {
     0x31, 0xfe, 0xff, 0x3e, 0x02, 0xc3, 0x7c, 0x00, 0xd3, 0x00, 0x98, 0xa0, 0x12, 0xd3, 0x00, 0x80,
     0x00, 0x40, 0x1e, 0x53, 0xd0, 0x00, 0x1f, 0x42, 0x1c, 0x00, 0x14, 0x2a, 0x4d, 0x19, 0x8c, 0x7e,
@@ -300,14 +303,17 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
         memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
     }
     
-    cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
+    cgb = 1;
+    //cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
 
     /* Copy bytes of cartridge before
      * it is overwritten by the boot rom so we can restore
-     *  it later */
+     *  it once the boot rom has finished executing */
      if (cgb) {
-        memcpy(cartridge_start, ROM_banks[0],  sizeof (cgb_boot_rom));
-        memcpy(ROM_banks[0], cgb_boot_rom, sizeof (cgb_boot_rom));
+        memcpy(cartridge_start, ROM_banks[0],  0x100);
+        memcpy(cartridge_start + 0x100, ROM_banks[0] + 0x200, 0x700); 
+        memcpy(ROM_banks[0], cgb_boot_rom, 0x100);
+        memcpy(ROM_banks[0] + 0x200, cgb_boot_rom + 0x100, 0x700);
     } else {
         memcpy(cartridge_start, ROM_banks[0],  sizeof (dmg_boot_rom));
         memcpy(ROM_banks[0], dmg_boot_rom, sizeof (dmg_boot_rom));
@@ -330,7 +336,8 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size) 
 void unload_boot_rom() {
 
     if (cgb) {
-        memcpy(ROM_banks[0], cartridge_start, sizeof (cgb_boot_rom));
+        memcpy(ROM_banks[0], cartridge_start, 0x100);
+        memcpy(ROM_banks[0] + 0x200, cartridge_start + 0x100, 0x700);
     } else {
         memcpy(ROM_banks[0], cartridge_start, sizeof (dmg_boot_rom));
     }
@@ -570,7 +577,7 @@ void set_mem(uint16_t addr, uint8_t const val) {
     /*  IO being written to */
     if (addr >= 0xFF00) {
         // Boot ROM finished, reload start of cartridge
-        if (addr == 0xFF50 && val == 1) {
+        if (addr == 0xFF50) { 
             unload_boot_rom();
         }
         io_write_mem(addr - 0xFF00, val);
