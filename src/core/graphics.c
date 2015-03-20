@@ -146,23 +146,23 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!priority) {
-                if (old_buffer[row][x_pos + x] == 0x7FFF && color_id != 0) {
+                if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
                    if (!cgb) {
                        screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
-                       old_buffer[row][x_pos + x] = get_dmg_col(color_id);
+                       old_buffer[row][x_pos + x] = color_id;
                    } else {                        
                        screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
-                       old_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       old_buffer[row][x_pos + x] = color_id;
                    }
                 }               
             } else  {
                 if (color_id != 0) {
                    if (!cgb) {
                        screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
-                       old_buffer[row][x_pos + x] = get_dmg_col(color_id);
+                       old_buffer[row][x_pos + x] = color_id;
                    } else {
                        screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
-                       old_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       old_buffer[row][x_pos + x] = color_id;
                    }
                 }
             }     
@@ -247,10 +247,10 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
 
                 if (!cgb) {
                     screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
-                    old_buffer[row][i + j] = get_dmg_col(color_id);
+                    old_buffer[row][i + j] = color_id;
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
-                    old_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                    old_buffer[row][i + j] = color_id;
                 }
             }
         }   
@@ -313,10 +313,10 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
                 if (!cgb) {
                     screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
-                    old_buffer[row][i + j] = get_dmg_col(color_id);
+                    old_buffer[row][i + j] = color_id;
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
-                    old_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                    old_buffer[row][i + j] = color_id;
                 }
             }
         }   
