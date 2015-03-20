@@ -10,7 +10,7 @@
 #include <pspctrl.h>
 #include <pspdisplay.h>
 
-#define VERS    1 //Talk about this
+#define VERS    1 
 #define REVS    0
 
 //PSP_MODULE_INFO("Gameboy", PSP_MODULE_USER, VERS, REVS);
@@ -22,11 +22,12 @@ int main(int argc, char* argv[]) {
     
     char file_name[1000];
     int debug = 0;
-   
+    int dmg_mode = 0;
+
     ClientOrServer cs = NO_CONNECT;
     set_log_level(LOG_INFO);
     
-    if (!get_gb_file(file_name)) {
+    if ((dmg_mode = get_gb_file(file_name)) < 0) {
         log_message(LOG_ERROR, "failed to load file\n");
         return 1;
     }
