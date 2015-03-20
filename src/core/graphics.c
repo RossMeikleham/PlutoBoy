@@ -151,7 +151,7 @@ static void draw_sprite_row() {
                        screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
                        old_buffer[row][x_pos + x] = color_id;
                    } else {                        
-                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
                        old_buffer[row][x_pos + x] = color_id;
                    }
                 }               
@@ -161,7 +161,7 @@ static void draw_sprite_row() {
                        screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
                        old_buffer[row][x_pos + x] = color_id;
                    } else {
-                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, final_color_id);
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
                        old_buffer[row][x_pos + x] = color_id;
                    }
                 }

@@ -607,9 +607,9 @@ void set_mem(uint16_t addr, uint8_t const val) {
 
 uint8_t get_vram(uint16_t addr, int bank) {
     if (cgb && (bank || cgb_vram_bank)) {
-        return vram_bank_1[addr - TILE_SET_0_START];
+        return vram_bank_1[addr - 0x8000];
     } else {
-        return mem[addr - TILE_SET_0_START];
+        return mem[addr - 0x8000];
     }
 }
 
