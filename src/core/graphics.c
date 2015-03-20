@@ -216,7 +216,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_no = get_vram(bg_mem + (tile_row << 5)  + tile_col, 0);
         
         int tile_attributes;
-        int palette_no;
+        int palette_no = 0;
         int tile_vram_bank_no = 0;
 
         if (cgb) {
@@ -282,7 +282,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_no = get_vram(bg_mem + (tile_row << 5) + tile_col, 0);
 
         int tile_attributes;
-        int palette_no;
+        int palette_no = 0;
         int tile_vram_bank_no = 0;
 
         if (cgb) {
