@@ -16,6 +16,8 @@ void set_mem_override(uint16_t loc, uint8_t val);
 // Read a value from a VRAM bank
 uint8_t get_vram(uint16_t addr, int bank);
 
+uint8_t get_vram0(uint16_t addr);
+
 // Read contents from given 16 bit memory address
 uint8_t get_mem(uint16_t const addr);
 

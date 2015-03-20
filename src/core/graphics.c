@@ -213,7 +213,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
      
         int x_pos = start_x - win_x;
         int tile_col = (x_pos) >> 3;
-        int tile_no = get_vram(bg_mem + (tile_row << 5)  + tile_col, 0);
+        int tile_no = get_vram0(bg_mem + (tile_row << 5)  + tile_col);
         
         int tile_attributes;
         int palette_no = 0;
@@ -279,7 +279,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
         uint8_t x_pos = i + scroll_x;
         int tile_col = x_pos >> 3;
-        int tile_no = get_vram(bg_mem + (tile_row << 5) + tile_col, 0);
+        int tile_no = get_vram0(bg_mem + (tile_row << 5) + tile_col);
 
         int tile_attributes;
         int palette_no = 0;

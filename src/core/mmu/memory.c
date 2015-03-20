@@ -86,7 +86,6 @@ static uint8_t cgb_ram_bank = 1;
 
 static uint8_t cgb_ram_banks[6][0x1000] = {{0}};
 
-
 /* The Gameboy color has 2 VRAM banks, stores
  * either 1 for VRAM bank 1 or 0 for VRAM bank 1
  * VRAM is located at memory 0x8000 - 0x97FF */
@@ -611,6 +610,10 @@ uint8_t get_vram(uint16_t addr, int bank) {
     } else {
         return mem[addr - 0x8000];
     }
+}
+
+uint8_t get_vram0(uint16_t addr) {
+    return mem[addr - 0x8000];
 }
 
 // Read contents from given 16 bit memory address
