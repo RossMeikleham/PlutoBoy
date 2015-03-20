@@ -82,7 +82,7 @@ static uint8_t io_mem[0x100]= {
 /* The Gameboy color has 2 VRAM banks, stores
  * either 1 for VRAM bank 1 or 0 for VRAM bank 1
  * VRAM is located at memory 0x8000 - 0x97FF */
-static int cgb_vram_bank = 1;
+static int cgb_vram_bank = 0;
 
 /* Holds secondary VRAM for cgb */
 static uint8_t vram_bank_1[0x1800]; 
@@ -90,7 +90,7 @@ static uint8_t vram_bank_1[0x1800];
 /* Gameboy colour has 8 internal RAM banks, bank 0 is from 0xC000 - 0xCFFF and is
  * fixed in both color gameboy and original gameboy. Banks 1-7 are switchable in 0xD000 - 0xDFFF in 
  * Colour gameboy but is fixed to bank 1 on the original gameboy */
-static uint8_t cgb_ram_bank = 0;
+static uint8_t cgb_ram_bank = 1;
 
 static uint8_t cgb_ram_banks[7][0x1000];
 
@@ -470,9 +470,9 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
 
         case VBANK_REG : if(cgb) {
-            printf("VBANK_REG\n");
+            printf("VBANK_REG %d\n", val);
                             // Select VRAM bank 0 or 1
-                            cgb_vram_bank = !!val;                       
+                            cgb_vram_bank = val;                       
                          }
                          break;
         
@@ -488,7 +488,8 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Check if Auto Increment bit is set in Background Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (bgpi & 0x80) {
-                            bgpi = 0x80 | ((index + 1) & 0x3F);
+                            index++;
+                            bgpi = (0xC0 & bgpi) | (index & 0x3F);
                             io_mem[BGPI - 0xFF00] = bgpi;
                         }
 
@@ -507,7 +508,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Check if Auto Increment bit is set in Sprite Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (sppi & 0x80) {
-                            sppi = 0x80 | ((index + 1) & 0x3F);
+                            sppi = (sppi & 0xc0) | ((index + 1) & 0x3F);
                             io_mem[SPPI - 0xFF00] = sppi;
                         }
 
@@ -515,6 +516,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SRAM_BANK: if (cgb) {
+            printf("SRAM BANK %d\n",val);
             val &= 0x7;
             io_mem[SRAM_BANK - 0xFF00] = val;
             if (val == 0) {
@@ -594,7 +596,7 @@ void set_mem(uint16_t addr, uint8_t const val) {
 
 
 uint8_t get_vram(uint16_t addr, int bank) {
-    if (cgb && bank) {
+    if (cgb && (bank || cgb_vram_bank)) {
         return vram_bank_1[addr - TILE_SET_0_START];
     } else {
         return mem[addr - TILE_SET_0_START];
