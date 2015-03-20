@@ -13,6 +13,8 @@
  * otherwise */
 int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs);
 
+// Execute until a single frame has been rendered
+void run_one_frame();
 
 //Main Fetch-Decode-Execute loop
 void run();

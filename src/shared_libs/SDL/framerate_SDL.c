@@ -1,12 +1,15 @@
 #include "SDL.h"
 #include <stdint.h>
+#include <stdio.h>
 #include "stdlib.h"
 #include "../../non_core/framerate.h"
 
+#ifndef EMSCRIPTEN
 static uint64_t last_ticks;
 static float framerate;
 static int count;
 static uint64_t current_ticks = 0;
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -29,26 +32,31 @@ int gettimeofday( struct timeval *tv, struct timezone *tz ) {
     return 0;
 }
 
-#else 
+#elif !defined(EMSCRIPTEN)
 #include <sys/time.h>
 #endif
 
 uint64_t get_timestamp_micro() {
+#ifndef EMSCRIPTEN
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	return tv.tv_sec * 1000000ull + tv.tv_usec;
+#endif
 }
 
 //Assign Framerate in FPS and start counter
 void start_framerate(float f) {
+#ifndef EMSCRIPTEN
     last_ticks = get_timestamp_micro();
     framerate = f;
     count = 0;
+#endif
 }
 
 /* Check time elapsed after one frame, hold up
  * the program if not enough tim has elapsed */
 void adjust_to_framerate() {
+#ifndef EMSCRIPTEN
 
     char title_buf[100];
 
@@ -83,7 +91,7 @@ void adjust_to_framerate() {
         SDL_WM_SetCaption(title_buf,"");
     }
     last_ticks = current_ticks;
-
+#endif
 }
 
 

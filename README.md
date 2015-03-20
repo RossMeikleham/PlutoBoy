@@ -4,11 +4,12 @@
 | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=master)](https://travis-ci.org/RossMeikleham/GB-Emu-C) | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=OSX)](https://travis-ci.org/RossMeikleham/GB-Emu-C) |
 
 
-Gameboy emulator for Windows, OSX, PSP, and Linux/Unix based systems.
+Gameboy emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
-The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS to be run on those platforms.
+The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
+Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/).
 
 #Currently Implemented
 
@@ -127,6 +128,25 @@ Raspberry Pi 2
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
+
+## Web Browser
+
+### Required:
+- Emscripten to compile the C/C++ sources to Javascript
+
+### How to Build:
+- Navigate to the `build/Javascript` folder
+- Place the rom you want to run in the same folder with the name "rom.gb"
+- Enter the command `make`
+- gameboy.js and gameboy.html files should be generated.
+- To run games, open gameboy.html with a web browser.
+
+### TODO
+  - Need to make a way for the user to enter the address of a rom and attempt to load
+    it rather than hard coding one at compile time. Also need to add sound.
+
+
+
 ## PSP
 
 ### Required:
@@ -176,6 +196,11 @@ and you should be able to play some multiplayer games.
 
 ![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
 
+Browser version running in Firefox
+![Firefox](/images/javascript.png?raw=true)
 
-Running on PPSSPP on Android:
+PSP version running on PSP hardware:
+![psp](/images/psp.jpg?raw=true)
+
+PSP version Running on PPSSPP emulator on Android:
 ![psp](/images/pok.png?raw=true)

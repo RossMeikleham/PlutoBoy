@@ -22,19 +22,23 @@ OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES)))
 TARGET		= gameboy
 OBJS		= $(OBJ_FILES)
 
+BUILD_PRX = 1
 #Compile for PSP Kernel 6.60
-PSP_FW_VERSION = 660
-
+PSP_FW_VERSION = 150
+#Give stack size of 1MB
+PSP_MAINTHREAD_STACK_SIZE_KB = 1024
 #callback.o:
 #	$(CC) $(CFLAGS) $(MAIN_DIR)/common/callback.c
  
 INCDIR		=
 PSPBIN = $(PSPSDK)/../bin
-CFLAGS		= -std=c99 -G4 -Wall -O2
+CFLAGS		= -g -std=c99 -G4 -Wall -O2
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
 OUTDIR = Gameboy
 
+USE_KERNEL_LIBC = 1 
+USE_KERNEL_LIBS = 1 
 
 LIBDIR		=
 LDFLAGS	=
@@ -43,15 +47,12 @@ LIBS		= -lstdc++ -lm
 CFLAGS += `$(PSPBIN)/sdl-config --cflags`
 LIBS += `$(PSPBIN)/sdl-config --libs`
 
-BUILD_PRX = 1 
- 
 EXTRA_TARGETS	= EBOOT.PBP
 PSP_EBOOT_TITLE= Gameboy
  
 PSPSDK	= $(shell psp-config --pspsdk-path)
 
 include $(PSPSDK)/lib/build.mak
-
 
 directory:
 	mkdir -p  $(OUTDIR)

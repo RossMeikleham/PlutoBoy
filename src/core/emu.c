@@ -35,13 +35,16 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     //Start logger
     set_log_level(LOG_INFO);
     
-    
-    if (!(size = load_rom_from_file(file_path, buffer))) {
+    log_message(LOG_INFO, "About to open file %s\n", file_path);
 
+    if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
     }
+    log_message(LOG_INFO, "File loaded %s\n", file_path);
 
+    load_rom(file_path, buffer, size);
+    
     if (!load_rom(file_path, buffer, size)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
@@ -90,30 +93,23 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     return 1;    
 }
 
-    
-void run() {
 
-    long current_cycles;
-    int skip_bug = 0;
-    long cycles = 0;
+static long current_cycles;
+static int skip_bug = 0;
+static long cycles = 0;    
 
-    if (DEBUG) {
-        int flags = get_command();
-        step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
+// Draws one frame then returns
+void run_one_frame() {
+    frame_drawn = 0;
 
-        breakpoint =  (flags & BREAKPOINT_SET) ? 
-            get_breakpoint() : BREAKPOINT_OFF;
-    }
-
-    for(;;) { 
-        
+    while (!frame_drawn) {
         if (halted || stopped) {
 
             current_cycles = 4;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);
-            
+        
             if (stopped) {
                 key_pressed();
             }
@@ -123,7 +119,7 @@ void run() {
         }
         else if (!(halted || stopped)) {
             current_cycles = exec_opcode(skip_bug);
-                   
+               
         }
 
         cycles += current_cycles;
@@ -136,9 +132,29 @@ void run() {
         if (DEBUG && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
-
-            breakpoint =  (flags & BREAKPOINT_SET) ? 
-            get_breakpoint() : BREAKPOINT_OFF;
         }
     }
+
 }
+
+void setup_debug() {
+    if (DEBUG) {
+        int flags = get_command();
+        step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
+
+        breakpoint =  (flags & BREAKPOINT_SET) ? 
+            get_breakpoint() : BREAKPOINT_OFF;
+    }
+
+
+}
+    
+void run() {
+    setup_debug();
+    for(;;) {run_one_frame();} 
+}
+        
+
+
+
+

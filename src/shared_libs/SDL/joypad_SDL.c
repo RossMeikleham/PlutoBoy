@@ -3,7 +3,7 @@
 #include "../../non_core/joypad.h"
 #include "../../core/mmu/mbc.h"
 
-static int keys[322];  // 322 SDL keys
+static int keys[2000];  
 
 typedef enum {TRIANGLE, CIRCLE, CROSS, SQUARE, LTRIGGER, RTRIGGER,
              DOWN, LEFT, UP, RIGHT, SELECT, START, HOME, CTRL_HOLD} PSP_Button;
