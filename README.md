@@ -194,6 +194,8 @@ and you should be able to play some multiplayer games.
 
 #Screenshots
 
+![Gold](/images/gold.png?raw=true)![zelda_col](/images/zelda_col.png?raw=true)![megaman](/images/megaman.ong?raw=true)![warriors](/images/warrior.png?raw=true)
+
 ![Tetris](/images/tetris.png?raw=true)![Zelda](/images/zelda.png?raw=true)![Pokemon](/images/poke.png?raw=true)![Mario](/images/mario.png?raw=true)
 
 Browser version running in Firefox
