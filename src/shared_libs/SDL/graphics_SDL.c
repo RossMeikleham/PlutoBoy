@@ -68,6 +68,7 @@ int init_screen(int win_x, int win_y, int (*const pixels)[GB_PIXELS_X]) {
 
 
 static Uint32 upscale_15_bit(int c) {
+    
     int red =   ((c & 0x1F) * 255) / 31;
     int green = (((c >> 5) & 0x1F) * 255) / 31;
     int blue =  (((c >> 10) & 0x1F)* 255) / 31;

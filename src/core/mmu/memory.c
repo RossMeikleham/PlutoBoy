@@ -95,9 +95,17 @@ static uint8_t cgb_ram_bank = 0;
 static uint8_t cgb_ram_banks[7][0x1000];
 
 /* 64 Bytes of background palette memory (Gameboy Color only)
- * Holds 8 difference background palettes, each with 4 colors.
- * Each color is represented by 2 bytes */
-static uint8_t bg_palette_mem[0x40];           
+ * Holds 8 different background palettes, each with 4 colors.
+ * Each color is represented by 2 bytes, initially set to white */
+static uint8_t bg_palette_mem[0x40] =
+ {0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
+  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F};           
     
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 difference background palettes, each with 3 colors. 
@@ -469,7 +477,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                          break;
         
         case BGPD : if (cgb) {
-            printf("BGPD\n");
+           // printf("BGPD %d\n",val);
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */

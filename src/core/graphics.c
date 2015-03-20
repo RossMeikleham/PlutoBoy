@@ -53,7 +53,7 @@ static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
     uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
     uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
     
-    return byte0 || ((byte1 & 0x7F) << 8);
+    return byte0 | ((byte1 & 0x7F) << 8);
 }
 
 // Obtain 15 bit gameboy color for background palette
@@ -62,8 +62,8 @@ static uint16_t get_cgb_bg_col(int palette_no, int color_no) {
     int base = palette_no * 8;
     uint8_t byte0 = read_bg_color_palette(base + (color_no * 2));
     uint8_t byte1 = read_bg_color_palette(base + (color_no * 2) + 1);
-
-    return byte0 || ((byte1 & 0x7F) << 8);
+   
+    return byte0 | ((byte1 & 0x7F) << 8);
 
 }
 
@@ -233,8 +233,13 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 int bit_1 = (byte1 >> (7 - j)) & 0x1;
                 int bit_0 = (byte0 >> (7 - j)) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
-                screen_buffer[row][start_x + j] =  get_dmg_col(pallete[color_id]); 
-                old_buffer[row][start_x + j] = get_dmg_col(color_id);
+
+                if (!cgb) {
+                    screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
+                    old_buffer[row][i + j] = get_dmg_col(color_id);
+                } else {
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, pallete[color_id]);
+                    old_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
             }
         }   
     }      
