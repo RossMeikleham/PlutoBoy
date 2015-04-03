@@ -34,18 +34,6 @@ int init_gfx() {
 }
 
 
-// Convert dot matrix gameboy's 2 bit color into a 15bit color
-static uint16_t get_dmg_col(int c) {
-    switch (c) {
-        case 0: return 0x7FFF;
-        case 1: return 0x56B5;
-        case 2: return 0x294A;
-        case 3: return 0x0000;
-        default : return 0x0;
-    }
-}
-
-
 // Obtain 15 bit gameboy color for sprite palette
 static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
 
@@ -66,6 +54,37 @@ static uint16_t get_cgb_bg_col(int palette_no, int color_no) {
     return byte0 | ((byte1 & 0x7F) << 8);
 
 }
+
+
+
+// Convert dot matrix gameboy's 2 bit color into a 15bit color
+static uint16_t get_dmg_sprite_col(int c, int palette_no) {
+    if (cgb) {
+        return get_cgb_sprite_col(palette_no, c);    
+    }
+    switch (c) {
+        case 0: return 0x7FFF;
+        case 1: return 0x56B5;
+        case 2: return 0x294A;
+        case 3: return 0x0000;
+        default : return 0x0;
+    }
+}
+
+static uint16_t get_dmg_bg_col(int c) {
+    if (cgb) {
+        return get_cgb_bg_col(0, c);    
+    }
+    switch (c) {
+        case 0: return 0x7FFF;
+        case 1: return 0x56B5;
+        case 2: return 0x294A;
+        case 3: return 0x0000;
+        default : return 0x0;
+    }
+}
+
+
 
 static void draw_sprite_row() {
    
@@ -114,8 +133,18 @@ static void draw_sprite_row() {
         int v_bank = 0;
         int cgb_palette_number = 0;
         if (cgb) {
-            v_bank = attributes & BIT_3; // Check which bank to read the tile from
-           cgb_palette_number = attributes & 0x7;
+           
+            if (is_booting || cgb_features) {
+                cgb_palette_number = attributes & 0x7;
+                v_bank = !!(attributes & BIT_3);
+            }            
+            // DMG mode in CGB, there is only 2 predefined BG palettes which the
+            // boot rom initialized at startup containing 3 colors each
+            // and only the original vram bank is available
+            else {
+                cgb_palette_number = !!(attributes & BIT_4);
+                v_bank = 0;
+            }
         }
 
         uint16_t tile_loc = TILE_SET_0_START + (tile_no * 16);
@@ -147,8 +176,8 @@ static void draw_sprite_row() {
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!priority) {
                 if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
-                   if (!cgb) {
-                       screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
+                    if (!cgb || !(is_booting || cgb_features)) {
+                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
                    } else {                        
                        screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
@@ -157,8 +186,8 @@ static void draw_sprite_row() {
                 }               
             } else  {
                 if (color_id != 0) {
-                   if (!cgb) {
-                       screen_buffer[row][x_pos + x] = get_dmg_col(final_color_id);
+                    if (!cgb || !(is_booting || cgb_features)) {
+                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
                    } else {
                        screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
@@ -221,8 +250,18 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
 
         if (cgb) {
             tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
-            palette_no = tile_attributes & 0x7;
-            tile_vram_bank_no = tile_attributes & BIT_3;
+
+            if (is_booting || cgb_features) {
+                palette_no = tile_attributes & 0x7;
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);
+            
+            // DMG mode in CGB, there is only 1 predefined BG palette which the
+            // boot rom initialized at startup containing 4 colors 
+            // and only the original vram bank is available
+            } else {
+                palette_no = 0;
+                tile_vram_bank_no = 0; 
+            }
         }
 
         // Signed tile no, need to convert to offset
@@ -245,8 +284,8 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 int bit_0 = (byte0 >> (7 - j)) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
 
-                if (!cgb) {
-                    screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
+                if (!cgb || !(is_booting || cgb_features)) {
+                    screen_buffer[row][i + j] = get_dmg_bg_col(pallete[color_id]); 
                     old_buffer[row][i + j] = color_id;
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
@@ -284,11 +323,20 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_attributes;
         int palette_no = 0;
         int tile_vram_bank_no = 0;
-
+        
         if (cgb) {
             tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
-            palette_no = tile_attributes & 0x7;
-            tile_vram_bank_no = tile_attributes & BIT_3;
+            if (is_booting || cgb_features) {
+                palette_no = tile_attributes & 0x7;
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);
+            
+            // DMG mode in CGB, there is only 1 predefined BG palette which the
+            // boot rom initialized at startup containing 4 colors 
+            // and only the original vram bank is available
+            } else {
+                palette_no = 0;
+                tile_vram_bank_no = 0; 
+            }
         }
 
         // Signed tile no, need to convert to offset
@@ -311,8 +359,8 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                 int bit_0 = (byte0 >> (7 - j)) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
 
-                if (!cgb) {
-                    screen_buffer[row][i + j] = get_dmg_col(pallete[color_id]); 
+                if (!cgb || !(is_booting || cgb_features)) {
+                    screen_buffer[row][i + j] = get_dmg_bg_col(pallete[color_id]); 
                     old_buffer[row][i + j] = color_id;
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);

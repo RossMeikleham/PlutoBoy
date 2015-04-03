@@ -33,7 +33,7 @@ CXX = em++
 all:
 	$(CC) -c $(CFLAGS) $(C_FILES)
 	$(CC) -c $(CXXFLAGS) $(CPP_FILES)
-	$(CC) -o $(TARGET) $(OBJ_FILES) --preload-file rom.gb
+	$(CC) -o $(TARGET) $(OBJ_FILES) --embed-file rom.gb
 
 clean:
 	rm -rf *.o

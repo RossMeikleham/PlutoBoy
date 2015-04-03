@@ -1642,9 +1642,8 @@ void master_interrupts_enable() {
 
 
 void reset_cpu() {
-    /*  Default starting values for normal GB */
-    //TODO A is 0x01 for GB, 0x11 for CGB
-    reg.AF = 0x01B0;
+    // A is 0x01 for GB, 0x11 for CGB
+    reg.AF = cgb ? 0x11B0 : 0x01B0;
     reg.BC = 0x0013;
     reg.DE = 0x00D8;
     reg.HL = 0x014D;

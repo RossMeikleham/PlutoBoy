@@ -65,8 +65,9 @@ int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
         DEBUG = 1;
     }
 
-    //Log ROM info
+    cgb_features = is_colour_compatible() || is_colour_only();
     
+    //Log ROM info
     char name_buf[100]; 
     int i;
     for(i = ROM_NAME_START; i <= ROM_NAME_END; i++) {
@@ -83,6 +84,7 @@ int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
     const char *c_type = get_cartridge_type();
     log_message(LOG_INFO,"Cartridge Type: %s\n",c_type != NULL ? c_type : "Unknown");
 
+    
     log_message(LOG_INFO, "Has Gameboy Color features: %s\n", is_colour_compatible() || is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
