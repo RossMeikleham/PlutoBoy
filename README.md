@@ -37,6 +37,8 @@ Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/)
 
 - Sound using Blaarg's C++ sound library which was further edited  by [drhelius]( https://github.com/drhelius). Source files for audio used in this emulator came from his emulator [here](https://github.com/drhelius/Gearboy/tree/master/src/audio)
 
+- Partial support for Gameboy Color ROMs 
+
 - Simple debugger which can:  
    - Step through instructions,
    - Set breakpoints,
@@ -58,13 +60,34 @@ Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/)
 
 - Save/Load ROM states
 
-#Using 
-Windows command line: `gb_emu.exe "game_file" [-d] [client/server]`
-<br>
-Unix shell: `./gb_emu "game_file" [-d] [client/server]` 
-<br>
-The -d flag starts the emulator in debugging mode.
+- Fully compatible Gameboy Color which can run all Gameboy Color Roms and
+  is backwards compatible with Gameboy ROMs
 
+> ***Note*** It's recommended to run .gb files in dmg(Dot Matrix Gameboy) mode and .gbc files in cgb(Color Gameboy) mode
+> in the future all roms should work in cgb mode but currently there are some issues
+> and unimplemented gbc features which prevent this. Use the -dmg option flag for desktops to run
+> in dmg mode
+
+#Using Desktop
+`gb_emu_c [options] romfile`
+use the `-h` option to display help info
+
+The -d flag starts the emulator in debugging mode.
+##Controls:
+  - a -> a
+  - s -> b
+  - enter -> start
+  - spacebar -> select
+  - arrows keys -> d-pad
+
+#Using PSP
+  Select the Gameboy file with "X" to run in cgb mode or "O" to run in dmg mode.
+##Controls:
+  - X -> A
+  - O -> B
+  - Start -> Start
+  - Select -> Select
+  - Joypad uses the PSP Joypad
 
 #Build Instructions
 
