@@ -481,7 +481,6 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
 
         case VBANK_REG : if(cgb && (cgb_features || is_booting)) {
-            printf("VBANK_REG %d\n", val);
                             // Select VRAM bank 0 or 1
                             cgb_vram_bank = val & 0x1;
                             io_mem[addr] = val & 0x1;
@@ -498,7 +497,6 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case BGPD : if (cgb && (cgb_features || is_booting)) {
-           // printf("BGPD %d\n",val);
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
@@ -525,7 +523,6 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SPPD : if (cgb && (cgb_features || is_booting)) {
-            printf("SPPD\n");
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
@@ -546,7 +543,6 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                     break;
 
         case SRAM_BANK: if (cgb && (cgb_features || is_booting)) {
-            printf("SRAM BANK %d\n",val);
             val &= 0x7;
             io_mem[SRAM_BANK - 0xFF00] = val;
             if (val == 0) {
