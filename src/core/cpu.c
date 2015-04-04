@@ -689,9 +689,15 @@ void invalid_op(){
     
     if (cgb && (is_booting || cgb_features)) {
         int speed = get_mem(KEY1_REG);
-        long new_clock_speed = speed ? CGB_CLOCK_SPEED_HZ : GB_CLOCK_SPEED_HZ; 
-        set_clock_speed(new_clock_speed);
-        io_write_override(KEY1_REG - 0xFF00, speed ? speed | 0x80 : speed & ~0x80);
+        int switch_speed = speed & BIT_0;
+
+        if (switch_speed) {
+            long new_clock_speed = (speed & BIT_7) ? GB_CLOCK_SPEED_HZ : CGB_CLOCK_SPEED_HZ; 
+            set_clock_speed(new_clock_speed);
+            io_write_override(KEY1_REG - 0xFF00, !(speed & BIT_7) * 0x80);
+            // Actually stopping doesn't make sense, this needs to be double checked though
+            stopped = 0;
+        }
     }
 }
 
