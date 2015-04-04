@@ -552,7 +552,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             }
             break;
 
-        // Can only set bit 0 to Prepare for a Transfer
+        // Can only set bit 0 to Prepare for a speed change
         case KEY1_REG: if (cgb && (cgb_features || is_booting)) {
             printf("KEY1_REG\n");
             io_mem[addr] = val & 0x1;

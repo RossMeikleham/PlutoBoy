@@ -109,9 +109,12 @@ void run_one_frame() {
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);
-        
+       
+            // If Key pressed in "stop" mode, then gameboy is "unstopped" 
             if (stopped) {
-                key_pressed();
+                if(key_pressed()) {
+                    stopped = 0;
+                }
             }
             if (halted) {
                 update_graphics(current_cycles);
