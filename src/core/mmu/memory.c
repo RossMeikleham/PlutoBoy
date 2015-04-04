@@ -369,6 +369,11 @@ static void oam_set_mem(uint8_t addr, uint8_t val) {
         /* If Object X position is written to, reorganise
          * sprite priorities for rendering */
         if((addr - 1) % 4 == 0) {
+            /* In CGB mode priorities are purely sprite numbers not x-positions
+               so just write 0 to the x position table so they are organised this way */
+            if (cgb && (is_booting || cgb_features)) { 
+                val = 0;
+            }
             update_sprite_prios(addr/4 ,val);
         }
     }
