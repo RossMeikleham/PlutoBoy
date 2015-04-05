@@ -1,10 +1,12 @@
 #include "lcd.h"
 #include "timers.h"
 #include "mmu/memory.h"
+#include "mmu/hdma.h"
 #include "memory_layout.h"
 #include "interrupts.h"
 #include "graphics.h"
 #include "bits.h"
+#include "rom_info.h"
 #include <stdint.h>
 
 
@@ -61,7 +63,7 @@ static void inc_ly() {
 
 /* Update the turned on LCD given the number of cycles, and the current lcd
  *status and control registers */
-static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
+static long update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     #define MODE2_CYCLES 80 // Mode 2 lasts from 0 -> 80 cycles
     #define MODE3_CYCLES 172 // Mode 3 lasts from  80 -> (172 + 80) cycles
     #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
@@ -84,6 +86,15 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
                     new_lcd_mode = 2;
                     inc_ly();
                     lcd_stat = check_lcd_coincidence(lcd_stat); 
+
+                    // Check if HDMA transfer needs to take place in CGB mode
+                    if (cgb && (is_booting || cgb_features) && !halted && hdma_in_progress) {
+                        long hdma_cycles = perform_hdma();
+                        current_cycles += hdma_cycles;
+                        cycles += hdma_cycles;
+
+                    }
+
                     // H-Blank to V-Blank, change to mode 2
                     if (get_mem(LY_REG) == 144) {
                         new_lcd_mode = 1;
@@ -137,6 +148,8 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     set_mem(STAT_REG, lcd_stat);
     current_lcd_stat = lcd_stat;
     current_lcd_mode = new_lcd_mode;
+
+    return cycles;
 }
 
 
@@ -145,7 +158,7 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
  * modes, registers and if a Vertical Blank occurs redisplays
  * the screen. Returns 1 if an entire frame has finished drawing,
  * 0 otherwise. */
-void update_graphics(long cycles) {
+long update_graphics(long cycles) {
   
     update_stat();
     uint8_t lcd_stat = current_lcd_stat;
@@ -161,6 +174,8 @@ void update_graphics(long cycles) {
     } 
 
     if (!screen_off) {
-        update_on_lcd(lcd_stat, lcd_ctrl, cycles);
+        return update_on_lcd(lcd_stat, lcd_ctrl, cycles);
     } 
+
+    return cycles;
 }  

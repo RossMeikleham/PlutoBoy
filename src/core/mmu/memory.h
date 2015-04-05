@@ -8,6 +8,9 @@
 // 1 if gameboy is booting up, 0 otherwise
 int is_booting; 
 
+//CGB HDMA transfer in progress
+int hdma_in_progress;
+
 /* Directly inject a value into IO memory without performing
  * any checks or operations on the data. Should be used by
  * controllers that have direct access to modifying this memory
