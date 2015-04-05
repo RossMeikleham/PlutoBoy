@@ -14,7 +14,7 @@ The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS pla
 Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/).
 
 The emulator supports 2 modes DMG (Dot Matrix Gameboy) and CGB (Color Gameboy),
-all original Gameboy games are backwards compative in CGB mode:
+all original Gameboy games are backwards compatible in CGB mode:
 
 ![zelda_no_col](/images/nocolor.png?raw=true)
 ![zelda_mid_col](/images/color1.png?raw=true)
