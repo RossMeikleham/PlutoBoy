@@ -1,15 +1,25 @@
+![crystal](/images/crystal.png?raw=true) ![2Player](/images/ages.png?raw=true)
+
 
 | Linux                           | OSX                             |
 |---------------------------------|---------------------------------|
 | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=master)](https://travis-ci.org/RossMeikleham/GB-Emu-C) | [![Build Status](https://travis-ci.org/RossMeikleham/GB-Emu-C.svg?branch=OSX)](https://travis-ci.org/RossMeikleham/GB-Emu-C) |
 
 
-Gameboy emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
+Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
 Uses SDL for input/output but can easily be expanded to include other frameworks.
 
 The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
 Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/).
+
+The emulator supports 2 modes DMG (Dot Matrix Gameboy) and CGB (Color Gameboy),
+all original Gameboy games are backwards compative in CGB mode:
+
+![zelda_no_col](/images/nocolor.png?raw=true)
+![zelda_mid_col](/images/color1.png?raw=true)
+![zelda_full_col](/images/color2.png?raw=true)
+
 
 #Currently Implemented
 
@@ -37,7 +47,7 @@ Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/)
 
 - Sound using Blaarg's C++ sound library which was further edited  by [drhelius]( https://github.com/drhelius). Source files for audio used in this emulator came from his emulator [here](https://github.com/drhelius/Gearboy/tree/master/src/audio)
 
-- Partial support for Gameboy Color ROMs 
+- Support for most Gameboy Color ROMs 
 
 - Simple debugger which can:  
    - Step through instructions,
@@ -60,13 +70,7 @@ Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/)
 
 - Save/Load ROM states
 
-- Fully compatible Gameboy Color which can run all Gameboy Color Roms and
-  is backwards compatible with Gameboy ROMs
-
-> ***Note*** It's recommended to run .gb files in dmg(Dot Matrix Gameboy) mode and .gbc files in cgb(Color Gameboy) mode
-> in the future all roms should work in cgb mode but currently there are some issues
-> and unimplemented gbc features which prevent this. Use the -dmg option flag for desktops to run
-> in dmg mode
+- Bug fixes for Color roms which heavily use GDMA/HDMA data transfers.
 
 #Using Desktop
 `gb_emu_c [options] romfile`

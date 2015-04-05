@@ -72,7 +72,7 @@ void adjust_to_framerate() {
     // cpu cycles to wait for the rest of the time
     if (framerate_ticks < 1000000) {        
 	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
-	if (delay_time >= 10000) {
+	if (delay_time >= 5000) {
 		//casting uint64_t into uint32_t, not really safe
 		// but we will never be delaying for more than 1000ms which is well in range
  		SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
