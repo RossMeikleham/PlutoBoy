@@ -23,7 +23,7 @@ all original Gameboy games are backwards compatible in CGB mode:
 ![poke_no_col](/images/blue_nocol.png?raw=true)
 ![poke_mid_col](/images/blue_col.png?raw=true)
 
-Some Color ROMS are backwards compatible whihc can also be run in DMG mode:
+Some Color ROMS are backwards compatible and can also be run in DMG mode:
 
 
 ![poke_no_col](/images/gold_nocol.png?raw=true)
