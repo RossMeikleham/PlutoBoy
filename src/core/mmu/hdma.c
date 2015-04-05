@@ -39,42 +39,49 @@ void check_cgb_dma(uint8_t value) {
 // Performs a HDMA transfer of 0x10 bytes from source to destination
 // returns the amount of machine cycles taken
 long perform_hdma() {
-   uint16_t source = hdma_source & 0xFFF0;
+    
+    uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
     for (int i = 0; i < 0x10; i++) {
         set_mem(dest + i, get_mem(source + i));       
     }
 
-    hdma_source = source + 0x10;
-    hdma_dest = dest + 0x10;
+    hdma_source += 0x10;
+    hdma_dest +=  0x10;
 
     //Keep destination address between 0x8000 and 0x9FFF
     if (hdma_dest == 0xA000) {
-        hdma_dest -= 0x2000;
+        hdma_dest = 0x8000;
     }
 
     // Keep source address away from destination addresses
     if (hdma_source == 0x8000) {
-        hdma_source += 0x2000;
+        hdma_source = 0xA000;
     }
 
     io_write_override(HDMA1_REG - 0xFF00, hdma_source >> 8); 
     io_write_override(HDMA2_REG - 0xFF00, hdma_source & 0xFF);
     io_write_override(HDMA3_REG - 0xFF00, hdma_dest >> 8);
     io_write_override(HDMA4_REG - 0xFF00, hdma_dest & 0xFF);
-    io_write_override(HDMA5_REG - 0xFF00, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
-    
+
     hdma_bytes -= 0x10;
 
-    return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 17 : 9) * 4;
+    io_write_override(HDMA5_REG - 0xFF00, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
+
+
+    if (get_mem(HDMA5_REG) == 0xFF) {
+        hdma_in_progress = 0;
+    }
     
-    return 0;
+
+    return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 17 : 9) * 4; 
+
 }
 
 
 void perform_gdma(uint8_t value) {
-          
+                   
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
@@ -88,8 +95,8 @@ void perform_gdma(uint8_t value) {
     io_write_override(HDMA4_REG - 0xFF00, 0xFF);
     io_write_override(HDMA5_REG - 0xFF00, 0xFF); 
 
-    hdma_source = source + hdma_bytes;
-    hdma_dest = dest + hdma_bytes;
+    hdma_source += hdma_bytes;
+    hdma_dest += hdma_bytes;
     hdma_bytes = 0;
     
     long cycles = get_clock_speed() == CGB_CLOCK_SPEED_HZ ?
@@ -97,7 +104,7 @@ void perform_gdma(uint8_t value) {
         1 +  8 * ((value & 0x7F) + 1);
 
     add_current_cycles(cycles * 4); 
-
+  
 }
 
 

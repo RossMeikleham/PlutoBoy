@@ -461,7 +461,6 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
              * or 0xA000 -> 0xDFFF */
             if ((val > 0x7F && val < 0xA0)) {
                 val = 0;
-                io_mem[addr] = 0;
             }
                 hdma_source = (val << 8) | (hdma_source & 0xF0);
             } 
@@ -470,14 +469,14 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         
         case HDMA2_REG : if (cgb && (cgb_features || is_booting)) {
             val &= 0xF0;
-            io_mem[addr] &= 0xF0; // Bits 3-0 in HDMA 2 unused
+            // Bits 3-0 in HDMA 2 unused
             hdma_source = (hdma_source & 0xFF00) | val;
         }
         break;
 
         case HDMA3_REG : if (cgb && (cgb_features || is_booting)) {
             /*  Destination address must be from 0x8000 -> 0x9FFF */
-            io_mem[addr] &= 0x1F; // Bits 7 - 5 in HDMA 3 unused
+            // Bits 7 - 5 in HDMA 3 unused
             val &= 0x1F;
             hdma_dest = (val << 8 ) | (hdma_dest & 0xF0);
             hdma_dest |= 0x8000;
@@ -486,7 +485,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         break;
 
         case HDMA4_REG : if (cgb && (cgb_features || is_booting)) {
-            io_mem[addr] &= 0xF0; // Bits 3-0 in HDMA 4 unused
+            // Bits 3-0 in HDMA 4 unused
             hdma_dest = (hdma_dest & 0x1F00) | val;
             hdma_dest |= 0x8000;
         }
