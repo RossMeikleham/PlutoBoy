@@ -16,9 +16,20 @@ Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/)
 The emulator supports 2 modes DMG (Dot Matrix Gameboy) and CGB (Color Gameboy),
 all original Gameboy games are backwards compative in CGB mode:
 
+![no_col](/images/bw_logo.png?raw=true)
+![col](/images/col_logo.png?raw=true)
 ![zelda_no_col](/images/nocolor.png?raw=true)
 ![zelda_mid_col](/images/color1.png?raw=true)
-![zelda_full_col](/images/color2.png?raw=true)
+![poke_no_col](/images/blue_nocol.png?raw=true)
+![poke_mid_col](/images/blue_col.png?raw=true)
+
+Some Color ROMS are backwards compatible whihc can also be run in DMG mode:
+
+
+![poke_no_col](/images/gold_nocol.png?raw=true)
+![poke_mid_col](/images/gold_col.png?raw=true)
+![mario_no_col](/images/mario_nocol.png?raw=true)
+![mario_mid_col](/images/mario_col.png?raw=true)
 
 
 #Currently Implemented
