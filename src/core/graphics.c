@@ -177,7 +177,7 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!sprite_prio || cgb_bg_prio[row][x_pos + x]) {
-                if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
+                if (old_buffer[row][x_pos + x] == 0 && color_id != 0 && !cgb_bg_prio[row][x_pos + x]) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -187,7 +187,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0) {
+                if (color_id != 0 && !cgb_bg_prio[row][x_pos + x]) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -257,7 +257,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
             if (is_booting || cgb_features) {
                 palette_no = tile_attributes & 0x7;
                 tile_vram_bank_no = !!(tile_attributes & BIT_3);                
-                bg_prio = tile_attributes & BIT_7;
+                 bg_prio = tile_attributes & BIT_7;
                 
             /* DMG mode in CGB, there is only 1 predefined BG palette which the
              * boot rom initialized at startup containing 4 colors 
@@ -298,7 +298,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
-                    cgb_bg_prio[row][i + j] |= bg_prio;
+                    cgb_bg_prio[row][i + j] = bg_prio || cgb_bg_prio[row][i + j];
                 }
             }
         }   
@@ -385,7 +385,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
-                    cgb_bg_prio[row][i + j] = bg_prio;
+                    cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0;
                    
                 }
             }
