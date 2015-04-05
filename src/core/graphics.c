@@ -17,6 +17,7 @@
 // Store 5 bit color to output
 static int screen_buffer[144][160];
 static int old_buffer[144][160];
+static int cgb_bg_prio[144][160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
@@ -175,7 +176,7 @@ static void draw_sprite_row() {
             // current pixel isn't transparent draw. Otherwise if priority set
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
-            if (!sprite_prio) {
+            if (!sprite_prio || cgb_bg_prio[row][x_pos + x]) {
                 if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
@@ -247,15 +248,17 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
         
         int tile_attributes = 0;
         int palette_no = 0;
-        int tile_vram_bank_no = 0;
+        int tile_vram_bank_no = 0;        
+        int bg_prio = 0;
 
         if (cgb) {
             tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
 
             if (is_booting || cgb_features) {
                 palette_no = tile_attributes & 0x7;
-                tile_vram_bank_no = !!(tile_attributes & BIT_3);
-
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);                
+                bg_prio = tile_attributes & BIT_7;
+                
             /* DMG mode in CGB, there is only 1 predefined BG palette which the
              * boot rom initialized at startup containing 4 colors 
              * and only the original vram bank is available */
@@ -295,6 +298,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
+                    cgb_bg_prio[row][i + j] |= bg_prio;
                 }
             }
         }   
@@ -328,16 +332,15 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_attributes = 0;
         int palette_no = 0;
         int tile_vram_bank_no = 0;
-        
+        int bg_prio = 0;
+
         if (cgb) {
             tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
             if (is_booting || cgb_features) {
                 palette_no = tile_attributes & 0x7;
-                tile_vram_bank_no = !!(tile_attributes & BIT_3);
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);            
+                bg_prio = tile_attributes & BIT_7;
             
-                if (tile_attributes & BIT_7) {
-                    printf("prio\n");
-                }
             // DMG mode in CGB, there is only 1 predefined BG palette which the
             // boot rom initialized at startup containing 4 colors 
             // and only the original vram bank is available
@@ -382,6 +385,8 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
+                    cgb_bg_prio[row][i + j] = bg_prio;
+                   
                 }
             }
         }   
