@@ -4,11 +4,15 @@
 int hdma_in_progress;
 int gdma_in_progress;
 int bytes_transferred; // no of bytes transferred in current dma
+uint16_t hdma_source;
+uint16_t hdma_dest;
+uint16_t hdma_bytes;
 
 
-//Start either HDMA or GDMA transfer
-void start_gbc_dma(uint16_t s_addr, uint16_t e_addr, unsigned b, int type);
+void check_cgb_dma(uint8_t value);
 
 long perform_hdma();
+
+void perform_gdma(uint8_t value);
 
 #endif //HDMA_H

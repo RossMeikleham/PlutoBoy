@@ -68,7 +68,7 @@ typedef struct {
 } Instructions;
 
 
-static void update_all_cycles(long cycles) {    
+void update_all_cycles(long cycles) {    
     update_timers(cycles); 
     long updated_cycles = update_graphics(8); 
     sound_add_cycles(updated_cycles);

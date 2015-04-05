@@ -19,4 +19,7 @@ void run_one_frame();
 //Main Fetch-Decode-Execute loop
 void run();
 
+
+void add_current_cycles(unsigned cycles);
+
 #endif

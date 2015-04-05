@@ -6,52 +6,98 @@
 
 #include "../memory_layout.h"
 #include "../timers.h"
+#include "../lcd.h"
+#include "../emu.h"
 
-static uint16_t source_addr;
-static uint16_t dest_addr;
-static unsigned bytes;
+void check_cgb_dma(uint8_t value) {
 
-void start_gbc_dma(uint16_t s_addr, uint16_t e_addr, unsigned b, int type) { 
-    source_addr = s_addr;
-    dest_addr = e_addr;
-    bytes = b * 0x10;
-    hdma_in_progress = type;
-    gdma_in_progress = !type;
-    bytes_transferred = 0;
+    hdma_bytes = 0x10 + ((value & 0x7F) * 0x10);
+    
+    if (hdma_in_progress) {
+        if (value & BIT_7) {
+            io_write_override(HDMA5_REG - 0xFF00, value & 0x7F); // Transferring
+        } else {
+            io_write_override(HDMA5_REG - 0xFF00, 0xFF); // Finished transferring
+            hdma_in_progress = 0;
+        }
+    
+    } else {
+        if (value & BIT_7) {
+            hdma_in_progress = 1;
+            io_write_override(HDMA5_REG - 0xFF00, value & 0x7F);
+            if (lcd_hblank_on) {
+                long cycles = perform_hdma();
+                add_current_cycles(cycles);
+            } 
+        } else {
+            perform_gdma(value);
+        }
+    }
+    
 }
-
 
 // Performs a HDMA transfer of 0x10 bytes from source to destination
 // returns the amount of machine cycles taken
 long perform_hdma() {
-    
-    uint16_t source = source_addr & 0xFFF0;
-    uint16_t dest = (dest_addr & 0x1FF0) | 0x8000;
+   uint16_t source = hdma_source & 0xFFF0;
+    uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
     for (int i = 0; i < 0x10; i++) {
-        set_mem(source + i, get_mem(dest + 1));       
+        set_mem(dest + i, get_mem(source + i));       
     }
 
-    source_addr = source + 0x10;
-    dest_addr = dest + 0x10;
+    hdma_source = source + 0x10;
+    hdma_dest = dest + 0x10;
 
     //Keep destination address between 0x8000 and 0x9FFF
-    if (dest_addr >= 0xA000) {
-        dest_addr -= 0x2000;
+    if (hdma_dest == 0xA000) {
+        hdma_dest -= 0x2000;
     }
 
     // Keep source address away from destination addresses
-    if (source_addr >= 0x8000) {
-        source_addr += 0x2000;
+    if (hdma_source == 0x8000) {
+        hdma_source += 0x2000;
     }
 
-    set_mem(HDMA1_REG, source_addr >> 8); 
-    set_mem(HDMA2_REG, source_addr & 0xFF);
-    set_mem(HDMA3_REG, dest_addr >> 8);
-    set_mem(HDMA4_REG, dest_addr & 0xFF);
-    set_mem(HDMA5_REG, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
-
-    bytes -= 0x10;
+    io_write_override(HDMA1_REG - 0xFF00, hdma_source >> 8); 
+    io_write_override(HDMA2_REG - 0xFF00, hdma_source & 0xFF);
+    io_write_override(HDMA3_REG - 0xFF00, hdma_dest >> 8);
+    io_write_override(HDMA4_REG - 0xFF00, hdma_dest & 0xFF);
+    io_write_override(HDMA5_REG - 0xFF00, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
+    
+    hdma_bytes -= 0x10;
 
     return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 17 : 9) * 4;
+    
+    return 0;
 }
+
+
+void perform_gdma(uint8_t value) {
+        
+    uint16_t source = hdma_source & 0xFFF0;
+    uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
+
+    for (int i = 0; i < hdma_bytes; i++) {
+        set_mem(dest + i, get_mem(source + i));       
+    }
+
+    io_write_override(HDMA1_REG - 0xFF00, 0xFF); 
+    io_write_override(HDMA2_REG - 0xFF00, 0xFF);
+    io_write_override(HDMA3_REG - 0xFF00, 0xFF);
+    io_write_override(HDMA4_REG - 0xFF00, 0xFF);
+    io_write_override(HDMA5_REG - 0xFF00, 0xFF); 
+
+    hdma_source = source + hdma_bytes;
+    hdma_dest = dest + hdma_bytes;
+    hdma_bytes = 0;
+    
+    long cycles = get_clock_speed() == CGB_CLOCK_SPEED_HZ ?
+        2 + 16 * ((value & 0x7F) + 1) :
+        1 +  8 * ((value & 0x7F) + 1);
+
+    add_current_cycles(cycles * 4); 
+
+}
+
+

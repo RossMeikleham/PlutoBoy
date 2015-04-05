@@ -17,6 +17,7 @@ static int screen_off = 1; //Stores whether screen is on or off
 static int current_lcd_mode;
 static int current_lcd_stat = 0;
 int frame_drawn = 0;
+int lcd_hblank_on = 0; 
 
 static void update_stat() {
 
@@ -148,6 +149,7 @@ static long update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
     set_mem(STAT_REG, lcd_stat);
     current_lcd_stat = lcd_stat;
     current_lcd_mode = new_lcd_mode;
+    lcd_hblank_on = current_lcd_mode == 0;
 
     return cycles;
 }

@@ -98,6 +98,13 @@ static long current_cycles;
 static int skip_bug = 0;
 static long cycles = 0;    
 
+
+void add_current_cycles(unsigned c) {
+    cycles += c;
+    update_all_cycles(c);
+}
+
+
 // Draws one frame then returns
 void run_one_frame() {
     frame_drawn = 0;
@@ -121,7 +128,8 @@ void run_one_frame() {
             }
         }
         else if (!(halted || stopped)) {
-            current_cycles = exec_opcode(skip_bug);
+            current_cycles = 0;
+            current_cycles += exec_opcode(skip_bug);
                
         }
 

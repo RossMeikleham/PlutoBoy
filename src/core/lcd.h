@@ -11,7 +11,9 @@
 #include <stdint.h>
 #include "cpu.h"
 
+
 extern int frame_drawn;
+extern int lcd_hblank_on;
 
 /* Given the elapsed cpu cycles since the last
 * call to this function, updates the internal LCD

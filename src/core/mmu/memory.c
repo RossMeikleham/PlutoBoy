@@ -459,35 +459,41 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         case HDMA1_REG : if (cgb && (cgb_features || is_booting)) {
             /* Source address must be from either 0x0000 -> 0x7FFFF
              * or 0xA000 -> 0xDFFF */
-            if ((val > 0x7F && val < 0xA0) || val > 0xDF) {
+            if ((val > 0x7F && val < 0xA0)) {
+                val = 0;
                 io_mem[addr] = 0;
             }
-        }
+                hdma_source = (val << 8) | (hdma_source & 0xF0);
+            } 
+            break;
+
+        
         case HDMA2_REG : if (cgb && (cgb_features || is_booting)) {
+            val &= 0xF0;
             io_mem[addr] &= 0xF0; // Bits 3-0 in HDMA 2 unused
+            hdma_source = (hdma_source & 0xFF00) | val;
         }
         break;
 
         case HDMA3_REG : if (cgb && (cgb_features || is_booting)) {
             /*  Destination address must be from 0x8000 -> 0x9FFF */
             io_mem[addr] &= 0x1F; // Bits 7 - 5 in HDMA 3 unused
+            val &= 0x1F;
+            hdma_dest = (val << 8 ) | (hdma_dest & 0xF0);
+            hdma_dest |= 0x8000;
         }
+
         break;
 
         case HDMA4_REG : if (cgb && (cgb_features || is_booting)) {
             io_mem[addr] &= 0xF0; // Bits 3-0 in HDMA 4 unused
+            hdma_dest = (hdma_dest & 0x1F00) | val;
+            hdma_dest |= 0x8000;
         }
         break;
 
         case HDMA5_REG : if (cgb && (cgb_features || is_booting)) {
-            int blocks = (val & 0xEF) + 1;
-            int hdma = val & BIT_7;
-            uint16_t source_addr = (((uint16_t) io_mem[HDMA1_REG - 0xFF00]) << 8) | io_mem[HDMA2_REG - 0xFF00];
-            uint16_t dest_addr = (((uint16_t) io_mem[HDMA3_REG - 0xFF00]) << 8) | io_mem[HDMA4_REG - 0xFF00];
-            dest_addr |= 0x8000;
-            start_gbc_dma(source_addr, dest_addr, blocks, hdma);
-
-           
+            check_cgb_dma(val); 
         }
         break;
 
