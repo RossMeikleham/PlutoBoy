@@ -2,11 +2,11 @@ import sys
 
 #Release environment
 release_env = Environment(CC = 'clang', 
-                  CCFLAGS = '-O3 -fomit-frame-pointer -W -Wall -Wextra'
+                  CCFLAGS = '-O2 -fomit-frame-pointer -W -Wall -Wextra'
 		 )
 
 #Profile environment
-profile_env = Environment(CC = 'clang',
+profile_env = Environment(CC = 'gcc -std=c99',
 		  CCFLAGS = '-pg -O2 -W -Wall -Wextra',
 		  LINKFLAGS = '-pg'
                  )
