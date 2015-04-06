@@ -91,7 +91,7 @@ static uint8_t cgb_ram_banks[6][0x1000];
 /* The Gameboy color has 2 VRAM banks, stores
  * either 1 for VRAM bank 1 or 0 for VRAM bank 1
  * VRAM is located at memory 0x8000 - 0x97FF */
-static int cgb_vram_bank;
+static int cgb_vram_bank = 0;
 
 /* Holds secondary VRAM for cgb */
 static uint8_t vram_bank_1[0x2000]; 
@@ -486,6 +486,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
         case HDMA4_REG : if (cgb && (cgb_features || is_booting)) {
             // Bits 3-0 in HDMA 4 unused
+            val &= 0xF0;
             hdma_dest = (hdma_dest & 0x1F00) | val;
             hdma_dest |= 0x8000;
         }
@@ -571,10 +572,9 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
         // Can only set bit 0 to Prepare for a speed change
         case KEY1_REG: if (cgb && (cgb_features || is_booting)) {
-            printf("KEY1_REG\n");
             io_mem[addr] = val & 0x1;
-            }
-            break;
+        }
+        break;
     }
     
 }
@@ -644,7 +644,7 @@ uint8_t get_vram1(uint16_t addr) {
 }
 
 uint8_t get_vram(uint16_t addr, int bank) {
-    if (cgb && (cgb_vram_bank || bank)) {
+    if (bank) {
         return vram_bank_1[addr - 0x8000];
     } else {
         return mem[addr - 0x8000];

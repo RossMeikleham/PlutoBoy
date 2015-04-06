@@ -59,7 +59,7 @@ void update_divider_reg(long cycles) {
     static long divider_counter = 0;
 
 	divider_counter += cycles;
-	// Increment div at a frequency of 16382hz
+	// Increment div at a frequency of 16382hz 
 	long max_counter = clock_speed / DIV_TIMER_INC_FREQUENCY;
 	while (divider_counter >= max_counter) {
 		increment_div();

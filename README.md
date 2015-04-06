@@ -1,5 +1,4 @@
-![crystal](/images/crystal.png?raw=true) ![2Player](/images/ages.png?raw=true)
-
+![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
 | Linux                           | OSX                             |
 |---------------------------------|---------------------------------|
@@ -231,6 +230,8 @@ and you should be able to play some multiplayer games.
 
 
 #Screenshots
+
+![crystal](/images/crystal.png?raw=true) ![dk](/images/dk.png?raw=true)
 
 ![Gold](/images/gold.png?raw=true)![zelda_col](/images/zelda_col.png?raw=true)![megaman](/images/megaman.png?raw=true)![warriors](/images/warrior.png?raw=true)
 

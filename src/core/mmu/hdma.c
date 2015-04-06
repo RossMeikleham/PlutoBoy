@@ -1,6 +1,6 @@
 //HDMA CGB module
 #include <stdint.h>
-
+#include <stdio.h>
 #include "hdma.h"
 #include "memory.h"
 
@@ -39,7 +39,7 @@ void check_cgb_dma(uint8_t value) {
 // Performs a HDMA transfer of 0x10 bytes from source to destination
 // returns the amount of machine cycles taken
 long perform_hdma() {
-    
+           
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
@@ -74,17 +74,15 @@ long perform_hdma() {
         hdma_in_progress = 0;
     }
     
-
-    return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 17 : 9) * 4; 
+    return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 28 : 82); 
 
 }
 
 
-void perform_gdma(uint8_t value) {
-                   
+void perform_gdma(uint8_t value) {                     
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
-
+    
     for (int i = 0; i < hdma_bytes; i++) {
         set_mem(dest + i, get_mem(source + i));       
     }
@@ -97,14 +95,14 @@ void perform_gdma(uint8_t value) {
 
     hdma_source += hdma_bytes;
     hdma_dest += hdma_bytes;
-    hdma_bytes = 0;
     
     long cycles = get_clock_speed() == CGB_CLOCK_SPEED_HZ ?
-        2 + 16 * ((value & 0x7F) + 1) :
-        1 +  8 * ((value & 0x7F) + 1);
+        (CGB_CLOCK_SPEED_HZ / 11000 + ((hdma_bytes/0x10) * 763))/10000 :
+        (GB_CLOCK_SPEED_HZ  / 22000 + ((hdma_bytes/0x10) * 763))/1000; 
+        
+    hdma_bytes = 0;
+    add_current_cycles(cycles);  
 
-    add_current_cycles(cycles * 4); 
-  
 }
 
 

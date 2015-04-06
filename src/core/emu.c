@@ -134,7 +134,7 @@ void run_one_frame() {
         }
 
         cycles += current_cycles;
-        if (cycles > 10000) {
+        if (cycles > 15000) {
             update_keys();
             cycles = 0;
         }
@@ -145,7 +145,7 @@ void run_one_frame() {
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
         }
     }
-
+    
 }
 
 void setup_debug() {

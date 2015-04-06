@@ -338,7 +338,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
             tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
             if (is_booting || cgb_features) {
                 palette_no = tile_attributes & 0x7;
-                tile_vram_bank_no = !!(tile_attributes & BIT_3);            
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);           
                 bg_prio = tile_attributes & BIT_7;
             
             // DMG mode in CGB, there is only 1 predefined BG palette which the
@@ -423,7 +423,6 @@ static void draw_tile_row() {
 void output_screen() {
     draw_screen();
     adjust_to_framerate();
-
 }
 
 //Render the row number stored in the LY register
