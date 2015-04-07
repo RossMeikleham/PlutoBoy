@@ -88,8 +88,7 @@ static long update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
                     lcd_stat = check_lcd_coincidence(lcd_stat); 
 
                     // Check if HDMA transfer needs to take place in CGB mode
-                    if (cgb && (is_booting || cgb_features) && !halted && hdma_in_progress
-                        && get_mem(LY_REG) < 144) {
+                    if (cgb && (is_booting || cgb_features) && !halted && hdma_in_progress) {
                         long hdma_cycles = perform_hdma();
                         current_cycles += hdma_cycles;
                         cycles += hdma_cycles;

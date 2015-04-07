@@ -21,6 +21,7 @@ static int cgb_bg_prio[144][160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
+static int no_bg;
 
 
 /*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
@@ -177,7 +178,7 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!sprite_prio || cgb_bg_prio[row][x_pos + x]) {
-                if (old_buffer[row][x_pos + x] == 0 && color_id != 0 && !cgb_bg_prio[row][x_pos + x]) {
+                if (old_buffer[row][x_pos + x] == 0 && color_id != 0 && (no_bg || !cgb_bg_prio[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -187,7 +188,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0 && !cgb_bg_prio[row][x_pos + x]) {
+                if (color_id != 0 && (no_bg || !cgb_bg_prio[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -429,6 +430,7 @@ void output_screen() {
 void draw_row() {
     lcd_ctrl = get_mem(LCDC_REG);
     row = get_mem(LY_REG);
+    no_bg = 0;
 
     //Render only if screen is on
     if ((lcd_ctrl & BIT_7)) {
@@ -436,6 +438,7 @@ void draw_row() {
         uint8_t render_tiles = (lcd_ctrl  & BIT_0);
         if (render_tiles) {
             draw_tile_row();
+            no_bg = 1;
         }
         if (render_sprites) { 
             draw_sprite_row();
