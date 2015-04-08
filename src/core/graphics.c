@@ -130,7 +130,6 @@ static void draw_sprite_row() {
 
     for (int i = sprite_count - 1; i >= 0; i--) {
          int sprite_no  = sprite_nos[i];
-          printf("%d\n", i);
 
          int16_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
          int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
@@ -191,7 +190,7 @@ static void draw_sprite_row() {
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
             if (!sprite_prio) {
-                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] && !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -201,7 +200,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] && !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
