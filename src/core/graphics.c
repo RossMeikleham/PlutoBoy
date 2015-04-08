@@ -21,7 +21,6 @@ static int cgb_bg_prio[144][160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
-static int no_bg;
 
 
 /*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
@@ -111,25 +110,39 @@ static void draw_sprite_row() {
     Sprite_Iterator si = create_sprite_iterator();
     int sprite_no;
     int sprite_count = 0;
+    int sprite_nos[10];
 
     /*40 Sprites, loop through from least priority to most priority
       limited to 10 a line */
     while((sprite_no = sprite_iterator_next(&si)) != -1 && sprite_count < 10)  {
+        
         int16_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
-        uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 2);
-        uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 3);
-
-        if (height == 16) {
-            tile_no &= ~0x1;
-        }                           
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row >= y_pos + height || x_pos >= 160) {
+        if (y_pos > row || row >= y_pos + height || x_pos >= 168 || x_pos == 0) {
             continue;
-        } 
+        }
         
+        sprite_nos[sprite_count] = sprite_no; 
         sprite_count++;
+    }
+
+    for (int i = sprite_count - 1; i >= 0; i--) {
+         int sprite_no  = sprite_nos[i];
+          printf("%d\n", i);
+
+         int16_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
+         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
+         uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 2);
+         uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 3);
+    
+        
+         if (height == 16) {
+            tile_no &= ~0x1;
+         }                           
+    
+        
         int x_flip = attributes & BIT_5;
         int y_flip = attributes & BIT_6;
         
@@ -177,8 +190,8 @@ static void draw_sprite_row() {
             // current pixel isn't transparent draw. Otherwise if priority set
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
-            if (!sprite_prio || cgb_bg_prio[row][x_pos + x]) {
-                if (old_buffer[row][x_pos + x] == 0 && color_id != 0 && (no_bg || !cgb_bg_prio[row][x_pos + x])) {
+            if (!sprite_prio) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -188,7 +201,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0 && (no_bg || !cgb_bg_prio[row][x_pos + x])) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -299,7 +312,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 } else {
                     screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
                     old_buffer[row][i + j] = color_id;
-                    cgb_bg_prio[row][i + j] = bg_prio || cgb_bg_prio[row][i + j];
+                    cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0; 
                 }
             }
         }   
@@ -430,7 +443,6 @@ void output_screen() {
 void draw_row() {
     lcd_ctrl = get_mem(LCDC_REG);
     row = get_mem(LY_REG);
-    no_bg = 0;
 
     //Render only if screen is on
     if ((lcd_ctrl & BIT_7)) {
@@ -438,8 +450,8 @@ void draw_row() {
         uint8_t render_tiles = (lcd_ctrl  & BIT_0);
         if (render_tiles) {
             draw_tile_row();
-            no_bg = 1;
-        }
+        } 
+        
         if (render_sprites) { 
             draw_sprite_row();
         }

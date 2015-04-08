@@ -39,7 +39,7 @@ void check_cgb_dma(uint8_t value) {
 // Performs a HDMA transfer of 0x10 bytes from source to destination
 // returns the amount of machine cycles taken
 long perform_hdma() {
-           
+             
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
@@ -73,9 +73,8 @@ long perform_hdma() {
     if (get_mem(HDMA5_REG) == 0xFF) {
         hdma_in_progress = 0;
     }
-    
+       
     return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 28 : 82); 
-
 }
 
 
