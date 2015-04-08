@@ -200,7 +200,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] && !old_buffer[row][x_pos + x])) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
