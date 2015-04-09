@@ -363,8 +363,6 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
             }
         }
 
-
-
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 128) + 128;
@@ -374,8 +372,8 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int vert_flip = tile_attributes & BIT_6;         
 
         int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
-        int line_offset = (vert_flip ? (7 - y_pos % 8) : (y_pos % 8)) * 2; //Offset into tile of our line
-
+        int line_offset = (vert_flip ? (7 - (y_pos % 8)) : ((y_pos % 8)) * 2); //Offset into tile of our line
+            
         int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
         int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
 
@@ -447,13 +445,13 @@ void draw_row() {
     if ((lcd_ctrl & BIT_7)) {
         uint8_t render_sprites = (lcd_ctrl & BIT_1);
         uint8_t render_tiles = (lcd_ctrl  & BIT_0);
-        if (render_tiles) {
+        if ((cgb && (cgb_features || is_booting)) || render_tiles) {
             draw_tile_row();
         } 
         
         if (render_sprites) { 
             draw_sprite_row();
         }
-    } 
+   } 
 }
 
