@@ -112,7 +112,8 @@ void run_one_frame() {
     while (!frame_drawn) {
         if (halted || stopped) {
 
-            current_cycles = 4;
+            long timer_cycles = 4;
+            current_cycles = cgb_speed ? timer_cycles / 2 : timer_cycles;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);

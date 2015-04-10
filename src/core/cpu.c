@@ -69,10 +69,14 @@ typedef struct {
 
 
 void update_all_cycles(long cycles) {    
-    update_timers(cycles); 
-    long updated_cycles = update_graphics(8); 
-    sound_add_cycles(updated_cycles);
-    inc_serial_cycles(updated_cycles);
+    long timer_cycles = cycles;
+    if (cgb_speed) {
+        cycles /= 2;
+    }   
+        update_timers(timer_cycles); 
+        long updated_cycles = update_graphics(cycles); 
+        sound_add_cycles(updated_cycles);
+        inc_serial_cycles(updated_cycles);
 }
 
 
@@ -673,8 +677,7 @@ void invalid_op(){
         int switch_speed = speed & BIT_0;
 
         if (switch_speed) {
-            long new_clock_speed = (speed & BIT_7) ? GB_CLOCK_SPEED_HZ : CGB_CLOCK_SPEED_HZ; 
-            set_clock_speed(new_clock_speed);
+            cgb_speed = !(speed & BIT_7);
             io_write_override(KEY1_REG - 0xFF00, !(speed & BIT_7) * 0x80);
             // Actually stopping doesn't make sense, this needs to be double checked though
             stopped = 0;
@@ -1552,6 +1555,7 @@ void master_interrupts_enable() {
 
 
 void reset_cpu() {
+    cgb_speed = 0;
     // A is 0x01 for GB, 0x11 for CGB
     reg.AF = cgb ? 0x11B0 : 0x01B0;
     reg.BC = 0x0013;
