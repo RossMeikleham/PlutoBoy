@@ -46,7 +46,7 @@ static uint8_t oam_mem[0xA0] = {
 };
 
 // 0xFF00 - 0xFFFF
-static uint8_t io_mem[0x100]= {
+static uint8_t io_mem_dmg[0x100]= {
 		0xCF, 0x00, 0x7E, 0xFF, 0xD3, 0x00, 0x00, 0xF8,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xE1,
 		0x80, 0xBF, 0xF3, 0xFF, 0xBF, 0xFF, 0x3F, 0x00,
@@ -80,6 +80,29 @@ static uint8_t io_mem[0x100]= {
 		0xBC, 0x7F, 0x7E, 0xD0, 0xC7, 0xC3, 0xBD, 0xCF,
 		0x59, 0xEA, 0x39, 0x01, 0x2E, 0x00, 0x69, 0x00
 };
+
+
+static uint8_t io_mem_cgb[0x100] = {
+    0xCF, 0x00, 0x7C, 0xFF, 0x44, 0x00, 0x00, 0xF8, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xE1,
+    0x80, 0xBF, 0xF3, 0xFF, 0xBF, 0xFF, 0x3F, 0x00, 0xFF, 0xBF, 0x7F, 0xFF, 0x9F, 0xFF, 0xBF, 0xFF,
+    0xFF, 0x00, 0x00, 0xBF, 0x77, 0xF3, 0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF,
+    0x91, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFC, 0x00, 0x00, 0x00, 0x00, 0xFF, 0x7E, 0xFF, 0xFE,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x3E, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xC0, 0xFF, 0xC1, 0x00, 0xFE, 0xFF, 0xFF, 0xFF,
+    0xF8, 0xFF, 0x00, 0x00, 0x00, 0x8F, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+    0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D,
+    0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99,
+    0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E,
+    0x45, 0xEC, 0x42, 0xFA, 0x08, 0xB7, 0x07, 0x5D, 0x01, 0xF5, 0xC0, 0xFF, 0x08, 0xFC, 0x00, 0xE5,
+    0x0B, 0xF8, 0xC2, 0xCA, 0xF4, 0xF9, 0x0D, 0x7F, 0x44, 0x6D, 0x19, 0xFE, 0x46, 0x97, 0x33, 0x5E,
+    0x08, 0xFF, 0xD1, 0xFF, 0xC6, 0x8B, 0x24, 0x74, 0x12, 0xFC, 0x00, 0x9F, 0x94, 0xB7, 0x06, 0xD5,
+    0x40, 0x7A, 0x20, 0x9E, 0x04, 0x5F, 0x41, 0x2F, 0x3D, 0x77, 0x36, 0x75, 0x81, 0x8A, 0x70, 0x3A,
+    0x98, 0xD1, 0x71, 0x02, 0x4D, 0x01, 0xC1, 0xFF, 0x0D, 0x00, 0xD3, 0x05, 0xF9, 0x00, 0x0B, 0x00
+};
+
+
+static uint8_t *io_mem;
 
 /* Gameboy colour has 8 internal RAM banks, bank 0 is from 0xC000 - 0xCFFF and is
  * fixed in both color gameboy and original gameboy. Banks 1-7 are switchable in 0xD000 - 0xDFFF in 
@@ -347,6 +370,7 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size, 
     }
     
     cgb = !dmg_mode;
+    io_mem  = cgb ? io_mem_cgb : io_mem_dmg;
     //cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
 
     // Setup the memory bank controller 
@@ -425,9 +449,10 @@ static void joypad_write(uint8_t joypad_state) {
     
     /* Raise joypad interrupt if a key
      * was pressed */
-    if (!(joypad_state & 0xF)) {
+    if ((joypad_state & 0xF) != 0xF) {
         raise_interrupt(JOYPAD_INT);
     }
+
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
@@ -435,30 +460,29 @@ static void joypad_write(uint8_t joypad_state) {
 /* Write to IO memory given address 0 - 0xFF */
 static void io_write_mem(uint8_t addr, uint8_t val) {
 
-  
-    io_mem[addr] = val;
-    
     uint16_t global_addr = addr + 0xFF00;
     if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
+        io_mem[addr] = val;
         write_apu(global_addr, val);
         return;
     }
     switch (global_addr) {
         /* Check Joypad values */
-        case P1_REG  : joypad_write(val); break;
+        case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
         /*  Attempting to set DIV reg resets it to 0 */
         case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
         /*  Attempting to set LY reg resets it to 0  */
         case LY_REG   : io_mem[addr] = 0; break;
         /*  Perform direct memory transfer  */
-        case DMA_REG  : dma_transfer(val); break;
+        case DMA_REG  : io_mem[addr] = val; dma_transfer(val); break;
         /*  Check if serial transfer starting*/
-        case SC_REG :start_transfer(&(io_mem[0x2]), &(io_mem[0x1])); break;
+        case SC_REG : io_mem[addr] = val; start_transfer(&(io_mem[0x2]), &(io_mem[0x1])); break;
 
         /* Color Gameboy registers */
         case HDMA1_REG : if (cgb && (cgb_features || is_booting)) {
             /* Source address must be from either 0x0000 -> 0x7FFFF
              * or 0xA000 -> 0xDFFF */
+            io_mem[addr] = val;
             if ((val > 0x7F && val < 0xA0)) {
                 val = 0;
             }
@@ -468,6 +492,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
         
         case HDMA2_REG : if (cgb && (cgb_features || is_booting)) {
+            io_mem[addr] = val;
             val &= 0xF0;
             // Bits 3-0 in HDMA 2 unused
             hdma_source = (hdma_source & 0xFF00) | val;
@@ -475,6 +500,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         break;
 
         case HDMA3_REG : if (cgb && (cgb_features || is_booting)) {
+            io_mem[addr] = val;
             /*  Destination address must be from 0x8000 -> 0x9FFF */
             // Bits 7 - 5 in HDMA 3 unused
             val &= 0x1F;
@@ -485,6 +511,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         break;
 
         case HDMA4_REG : if (cgb && (cgb_features || is_booting)) {
+            io_mem[addr] = val;
             // Bits 3-0 in HDMA 4 unused
             val &= 0xF0;
             hdma_dest = (hdma_dest & 0x1F00) | val;
@@ -493,6 +520,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         break;
 
         case HDMA5_REG : if (cgb && (cgb_features || is_booting)) {
+            io_mem[addr] = val;
             check_cgb_dma(val); 
         }
         break;
@@ -510,11 +538,14 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                          break;
         
         case BGPI : if (!cgb || !(cgb_features || is_booting)) {
-                        io_mem[BGPI - 0xFF00] = 0;
-                    } 
+                        io_mem[addr] = 0;
+                    } else {
+                        io_mem[addr] = val;
+                    }
                     break;
 
         case BGPD : if (cgb && (cgb_features || is_booting)) {
+                        io_mem[addr] = val;
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
@@ -531,16 +562,19 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         }
 
                     } else {
-                        io_mem[BGPD - 0xFF00] = 0;
+                        io_mem[addr] = 0;
                     }
                     break;
 
         case SPPI : if (!cgb || !(cgb_features || is_booting)) {
-                        io_mem[SPPI - 0xFF00] = 0;
-                    } 
+                        io_mem[addr] = 0;
+                    } else {
+                        io_mem[addr] = val;
+                    }
                     break;
 
         case SPPD : if (cgb && (cgb_features || is_booting)) {
+                        io_mem[addr] = val;
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
@@ -562,7 +596,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
         case SRAM_BANK: if (cgb && (cgb_features || is_booting)) {
             val &= 0x7;
-            io_mem[SRAM_BANK - 0xFF00] = val;
+            io_mem[addr] = val;
             if (val == 0) {
                 val = 1;
             }
@@ -571,10 +605,36 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             break;
 
         // Can only set bit 0 to Prepare for a speed change
-        case KEY1_REG: if (cgb && (cgb_features || is_booting)) {
-            io_mem[addr] = val & 0x1;
+        case 0xFF4D: if (cgb && (cgb_features || is_booting)) {
+            io_mem[addr] = ((io_mem[addr] & 0x80) | (val & 0x1));
         }
         break;
+
+        // Undocumented Registers
+        case 0xFF6C:
+            io_mem[addr] = (cgb && (is_booting || cgb_features)) ? val & 0x1 : cgb ? 0xFF : val;
+            break;
+
+        case 0xFF74:
+            io_mem[addr] = (cgb && !(is_booting || cgb_features)) ? 0xFF : val;
+            break;
+
+        case 0xFF75:
+            // Bits 4-6 Readable/Writeable
+            io_mem[addr] = cgb ? val & 0x60 : val;
+            break;
+
+        case 0xFF76:
+            io_mem[addr] = cgb ? 0 : val;
+            break;
+
+        case 0xFF77:
+            io_mem[addr] = cgb ? 0 : val;
+            break;
+
+       default:
+            io_mem[addr] = val;
+            break;
     }
     
 }
