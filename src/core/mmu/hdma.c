@@ -74,9 +74,7 @@ long perform_hdma() {
         hdma_in_progress = 0;
     }
        
-    return (get_clock_speed() == CGB_CLOCK_SPEED_HZ ? 28 : 82); 
-
-    return 0;
+    return (cgb_speed ? 68 : 36); 
 }
 
 
@@ -97,14 +95,15 @@ void perform_gdma(uint8_t value) {
 
     hdma_source += hdma_bytes;
     hdma_dest += hdma_bytes;
-    
-    long cycles = get_clock_speed() == CGB_CLOCK_SPEED_HZ ?
-        (CGB_CLOCK_SPEED_HZ / 11000 + ((hdma_bytes/0x10) * 763))/10000 :
-        (GB_CLOCK_SPEED_HZ  / 22000 + ((hdma_bytes/0x10) * 763))/1000; 
-        
-    hdma_bytes = 0;
-    add_current_cycles(cycles);  
-
+  
+    long clock_cycles = 0;
+    if (cgb_speed) {
+        clock_cycles = 2 + 16 * ((value & 0x7F) + 1);
+    } else {
+        clock_cycles = 1 + 8 * ((value & 0x7F) + 1);
+    }
+  
+    add_current_cycles(clock_cycles * 4);  
 }
 
 
