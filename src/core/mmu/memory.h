@@ -53,4 +53,7 @@ uint8_t read_bg_color_palette(int addr);
 // Read a vlue from gameboy color sprite palette RAM
 uint8_t read_sprite_color_palette(int addr);
 
+
+int interrupt_about_to_raise();
+
 #endif

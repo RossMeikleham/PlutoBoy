@@ -29,7 +29,7 @@ typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
-    int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
+    int result = init_screen(GB_PIXELS_X * 3, GB_PIXELS_Y * 3, screen_buffer);
     init_sprite_prio_list();    
         
     return result;
@@ -42,7 +42,6 @@ static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
     int base = palette_no * 8;
     uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
     uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
-    
     return byte0 | ((byte1 & 0x7F) << 8);
 }
 
@@ -52,7 +51,7 @@ static uint16_t get_cgb_bg_col(int palette_no, int color_no) {
     int base = palette_no * 8;
     uint8_t byte0 = read_bg_color_palette(base + (color_no * 2));
     uint8_t byte1 = read_bg_color_palette(base + (color_no * 2) + 1);
-   
+
     return byte0 | ((byte1 & 0x7F) << 8);
 
 }
@@ -349,6 +348,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
         if (cgb) {
             tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
+            
             if (is_booting || cgb_features) {
                 palette_no = tile_attributes & 0x7;
                 tile_vram_bank_no = !!(tile_attributes & BIT_3);           
@@ -411,14 +411,14 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
       
 
 static void draw_tile_row() {
-  
+ 
     uint8_t win_y_pos = get_mem(WY_REG);
 
     uint16_t tile_mem; // Either tile set 0 or 1
 
     // Check if using Tile set 0 or 1 
     tile_mem = lcd_ctrl & BIT_4 ? TILE_SET_0_START : TILE_SET_1_START;
-    
+     
     //Draw background    
     uint16_t bg_mem = lcd_ctrl & BIT_3 ? BG_MAP_DATA1_START : BG_MAP_DATA0_START;
     draw_tile_bg_row(tile_mem, bg_mem);
@@ -438,6 +438,7 @@ void output_screen() {
 
 //Render the row number stored in the LY register
 void draw_row() {
+
     lcd_ctrl = get_mem(LCDC_REG);
     row = get_mem(LY_REG);
 
@@ -445,13 +446,20 @@ void draw_row() {
     if ((lcd_ctrl & BIT_7)) {
         uint8_t render_sprites = (lcd_ctrl & BIT_1);
         uint8_t render_tiles = (lcd_ctrl  & BIT_0);
+
         if ((cgb && (cgb_features || is_booting)) || render_tiles) {
             draw_tile_row();
-        } 
+        
+        }
         
         if (render_sprites) { 
             draw_sprite_row();
         }
    } 
+    
+   if (row >= 143) {
+        output_screen();
+   }
+   
 }
 

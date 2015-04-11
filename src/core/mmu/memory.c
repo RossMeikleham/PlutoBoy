@@ -12,6 +12,7 @@
 #include "../bits.h"
 #include "../sound.h"
 #include "../serial_io.h"
+#include "../lcd.h"
 
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"
@@ -456,6 +457,25 @@ static void joypad_write(uint8_t joypad_state) {
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
+static uint8_t io_read_mem(uint8_t addr) {
+    switch (addr + 0xFF00) {
+        case LY_REG:
+            return screen_enabled() ? io_mem[addr] : 0x00; 
+
+        case BGPI:
+        case SPPI:
+            return ((cgb && (is_booting || cgb_features)) ? 
+                io_mem[addr] | 0x40 : 0xC0);
+
+       case BGPD:
+       case SPPD:
+            return ((cgb && (is_booting || cgb_features)) ?
+                io_mem[addr] : 0xFF);
+
+       default:
+            return io_mem[addr];
+    }
+}
 
 /* Write to IO memory given address 0 - 0xFF */
 static void io_write_mem(uint8_t addr, uint8_t val) {
@@ -463,16 +483,84 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
     uint16_t global_addr = addr + 0xFF00;
     if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
         io_mem[addr] = val;
-        write_apu(global_addr, val);
+        write_apu(global_addr, val); 
         return;
     }
     switch (global_addr) {
         /* Check Joypad values */
         case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
         /*  Attempting to set DIV reg resets it to 0 */
-        case DIV_REG  : io_mem[addr] = 0 ;break; //io_mem[addr] = 0; break;
-        /*  Attempting to set LY reg resets it to 0  */
-        case LY_REG   : io_mem[addr] = 0; break;
+        case DIV_REG  : io_mem[addr] = 0 ;break; 
+        
+        case LCDC_REG: {
+            uint8_t current_lcdc = io_mem[addr];
+            uint8_t new_lcdc = val;
+            io_mem[addr] = val;
+            if (!(current_lcdc & BIT_5) && (new_lcdc & BIT_5)) {
+                reset_window_line();
+            }
+            if (new_lcdc & BIT_7) {
+                enable_screen();
+            } else {
+                disable_screen();
+            }
+            break;
+        }
+
+        case STAT_REG: {
+            uint8_t current_stat = io_mem[addr] & 0x7;
+            uint8_t new_stat = (val & 0x78) | (current_stat & 0x7);
+            io_mem[addr] = new_stat;
+            uint8_t lcdc = io_mem[LCDC_REG - 0xFF00];
+            uint8_t lcd_interrupt_signal = get_interrupt_signal();
+            uint8_t mode = get_lcd_mode();
+            lcd_interrupt_signal &= ((new_stat >> 3) & 0x0F);
+            set_interrupt_signal(lcd_interrupt_signal);
+
+            if (lcdc & BIT_7) {
+                if ((new_stat & BIT_3) && (mode == 0)) {
+                    if (lcd_interrupt_signal == 0) {
+                        raise_interrupt(LCD_INT);
+                    }
+                    lcd_interrupt_signal |= BIT_0;
+                }
+                if ((new_stat & BIT_4) && (mode == 1)) {
+                    if (lcd_interrupt_signal == 0) {
+                        raise_interrupt(LCD_INT);
+                    }
+                    lcd_interrupt_signal |= BIT_1;
+                }
+                if ((new_stat & BIT_5) && (mode == 2)) {
+                    if (lcd_interrupt_signal == 0) {
+                        raise_interrupt(LCD_INT);
+                    }
+                }
+                check_lcd_coincidence();
+            }
+
+            break;
+        }
+
+        case LY_REG : {
+            uint8_t ly = io_mem[LY_REG - 0xFF00];
+            if ((ly & BIT_7) && !(val & BIT_7)) {
+                disable_screen();
+            }
+            break;
+        }
+
+        case LYC_REG : {
+            uint8_t current_lyc = io_mem[addr];
+            if (current_lyc != val) {
+                io_mem[addr] = val;
+                uint8_t lcdc = io_mem[LCDC_REG - 0xFF00];
+                if (lcdc & BIT_7) {
+                    check_lcd_coincidence();
+                }
+            }
+            break;
+        } 
+
         /*  Perform direct memory transfer  */
         case DMA_REG  : io_mem[addr] = val; dma_transfer(val); break;
         /*  Check if serial transfer starting*/
@@ -549,7 +637,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
-                        uint8_t bgpi = io_mem[BGPI - 0xFF00];
+                        uint8_t bgpi = io_read_mem(BGPI - 0xFF00);
                         uint8_t index = bgpi & 0x3F;
                         bg_palette_mem[index] = val;
 
@@ -557,7 +645,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (bgpi & 0x80) {
                             index++;
-                            bgpi = (0xC0 & bgpi) | (index & 0x3F);
+                            bgpi = (bgpi & 0x80) | (index & 0x3F);
                             io_mem[BGPI - 0xFF00] = bgpi;
                         }
 
@@ -578,14 +666,14 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
-                        uint8_t sppi = io_mem[SPPI - 0xFF00];
+                        uint8_t sppi = io_read_mem(SPPI - 0xFF00);
                         uint8_t index = sppi & 0x3F;
                         sprite_palette_mem[index] = val;
 
                         /* Check if Auto Increment bit is set in Sprite Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (sppi & 0x80) {
-                            sppi = (sppi & 0xc0) | ((index + 1) & 0x3F);
+                            sppi = (sppi & 0x80) | ((index + 1) & 0x3F);
                             io_mem[SPPI - 0xFF00] = sppi;
                         }
 
@@ -636,9 +724,12 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             io_mem[addr] = val;
             break;
     }
-    
 }
 
+
+int interrupt_about_to_raise() {
+    return io_mem[0xFF] & io_mem[0x0F] & 0x1F;
+}
 
 /* Directly inject a value into IO memory without performing
  * any checks or operations on the data. Should be used by
@@ -768,7 +859,7 @@ uint8_t get_mem(uint16_t addr) {
     if (addr >= 0xFF10 && addr <= 0xFF3F) {
         return read_apu(addr);
     }
-    return io_mem[addr - 0xFF00];
+    return io_read_mem(addr - 0xFF00);
 
 }
 

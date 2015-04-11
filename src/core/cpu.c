@@ -670,7 +670,6 @@ void invalid_op(){
     /* If in Gameboy Color mode and a speed switch has been prepared
      *  switch the processor speed and unset bit 0 and set bit 7 if new speed is double
      *  speed or 0 otherwise in the KEY1 Register */
-    
     if (cgb && (is_booting || cgb_features)) {
         int speed = get_mem(KEY1_REG);
         int switch_speed = speed & BIT_0;
@@ -1588,7 +1587,7 @@ int exec_opcode(int skip_bug) {
     }
     
     opcode = get_mem(reg.PC); /*  fetch */
-    //dasm_instruction(reg.PC, stdout);
+//    dasm_instruction(reg.PC, stdout);
   // printf("OPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {
         reg.PC--;
@@ -1600,6 +1599,8 @@ int exec_opcode(int skip_bug) {
         int cycles = instructions.instruction_set[opcode].cycles;
         update_all_cycles(cycles - timer_cycles_passed);
         timer_cycles_passed = 0;
+
+        //0 here
         return cycles;
 
     } else { /*  extended instruction */

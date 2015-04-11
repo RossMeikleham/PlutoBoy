@@ -12,8 +12,8 @@ profile_env = Environment(CC = 'gcc -std=c99',
                  )
 
 #Debug environment
-debug_env = Environment(CC = 'clang',
-		  CCFLAGS = '-g -O1 -W -Wall -Wextra'
+debug_env = Environment(CC = 'gcc -std=c99',
+		  CCFLAGS = '-g -W -Wall -Wextra'
 		  )
 
 env = Environment()

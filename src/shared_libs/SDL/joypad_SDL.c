@@ -69,8 +69,10 @@ void update_keys() {
                     keys[event.key.keysym.sym] = 1;
                     if (keys[SDLK_ESCAPE]) {
                         write_SRAM();
-                        exit(0);}
+                        exit(0);
+                    }
                         break;
+
                 case SDL_KEYUP: //Key "unpressed"
                     keys[event.key.keysym.sym] = 0;
                     break;

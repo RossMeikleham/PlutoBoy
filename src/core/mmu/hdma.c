@@ -25,7 +25,7 @@ void check_cgb_dma(uint8_t value) {
         if (value & BIT_7) {
             hdma_in_progress = 1;
             io_write_override(HDMA5_REG - 0xFF00, value & 0x7F);
-            if (lcd_hblank_on) {
+            if (lcd_hblank_mode()) {
                 long cycles = perform_hdma();
                 add_current_cycles(cycles);
             } 
@@ -39,7 +39,7 @@ void check_cgb_dma(uint8_t value) {
 // Performs a HDMA transfer of 0x10 bytes from source to destination
 // returns the amount of machine cycles taken
 long perform_hdma() {
-             
+
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
 
@@ -69,8 +69,7 @@ long perform_hdma() {
 
     io_write_override(HDMA5_REG - 0xFF00, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
 
-
-    if (get_mem(HDMA5_REG) == 0xFF) {
+    if (get_mem(HDMA5_REG) == 0xFF || hdma_bytes == 0) {
         hdma_in_progress = 0;
     }
        
@@ -82,7 +81,7 @@ void perform_gdma(uint8_t value) {
   
     uint16_t source = hdma_source & 0xFFF0;
     uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
-    
+ 
     for (int i = 0; i < hdma_bytes; i++) {
         set_mem(dest + i, get_mem(source + i));       
     }
