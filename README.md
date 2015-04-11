@@ -80,7 +80,7 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
 
 - Save/Load ROM states
 
-- Bug fixes for Color roms which heavily use GDMA/HDMA data transfers.
+- Fixes for graphical glitches and bugs in some ROMS. 
 
 #Using Desktop
 `gb_emu_c [options] romfile`
@@ -185,6 +185,9 @@ Raspberry Pi 2
 
 
 ## PSP
+
+The PSP version doesn't run anywhere near close to full speed, optimisations needs
+to be made to the emulator for speeding it up to where it can run on it at full speed.
 
 ### Required:
 
