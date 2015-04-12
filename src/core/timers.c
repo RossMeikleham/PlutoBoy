@@ -5,21 +5,11 @@
 
 //Possible timer increment timer_frequencies in hz
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
-static const long timer_frequencies[] = {4096, 262144, 65536, 16384}; 
+static const long timer_frequencies[] = {1024, 16, 64, 256}; 
 
-static long clock_speed = GB_CLOCK_SPEED_HZ;
 static long timer_frequency = -1;
 static long timer_counter = 0;
 
-
-/*  Set and get the clockspeed in hz */
-void set_clock_speed(long hz) {
-    clock_speed = hz;
-}
-
-long get_clock_speed() {
-    return clock_speed;
-}
 
 /* Change the timer frequency to another of the possible
  * frequencies, resets the timer_counter 
@@ -30,6 +20,9 @@ void set_timer_frequency(unsigned int n) {
     }
 }
 
+long get_timer_frequency() {
+    return cgb_speed ? timer_frequency / 2 : timer_frequency;
+}
 
 /*  Increments the TIMA register
  *  if causes overflow, timer interrupt is raised*/
@@ -59,11 +52,10 @@ void update_divider_reg(long cycles) {
     static long divider_counter = 0;
 
 	divider_counter += cycles;
-	// Increment div at a frequency of 16382hz
-	long max_counter = clock_speed / DIV_TIMER_INC_FREQUENCY;
-	while (divider_counter >= max_counter) {
+	long div_cycles = cgb_speed ? 128 : 256;
+	while (divider_counter >= div_cycles) {
 		increment_div();
-		divider_counter -= clock_speed / max_counter;
+		divider_counter -= div_cycles;
 	}
 }
 
@@ -82,8 +74,8 @@ void update_timers(long cycles) {
 		timer_counter += cycles;
 		/* Once timer incremented, check for changes in timer frequency,
 		* and reset timer */
-		while (timer_counter >= (clock_speed / timer_frequency)) {
-			timer_counter -= (clock_speed / timer_frequency);
+		while (timer_counter >= get_timer_frequency()) {
+			timer_counter -= get_timer_frequency();
 			increment_tima();
 			set_timer_frequency(timer_control & 3);
 		}

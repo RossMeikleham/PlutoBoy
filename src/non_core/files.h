@@ -1,7 +1,7 @@
 #ifndef FILES_H
 #define FILES_H
 
-#define MAX_FILE_SIZE 0x200000 //2MB Roms
+#define MAX_FILE_SIZE 0x400000 //8MB Roms
 #define MAX_SRAM_SIZE 0x8000
 
 /*  Given a file_path and buffer to store file data in, attempts to

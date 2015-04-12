@@ -3,12 +3,14 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+//#ifdef __cplusplus
+//extern "C"
+//{
+//#endif
 
+int cgb;
 
+int cgb_features;
 /* Information on game rom currently loaded
  * into memory */
 
@@ -80,10 +82,13 @@ int has_sgb_features();
  * 0 otherwise */  
 int is_colour_compatible();
 
+/* Returns 1 if loaded ROM can only be ran on a Gameboy Color system 
+   0 otherwise*/
+int is_colour_only();
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 
 #endif // ROM_INFO_H

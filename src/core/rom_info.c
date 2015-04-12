@@ -184,3 +184,9 @@ int is_colour_compatible() {
 }
 
 
+int is_colour_only() {
+    return get_mem(IS_COLOUR_COMPATIBLE) == 0xC0;
+}
+
+
+

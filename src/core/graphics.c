@@ -9,23 +9,80 @@
 #include "graphics.h"
 #include "sprite_priorities.h"
 #include "bits.h"
+#include "rom_info.h"
 
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"
 
+// Store 5 bit color to output
 static int screen_buffer[144][160];
 static int old_buffer[144][160];
+static int cgb_bg_prio[144][160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
 
+
+/*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
+typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
+
 int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
-    int result = init_screen(GB_PIXELS_X * 2, GB_PIXELS_Y * 2, screen_buffer);
+    int result = init_screen(GB_PIXELS_X * 3, GB_PIXELS_Y * 3, screen_buffer);
     init_sprite_prio_list();    
         
     return result;
+}
+
+
+// Obtain 15 bit gameboy color for sprite palette
+static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
+
+    int base = palette_no * 8;
+    uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
+    uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
+    return byte0 | ((byte1 & 0x7F) << 8);
+}
+
+// Obtain 15 bit gameboy color for background palette
+static uint16_t get_cgb_bg_col(int palette_no, int color_no) {
+    
+    int base = palette_no * 8;
+    uint8_t byte0 = read_bg_color_palette(base + (color_no * 2));
+    uint8_t byte1 = read_bg_color_palette(base + (color_no * 2) + 1);
+
+    return byte0 | ((byte1 & 0x7F) << 8);
+
+}
+
+
+
+// Convert dot matrix gameboy's 2 bit color into a 15bit color
+static uint16_t get_dmg_sprite_col(int c, int palette_no) {
+    if (cgb) {
+        return get_cgb_sprite_col(palette_no, c);    
+    }
+    switch (c) {
+        case 0: return 0x7FFF;
+        case 1: return 0x56B5;
+        case 2: return 0x294A;
+        case 3: return 0x0000;
+        default : return 0x0;
+    }
+}
+
+static uint16_t get_dmg_bg_col(int c) {
+    if (cgb) {
+        return get_cgb_bg_col(0, c);    
+    }
+    switch (c) {
+        case 0: return 0x7FFF;
+        case 1: return 0x56B5;
+        case 2: return 0x294A;
+        case 3: return 0x0000;
+        default : return 0x0;
+    }
 }
 
 
@@ -52,36 +109,67 @@ static void draw_sprite_row() {
     Sprite_Iterator si = create_sprite_iterator();
     int sprite_no;
     int sprite_count = 0;
+    int sprite_nos[10];
 
     /*40 Sprites, loop through from least priority to most priority
       limited to 10 a line */
     while((sprite_no = sprite_iterator_next(&si)) != -1 && sprite_count < 10)  {
+        
         int16_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
-        uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 2);
-        uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 3);
-
-        if (height == 16) {
-            tile_no &= ~0x1;
-        }                           
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row >= y_pos + height || x_pos >= 160) {
+        if (y_pos > row || row >= y_pos + height || x_pos >= 160 || x_pos == 0) {
             continue;
-        } 
+        }
         
+        sprite_nos[sprite_count] = sprite_no; 
         sprite_count++;
+    }
+
+    for (int i = sprite_count - 1; i >= 0; i--) {
+         int sprite_no  = sprite_nos[i];
+
+         int16_t y_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4)) - 16;
+         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
+         uint8_t tile_no = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 2);
+         uint8_t attributes = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 3);
+    
+        
+         if (height == 16) {
+            tile_no &= ~0x1;
+         }                           
+    
+        
         int x_flip = attributes & BIT_5;
         int y_flip = attributes & BIT_6;
+        
+        int v_bank = 0;
+        int cgb_palette_number = 0;
+        if (cgb) {
+           
+            if (is_booting || cgb_features) {
+                cgb_palette_number = attributes & 0x7;
+                v_bank = !!(attributes & BIT_3);
+            }            
+            // DMG mode in CGB, there is only 2 predefined BG palettes which the
+            // boot rom initialized at startup containing 3 colors each
+            // and only the original vram bank is available
+            else {
+                cgb_palette_number = !!(attributes & BIT_4);
+                v_bank = 0;
+            }
+        }
 
         uint16_t tile_loc = TILE_SET_0_START + (tile_no * 16);
-
+        
         // Obtain row of sprite to draw, if sprite is flipped
         // need to obtain row relative to bottom of sprite
         uint8_t line =  (!y_flip) ? row - y_pos  : height + y_pos - row -1;
         uint16_t line_offset = 2 * line;
-        uint8_t high_byte = get_mem(tile_loc + line_offset);
-        uint8_t low_byte =  get_mem(tile_loc + line_offset + 1);
+        uint8_t high_byte = get_vram(tile_loc + line_offset, v_bank);
+        uint8_t low_byte =  get_vram(tile_loc + line_offset + 1, v_bank);
+
         int pal_no = (attributes & BIT_4) ? 1 : 0;
         
         // Draw all pixels in current line of sprite
@@ -94,21 +182,31 @@ static void draw_sprite_row() {
             int bit_0 = (low_byte >> bit_pos) & 0x1;
             int bit_1 = (high_byte >> bit_pos) & 0x1;
             uint8_t color_id = (bit_0 << 1) | bit_1;
-            int priority  = !(attributes & 0x80);
+            int sprite_prio  = !(attributes & 0x80);
             
             // If priority bit not set but background is transparent and
             // current pixel isn't transparent draw. Otherwise if priority set
             // as long as pixel isn't transparent, draw it
             uint8_t final_color_id = palletes[pal_no][color_id]; 
-            if (!priority) {
-                if (old_buffer[row][x_pos + x] == 0 && color_id != 0) {
-                   screen_buffer[row][x_pos + x] = final_color_id;
-                   old_buffer[row][x_pos + x] = color_id;
+            if (!sprite_prio) {
+                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] && !old_buffer[row][x_pos + x])) {
+                    if (!cgb || !(is_booting || cgb_features)) {
+                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
+                       old_buffer[row][x_pos + x] = color_id;
+                   } else {                        
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       old_buffer[row][x_pos + x] = color_id;
+                   }
                 }               
             } else  {
-                if (color_id != 0) {
-                   screen_buffer[row][x_pos + x] = final_color_id;
-                   old_buffer[row][x_pos + x] = color_id;
+                if (color_id != 0 && (!cgb || (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x]))) {
+                    if (!cgb || !(is_booting || cgb_features)) {
+                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
+                       old_buffer[row][x_pos + x] = color_id;
+                   } else {
+                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       old_buffer[row][x_pos + x] = color_id;
+                   }
                 }
             }     
              
@@ -158,7 +256,29 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
      
         int x_pos = start_x - win_x;
         int tile_col = (x_pos) >> 3;
-        int tile_no = get_mem(bg_mem + (tile_row << 5)  + tile_col);
+        int tile_no = get_vram0(bg_mem + (tile_row << 5)  + tile_col);
+        
+        int tile_attributes = 0;
+        int palette_no = 0;
+        int tile_vram_bank_no = 0;        
+        int bg_prio = 0;
+
+        if (cgb) {
+            tile_attributes = get_vram(bg_mem + (tile_row << 5) + tile_col, 1);
+
+            if (is_booting || cgb_features) {
+                palette_no = tile_attributes & 0x7;
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);                
+                 bg_prio = tile_attributes & BIT_7;
+                
+            /* DMG mode in CGB, there is only 1 predefined BG palette which the
+             * boot rom initialized at startup containing 4 colors 
+             * and only the original vram bank is available */
+            } else {
+                palette_no = 0;
+                tile_vram_bank_no = 0; 
+            }
+        }
 
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
@@ -168,18 +288,30 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
         int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
         int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
         
-        int byte0 = get_mem(tile_loc + line_offset);
-        int byte1 = get_mem(tile_loc + line_offset + 1);
-        
+
+        int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
+        int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
+       
+         
+        // If Horizontal flip flag set in CGB mode
+        int horiz_flip = tile_attributes & BIT_5;
+
         // For each pixel in the line of the tile
         for (int j = pixel_x_start; j < 8; j++) {
 
             if ((start_x + j) >= 0 && (start_x + j) < 160) {
-                int bit_1 = (byte1 >> (7 - j)) & 0x1;
-                int bit_0 = (byte0 >> (7 - j)) & 0x1;
+                int bit_1 = (byte1 >> (horiz_flip ? j : (7 - j))) & 0x1;
+                int bit_0 = (byte0 >> (horiz_flip ? j : (7 - j))) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
-                screen_buffer[row][start_x + j] =  pallete[color_id]; 
-                old_buffer[row][start_x + j] = color_id;
+
+                if (!cgb || !(is_booting || cgb_features)) {
+                    screen_buffer[row][i + j] = get_dmg_bg_col(pallete[color_id]); 
+                    old_buffer[row][i + j] = color_id;
+                } else {
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                    old_buffer[row][i + j] = color_id;
+                    cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0; 
+                }
             }
         }   
     }      
@@ -207,28 +339,66 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
         uint8_t x_pos = i + scroll_x;
         int tile_col = x_pos >> 3;
-        int tile_no = get_mem(bg_mem + (tile_row << 5) + tile_col);
+        int tile_no = get_vram0(bg_mem + (tile_row << 5) + tile_col);
+
+        int tile_attributes = 0;
+        int palette_no = 0;
+        int tile_vram_bank_no = 0;
+        int bg_prio = 0;
+
+        if (cgb) {
+            tile_attributes = get_vram1(bg_mem + (tile_row << 5) + tile_col);
+            
+            if (is_booting || cgb_features) {
+                palette_no = tile_attributes & 0x7;
+                tile_vram_bank_no = !!(tile_attributes & BIT_3);           
+                bg_prio = tile_attributes & BIT_7;
+            
+            // DMG mode in CGB, there is only 1 predefined BG palette which the
+            // boot rom initialized at startup containing 4 colors 
+            // and only the original vram bank is available
+            } else {
+                palette_no = 0;
+                tile_vram_bank_no = 0; 
+            }
+        }
+
         // Signed tile no, need to convert to offset
         if (tile_mem == TILE_SET_1_START) {
             tile_no = (tile_no & 127) - (tile_no & 128) + 128;
         }
-         
-        int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
-        int line_offset = (y_pos % 8) * 2; //Offset into tile of our line
+        
+        // If Verical flip flag set in CGB mode
+        int vert_flip = tile_attributes & BIT_6;         
 
-        int byte0 = get_mem(tile_loc + line_offset);
-        int byte1 = get_mem(tile_loc + line_offset + 1);
+        int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
+        int line_offset = (vert_flip ? (7 - (y_pos % 8)) : ((y_pos % 8)) * 2); //Offset into tile of our line
+            
+        int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
+        int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
+
+
+        // If Horizontal flip flag set in CGB mode
+        int horiz_flip = tile_attributes & BIT_5;
 
         //Render entire tile row
         for (int j = 0; j < 8; j++) {
 
             if (i + j >= 0 && i + j < 160) {
 
-                int bit_1 = (byte1 >> (7 - j)) & 0x1;
-                int bit_0 = (byte0 >> (7 - j)) & 0x1;
+                int bit_1 = (byte1 >> (horiz_flip ? j : (7 - j))) & 0x1;
+                int bit_0 = (byte0 >> (horiz_flip ? j : (7 - j))) & 0x1;
                 int color_id = (bit_1 << 1) | bit_0;
-                screen_buffer[row][i + j] =  pallete[color_id]; 
-                old_buffer[row][i + j] = color_id;
+
+                if (!cgb || !(is_booting || cgb_features)) {
+                    screen_buffer[row][i + j] = get_dmg_bg_col(pallete[color_id]); 
+                    old_buffer[row][i + j] = color_id;
+                } else {
+                    screen_buffer[row][i + j] = get_cgb_bg_col(palette_no, color_id);
+                    old_buffer[row][i + j] = color_id;
+                    cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0;
+                   
+                }
             }
         }   
             
@@ -241,14 +411,14 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
       
 
 static void draw_tile_row() {
-  
+ 
     uint8_t win_y_pos = get_mem(WY_REG);
 
     uint16_t tile_mem; // Either tile set 0 or 1
 
     // Check if using Tile set 0 or 1 
     tile_mem = lcd_ctrl & BIT_4 ? TILE_SET_0_START : TILE_SET_1_START;
-    
+     
     //Draw background    
     uint16_t bg_mem = lcd_ctrl & BIT_3 ? BG_MAP_DATA1_START : BG_MAP_DATA0_START;
     draw_tile_bg_row(tile_mem, bg_mem);
@@ -264,11 +434,11 @@ static void draw_tile_row() {
 void output_screen() {
     draw_screen();
     adjust_to_framerate();
-
 }
 
 //Render the row number stored in the LY register
 void draw_row() {
+
     lcd_ctrl = get_mem(LCDC_REG);
     row = get_mem(LY_REG);
 
@@ -276,12 +446,25 @@ void draw_row() {
     if ((lcd_ctrl & BIT_7)) {
         uint8_t render_sprites = (lcd_ctrl & BIT_1);
         uint8_t render_tiles = (lcd_ctrl  & BIT_0);
-        if (render_tiles) {
+
+        if ((cgb && (cgb_features || is_booting)) || render_tiles) {
             draw_tile_row();
+        
         }
+        
         if (render_sprites) { 
             draw_sprite_row();
         }
-    } 
+   } 
+    
+   if (row >= 143) {
+        output_screen();
+//        for (int i = 0; i < 8; i++) {
+//            printf("palette %d %X %X %X %X\n", i, get_cgb_bg_col(i, 0), 
+//                get_cgb_bg_col(i, 1), get_cgb_bg_col(i, 2), get_cgb_bg_col(i, 3));
+//        }
+//        printf("\n\n");
+   }
+   
 }
 

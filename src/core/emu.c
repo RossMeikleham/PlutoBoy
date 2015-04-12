@@ -27,21 +27,23 @@ int breakpoint = BREAKPOINT_OFF;
  *
  * returns 1 if successfully initialized, 0
  * otherwise */
-int init(const char *file_path, int debugger, ClientOrServer cs) {
+int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;
 
     //Start logger
     set_log_level(LOG_INFO);
+    
+    log_message(LOG_INFO, "About to open file %s\n", file_path);
 
     if (!(size = load_rom_from_file(file_path, buffer))) {
-
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
     }
+    log_message(LOG_INFO, "File loaded %s\n", file_path);
 
-    if (!load_rom(file_path, buffer, size)) {
+    if (!load_rom(file_path, buffer, size, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }
@@ -63,8 +65,9 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
         DEBUG = 1;
     }
 
-    //Log ROM info
+    cgb_features = is_colour_compatible() || is_colour_only();
     
+    //Log ROM info
     char name_buf[100]; 
     int i;
     for(i = ROM_NAME_START; i <= ROM_NAME_END; i++) {
@@ -81,51 +84,57 @@ int init(const char *file_path, int debugger, ClientOrServer cs) {
     const char *c_type = get_cartridge_type();
     log_message(LOG_INFO,"Cartridge Type: %s\n",c_type != NULL ? c_type : "Unknown");
 
-    log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_compatible() ? "Yes":"No");
+    
+    log_message(LOG_INFO, "Has Gameboy Color features: %s\n", is_colour_compatible() || is_colour_only() ? "Yes":"No");
+    log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
     
     
     return 1;    
 }
 
-    
-void run() {
 
-    long current_cycles;
-    int skip_bug = 0;
-    long cycles = 0;
+static long current_cycles;
+static int skip_bug = 0;
+static long cycles = 0;    
 
-    if (DEBUG) {
-        int flags = get_command();
-        step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
 
-        breakpoint =  (flags & BREAKPOINT_SET) ? 
-            get_breakpoint() : BREAKPOINT_OFF;
-    }
+void add_current_cycles(unsigned c) {
+    cycles += c;
+    update_all_cycles(c);
+}
 
-    for(;;) { 
-        
+
+// Draws one frame then returns
+void run_one_frame() {
+    frame_drawn = 0;
+
+    while (!frame_drawn) {
         if (halted || stopped) {
 
-            current_cycles = 4;
+            long current_cycles = cgb_speed ? 2 : 4;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);
-            
+       
+            // If Key pressed in "stop" mode, then gameboy is "unstopped" 
             if (stopped) {
-                key_pressed();
+                if(key_pressed()) {
+                    stopped = 0;
+                }
             }
             if (halted) {
                 update_graphics(current_cycles);
             }
         }
         else if (!(halted || stopped)) {
-            current_cycles = exec_opcode(skip_bug);
-                   
+            current_cycles = 0;
+            current_cycles += exec_opcode(skip_bug);
+               
         }
 
         cycles += current_cycles;
-        if (cycles > 10000) {
+        if (cycles > 15000) {
             update_keys();
             cycles = 0;
         }
@@ -134,9 +143,29 @@ void run() {
         if (DEBUG && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
-
-            breakpoint =  (flags & BREAKPOINT_SET) ? 
-            get_breakpoint() : BREAKPOINT_OFF;
         }
     }
+    
 }
+
+void setup_debug() {
+    if (DEBUG) {
+        int flags = get_command();
+        step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
+
+        breakpoint =  (flags & BREAKPOINT_SET) ? 
+            get_breakpoint() : BREAKPOINT_OFF;
+    }
+
+
+}
+    
+void run() {
+    setup_debug();
+    for(;;) {run_one_frame();} 
+}
+        
+
+
+
+
