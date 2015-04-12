@@ -244,6 +244,7 @@ Browser version running in Firefox
 ![Firefox](/images/javascript.png?raw=true)
 
 PSP version running on PSP hardware:
+![psp](/images/pspray.jpg?raw=true)
 ![psp](/images/psp.jpg?raw=true)
 
 PSP version Running on PPSSPP emulator on Android:
