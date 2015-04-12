@@ -19,11 +19,13 @@ static Node *head_ptr; //current head of queue
 
 void init_sprite_prio_list() {
 
+    Node *prev = sentinal;
     for (int i = 0; i < MAX_SPRITES; i++) {
         Node *node = prio_sprites + i;
-        node->x_pos = 160; //Lowest prio
+        node->x_pos = 0xFFFF; //Lowest prio
         node->next = (i >= MAX_SPRITES - 1) ? sentinal : prio_sprites + i + 1; 
-        node->prev = (i == 0) ? sentinal : prio_sprites + i - 1;
+        node->prev = prev;
+        prev = &prio_sprites[i];
     }
 
     sentinal->next = prio_sprites;
@@ -59,16 +61,16 @@ void update_sprite_prios(int sprite_no, uint8_t x_pos) {
 
    
     // Move up priorities
-    if (swap_node->next != sentinal && val < swap_node->next->x_pos) {
-        while (swap_node->next != sentinal && val < swap_node->next->x_pos) {
+    if (swap_node->prev != sentinal && val < swap_node->prev->x_pos) {
+        while (swap_node->prev != sentinal && val < swap_node->prev->x_pos) {
             swap_node = swap_node->prev;
         }
         move_after(current_node, swap_node->prev);
      }
     
     // Move down priorites
-    else if (swap_node->prev != sentinal && val > swap_node->prev->x_pos) {
-        while (swap_node->prev != sentinal && val > swap_node->prev->x_pos) {
+    else if (swap_node->next != sentinal && val > swap_node->next->x_pos) {
+        while (swap_node->next != sentinal && val > swap_node->next->x_pos) {
             swap_node = swap_node->next;
         }
         move_after(current_node, swap_node);

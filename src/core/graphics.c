@@ -119,7 +119,7 @@ static void draw_sprite_row() {
         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row >= y_pos + height || x_pos >= 168 || x_pos == 0) {
+        if (y_pos > row || row >= y_pos + height || x_pos >= 160 || x_pos == 0) {
             continue;
         }
         
@@ -199,7 +199,7 @@ static void draw_sprite_row() {
                    }
                 }               
             } else  {
-                if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x])) {
+                if (color_id != 0 && (!cgb || (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x]))) {
                     if (!cgb || !(is_booting || cgb_features)) {
                        screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
@@ -459,6 +459,11 @@ void draw_row() {
     
    if (row >= 143) {
         output_screen();
+//        for (int i = 0; i < 8; i++) {
+//            printf("palette %d %X %X %X %X\n", i, get_cgb_bg_col(i, 0), 
+//                get_cgb_bg_col(i, 1), get_cgb_bg_col(i, 2), get_cgb_bg_col(i, 3));
+//        }
+//        printf("\n\n");
    }
    
 }
