@@ -10,7 +10,7 @@ Uses SDL for input/output but can easily be expanded to include other frameworks
 
 The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
-Play a demo game in the browser [here](http://rossmeikleham.github.io/GB-Emu-C/).
+Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
 
 The emulator supports 2 modes DMG (Dot Matrix Gameboy) and CGB (Color Gameboy),
 all original Gameboy games are backwards compatible in CGB mode:
