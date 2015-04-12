@@ -29,7 +29,7 @@ typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
-    int result = init_screen(GB_PIXELS_X * 3, GB_PIXELS_Y * 3, screen_buffer);
+    int result = init_screen(GB_PIXELS_X, GB_PIXELS_Y, screen_buffer);
     init_sprite_prio_list();    
         
     return result;

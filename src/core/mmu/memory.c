@@ -123,6 +123,7 @@ static uint8_t vram_bank_1[0x2000];
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 different background palettes, each with 4 colors.
  * Each color is represented by 2 bytes, initially set to white */
+/*  
 static uint8_t bg_palette_mem[0x40] = 
  {0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
@@ -132,6 +133,17 @@ static uint8_t bg_palette_mem[0x40] =
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F};           
+*/
+
+static uint8_t bg_palette_mem[0x40] = {
+     0xFF, 0x7F, 0xBF, 0x03, 0x1F, 0x00, 0x00, 0x00,
+     0xFF, 0x7F, 0x80, 0x69, 0x1F, 0x00, 0x00, 0x00,
+     0xFF, 0x7F, 0xF7, 0x63, 0x1F, 0x00, 0x00, 0x00,
+     0xFF, 0x7F, 0xBF, 0x03, 0x80, 0x69, 0x00, 0x00,
+     0xFF, 0x7F, 0x94, 0x7E, 0x80, 0x69, 0x00, 0x00,
+     0xFF, 0x7F, 0xF7, 0x63, 0x80, 0x69, 0x00, 0x00,
+     0xC0, 0x00, 0xC0, 0x00, 0xC0, 0x00, 0xC0, 0x00};
+  
     
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 difference background palettes, each with 3 colors. 
@@ -419,8 +431,7 @@ static uint8_t oam_get_mem(uint8_t addr) {
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
-static void dma_transfer(uint8_t val) {
-
+static void dma_transfer(uint8_t val) {        
     uint16_t source_addr = val << 8;
     for (int i = 0; i < 0xA0; i++) {
         oam_mem[i] = get_mem(source_addr + i);
@@ -465,7 +476,7 @@ static uint8_t io_read_mem(uint8_t addr) {
         case BGPI:
         case SPPI:
             return ((cgb && (is_booting || cgb_features)) ? 
-                io_mem[addr] | 0x40 : 0xC0);
+                io_mem[addr] : 0xC0);
 
        case BGPD:
        case SPPD:
@@ -486,6 +497,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         write_apu(global_addr, val); 
         return;
     }
+
     switch (global_addr) {
         /* Check Joypad values */
         case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
@@ -625,10 +637,10 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
 
                          break;
         
-        case BGPI : if (!cgb || !(cgb_features || is_booting)) {
-                        io_mem[addr] = 0;
-                    } else {
-                        io_mem[addr] = val;
+        case BGPI : 
+                    io_mem[addr] = val;
+                    if (cgb && (cgb_features || is_booting)) {
+                        io_mem[BGPD - 0xFF00] = bg_palette_mem[val & 0x3F];
                     }
                     break;
 
@@ -638,44 +650,52 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
                         uint8_t bgpi = io_read_mem(BGPI - 0xFF00);
-                        uint8_t index = bgpi & 0x3F;
-                        bg_palette_mem[index] = val;
+                       // uint8_t address = bgpi & 0x3F
+                       // uint8_t index = bgpi & 0x3F;
+                        bg_palette_mem[bgpi & 0x3F] = val;
 
                         /* Check if Auto Increment bit is set in Background Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (bgpi & 0x80) {
-                            index++;
-                            bgpi = (bgpi & 0x80) | (index & 0x3F);
+                            uint8_t address = bgpi & 0x3F;
+                            address++;
+                            address &= 0x3F;
+                            bgpi = (bgpi & 0x80) | address;
                             io_mem[BGPI - 0xFF00] = bgpi;
-                        }
+                            io_mem[SPPD - 0xFF00] = bg_palette_mem[bgpi & 0x3F];
+                        } 
 
                     } else {
                         io_mem[addr] = 0;
                     }
                     break;
 
-        case SPPI : if (!cgb || !(cgb_features || is_booting)) {
-                        io_mem[addr] = 0;
-                    } else {
-                        io_mem[addr] = val;
+        case SPPI : 
+                    io_mem[addr] = val;
+                    if (cgb && (cgb_features || is_booting)) {
+                        io_mem[SPPD - 0xFF00] = sprite_palette_mem[val & 0x3F];
                     }
                     break;
-
+        
         case SPPD : if (cgb && (cgb_features || is_booting)) {
                         io_mem[addr] = val;
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
                         uint8_t sppi = io_read_mem(SPPI - 0xFF00);
-                        uint8_t index = sppi & 0x3F;
-                        sprite_palette_mem[index] = val;
+                        sprite_palette_mem[sppi & 0x3F] = val;
 
                         /* Check if Auto Increment bit is set in Sprite Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (sppi & 0x80) {
-                            sppi = (sppi & 0x80) | ((index + 1) & 0x3F);
+                            uint8_t address = sppi & 0x3F;
+                            address++;
+                            address &= 0x3F;
+                            sppi = (sppi & 0x80) | address;
                             io_mem[SPPI - 0xFF00] = sppi;
-                        }
+                            io_mem[SPPD - 0xFF00] = sprite_palette_mem[sppi & 0x3F];
+                        } 
+
 
                     } else {
                         io_mem[SPPD - 0xFF00] = 0;
