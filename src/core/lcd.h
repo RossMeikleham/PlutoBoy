@@ -11,9 +11,6 @@
 #include <stdint.h>
 #include "cpu.h"
 
-
-extern int frame_drawn;
-
 /* Given the elapsed cpu cycles since the last
 * call to this function, updates the internal LCD
 * modes, registers and if a Vertical Blank occurs redisplays

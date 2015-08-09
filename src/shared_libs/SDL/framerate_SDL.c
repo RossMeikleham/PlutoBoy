@@ -36,13 +36,14 @@ int gettimeofday( struct timeval *tv, struct timezone *tz ) {
 #include <sys/time.h>
 #endif
 
-uint64_t get_timestamp_micro() {
 #ifndef EMSCRIPTEN
+uint64_t get_timestamp_micro() {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	return tv.tv_sec * 1000000ull + tv.tv_usec;
-#endif
 }
+#endif
+
 
 //Assign Framerate in FPS and start counter
 void start_framerate(float f) {

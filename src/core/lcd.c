@@ -24,8 +24,6 @@ static uint8_t window_line = 0;
 static uint8_t vblank_line = 0;
 static uint8_t scanline_transferred = 0;
 
-int frame_drawn = 0;
-
 int screen_enabled() {
     return !screen_off;
 }

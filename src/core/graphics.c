@@ -22,6 +22,7 @@ static int cgb_bg_prio[144][160];
 static uint8_t row;
 static uint8_t lcd_ctrl;
 
+int frame_drawn = 0;
 
 /*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
 typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
@@ -459,11 +460,7 @@ void draw_row() {
     
    if (row >= 143) {
         output_screen();
-//        for (int i = 0; i < 8; i++) {
-//            printf("palette %d %X %X %X %X\n", i, get_cgb_bg_col(i, 0), 
-//                get_cgb_bg_col(i, 1), get_cgb_bg_col(i, 2), get_cgb_bg_col(i, 3));
-//        }
-//        printf("\n\n");
+        frame_drawn = 1;
    }
    
 }
