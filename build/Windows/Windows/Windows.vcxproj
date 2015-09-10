@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\..\src\core\interrupts.h" />
     <ClInclude Include="..\..\..\src\core\lcd.h" />
     <ClInclude Include="..\..\..\src\core\memory_layout.h" />
+    <ClInclude Include="..\..\..\src\core\mmu\hdma.h" />
     <ClInclude Include="..\..\..\src\core\mmu\mbc.h" />
     <ClInclude Include="..\..\..\src\core\mmu\mbc0.h" />
     <ClInclude Include="..\..\..\src\core\mmu\mbc1.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="..\..\..\src\core\graphics.c" />
     <ClCompile Include="..\..\..\src\core\interrupts.c" />
     <ClCompile Include="..\..\..\src\core\lcd.c" />
+    <ClCompile Include="..\..\..\src\core\mmu\hdma.c" />
     <ClCompile Include="..\..\..\src\core\mmu\mbc.c" />
     <ClCompile Include="..\..\..\src\core\mmu\mbc0.c" />
     <ClCompile Include="..\..\..\src\core\mmu\mbc1.c" />
