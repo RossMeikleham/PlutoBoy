@@ -373,7 +373,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
         int vert_flip = tile_attributes & BIT_6;         
 
         int tile_loc = tile_mem + (tile_no * 16); //Location of tile in memory
-        int line_offset = (vert_flip ? (7 - (y_pos % 8)) : ((y_pos % 8)) * 2); //Offset into tile of our line
+        int line_offset = (vert_flip ? (7 - y_pos % 8) : (y_pos % 8)) * 2; //Offset into tile of our line
             
         int byte0 = get_vram(tile_loc + line_offset, tile_vram_bank_no);
         int byte1 = get_vram(tile_loc + line_offset + 1, tile_vram_bank_no);
