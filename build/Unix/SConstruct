@@ -1,33 +1,50 @@
 import sys
 
 #Release environment
-release_env = Environment(CC = 'clang', 
-                  CCFLAGS = '-O2 -fomit-frame-pointer -W -Wall -Wextra'
-		 )
+release_env = Environment( 
+                CCFLAGS = '-O2 -fomit-frame-pointer -W -Wall -Wextra'
+		    )
 
 #Profile environment
-profile_env = Environment(CC = 'gcc -std=c99',
-		  CCFLAGS = '-pg -O2 -W -Wall -Wextra',
-		  LINKFLAGS = '-pg'
-                 )
+profile_env = Environment(
+		        CCFLAGS = '-pg -O2 -W -Wall -Wextra',
+		        LINKFLAGS = '-pg'
+            )
 
 #Debug environment
-debug_env = Environment(CC = 'gcc -std=c99',
-		  CCFLAGS = '-g -W -Wall -Wextra'
-		  )
+debug_env = Environment(CCFLAGS = '-g -W -Wall -Wextra')
 
-env = Environment()
+env = release_env
+compiler = 'clang'
+cxxcompiler = 'clang++'
 
-debug = ARGUMENTS.get('debug',0)
-prof  = ARGUMENTS.get('prof',0)
+for key, value in ARGLIST:
+    if key == 'cc':
+        if value == 'gcc':
+            compiler = 'gcc -std=c99'
+            cxxcompiler = 'g++'
+        elif value == 'clang':
+            compiler = 'clang'
+            cxxcompiler = 'clang++'
+        else:
+            print("build error expected cc=clang or cc=gcc");
+    
+    elif key == 'mode':
+        if value == 'prof':
+            env = profile_env
+        elif value == 'debug':
+            env = debug_env
+        elif value == 'release':
+            env = release_env
+        else:
+            print("unknown mode, expected either prof, debug, or release")
+       
+    else:
+        print("Unknown setting:" + key)
 
-if int(debug):
-	env = debug_env
-elif int(prof):
-	env = profile_env
-else:
-	env = release_env 
 
+env.Replace(CC = compiler)
+env.Replace(CXX = cxxcompiler)
 
 env.Append(CPPPATH = ['/usr/include/SDL'])
 env.Append(CPPPATH = ['/usr/local/include/SDL'])
@@ -44,9 +61,5 @@ sourceObjs = env.Object( Glob('../../src/core/*.c'))\
            + env.Object( Glob('../../src/platforms/standard/*.c'))\
            + env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
            + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))
-
-#OSX needs to link SDLmain.m to be able to work with SDL
-#if sys.platform == 'darwin':
-#	sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/OSX/*.m'))
 
 env.Program('gb_emu',sourceObjs)
