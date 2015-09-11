@@ -16,7 +16,7 @@
 
 static unsigned cycles = 0;
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
 static Gb_Apu apu;
 static Sound_Queue sound;
 static Stereo_Buffer stereo_buf;
@@ -25,7 +25,7 @@ static blip_sample_t sample_buffer[BUF_SIZE];
 
 
 void init_apu() {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
     if ( SDL_Init( SDL_INIT_AUDIO ) < 0 )
     {
         atexit( SDL_Quit );
@@ -42,7 +42,7 @@ void init_apu() {
 }
     
 void sound_add_cycles(unsigned c) {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
     cycles += c;
     if (cycles >= MAX_CYCLES) {
         cycles -= MAX_CYCLES;
@@ -52,14 +52,14 @@ void sound_add_cycles(unsigned c) {
 }
 
 void write_apu(uint16_t addr, uint8_t val) {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
     apu.write_register(cycles, addr, val);
 #endif
 }
 
 
 uint8_t read_apu(uint16_t addr) {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
    return apu.read_register(cycles, addr);
 #else 
    return 0x0;
@@ -70,7 +70,7 @@ uint8_t read_apu(uint16_t addr) {
                            
 
 void end_frame() {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) //&& !defined(EMSCRIPTEN)
 	    apu.end_frame(MAX_CYCLES);
         stereo_buf.end_frame(MAX_CYCLES);
 			
