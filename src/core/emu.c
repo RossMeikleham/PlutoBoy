@@ -140,7 +140,7 @@ void run_one_frame() {
         }
         skip_bug = handle_interrupts();
 
-        if (DEBUG && step_count > 0 && --step_count == 0) {
+        if (debug && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
         }
@@ -149,7 +149,7 @@ void run_one_frame() {
 }
 
 void setup_debug() {
-    if (DEBUG) {
+    if (debug) {
         int flags = get_command();
         step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
 
