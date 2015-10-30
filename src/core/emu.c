@@ -17,7 +17,7 @@
 
 
 // Debug options
-int DEBUG = 0;
+int debug = 0;
 int step_count = STEPS_OFF;
 int breakpoint = BREAKPOINT_OFF;
 
@@ -62,7 +62,7 @@ int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
     
      
     if (debugger) {
-        DEBUG = 1;
+        debug = 1;
     }
 
     cgb_features = is_colour_compatible() || is_colour_only();
