@@ -1,0 +1,569 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		913396FC1BE3D4F800178CD2 /* cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F21BE3D4F800178CD2 /* cpu.c */; };
+		913396FD1BE3D4F800178CD2 /* disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F31BE3D4F800178CD2 /* disasm.c */; };
+		913396FE1BE3D4F800178CD2 /* emu.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F41BE3D4F800178CD2 /* emu.c */; };
+		913396FF1BE3D4F800178CD2 /* graphics.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F51BE3D4F800178CD2 /* graphics.c */; };
+		913397001BE3D4F800178CD2 /* interrupts.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F61BE3D4F800178CD2 /* interrupts.c */; };
+		913397011BE3D4F800178CD2 /* lcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F71BE3D4F800178CD2 /* lcd.c */; };
+		913397021BE3D4F800178CD2 /* rom_info.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F81BE3D4F800178CD2 /* rom_info.c */; };
+		913397031BE3D4F800178CD2 /* serial_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396F91BE3D4F800178CD2 /* serial_io.c */; };
+		913397041BE3D4F800178CD2 /* sprite_priorities.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396FA1BE3D4F800178CD2 /* sprite_priorities.c */; };
+		913397051BE3D4F800178CD2 /* timers.c in Sources */ = {isa = PBXBuildFile; fileRef = 913396FB1BE3D4F800178CD2 /* timers.c */; };
+		9133970D1BE3D51E00178CD2 /* hdma.c in Sources */ = {isa = PBXBuildFile; fileRef = 913397061BE3D51E00178CD2 /* hdma.c */; };
+		9133970E1BE3D51E00178CD2 /* mbc.c in Sources */ = {isa = PBXBuildFile; fileRef = 913397071BE3D51E00178CD2 /* mbc.c */; };
+		9133970F1BE3D51E00178CD2 /* mbc0.c in Sources */ = {isa = PBXBuildFile; fileRef = 913397081BE3D51E00178CD2 /* mbc0.c */; };
+		913397101BE3D51E00178CD2 /* mbc1.c in Sources */ = {isa = PBXBuildFile; fileRef = 913397091BE3D51E00178CD2 /* mbc1.c */; };
+		913397111BE3D51E00178CD2 /* mbc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 9133970A1BE3D51E00178CD2 /* mbc3.c */; };
+		913397121BE3D51E00178CD2 /* mbc5.c in Sources */ = {isa = PBXBuildFile; fileRef = 9133970B1BE3D51E00178CD2 /* mbc5.c */; };
+		913397131BE3D51E00178CD2 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 9133970C1BE3D51E00178CD2 /* memory.c */; };
+		913397151BE3D6C200178CD2 /* rom.gb in Resources */ = {isa = PBXBuildFile; fileRef = 913397141BE3D6C200178CD2 /* rom.gb */; settings = {ASSET_TAGS = (); }; };
+		9145A0AC1BDBCB200009154A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9145A0AB1BDBCB200009154A /* main.m */; };
+		9145A0AF1BDBCB200009154A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9145A0AE1BDBCB200009154A /* AppDelegate.m */; };
+		9145A0B21BDBCB200009154A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9145A0B11BDBCB200009154A /* ViewController.m */; };
+		9145A0B51BDBCB200009154A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9145A0B31BDBCB200009154A /* Main.storyboard */; };
+		9145A0B71BDBCB200009154A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9145A0B61BDBCB200009154A /* Assets.xcassets */; };
+		9145A0BA1BDBCB200009154A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9145A0B81BDBCB200009154A /* LaunchScreen.storyboard */; };
+		9145A0E51BDBFF710009154A /* IOS in Resources */ = {isa = PBXBuildFile; fileRef = 9145A0E41BDBFF710009154A /* IOS */; settings = {ASSET_TAGS = (); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9145A0C11BDBCB210009154A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9145A09F1BDBCB200009154A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9145A0A61BDBCB200009154A;
+			remoteInfo = PlutoBoy;
+		};
+		9145A0CC1BDBCB210009154A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9145A09F1BDBCB200009154A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9145A0A61BDBCB200009154A;
+			remoteInfo = PlutoBoy;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		913396F21BE3D4F800178CD2 /* cpu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = cpu.c; path = ../../../src/core/cpu.c; sourceTree = "<group>"; };
+		913396F31BE3D4F800178CD2 /* disasm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = disasm.c; path = ../../../src/core/disasm.c; sourceTree = "<group>"; };
+		913396F41BE3D4F800178CD2 /* emu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = emu.c; path = ../../../src/core/emu.c; sourceTree = "<group>"; };
+		913396F51BE3D4F800178CD2 /* graphics.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = graphics.c; path = ../../../src/core/graphics.c; sourceTree = "<group>"; };
+		913396F61BE3D4F800178CD2 /* interrupts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = interrupts.c; path = ../../../src/core/interrupts.c; sourceTree = "<group>"; };
+		913396F71BE3D4F800178CD2 /* lcd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = lcd.c; path = ../../../src/core/lcd.c; sourceTree = "<group>"; };
+		913396F81BE3D4F800178CD2 /* rom_info.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = rom_info.c; path = ../../../src/core/rom_info.c; sourceTree = "<group>"; };
+		913396F91BE3D4F800178CD2 /* serial_io.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = serial_io.c; path = ../../../src/core/serial_io.c; sourceTree = "<group>"; };
+		913396FA1BE3D4F800178CD2 /* sprite_priorities.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = sprite_priorities.c; path = ../../../src/core/sprite_priorities.c; sourceTree = "<group>"; };
+		913396FB1BE3D4F800178CD2 /* timers.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = timers.c; path = ../../../src/core/timers.c; sourceTree = "<group>"; };
+		913397061BE3D51E00178CD2 /* hdma.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = hdma.c; path = ../../../src/core/mmu/hdma.c; sourceTree = "<group>"; };
+		913397071BE3D51E00178CD2 /* mbc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mbc.c; path = ../../../src/core/mmu/mbc.c; sourceTree = "<group>"; };
+		913397081BE3D51E00178CD2 /* mbc0.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mbc0.c; path = ../../../src/core/mmu/mbc0.c; sourceTree = "<group>"; };
+		913397091BE3D51E00178CD2 /* mbc1.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mbc1.c; path = ../../../src/core/mmu/mbc1.c; sourceTree = "<group>"; };
+		9133970A1BE3D51E00178CD2 /* mbc3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mbc3.c; path = ../../../src/core/mmu/mbc3.c; sourceTree = "<group>"; };
+		9133970B1BE3D51E00178CD2 /* mbc5.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = mbc5.c; path = ../../../src/core/mmu/mbc5.c; sourceTree = "<group>"; };
+		9133970C1BE3D51E00178CD2 /* memory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = memory.c; path = ../../../src/core/mmu/memory.c; sourceTree = "<group>"; };
+		913397141BE3D6C200178CD2 /* rom.gb */ = {isa = PBXFileReference; lastKnownFileType = file; name = rom.gb; path = ../../../../../../Downloads/rom.gb; sourceTree = "<group>"; };
+		9145A0A71BDBCB200009154A /* PlutoBoy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = PlutoBoy.app; path = "/Users/ross/Projects/PlutoBoy/build/IOS/PlutoBoy/build/Debug-iphoneos/PlutoBoy.app"; sourceTree = "<absolute>"; };
+		9145A0AB1BDBCB200009154A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ../../../../src/platforms/IOS/main.m; sourceTree = "<group>"; };
+		9145A0AD1BDBCB200009154A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = ../../../../src/platforms/IOS/AppDelegate.h; sourceTree = "<group>"; };
+		9145A0AE1BDBCB200009154A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = ../../../../src/platforms/IOS/AppDelegate.m; sourceTree = "<group>"; };
+		9145A0B01BDBCB200009154A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ViewController.h; path = ../../../../src/platforms/IOS/ViewController.h; sourceTree = "<group>"; };
+		9145A0B11BDBCB200009154A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ViewController.m; path = ../../../../src/platforms/IOS/ViewController.m; sourceTree = "<group>"; };
+		9145A0B41BDBCB200009154A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9145A0B61BDBCB200009154A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9145A0B91BDBCB200009154A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		9145A0BB1BDBCB200009154A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9145A0C01BDBCB210009154A /* PlutoBoyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = PlutoBoyTests.xctest; path = "/Users/ross/Projects/PlutoBoy/build/IOS/PlutoBoy/build/Debug-iphoneos/PlutoBoyTests.xctest"; sourceTree = "<absolute>"; };
+		9145A0CB1BDBCB210009154A /* PlutoBoyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = PlutoBoyUITests.xctest; path = "/Users/ross/Projects/PlutoBoy/build/IOS/PlutoBoy/build/Debug-iphoneos/PlutoBoyUITests.xctest"; sourceTree = "<absolute>"; };
+		9145A0E41BDBFF710009154A /* IOS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = folder; name = IOS; path = ../../../../src/platforms/IOS; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9145A0A41BDBCB200009154A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0BD1BDBCB210009154A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0C81BDBCB210009154A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9145A09E1BDBCB200009154A = {
+			isa = PBXGroup;
+			children = (
+				913397061BE3D51E00178CD2 /* hdma.c */,
+				913397071BE3D51E00178CD2 /* mbc.c */,
+				913397081BE3D51E00178CD2 /* mbc0.c */,
+				913397091BE3D51E00178CD2 /* mbc1.c */,
+				9133970A1BE3D51E00178CD2 /* mbc3.c */,
+				9133970B1BE3D51E00178CD2 /* mbc5.c */,
+				9133970C1BE3D51E00178CD2 /* memory.c */,
+				913396F21BE3D4F800178CD2 /* cpu.c */,
+				913396F31BE3D4F800178CD2 /* disasm.c */,
+				913396F41BE3D4F800178CD2 /* emu.c */,
+				913396F51BE3D4F800178CD2 /* graphics.c */,
+				913396F61BE3D4F800178CD2 /* interrupts.c */,
+				913396F71BE3D4F800178CD2 /* lcd.c */,
+				913396F81BE3D4F800178CD2 /* rom_info.c */,
+				913396F91BE3D4F800178CD2 /* serial_io.c */,
+				913396FA1BE3D4F800178CD2 /* sprite_priorities.c */,
+				913396FB1BE3D4F800178CD2 /* timers.c */,
+				9145A0A91BDBCB200009154A /* PlutoBoy */,
+			);
+			sourceTree = "<group>";
+		};
+		9145A0A91BDBCB200009154A /* PlutoBoy */ = {
+			isa = PBXGroup;
+			children = (
+				9145A0E11BDBFF150009154A /* Graphics */,
+				9145A0AD1BDBCB200009154A /* AppDelegate.h */,
+				9145A0AE1BDBCB200009154A /* AppDelegate.m */,
+				9145A0B01BDBCB200009154A /* ViewController.h */,
+				9145A0B11BDBCB200009154A /* ViewController.m */,
+				9145A0B31BDBCB200009154A /* Main.storyboard */,
+				9145A0B61BDBCB200009154A /* Assets.xcassets */,
+				9145A0B81BDBCB200009154A /* LaunchScreen.storyboard */,
+				9145A0BB1BDBCB200009154A /* Info.plist */,
+				9145A0AA1BDBCB200009154A /* Supporting Files */,
+			);
+			path = PlutoBoy;
+			sourceTree = "<group>";
+		};
+		9145A0AA1BDBCB200009154A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				913397141BE3D6C200178CD2 /* rom.gb */,
+				9145A0AB1BDBCB200009154A /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9145A0E11BDBFF150009154A /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				9145A0E41BDBFF710009154A /* IOS */,
+			);
+			name = Graphics;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9145A0A61BDBCB200009154A /* PlutoBoy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9145A0D41BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoy" */;
+			buildPhases = (
+				9145A0A31BDBCB200009154A /* Sources */,
+				9145A0A41BDBCB200009154A /* Frameworks */,
+				9145A0A51BDBCB200009154A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PlutoBoy;
+			productName = PlutoBoy;
+			productReference = 9145A0A71BDBCB200009154A /* PlutoBoy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		9145A0BF1BDBCB210009154A /* PlutoBoyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9145A0D71BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoyTests" */;
+			buildPhases = (
+				9145A0BC1BDBCB210009154A /* Sources */,
+				9145A0BD1BDBCB210009154A /* Frameworks */,
+				9145A0BE1BDBCB210009154A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9145A0C21BDBCB210009154A /* PBXTargetDependency */,
+			);
+			name = PlutoBoyTests;
+			productName = PlutoBoyTests;
+			productReference = 9145A0C01BDBCB210009154A /* PlutoBoyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		9145A0CA1BDBCB210009154A /* PlutoBoyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9145A0DA1BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoyUITests" */;
+			buildPhases = (
+				9145A0C71BDBCB210009154A /* Sources */,
+				9145A0C81BDBCB210009154A /* Frameworks */,
+				9145A0C91BDBCB210009154A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				9145A0CD1BDBCB210009154A /* PBXTargetDependency */,
+			);
+			name = PlutoBoyUITests;
+			productName = PlutoBoyUITests;
+			productReference = 9145A0CB1BDBCB210009154A /* PlutoBoyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9145A09F1BDBCB200009154A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = "Ross Meikleham";
+				TargetAttributes = {
+					9145A0A61BDBCB200009154A = {
+						CreatedOnToolsVersion = 7.0.1;
+					};
+					9145A0BF1BDBCB210009154A = {
+						CreatedOnToolsVersion = 7.0.1;
+						TestTargetID = 9145A0A61BDBCB200009154A;
+					};
+					9145A0CA1BDBCB210009154A = {
+						CreatedOnToolsVersion = 7.0.1;
+						TestTargetID = 9145A0A61BDBCB200009154A;
+					};
+				};
+			};
+			buildConfigurationList = 9145A0A21BDBCB200009154A /* Build configuration list for PBXProject "PlutoBoy" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9145A09E1BDBCB200009154A;
+			productRefGroup = 9145A09E1BDBCB200009154A;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9145A0A61BDBCB200009154A /* PlutoBoy */,
+				9145A0BF1BDBCB210009154A /* PlutoBoyTests */,
+				9145A0CA1BDBCB210009154A /* PlutoBoyUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9145A0A51BDBCB200009154A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				913397151BE3D6C200178CD2 /* rom.gb in Resources */,
+				9145A0BA1BDBCB200009154A /* LaunchScreen.storyboard in Resources */,
+				9145A0B71BDBCB200009154A /* Assets.xcassets in Resources */,
+				9145A0E51BDBFF710009154A /* IOS in Resources */,
+				9145A0B51BDBCB200009154A /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0BE1BDBCB210009154A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0C91BDBCB210009154A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9145A0A31BDBCB200009154A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9133970D1BE3D51E00178CD2 /* hdma.c in Sources */,
+				9133970E1BE3D51E00178CD2 /* mbc.c in Sources */,
+				9133970F1BE3D51E00178CD2 /* mbc0.c in Sources */,
+				913397101BE3D51E00178CD2 /* mbc1.c in Sources */,
+				913397111BE3D51E00178CD2 /* mbc3.c in Sources */,
+				913397121BE3D51E00178CD2 /* mbc5.c in Sources */,
+				913397131BE3D51E00178CD2 /* memory.c in Sources */,
+				913396FC1BE3D4F800178CD2 /* cpu.c in Sources */,
+				913396FD1BE3D4F800178CD2 /* disasm.c in Sources */,
+				913396FE1BE3D4F800178CD2 /* emu.c in Sources */,
+				913396FF1BE3D4F800178CD2 /* graphics.c in Sources */,
+				913397001BE3D4F800178CD2 /* interrupts.c in Sources */,
+				913397011BE3D4F800178CD2 /* lcd.c in Sources */,
+				913397021BE3D4F800178CD2 /* rom_info.c in Sources */,
+				913397031BE3D4F800178CD2 /* serial_io.c in Sources */,
+				913397041BE3D4F800178CD2 /* sprite_priorities.c in Sources */,
+				913397051BE3D4F800178CD2 /* timers.c in Sources */,
+				9145A0B21BDBCB200009154A /* ViewController.m in Sources */,
+				9145A0AF1BDBCB200009154A /* AppDelegate.m in Sources */,
+				9145A0AC1BDBCB200009154A /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0BC1BDBCB210009154A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9145A0C71BDBCB210009154A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		9145A0C21BDBCB210009154A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9145A0A61BDBCB200009154A /* PlutoBoy */;
+			targetProxy = 9145A0C11BDBCB210009154A /* PBXContainerItemProxy */;
+		};
+		9145A0CD1BDBCB210009154A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9145A0A61BDBCB200009154A /* PlutoBoy */;
+			targetProxy = 9145A0CC1BDBCB210009154A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		9145A0B31BDBCB200009154A /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9145A0B41BDBCB200009154A /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		9145A0B81BDBCB200009154A /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9145A0B91BDBCB200009154A /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9145A0D21BDBCB210009154A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		9145A0D31BDBCB210009154A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		9145A0D51BDBCB210009154A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = PlutoBoy/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		9145A0D61BDBCB210009154A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = PlutoBoy/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		9145A0D81BDBCB210009154A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = PlutoBoyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PlutoBoy.app/PlutoBoy";
+			};
+			name = Debug;
+		};
+		9145A0D91BDBCB210009154A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = PlutoBoyTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PlutoBoy.app/PlutoBoy";
+			};
+			name = Release;
+		};
+		9145A0DB1BDBCB210009154A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = PlutoBoyUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = PlutoBoy;
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		9145A0DC1BDBCB210009154A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = PlutoBoyUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoBoyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = PlutoBoy;
+				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9145A0A21BDBCB200009154A /* Build configuration list for PBXProject "PlutoBoy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9145A0D21BDBCB210009154A /* Debug */,
+				9145A0D31BDBCB210009154A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9145A0D41BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9145A0D51BDBCB210009154A /* Debug */,
+				9145A0D61BDBCB210009154A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9145A0D71BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9145A0D81BDBCB210009154A /* Debug */,
+				9145A0D91BDBCB210009154A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9145A0DA1BDBCB210009154A /* Build configuration list for PBXNativeTarget "PlutoBoyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9145A0DB1BDBCB210009154A /* Debug */,
+				9145A0DC1BDBCB210009154A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9145A09F1BDBCB200009154A /* Project object */;
+}
