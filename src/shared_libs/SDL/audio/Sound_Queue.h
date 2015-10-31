@@ -12,6 +12,10 @@
 
 #include "SDL.h"
 
+#ifdef EMSCRIPTEN 
+#include "Emscripten_SDL_Semaphore.h"
+#endif
+
 // Simple SDL sound wrapper that has a synchronous interface
 class Sound_Queue {
 public:

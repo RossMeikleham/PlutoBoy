@@ -4,6 +4,7 @@ COMMON_DIR = $(MAIN_DIR)/common
 CORE_DIR=../../src/core
 MMU_DIR=$(CORE_DIR)/mmu
 IO_DIR=../../src/shared_libs/SDL
+SOUND_DIR=$(IO_DIR)/audio
 FILE_BROWSER_DIR=$(MAIN_DIR)/file_browser
 
 MAIN_DIR_FILES = $(filter-out $(MAIN_DIR)/main.c, $(wildcard $(MAIN_DIR)/*.c)) 
@@ -14,17 +15,18 @@ MMU_DIR_FILES = $(wildcard $(MMU_DIR)/*.c)
 IO_DIR_FILES = $(wildcard $(IO_DIR)/*.c)
 IO_DIR_FILES2 = $(wildcard $(IO_DIR)/*.cpp)
 FILE_BROWSER_FILES =$(wildcard $(FILE_BROWSER_DIR)/*.c)
+SOUND_DIR_FILES =$(wildcard $(SOUND_DIR)/*.cpp)
 
 C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(IO_DIR_FILES) $(FILE_BROWSER_FILES) $(MAIN_FILE)
 
-CPP_FILES = $(IO_DIR_FILES2) 
+CPP_FILES = $(IO_DIR_FILES2) $(SOUND_DIR_FILES)
 
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES))) $(addsuffix .o, $(basename $(CPP_FILES)))
 
 TARGET		= gameboy.html
 OBJS		= $(OBJ_FILES)
 
-CFLAGS		= -O2 -Wall
+CFLAGS		= -O3 -Wall
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
 CC = emcc
