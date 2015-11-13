@@ -19,7 +19,7 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl-net1.2-dev; fi
     
     # Native OSX Build setup
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; && [ "$BUILD" == "native" ]; then brew install scons; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl_net; fi
