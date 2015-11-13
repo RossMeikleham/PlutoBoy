@@ -1,8 +1,8 @@
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
-| Linux                           | OSX                             |
-|---------------------------------|---------------------------------|
-| [![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master)](https://travis-ci.org/RossMeikleham/GB-Emu-C) | [![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=OSX)](https://travis-ci.org/RossMeikleham/GB-Emu-C) |
+| Linux + OSX                     | 
+|---------------------------------|
+| ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 
 
 Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.

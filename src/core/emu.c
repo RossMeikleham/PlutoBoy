@@ -17,7 +17,7 @@
 
 
 // Debug options
-int DEBUG = 0;
+int debug = 0;
 int step_count = STEPS_OFF;
 int breakpoint = BREAKPOINT_OFF;
 
@@ -62,7 +62,7 @@ int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
     
      
     if (debugger) {
-        DEBUG = 1;
+        debug = 1;
     }
 
     cgb_features = is_colour_compatible() || is_colour_only();
@@ -140,7 +140,7 @@ void run_one_frame() {
         }
         skip_bug = handle_interrupts();
 
-        if (DEBUG && step_count > 0 && --step_count == 0) {
+        if (debug && step_count > 0 && --step_count == 0) {
             int flags = get_command();
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
         }
@@ -149,7 +149,7 @@ void run_one_frame() {
 }
 
 void setup_debug() {
-    if (DEBUG) {
+    if (debug) {
         int flags = get_command();
         step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
 
