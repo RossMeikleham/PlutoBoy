@@ -9,7 +9,7 @@ env:
     - BUILD=native CC=clang MODE=debug
     - BUILD=native CC=gcc MODE=release
     - BUILD=native CC=gcc MODE=debug
-
+    - BUILD=psp CC=gcc MODE=release
 
 install:    
      # Native OSX build setup
@@ -23,7 +23,13 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl2; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl_net; fi
-    
+    # Building PSP version on OSX/Linux
+    - if [ "$BUILD" == "psp" ]; then git clone https://github.com/pspdev/psptoolchain; fi
+    - if [ "$BUILD" == "psp" ]; then cd psptoolchain ; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool libtool-bin subversion tcl unzip; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo ./prepare-mac-os.sh; fi 
+    - if [ "$BUILD" == "psp" ]; then sudo ./toolchain-sudo.sh; fi
+
 
 script:
     # Native builds
