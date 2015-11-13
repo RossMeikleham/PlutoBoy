@@ -12,24 +12,25 @@ env:
     - BUILD=psp CC=gcc MODE=release
 
 install:    
-     # Native OSX build setup
+     # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install clang; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install libsdl1.2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install libsdl-net1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl-net1.2-dev; fi
     
-    # Native Linux Build setup
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl2; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install sdl_net; fi
+    # Native OSX Build setup
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; && [ "$BUILD" == "native" ]; then brew install scons; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl_net; fi
+    
     # Building PSP version on OSX/Linux
-    - if [ "$BUILD" == "psp" ]; then echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo dpkg-reconfigure dash; fi 
+    - if [ "$BUILD" == "psp" ]; then echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
     - if [ "$BUILD" == "psp" ]; then git clone https://github.com/pspdev/psptoolchain; fi
     - if [ "$BUILD" == "psp" ]; then cd psptoolchain; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo dpkg-reconfigure dash; fi 
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get update; fi 
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip sdl-config; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo ./prepare-mac-os.sh; fi 
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then curl -o automake.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then tar -zxvf automake.tar.gz ; fi
