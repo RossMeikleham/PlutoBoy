@@ -1,36 +1,88 @@
 # Unix builds
 
+language: c
+
 os:
     - linux
     - osx
 
 env:
-    - BUILD=native CC=clang MODE=release
-    - BUILD=native CC=clang MODE=debug
-    - BUILD=native CC=gcc MODE=release
-    - BUILD=native CC=gcc MODE=debug
-    - BUILD=psp CC=gcc MODE=release
+    - BUILD=native CC=clang CXX=clang++ MODE=release
+    - BUILD=native CC=clang CXX=clang++ MODE=debug
+    - BUILD=native CC=gcc CXX=g++ MODE=release
+    - BUILD=native CC=gcc CXX=g++ MODE=debug
+    - BUILD=psp CC=gcc CXX=g++ MODE=release
+    - BUILD=emscripten CC=clang CXX=clang++ MODE=release
+
+
+before_install:
+  - touch ~/error.log
+
 
 install:    
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install clang; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install clang; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl1.2-dev; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl-net1.2-dev; fi
     
     # Native OSX Build setup
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl_net; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl_mixer; fi
+
+   
+   
+    # Install Emscripten version on OSX/Linux
     
-    # Building PSP version on OSX/Linux
+    # Update clang + python and install CMAKE on Linux
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:kubuntu-ppa/backports; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.6 main'; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install build-essential; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install python llvm-3.6-dev libclang-3.6-dev clang-3.6; fi
+   
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export CC=clang CXX=clang++; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /usr/bin/clang; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /usr/bin/clang++; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/clang++-3.6 /usr/bin/clang++; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm /usr/local/clang-3.4/bin/clang; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm /usr/local/clang-3.4/bin/clang++; fi
+
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://cmake.org/files/v3.4/cmake-3.4.0-Linux-x86_64.tar.gz --no-check-certificate; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then mkdir cmake-dist; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xzf cmake-3.4.0-Linux-x86_64.tar.gz -C cmake-dist --strip-components=1; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-dist/bin:$PATH; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/bin/c++:/usr/bin/make; fi
+    
+    # Install Python on OSX
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python; fi
+    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then sudo ln -sf /usr/bin/python2.7 /usr/local/bin/python2; fi
+   
+    - if [ "$BUILD" == "emscripten" ]; then wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz; fi
+    - if [ "$BUILD" == "emscripten" ]; then tar zxvf emsdk-portable.tar.gz; fi
+    - if [ "$BUILD" == "emscripten" ]; then cd emsdk_portable; fi
+    - if [ "$BUILD" == "emscripten" ]; then ./emsdk update; fi
+    - if [ "$BUILD" == "emscripten" ]; then ./emsdk install latest; fi
+    - if [ "$BUILD" == "emscripten" ]; then ./emsdk activate latest; fi
+    - if [ "$BUILD" == "emscripten" ]; then source ./emsdk_env.sh; fi
+    - if [ "$BUILD" == "emscripten" ]; then cd ../build/Javascript; fi
+    - if [ "$BUILD" == "emscripten" ]; then make; fi
+    
+
+ 
+    # Install PSPToolChain on OSX/Linux
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo dpkg-reconfigure dash; fi 
-    - if [ "$BUILD" == "psp" ]; then echo -e "Host *\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config; fi
-    - if [ "$BUILD" == "psp" ]; then git clone https://github.com/pspdev/psptoolchain; fi
+    
+    
+    - if [ "$BUILD" == "psp" ]; then git clone https://github.com/RossMeikleham/psptoolchain; fi
     - if [ "$BUILD" == "psp" ]; then cd psptoolchain; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get update; fi 
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip libsdl1.2debian; fi
+    
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo ./prepare-mac-os.sh; fi 
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then curl -o automake.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then tar -zxvf automake.tar.gz ; fi
@@ -40,10 +92,28 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo make install ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd .. ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then brew install doxygen ; fi
-    - if [ "$BUILD" == "psp" ]; then sudo ./toolchain-sudo.sh; fi
+    - if [ "$BUILD" == "psp" ]; then export CXXFLAGS='-w -Wno-unused-function'; fi
+    - if [ "$BUILD" == "psp" ]; then export CFLAGS='-w -Wno-unused-function'; fi
+    - if [ "$BUILD" == "psp" ]; then ~/build/RossMeikleham/PlutoBoy/build/PSP/buildPspToolchainTravis.sh; fi
+    - if [ "$BUILD" == "psp" ]; then export PSPDEV=/usr/local/pspdev; fi
+    - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
+
+
+
+after_failure:
+    tail ~/error.log --lines=1000
 
 
 script:
     # Native builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
     - if [ "$BUILD" == "native" ]; then scons cc=$CC mode=$MODE; fi
+    
+    #PSP builds, having problems with OSX installing the PSP SDL lib, so disable
+    #OSX PSP build for now
+    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "linux"]; then cd ~/build/RossMeikleham/PlutoBoy/build/PSP; fi
+    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "linux"];  then make; fi
+    
+    # Emscripten Builds
+    - if [ "$BUILD" == "emscripten" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Javascript; fi
+    - if [ "$BUILD" == "emscripten" ]; then make; fi
