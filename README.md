@@ -1,8 +1,14 @@
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
-| Linux + OSX                     | 
+
+
+|    Platform   | CI Build Status | 
 |---------------------------------|
-| ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | TODO | 
+| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 
 
 Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
