@@ -2,9 +2,9 @@
 
 
 
-|    Platform   | CI Build Status | 
-|---------------------------------|
-| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| Platform   | CI Build Status | 
+|------------|-----------------|
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | TODO | 
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
