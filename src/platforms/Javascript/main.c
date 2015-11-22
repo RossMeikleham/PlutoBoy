@@ -16,7 +16,7 @@ int main() {
 
     printf("hello there\n");
 
-    if (!init(file_name, debug, dmg, cs)) {
+    if (!init_emu(file_name, debug, dmg, cs)) {
         return 1;
     }
 

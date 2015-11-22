@@ -6,7 +6,7 @@
 
 #include "SDL.h"
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
 #include "SDL_net.h"
 #endif
 
@@ -14,7 +14,7 @@ static int is_client = 0;
 static int is_server = 0;
 static int connection_up = 0;
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
 static TCPsocket client = NULL;
 static TCPsocket server = NULL;
 static SDLNet_SocketSet socketset; 
@@ -23,7 +23,7 @@ static SDLNet_SocketSet socketset;
  * to the server */
 int setup_client(unsigned port) {
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     is_client = 1;
 
     log_message(LOG_INFO, "Attempting to connect to server on port %u\n",port);
@@ -55,7 +55,7 @@ int setup_client(unsigned port) {
  *  client to connect */
 int setup_server(unsigned port) { 
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     is_server = 1;
 
     log_message(LOG_INFO, "Starting server on port %u\n",port);
@@ -88,7 +88,7 @@ int setup_server(unsigned port) {
 /*  Send and Recieved byte */
 int transfer(uint8_t data, uint8_t *recv, int ext) {
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     
     log_message(LOG_INFO, "Sending byte %x\n", data);
     if ((is_server || is_client) && !ext) {
@@ -130,16 +130,18 @@ int transfer(uint8_t data, uint8_t *recv, int ext) {
 
 
 void quit_io() {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     client = NULL;
     server = NULL;
     SDLNet_Quit();
 #endif
 }
+
+
 // Transfer when current GB is using external clock
 // returns 1 if there is data to be recieved, 0 otherwise
 int transfer_ext(uint8_t data, uint8_t *recv) {
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     if ( (is_client || is_server) &&
          (SDLNet_CheckSockets(socketset, 0) > 0) &&
          (SDLNet_SocketReady(client) > 0)) {
@@ -154,7 +156,7 @@ int transfer_ext(uint8_t data, uint8_t *recv) {
 // returns 0xFF if no external GB found
 uint8_t transfer_int(uint8_t data) {
 
-#if !defined(PSP) && !defined(EMSCRIPTEN)
+#if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
     uint8_t res;
     if (transfer(data, &res, 0)) {
         return 0xFF;

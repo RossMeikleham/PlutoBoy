@@ -6,6 +6,10 @@
 #include <assert.h>
 #include <string.h>
 
+#ifdef DREAMCAST
+#include <cstdlib>
+#endif
+
 /* Copyright (C) 2005 by Shay Green. Permission is hereby granted, free of
 charge, to any person obtaining a copy of this software module and associated
 documentation files (the "Software"), to deal in the Software without
@@ -20,6 +24,7 @@ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
+
 
 // Return current SDL_GetError() string, or str if SDL didn't have a string
 static const char* sdl_error( const char* str )
@@ -50,8 +55,12 @@ const char* Sound_Queue::start( long sample_rate, int chan_count )
 	write_pos = 0;
 	read_buf = 0;
 	
+#ifndef DREAMCAST
 	bufs = new sample_t [(long) buf_size * buf_count];
-	if ( !bufs )
+#else
+    bufs = (sample_t *)std::malloc((long) buf_size * buf_count); 
+#endif	
+    if ( !bufs )
 		return "Out of memory";
 	currently_playing_ = bufs;
 	
@@ -90,8 +99,11 @@ void Sound_Queue::stop()
 		SDL_DestroySemaphore( free_sem );
 		free_sem = NULL;
 	}
-	
+#ifndef DREAMCAST
 	delete [] bufs;
+#else
+    std::free(bufs);
+#endif
 	bufs = NULL;
 }
 

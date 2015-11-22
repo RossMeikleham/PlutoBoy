@@ -27,7 +27,7 @@ int breakpoint = BREAKPOINT_OFF;
  *
  * returns 1 if successfully initialized, 0
  * otherwise */
-int init(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
+int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
     unsigned char buffer[MAX_FILE_SIZE];
     unsigned long size;

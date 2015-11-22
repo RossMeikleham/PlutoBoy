@@ -4,6 +4,8 @@
 #ifndef BLIP_BUFFER_H
 #define BLIP_BUFFER_H
 
+#include <cstddef>
+
 	// internal
 	#include <limits.h>
 	#if INT_MAX < 0x7FFFFFFF || LONG_MAX == 0x7FFFFFFF
