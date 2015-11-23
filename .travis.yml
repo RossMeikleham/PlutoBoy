@@ -13,6 +13,8 @@ env:
     - BUILD=native CC=gcc CXX=g++ MODE=debug
     - BUILD=psp CC=gcc CXX=g++ MODE=release
     - BUILD=emscripten CC=clang CXX=clang++ MODE=release
+    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
+
 
 
 before_install:
@@ -99,6 +101,27 @@ install:
     - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
 
 
+   # Install KOS Toolchain on Linux
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install build-essential binutils texinfo; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo mkdir /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo chown -R travis:travis /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then git clone git://cadcdev.git.sourceforge.net/gitroot/cadcdev/KallistiOS; fi
+    
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then curl -L -o kos-ports.tar.gz http://sourceforge.net/projects/cadcdev/files/kallistios/2.0.0/kos-ports-2.0.0-src.tar.gz/download; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -zxvf kos-ports.tar.gz; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd KallistiOS/utils/dc-chain; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ./download.sh; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ./unpack.sh; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/output.sh; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cp ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/dreamcast_kos_env.sh /opt/toolchains/KallistiOS/environ.sh; fi     
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../../; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then source environ.sh; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
+
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../kos-ports; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
 
 after_failure:
     tail ~/error.log --lines=1000
@@ -117,3 +140,7 @@ script:
     # Emscripten Builds
     - if [ "$BUILD" == "emscripten" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Javascript; fi
     - if [ "$BUILD" == "emscripten" ]; then make; fi
+
+    #Dreamcast builds for Linux
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi

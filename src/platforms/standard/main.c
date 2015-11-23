@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
     file_name = argv[argc - 1];
 
-    if (!init(file_name, debug, dmg_mode, cs)) {
+    if (!init_emu(file_name, debug, dmg_mode, cs)) {
         return 1;
     }
         
