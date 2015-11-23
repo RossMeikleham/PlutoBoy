@@ -9,6 +9,7 @@
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | TODO | 
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 
 
 Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
