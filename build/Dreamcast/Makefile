@@ -38,6 +38,9 @@ $(TARGET).elf: $(OBJS)
 	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LDFLAGS) -o $(TARGET).elf $(KOS_START) \
 		$(OBJS) -lSDL -lm $(OBJEXTRA) $(KOS_LIBS)
 
+
+#$(OBJS) -L$(KOS_PORTS)/SDL/inst/lib -lSDL -lm $(OBJEXTRA) $(KOS_LIBS)
+
 $(TARGET).bin: $(TARGET).elf
 	$(KOS_OBJCOPY) -R .stack -O binary $(TARGET).elf $(TARGET).bin
 
