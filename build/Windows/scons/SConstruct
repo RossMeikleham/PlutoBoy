@@ -1,0 +1,84 @@
+import sys
+
+#!python 
+import urllib, re, os, zipfile
+import SCons.Errors
+
+#Setup environment
+env = Environment(
+                CCFLAGS='-O2',
+                LINKFLAGS='/MACHINE:X64 /STACK:20000000'
+		    )
+
+Environment(TARGET_ARCH = 'x86_64')
+
+Execute(Delete("build"))
+
+# Architecture compiling for, either x86(32 bit) or x64(64 bit)
+gb_arch = "x64"
+
+# Check architecture building for
+#for key, value in ARGLIST:
+#    if key == 'arch':
+#        if value == 'x64' or value == 'x86':
+#            arch64 = value
+#        else:
+#            print("build error, expected arch=x86 or arch=x64");
+
+
+# Download and unpack SDL library dependencies
+sdl_url     = 'https://www.libsdl.org/release/SDL-devel-1.2.15-VC.zip'
+sdl2_url    = 'https://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip'
+sdl_net_url = "https://www.libsdl.org/projects/SDL_net/release/SDL2_net-devel-2.0.0-VC.zip"
+
+urllib.urlretrieve(sdl_url, "sdl.zip")
+urllib.urlretrieve(sdl2_url, "sdl2.zip")
+urllib.urlretrieve(sdl_net_url, "sdl_net.zip")
+
+f1 = zipfile.ZipFile("sdl.zip").extractall()
+zipfile.ZipFile("sdl2.zip").extractall()
+zipfile.ZipFile("sdl_net.zip").extractall()
+
+sdl_path     = Dir('.').abspath + "\\SDL-1.2.15" 
+sdl2_path    = Dir('.').abspath + "\\SDL2-2.0.3" 
+sdl_net_path = Dir('.').abspath + "\\SDL2_net-2.0.0" 
+
+# Add Libraries to the paths
+env.Append(CPPPATH = [sdl_path     + "\\include"])
+env.Append(CPPPATH = [sdl_net_path + "\\include"])
+
+env.Append(LIBPATH = [sdl_path + "\\lib\\" + gb_arch + "\\",
+                      sdl_net_path + "\\lib\\" + gb_arch + "\\"])
+
+
+env.Append(LIBS = ['SDL', 'SDL2_net'])
+env.Append(LINKFLAGS = '')
+
+
+print(sdl_path + "\\lib\\" + gb_arch + "\\")
+
+
+src_dir = "../../../src"
+
+# Get all the the source files
+sourceObjs = env.Object( Glob(src_dir + '/core/*.c'))\
+           + env.Object( Glob(src_dir + '/core/mmu/*.c'))\
+           + env.Object( Glob(src_dir + '/shared_libs/SDL/*.c'))\
+           + env.Object( Glob(src_dir + '/platforms/standard/*.c'))\
+           + env.Object( Glob(src_dir + '/shared_libs/SDL/*.cpp'))\
+           + env.Object( Glob(src_dir + '/shared_libs/SDL/audio/*.cpp'))
+
+# Compile
+env.Program('gb_emu',sourceObjs)
+
+dlls = [sdl_path + "\\lib\\" + gb_arch + "\\SDL.dll",
+        sdl2_path + "\\lib\\" + gb_arch + "\\SDL2.dll",
+        sdl_net_path + "\\lib\\" + gb_arch + "\\SDL2_net.dll"]
+
+
+
+Execute(Mkdir('build'))
+Execute(Copy('build/SDL.dll', dlls[0]))
+Execute(Copy('build/SDL2.dll', dlls[1]))
+Execute(Copy('build/SDL2_net.dll', dlls[2]))
+Execute(Copy('build/gb_emu.exe', 'gb_emu.exe'))
