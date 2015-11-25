@@ -6,7 +6,7 @@
 |------------|-----------------|
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | TODO | 
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | 
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 
@@ -144,8 +144,22 @@ Raspberry Pi 2
 ### How To Build:
 - Same as for Linux, navigate to the project `build/Unix` folder and enter the command `./scons`
 
-## Windows
+## Windows (Recommended Method)
+### Required:
+- Visual Studio
+- Scons
 
+### How To Build:
+
+- Navigate to the project `build/Windows/scons` folder.
+ 
+- Enter the command `scons`
+
+- The scons builder should download the required SDL dependencies and build the emulator,
+  the executable along with the required SDL DLLs should be in a new folder called `build` 
+  inside the current `scons` folder
+
+## Winodws (Alternative Method)
 ### Required:
 - Visual C++/ Visual Studio
 - SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
@@ -153,7 +167,7 @@ Raspberry Pi 2
 - SDL2.dll (can be found [here] (https://www.libsdl.org/download-2.0.php) Download the VC zip file for Windows.
 ### How To Build:
 
-- Navigate to the project `build/Windows` folder.
+- Navigate to the project `build/Windows/vc` folder.
 
 - Open `Windows GB.sdf`
 
