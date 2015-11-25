@@ -27,9 +27,9 @@ gb_arch = "x64"
 
 
 # Download and unpack SDL library dependencies
-sdl_url     = 'https://www.libsdl.org/release/SDL-devel-1.2.15-VC.zip'
-sdl2_url    = 'https://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip'
-sdl_net_url = "https://www.libsdl.org/projects/SDL_net/release/SDL2_net-devel-2.0.0-VC.zip"
+sdl_url     = 'http://www.libsdl.org/release/SDL-devel-1.2.15-VC.zip'
+sdl2_url    = 'http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip'
+sdl_net_url = "http://www.libsdl.org/projects/SDL_net/release/SDL2_net-devel-2.0.0-VC.zip"
 
 urllib.urlretrieve(sdl_url, "sdl.zip")
 urllib.urlretrieve(sdl2_url, "sdl2.zip")
@@ -55,8 +55,6 @@ env.Append(LIBS = ['SDL', 'SDL2_net'])
 env.Append(LINKFLAGS = '')
 
 
-print(sdl_path + "\\lib\\" + gb_arch + "\\")
-
 
 src_dir = "../../../src"
 
@@ -69,16 +67,20 @@ sourceObjs = env.Object( Glob(src_dir + '/core/*.c'))\
            + env.Object( Glob(src_dir + '/shared_libs/SDL/audio/*.cpp'))
 
 # Compile
-env.Program('gb_emu',sourceObjs)
+comp = env.Program('gb_emu',sourceObjs)
 
 dlls = [sdl_path + "\\lib\\" + gb_arch + "\\SDL.dll",
         sdl2_path + "\\lib\\" + gb_arch + "\\SDL2.dll",
         sdl_net_path + "\\lib\\" + gb_arch + "\\SDL2_net.dll"]
 
+# Create build folder and place executable and dlls
+# into it
+def after(target, source, env):
+    Execute(Mkdir('build'))
+    Execute(Copy('build/SDL.dll', dlls[0]))
+    Execute(Copy('build/SDL2.dll', dlls[1]))
+    Execute(Copy('build/SDL2_net.dll', dlls[2]))
+    Execute(Copy('build/gb_emu.exe', 'gb_emu.exe'))
 
-
-Execute(Mkdir('build'))
-Execute(Copy('build/SDL.dll', dlls[0]))
-Execute(Copy('build/SDL2.dll', dlls[1]))
-Execute(Copy('build/SDL2_net.dll', dlls[2]))
-Execute(Copy('build/gb_emu.exe', 'gb_emu.exe'))
+after_command = Command('after', [], after) 
+Depends(after_command, comp)
