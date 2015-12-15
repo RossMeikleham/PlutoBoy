@@ -21,18 +21,22 @@ TARGET = gameboy
 OPTFLAGS=-std=c99 -O3 -fomit-frame-pointer
 CFLAGS = -DDREAMCAST
 KOS_CFLAGS+= -I$(KOS_PORTS)/include/SDL $(OPTFLAGS) 
+KOS_ROMDISK_DIR = romdisk
 
-all: $(TARGET).bin
+all: rm_romdisk $(TARGET).bin
 
 include $(KOS_BASE)/Makefile.rules
 
 .SRCS	=	$(C_FILES) \
 
-OBJS = $(OBJ_FILES)
+OBJS = $(OBJ_FILES) romdisk.o
 
 clean:
-	rm -f $(OBJS) $(TARGET).elf $(TARGET).bin
+	rm -f $(OBJS) $(TARGET).elf $(TARGET).bin romdisk.*
 
+
+rm_romdisk:
+	-rm -f $(TARGET) romdisk.*
 
 $(TARGET).elf: $(OBJS)
 	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LDFLAGS) -o $(TARGET).elf $(KOS_START) \
