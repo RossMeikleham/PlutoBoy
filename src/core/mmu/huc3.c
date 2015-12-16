@@ -3,12 +3,13 @@
 #include "huc3.h"
 #include "memory.h"
 #include "../bits.h"
+#include "../../non_core/get_time.h"
 
-#include <time.h>
-#include <sys/time.h>
 
 /* Hudson Memory Bank Controller 3 (2MB ROM, 128KB RAM, RTC)
  * 
+ * Uses a 28-bit Clock
+ *
  * 0000-3FFF	ROM Bank 0 (16KB)
  * 4000-7FFF	ROM Bank 1-127 (16KB)
  * A000-BFFF	RAM Bank 0-15 (8KB)
@@ -24,14 +25,13 @@ static uint64_t clock_register = 0;
 static uint64_t clock_shift = 0;
 static uint64_t clock_time = 0;
 
-static struct timeval tv;
 
-
-uint64_t get_time() {
-	gettimeofday(&tv, NULL);
-
-    return (uint64_t)(tv.tv_sec) * 1000 +
-    		(uint64_t)(tv.tv_usec) / 1000;
+void setup_HUC3(int flags) {
+    battery = (flags & BATTERY) ? 1 : 0;
+    // Check for previous saves if Battery active
+    if (battery) {
+        read_SRAM();
+    }
 }
 
 
@@ -69,17 +69,6 @@ void update_clock() {
 	clock_time = now - elapsed;
 }
 	
-
-
-void setup_HUC3(int flags) {
-    battery = (flags & BATTERY) ? 1 : 0;
-    // Check for previous saves if Battery active
-    if (battery) {
-        read_SRAM();
-    }
-	gettimeofday(&tv, NULL);
-}
-
 
 
 

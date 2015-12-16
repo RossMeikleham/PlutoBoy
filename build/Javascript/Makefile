@@ -4,6 +4,7 @@ COMMON_DIR = $(MAIN_DIR)/common
 CORE_DIR=../../src/core
 MMU_DIR=$(CORE_DIR)/mmu
 IO_DIR=../../src/shared_libs/SDL
+IO_DIR2=../../src/shared_libs
 FILE_BROWSER_DIR=$(MAIN_DIR)/file_browser
 
 MAIN_DIR_FILES = $(filter-out $(MAIN_DIR)/main.c, $(wildcard $(MAIN_DIR)/*.c)) 
@@ -13,9 +14,10 @@ CORE_DIR_FILES = $(wildcard $(CORE_DIR)/*.c)
 MMU_DIR_FILES = $(wildcard $(MMU_DIR)/*.c)
 IO_DIR_FILES = $(wildcard $(IO_DIR)/*.c)
 IO_DIR_FILES2 = $(wildcard $(IO_DIR)/*.cpp)
+IO_DIR_FILES3 = $(wildcard $(IO_DIR2)/*.c)
 FILE_BROWSER_FILES =$(wildcard $(FILE_BROWSER_DIR)/*.c)
 
-C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(IO_DIR_FILES) $(FILE_BROWSER_FILES) $(MAIN_FILE)
+C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(IO_DIR_FILES) $(FILE_BROWSER_FILES) $(MAIN_FILE) $(IO_DIR_FILES3)
 
 CPP_FILES = $(IO_DIR_FILES2) 
 
