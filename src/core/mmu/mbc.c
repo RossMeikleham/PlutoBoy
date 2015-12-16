@@ -5,6 +5,7 @@
 #include "mbc5.h"
 #include "mmm01.h"
 #include "huc1.h"
+#include "huc3.h"
 
 
 #include "../../non_core/logger.h"
@@ -120,6 +121,14 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
         read_MBC = &read_MBC5;
         write_MBC = &write_MBC5;
    }
+  
+   // HUC3
+   else if (MBC_no == 0xFE) {
+       flags = SRAM | BATTERY | RTC;
+       setup_HUC3(flags);
+       read_MBC = &read_HUC3;
+       write_MBC = &write_HUC3;
+   } 
    
    // HUC1
    else if (MBC_no == 0xFF) {
