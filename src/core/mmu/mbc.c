@@ -3,6 +3,7 @@
 #include "mbc1.h"
 #include "mbc3.h"
 #include "mbc5.h"
+#include "mmm01.h"
 
 #include "../../non_core/logger.h"
 #include "../../non_core/files.h"
@@ -72,6 +73,19 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
         setup_MBC1(flags);
         read_MBC = &read_MBC1;
         write_MBC = &write_MBC1;
+
+   //MMM01
+   } else if(MBC_no >= 0xB && MBC_no <= 0xD) {
+        
+        switch (MBC_no) {
+            case 0xB: flags = 0; break;
+            case 0xC: flags = SRAM; break;
+            case 0xD: flags = SRAM | BATTERY; break;
+        } 
+        
+        setup_MMM01(flags);
+        read_MBC =&read_MMM01;
+        write_MBC = &write_MMM01; 
 
    // MBC3
    } else if(MBC_no >= 0xF && MBC_no <= 0x13) {
