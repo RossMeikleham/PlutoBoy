@@ -4,6 +4,8 @@
 #include "mbc3.h"
 #include "mbc5.h"
 #include "mmm01.h"
+#include "huc1.h"
+
 
 #include "../../non_core/logger.h"
 #include "../../non_core/files.h"
@@ -117,7 +119,16 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
         setup_MBC5(flags);
         read_MBC = &read_MBC5;
         write_MBC = &write_MBC5;
-   } 
+   }
+   
+   // HUC1
+   else if (MBC_no == 0xFF) {
+        flags = SRAM | BATTERY;
+        setup_HUC1(flags);
+        read_MBC = &read_HUC1;
+        write_MBC = &write_HUC1;
+   }
+    
    else{ 
        log_message(LOG_ERROR, "unimplimented MBC mode for code %d\n",MBC_no);
        return 0;
