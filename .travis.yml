@@ -13,7 +13,7 @@ env:
     - BUILD=native CC=gcc CXX=g++ MODE=debug
     - BUILD=psp CC=gcc CXX=g++ MODE=release
     - BUILD=emscripten CC=clang CXX=clang++ MODE=release
-    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
+#    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
 
 
 
