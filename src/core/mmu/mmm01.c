@@ -8,6 +8,10 @@
  * (1) :ROM ONLY : Can only write/read from ROM banks
  * (2) :ROM + RAM : Can write/read from RAM Banks
  * (3): ROM + RAM + SAVE : Same as (2) but saves to SRAM
+ * 
+ * Currently works with Momotarous Collection 2, but
+ * I need more documentation to be able to implement
+ * this more correctly so it works with Taito Pack
 */
 
 static int rom_mode = 0; 
@@ -16,6 +20,7 @@ static int ram_select = 0; // Current RAM bank 0x0 - 0x03
 static int ram_banking = 0;  // 0: RAM banking off, 1: RAM banking on
 static int battery = 0;
 static int rom_base = 0;
+static uint8_t mask = 0;
 
 void setup_MMM01(int flags) {
     battery = (flags & BATTERY) ? 1 : 0;
@@ -34,7 +39,7 @@ uint8_t read_MMM01(uint16_t addr) {
      }
 
      if ((addr & 0xC000) == 0x0000) {
-        return ROM_banks[rom_base + 2][addr];
+        return ROM_banks[rom_base + 2][addr]; //1st 2 banks used by game menu
      }
 
      if ((addr & 0xC000) == 0x4000) {

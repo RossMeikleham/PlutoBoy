@@ -412,7 +412,6 @@ int load_rom(char const *filename, unsigned char *file_data, size_t size, int co
     
     cgb = !dmg_mode;
     io_mem  = cgb ? io_mem_cgb : io_mem_dmg;
-    //cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
 
     // Setup the memory bank controller 
     if(!setup_MBC(file_data[CARTRIDGE_TYPE], 
