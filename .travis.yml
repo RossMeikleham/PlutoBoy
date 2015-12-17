@@ -23,9 +23,10 @@ before_install:
 
 install:    
      # Native Linux build setup
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl1.2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl-net1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl-net1.2-dev; fi
     
     # Native OSX Build setup
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
@@ -36,7 +37,6 @@ install:
     # Install Emscripten version on OSX/Linux
     
     # Update clang + python and install CMAKE on Linux
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:kubuntu-ppa/backports; fi
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.6 main'; fi
