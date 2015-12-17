@@ -24,7 +24,6 @@ before_install:
 install:    
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install clang; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl1.2-dev; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libsdl-net1.2-dev; fi
     
