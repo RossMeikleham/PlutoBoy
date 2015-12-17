@@ -54,21 +54,22 @@ static licensee old_licenses[] = {{0, "none"}, {1, "nintendo"}, {8, "capcom"}, {
 
 
 static rom_size rom_sizes[] = {{0x0, 32}, {0x1, 64}, {0x2, 128}, {0x3, 256}, {0x4, 512},
-    {0x5, 1024}, {0x6, 2048}, {0x7, 4096}, {0x52, 1152}, {0x53, 1280}, {0x54, 1536}};
+    {0x5, 1024}, {0x6, 2048}, {0x7, 4096}, {0x8, 8192}};
 
 static cartridge_type cartridge_types[] = {{0x00 ,"ROM"}, {0x01, "ROM+MBC1"},
- {0x02, "ROM+MBC1+RAM"}, {0x03, "ROM+MBC1+RAM+BATTERY"}, {0x05, "ROM+MBC2"}, 
- {0x06, "ROM+MBC2+BATTERY"}, {0x08, "ROM+RAM"},
-    {0x09, "ROM+RAM+BATTERY"}, {0x0B, "ROM+MMM01"}, {0x0C, "ROM+MMM01+SRAM"}, {0x0D, "ROM+MMM01+SRAM+BATTERY"},
+    {0x02, "ROM+MBC1+RAM"}, {0x03, "ROM+MBC1+RAM+BATTERY"}, {0x05, "ROM+MBC2"}, 
+    {0x06, "ROM+MBC2+RAM+BATTERY"}, {0x08, "ROM+RAM"},
+    {0x09, "ROM+RAM+BATTERY"}, {0x0B, "ROM+MMM01"}, {0x0C, "ROM+MMM01+RAM"}, {0x0D, "ROM+MMM01+RAM+BATTERY"},
     {0x0F, "ROM+MBC3+TIMER+BATTERY"}, {0x10, "ROM+MBC3+TIMER+RAM+BATTERY"}, {0x11, "ROM+MBC3"},
-    {0x12, "ROM+MBC3+RAM"}, {0x13, "ROM+MBC3+RAM+BATTERY"}, {0x15, "ROM+MBC4"}, {0x16, "ROM+MBC4+RAM"},
-    {0x17, "ROM+MBC4+RAM+BATTERY"}, {0x19, "ROM+MBC5"}, {0x1A, "ROM+MBC5+RAM"}, {0x1B, "ROM+MBC5+RAM+BATTERY"},
-    {0x1C, "ROM+MBC5+RUMBLE"}, {0x1D, "ROM+MBC5+RUMBLE+SRAM"}, {0x1E, "ROM+MBC5+RUMBLE+SRAM+BATTERY"}, 
-    {0xFC, "POCKET CAMERA"}, {0xFD, "BANDAI TAMA5"}, {0xFE, "HuC3"}, {0xFF, "HuC1+RAM+BATTERY"}};
+    {0x12, "ROM+MBC3+RAM"}, {0x13, "ROM+MBC3+RAM+BATTERY"}, {0x19, "ROM+MBC5"}, {0x1A, "ROM+MBC5+RAM"}, 
+    {0x1B, "ROM+MBC5+RAM+BATTERY"},
+    {0x1C, "ROM+MBC5+RUMBLE"}, {0x1D, "ROM+MBC5+RUMBLE+RAM"}, {0x1E, "ROM+MBC5+RUMBLE+RAM+BATTERY"}, 
+    {0x20, "ROM+MBC6+RAM+BATTERY"}, {0x22, "ROM+MBC7+RAM+BATTERY+ACCELEROMETER"}, 
+    {0xFC, "POCKET CAMERA"}, {0xFD, "BANDAI TAMA5"}, {0xFE, "HuC3+RAM+BATTERY+RTC"}, {0xFF, "HuC1+RAM+BATTERY"}};
 
 
 
-static ram_save_size ram_save_sizes[] = {{0, 0}, {1, 2}, {2, 8}, {3, 32}};
+static ram_save_size ram_save_sizes[] = {{0, 0}, {1, 2}, {2, 8}, {3, 32}, {5, 64}};
 
 static char *destination_codes[] = {"Japanese", "Non-Japanese"};
 

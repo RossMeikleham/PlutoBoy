@@ -4,16 +4,18 @@ CORE_DIR=../../src/core
 MMU_DIR=$(CORE_DIR)/mmu
 IO_DIR=../../src/shared_libs/SDL
 SOUND_DIR=../../src/shared_libs/SDL/audio
+NON_CORE_DIR=../../src/shared_libs
 
 MAIN_DIR_FILES = $(wildcard $(MAIN_DIR)/*.c)
 COMMON_DIR_FILES = $(wildcard $(COMMON_DIR)/*.c)
 CORE_DIR_FILES = $(wildcard $(CORE_DIR)/*.c)
 MMU_DIR_FILES = $(wildcard $(MMU_DIR)/*.c)
+NON_CORE_FILES = $(wildcard $(NON_CORE_DIR)/*.c)
 IO_DIR_FILES = $(wildcard $(IO_DIR)/*.c)
 IO_DIR_FILES2 = $(wildcard $(IO_DIR)/*.cpp)
 SOUND_FILES = $(wildcard $(SOUND_DIR)/*.cpp)
 
-C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(IO_DIR_FILES) $(IO_DIR_FILES2) $(SOUND_FILES)
+C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(NON_CORE_FILES) $(IO_DIR_FILES) $(IO_DIR_FILES2) $(SOUND_FILES)
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES)))
 
 TARGET = gameboy
@@ -21,18 +23,22 @@ TARGET = gameboy
 OPTFLAGS=-std=c99 -O3 -fomit-frame-pointer
 CFLAGS = -DDREAMCAST
 KOS_CFLAGS+= -I$(KOS_PORTS)/include/SDL $(OPTFLAGS) 
+KOS_ROMDISK_DIR = romdisk
 
-all: $(TARGET).bin
+all: rm_romdisk $(TARGET).bin
 
 include $(KOS_BASE)/Makefile.rules
 
 .SRCS	=	$(C_FILES) \
 
-OBJS = $(OBJ_FILES)
+OBJS = $(OBJ_FILES) romdisk.o
 
 clean:
-	rm -f $(OBJS) $(TARGET).elf $(TARGET).bin
+	rm -f $(OBJS) $(TARGET).elf $(TARGET).bin romdisk.*
 
+
+rm_romdisk:
+	-rm -f $(TARGET) romdisk.*
 
 $(TARGET).elf: $(OBJS)
 	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LDFLAGS) -o $(TARGET).elf $(KOS_START) \

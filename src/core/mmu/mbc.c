@@ -3,6 +3,10 @@
 #include "mbc1.h"
 #include "mbc3.h"
 #include "mbc5.h"
+#include "mmm01.h"
+#include "huc1.h"
+#include "huc3.h"
+
 
 #include "../../non_core/logger.h"
 #include "../../non_core/files.h"
@@ -73,6 +77,19 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
         read_MBC = &read_MBC1;
         write_MBC = &write_MBC1;
 
+   //MMM01
+   } else if(MBC_no >= 0xB && MBC_no <= 0xD) {
+        
+        switch (MBC_no) {
+            case 0xB: flags = 0; break;
+            case 0xC: flags = SRAM; break;
+            case 0xD: flags = SRAM | BATTERY; break;
+        } 
+        
+        setup_MMM01(flags);
+        read_MBC =&read_MMM01;
+        write_MBC = &write_MMM01; 
+
    // MBC3
    } else if(MBC_no >= 0xF && MBC_no <= 0x13) {
    
@@ -103,7 +120,24 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
         setup_MBC5(flags);
         read_MBC = &read_MBC5;
         write_MBC = &write_MBC5;
+   }
+  
+   // HUC3
+   else if (MBC_no == 0xFE) {
+       flags = SRAM | BATTERY | RTC;
+       setup_HUC3(flags);
+       read_MBC = &read_HUC3;
+       write_MBC = &write_HUC3;
    } 
+   
+   // HUC1
+   else if (MBC_no == 0xFF) {
+        flags = SRAM | BATTERY;
+        setup_HUC1(flags);
+        read_MBC = &read_HUC1;
+        write_MBC = &write_HUC1;
+   }
+    
    else{ 
        log_message(LOG_ERROR, "unimplimented MBC mode for code %d\n",MBC_no);
        return 0;

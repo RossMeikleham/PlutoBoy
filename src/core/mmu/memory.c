@@ -356,7 +356,31 @@ static uint8_t cgb_boot_rom[] = {
 
 
 
-int load_rom(char const *filename, unsigned char const *file_data, size_t size, int const dmg_mode) {
+// Header in MMM01 Roms are placed at the end
+// of the ROM instead of at the beginning
+void check_mmm01_format(unsigned char *file_data, size_t size) {
+    if (size < 0x8000) {
+        return;;
+    }
+    
+    unsigned char const *header_data = file_data + (size - 0x8000);
+    unsigned char rom_code = header_data[0x147];
+    
+    // If Header is at the end place it at the front
+    if (header_data[0x104] == 0xCE && header_data[0x105] == 0xED &&
+        header_data[0x106] == 0x66 && header_data[0x107] == 0x66 &&
+        header_data[0x108] == 0xCC && header_data[0x109] == 0x0D &&
+        rom_code >= 0xB && rom_code <= 0xD) {
+    
+            unsigned char temp[0x8000];
+            memcpy(temp, header_data, 0x8000);
+            memmove(file_data + 0x8000, file_data, size - 0x8000);
+            memcpy(file_data, temp, 0x8000); 
+    
+    }
+}
+
+int load_rom(char const *filename, unsigned char *file_data, size_t size, int const dmg_mode) {
 
     /* Check the file length given to us is long enough
      * to obtain what the size of the file should be */   
@@ -364,16 +388,20 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size, 
         log_message(LOG_ERROR, "Error: Cartridge size is too small (%lu bytes)\n",size);
         return 0;
     }
+    
+    check_mmm01_format(file_data, size);
 
     // Obtain rom size in KB
     size_t rom_size = id_to_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
 
     // Data read in doesn't match header information
     if (size != rom_size) {
+
         log_message(LOG_ERROR, "Error: Cartridge header info on its size (%lu bytes) \
             doesn't match file size (%lu bytes)\n",rom_size, size);
         return 0;
     }
+
 
     // Dump ROM into memory banks
     unsigned rom_bank_count = rom_size / 0x4000;
@@ -384,7 +412,6 @@ int load_rom(char const *filename, unsigned char const *file_data, size_t size, 
     
     cgb = !dmg_mode;
     io_mem  = cgb ? io_mem_cgb : io_mem_dmg;
-    //cgb = ROM_banks[0][IS_COLOUR_COMPATIBLE];
 
     // Setup the memory bank controller 
     if(!setup_MBC(file_data[CARTRIDGE_TYPE], 
