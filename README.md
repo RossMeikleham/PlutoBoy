@@ -58,7 +58,7 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
   scanlines have been rendered the screen is displayed/updated 
   using SDL.
 
-- Support for regular 32kb, MBC1, MBC3, MBC5, HuC1, HuC3, and MMM01 chip ROMs. (Not including Real Time Clock or Rumble)
+- Support for regular 32KB, MBC1, MBC2, MBC3, MBC5, HuC1, HuC3, and MMM01 chip ROMs. (Not including Real Time Clock or Rumble)
 
 - Saving SRAM to and loading SRAM from file for games that support it.
 
@@ -77,7 +77,7 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
 #Still to implement:
 
 - Support for Real Time Clock for MBC3 + HuC3, rumble for MBC5. 
-  MBC2, MBC6, MBC7, TAMA5, and Gameboy Camera Memory Controllers.
+  MBC6, MBC7, TAMA5, and Gameboy Camera Memory Controllers.
 
 - Updating screen information during the scan line instead
   of all at once when H-Blank occurs. 
