@@ -18,6 +18,7 @@
 
 static char SRAM_filename[MAX_SRAM_FNAME_SIZE + 1];
 static unsigned RAM_bank_count = 0;
+static int mbc3_rtc = 0;
 
 void write_SRAM() {
     save_SRAM(SRAM_filename, RAM_banks[0], RAM_bank_count * 0x2000);
@@ -32,6 +33,32 @@ void read_SRAM() {
             memset(RAM_banks[0],0,len); //"Erase" what just got read into memory
         }
     }
+}
+
+
+
+void inc_sec_mbc3() {
+	if (mbc3_rtc) {
+		inc_rtc_second();
+	}
+}
+
+//TODO
+rtc_regs_MBC3 read_RTC() {
+  	rtc_regs_MBC3 r;
+
+	r.seconds = 0x0;
+	r.minutes = 0x0;
+	r.hours = 0x0;
+	r.days_low = 0x0;
+	r.flags = 0x0;
+	
+	return r;	
+}
+
+//TODO
+void write_RTC(rtc_regs_MBC3 rtc_regs){
+	return;
 }
 
 
@@ -105,8 +132,8 @@ int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
    } else if(MBC_no >= 0xF && MBC_no <= 0x13) {
    
         switch (MBC_no) {
-            case 0xF : flags = RTC | BATTERY; break;
-            case 0x10: flags = RTC | BATTERY | SRAM; break;
+            case 0xF : flags = RTC | BATTERY; mbc3_rtc = 1; break;
+            case 0x10: flags = RTC | BATTERY | SRAM; mbc3_rtc = 1; break;
             case 0x11: flags = 0; break;
             case 0x12: flags = SRAM; break;
             case 0x13: flags = BATTERY | SRAM; break;

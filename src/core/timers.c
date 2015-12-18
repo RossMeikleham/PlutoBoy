@@ -1,7 +1,7 @@
 #include "timers.h"
 #include "interrupts.h"
 #include "bits.h"
-
+#include "mmu/mbc.h"
 
 //Possible timer increment timer_frequencies in hz
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
@@ -9,7 +9,7 @@ static const long timer_frequencies[] = {1024, 16, 64, 256};
 
 static long timer_frequency = -1;
 static long timer_counter = 0;
-
+static uint64_t clocks = 0;
 
 /* Change the timer frequency to another of the possible
  * frequencies, resets the timer_counter 
@@ -63,6 +63,13 @@ void update_divider_reg(long cycles) {
 /* Update internal timers given the cycles executed since
 * the last time this function was called. */
 void update_timers(long cycles) {
+    clocks += cycles;
+    // Inc MBC3 RTC seconds
+    if (clocks >= 4 * 1024 * 1024) {
+        inc_sec_mbc3();         
+        clocks -= 4 * 1024 * 1024;
+    }
+
 	uint8_t timer_control = get_mem(TAC_REG);
 
 	update_divider_reg(cycles);

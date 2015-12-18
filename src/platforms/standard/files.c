@@ -80,6 +80,9 @@ int save_SRAM(const char *file_path, const unsigned char *data, unsigned long si
     }
         
     fclose(file);   
-    return 1;
- 
-}                                      
+    return 1; 
+}            
+
+// Write a given RTC time to a file, includes the current system time since 
+// the Unix epoch in milliseconds
+                          
