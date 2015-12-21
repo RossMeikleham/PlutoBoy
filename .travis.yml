@@ -7,12 +7,12 @@ os:
     - osx
 
 env:
-    - BUILD=native CC=clang CXX=clang++ MODE=release
-    - BUILD=native CC=clang CXX=clang++ MODE=debug
-    - BUILD=native CC=gcc CXX=g++ MODE=release
-    - BUILD=native CC=gcc CXX=g++ MODE=debug
-    - BUILD=psp CC=gcc CXX=g++ MODE=release
-    - BUILD=emscripten CC=clang CXX=clang++ MODE=release
+    - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL MODE=release
+    - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2 MODE=release
+    - BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release
+    - BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=debug
+    - BUILD=psp CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release
+    - BUILD=emscripten CC=clang CXX=clang++ FRAMEWORK=SDL2 MODE=release
 #    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
 
 
@@ -25,15 +25,17 @@ install:
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl1.2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl-net1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl-net1.2-dev; fi
     
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2" ]; then sudo apt-get -f install libsdl2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2"]; then sudo apt-get -f install libsdl-net2-dev; fi
+
+
     # Native OSX Build setup
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl_mixer; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl2_net; fi
 
-   
-   
     # Install Emscripten version on OSX/Linux
     
     # Update clang + python and install CMAKE on Linux
@@ -129,7 +131,7 @@ after_failure:
 script:
     # Native builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
-    - if [ "$BUILD" == "native" ]; then scons cc=$CC mode=$MODE; fi
+    - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
     
     #PSP builds, having problems with OSX installing the PSP SDL lib, so disable
     #OSX PSP build for now
