@@ -91,12 +91,6 @@ const char* Sound_Queue::start( long sample_rate, int chan_count )
         return sdl_error( "Couldn't open SDL audio" );
 }
     
-    log_message(LOG_INFO, "hello\n");
-    printf("freq %i, %i\n", as.freq, as2.freq);
-    printf("format %i, %i\n", as.format, as2.format);
-    printf("channels %i, %i\n", as.channels, as2.channels);
-    printf("samples %i, %i\n", as.samples, as2.samples);
-    
     SDL_PauseAudioDevice(this->device, 0);
 	sound_open = true;
 	

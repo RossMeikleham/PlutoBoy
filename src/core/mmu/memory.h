@@ -27,19 +27,19 @@ uint8_t get_vram0(uint16_t addr);
 uint8_t get_vram1(uint16_t addr);
 
 // Read contents from given 16 bit memory address
-uint8_t get_mem(uint16_t const addr);
+uint8_t get_mem(uint16_t addr);
 
 /*  Write an 8 bit value to the given 16 bit address */
-void set_mem(uint16_t const addr, uint8_t const val);
+void set_mem(uint16_t addr, uint8_t const val);
 
 /* Write 16bit value starting at the given memory address 
  * into memory.  Written in little-endian byte order */
-void set_mem_16(uint16_t loc, uint16_t val);
+void set_mem_16(uint16_t const loc, uint16_t const val);
 
 
 /* Read contents of 2 memory locations starting at the
  * given address. Returned as little-endian byte order 16 bit value */
-uint16_t get_mem_16(uint16_t loc); 
+uint16_t get_mem_16(uint16_t const loc); 
     
 /* Given the ROM data, load the ROM into
  * Gameboy memory and setup banks */

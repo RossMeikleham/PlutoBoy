@@ -24,12 +24,12 @@ before_install:
 install:    
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl-net1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev libsdl-net1.2-dev; fi
     
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2" ]; then sudo apt-get -f install libsdl2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2"]; then sudo apt-get -f install libsdl-net2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2" ]; then sudo apt-get -f install libsdl2-dev libsdl2-net-dev; fi
 
 
     # Native OSX Build setup

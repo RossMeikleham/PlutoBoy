@@ -16,7 +16,7 @@ debug_env = Environment(CCFLAGS = '-g -W -Wall -Wextra')
 
 env = release_env
 compiler = 'clang'
-framework = 'sdl2'
+framework = 'SDL2'
 
 cxxcompiler = 'clang++'
 
@@ -42,12 +42,12 @@ for key, value in ARGLIST:
             print("unknown mode, expected either prof, debug, or release")
     
     elif key == 'framework':
-        if value == 'sdl':
-            framework = 'sdl'
-        elif value == 'sdl2':
-            framework = 'sdl2'
+        if value == 'SDL':
+            framework = 'SDL'
+        elif value == 'SDL2':
+            framework = 'SDL2'
         else:
-            printf("Unknown framework, expecting either sdl or sdl2");
+            printf("Unknown framework, expecting either SDL or SDL2");
     else:
         print("Unknown setting:" + key)
 
@@ -55,12 +55,12 @@ for key, value in ARGLIST:
 env.Replace(CC = compiler)
 env.Replace(CXX = cxxcompiler)
 
-if framework == 'sdl':
+if framework == 'SDL':
     env.Append(LIBS = ['SDL','SDL_net'])
     env.Append(CPPPATH = ['/usr/include/SDL'])
     env.Append(CPPPATH = ['/usr/local/include/SDL'])
 
-elif framework == 'sdl2':
+elif framework == 'SDL2':
     env.Append(LIBS = ['SDL2','SDL2_net'])
     env.Append(CPPPATH = ['/usr/include/SDL2'])
     env.Append(CPPPATH = ['/usr/local/include/SDL2'])
@@ -75,12 +75,12 @@ sourceObjs = env.Object( Glob('../../src/core/*.c'))\
            + env.Object( Glob('../../src/platforms/standard/*.c'))\
            + env.Object( Glob('../../src/shared_libs/*.c'))\
 
-if framework == 'sdl':
+if framework == 'SDL':
     sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
                 + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))\
                 + env.Object( Glob('../../src/shared_libs/SDL/*.c'))
 
-elif framework == 'sdl2':
+elif framework == 'SDL2':
     sourceObjs += env.Object( Glob('../../src/shared_libs/SDL2/*.cpp'))\
                 + env.Object( Glob('../../src/shared_libs/SDL2/audio/*.cpp'))\
                 + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))

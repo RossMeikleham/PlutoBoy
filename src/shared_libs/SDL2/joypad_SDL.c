@@ -1,6 +1,12 @@
-#include <SDL2/SDL.h>
-#include "stdlib.h"
 #include "../../non_core/joypad.h"
+
+#ifdef _MSC_VER
+#include "SDL.h"
+#else 
+#include <SDL2/SDL.h>
+#endif
+
+#include "stdlib.h"
 #include "../../core/mmu/mbc.h"
 
 typedef struct {

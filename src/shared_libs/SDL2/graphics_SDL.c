@@ -1,7 +1,11 @@
 #include "../../non_core/graphics_out.h"
 #include "../../non_core/logger.h"
 
+#ifdef _MSC_VER
+#include "SDL.h"
+#else 
 #include <SDL2/SDL.h>
+#endif
 
 static SDL_Window *screen;
 static SDL_Renderer *renderer;

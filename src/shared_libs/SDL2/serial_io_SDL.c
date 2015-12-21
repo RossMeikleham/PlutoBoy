@@ -4,7 +4,11 @@
 #include "../../non_core/serial_io_transfer.h"
 #include "../../non_core/logger.h"
 
+#ifdef _MSC_VER
 #include "SDL.h"
+#else 
+#include <SDL2/SDL.h>
+#endif
 
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST)
 #include "SDL_net.h"

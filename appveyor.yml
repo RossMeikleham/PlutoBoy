@@ -7,6 +7,13 @@ environment:
       PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x" # currently 2.7.10
       PYTHON_ARCH: "64"
+      FRAMEWORK: "SDL"
+
+    - platform: x64 
+      PYTHON: "C:\\Python27-x64"
+      PYTHON_VERSION: "2.7.x" # currently 2.7.10
+      PYTHON_ARCH: "64"
+      FRAMEWORK: "SDL2"
 
 install:
   - SET "PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
@@ -16,4 +23,4 @@ build_script:
     - python --version
     - scons --version
     - cd build/Windows/scons
-    - scons
+    - scons framework=%FRAMEWORK%

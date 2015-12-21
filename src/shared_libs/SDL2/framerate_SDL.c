@@ -1,8 +1,14 @@
+#include "../../non_core/framerate.h"
+
+#ifdef _MSC_VER
+#include "SDL.h"
+#else 
 #include <SDL2/SDL.h>
+#endif
+
 #include <stdint.h>
 #include <stdio.h>
 #include "stdlib.h"
-#include "../../non_core/framerate.h"
 
 #ifndef EMSCRIPTEN
 static uint64_t last_ticks;
