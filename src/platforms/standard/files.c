@@ -41,7 +41,7 @@ unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned lon
     log_message(LOG_INFO, "Attempting to load SRAM for file: %s\n",file_path);
 
     if(!(file = fopen(file_path,"rb"))) {
-        log_message(LOG_INFO, "Error opening file: %s\n SRAM not loaded",file_path);
+        log_message(LOG_INFO, "Error opening file: %s. SRAM not loaded\n",file_path);
         return 0;
     }
     
