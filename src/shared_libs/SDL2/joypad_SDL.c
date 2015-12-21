@@ -73,6 +73,39 @@ int key_pressed() {
 }
 
 
+static float last_touch_x = -1.0;
+static float last_touch_y = -1.0;
+
+void check_keys_pressed(float x, float y, int state) {
+    if (x <= 0.5) {
+        if (x <= 0.2 && y >= 0.2 && y <= 0.4) {
+            buttons[LEFT].state = state;
+        } else if (x > 0.2 && x < 0.4 && y > 0.6) {
+            buttons[DOWN].state = state;
+        } else if (x >= 0.4 && y >= 0.2 && y <= 0.4) {
+            buttons[RIGHT].state = state;
+        } else if (x > 0.2 && x < 0.4 && y <= 0.6) {
+            buttons[UP].state = state;
+        }
+    } else {
+        if (x <= 0.7 && y >= 0.2 && y <= 0.4) {
+            buttons[A].state = state;
+        } else if (x > 0.7 && x < 0.9 && y > 0.6) {
+            buttons[START].state = state;
+        } else if (x >= 0.9 && y >= 0.2 && y <= 0.4) {
+            buttons[SELECT].state = state;
+        } else if (x > 0.7 && x < 0.9 && y <= 0.6) {
+            buttons[B].state = state;
+        }
+    }
+}
+
+void unset_keys() {
+    for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
+        buttons[i].state = 0;
+    }
+}
+
 /* Update current state of GameBoy keys as well as control
  * other external actions for the emulator */
 void update_keys() {
@@ -106,7 +139,15 @@ void update_keys() {
                             }
                         }
                     break;
-            } 
+                
+                case SDL_FINGERDOWN:
+                    check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
+                    break;
+                
+                case SDL_FINGERUP:
+                    check_keys_pressed(event.tfinger.x, event.tfinger.y, 0);
+                    break;
+            }
         }
 }
 

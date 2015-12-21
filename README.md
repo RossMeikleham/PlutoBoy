@@ -7,15 +7,16 @@
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | 
+| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | BROKEN |
 
 
-Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
-The desktop versions can use either SDL or SDL2. Emscripten uses SDL2, and PSP version uses SDL.
+Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, iOS, Web Browsers, and PSP.
+The desktop versions can use either SDL or SDL2. Emscripten and iOS uses SDL2. The PSP version uses SDL.
 
-The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
+The PSP version can be run through the PSP emulator (PPSSPP) for Android.
 
 Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
 
@@ -49,7 +50,8 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
 
 - LCD timings and handling.
 
-- Joypad support from Keyboard.
+- Joypad support from Keyboard, and touch screen
+  controls when using SDL2.
 
 - Serial I/O transfer implemented in TCP to emulate transfer of
   data through the link port. (Experimental) 
@@ -186,6 +188,27 @@ Raspberry Pi 2
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
+## iOS
+### Required:
+- XCode 7
+
+### How To Build + Run in Simulator:
+
+- Setup the SDL2 iOS framework by generating the `SDL2.Framework` folder from [here](https://github.com/manifest/sdl-ios-framework)
+- Copy `SDL2.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
+- Replace the dummy gameboy ROM `rom.gb` in the project `build\IOS\Rom_Folder` with the ROM you wish to run, and rename it as `rom.gb`.
+- Open `build\IOS\Plutoboy.xcodeproj` in XCode and build + run the app in the simulator.
+- There are touch screen controls, but they are currently rather horribly
+  implemented and don't have any visual indicators. Click around in the simulator
+  to find out where they are. 
+
+![simulator](/images/sim.png?raw=true) 
+
+#TODO
+    - Build/Run on actual devices
+    - Visual touch screen buttons
+    - Selecting ROM files from the app to load
+    - SRAM loads + saves
 
 ## Web Browser
 
