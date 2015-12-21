@@ -13,7 +13,7 @@
 
 
 Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
-Uses SDL for input/output but can easily be expanded to include other frameworks.
+The desktop versions can use either SDL or SDL2. Emscripten uses SDL2, and PSP version uses SDL.
 
 The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
 
@@ -114,16 +114,16 @@ The -d flag starts the emulator in debugging mode.
 
 ## Linux
 
-### Required: (All these should be easily installed using your package manager)
+### Required: (All these should be easily installed using the package manager provided by your Linux distribution)
 
-- SDL 1.2 libraries
-- SDL_net library
+- SDL2  
+- SDL2_net 
 - Scons 
-- Clang compiler 
+- Clang or GCC 
 
 ### How To Build:
 - Navigate to the project `build/Unix` folder.
-- Enter the command `./scons`
+- Enter the command `./scons cc=[compiler]` where `[compiler]` is either "gcc" or "clang". Leaving out the cc option compiles with clang by default.
  
 Raspberry Pi 1
  - Overclock the Pi to 1 Ghz to be able to run at full speed
@@ -137,8 +137,8 @@ Raspberry Pi 2
 
 ### Required: (All these can be easily installed using the homebrew package manager)
 
-- SDL 1.2 libraries
-- SDL_net library
+- SDL_2 
+- SDL2_net 
 - XCode + XCode Command Line tools 
 - Scons
 
@@ -160,7 +160,7 @@ Raspberry Pi 2
   the executable along with the required SDL DLLs should be in a new folder called `build` 
   inside the current `scons` folder
 
-## Winodws (Alternative Method)
+## Windows (Alternative Method)  - *CURRENTLY BROKEN* 
 ### Required:
 - Visual C++/ Visual Studio
 - SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
@@ -190,7 +190,7 @@ Raspberry Pi 2
 ## Web Browser
 
 ### Required:
-- Emscripten to compile the C/C++ sources to Javascript
+- [Emscripten]( https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) to compile the C/C++ sources to Javascript
 
 ### How to Build:
 - Navigate to the `build/Javascript` folder
@@ -198,10 +198,13 @@ Raspberry Pi 2
 - Enter the command `make`
 - gameboy.js and gameboy.html files should be generated.
 - To run games, open gameboy.html with a web browser.
+- In Google Chrome you may need to close all instances of chrome and then start a new one from the terminal/command line with the flag `--allow-file-access-from-files`.
 
 ### TODO
   - Need to make a way for the user to enter the address of a rom and attempt to load
-    it rather than hard coding one at compile time. Also need to add sound.
+    it rather than hard coding one at compile time. Sound is currently broken
+    due to the sound library using multithreading which isn't currently supported
+    very well. 
 
 
 
