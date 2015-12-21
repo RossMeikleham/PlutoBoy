@@ -16,6 +16,8 @@ debug_env = Environment(CCFLAGS = '-g -W -Wall -Wextra')
 
 env = release_env
 compiler = 'clang'
+framework = 'sdl2'
+
 cxxcompiler = 'clang++'
 
 for key, value in ARGLIST:
@@ -38,7 +40,14 @@ for key, value in ARGLIST:
             env = release_env
         else:
             print("unknown mode, expected either prof, debug, or release")
-       
+    
+    elif key == 'framework':
+        if value == 'sdl':
+            framework = 'sdl'
+        elif value == 'sdl2':
+            framework = 'sdl2'
+        else:
+            printf("Unknown framework, expecting either sdl or sdl2");
     else:
         print("Unknown setting:" + key)
 
@@ -46,10 +55,15 @@ for key, value in ARGLIST:
 env.Replace(CC = compiler)
 env.Replace(CXX = cxxcompiler)
 
-env.Append(CPPPATH = ['/usr/include/SDL'])
-env.Append(CPPPATH = ['/usr/local/include/SDL'])
-env.Append(LIBS = ['SDL','SDL_net'])
-env.Append(LINKFLAGS = '')
+if framework == 'sdl':
+    env.Append(LIBS = ['SDL','SDL_net'])
+    env.Append(CPPPATH = ['/usr/include/SDL'])
+    env.Append(CPPPATH = ['/usr/local/include/SDL'])
+
+elif framework == 'sdl2':
+    env.Append(LIBS = ['SDL2','SDL2_net'])
+    env.Append(CPPPATH = ['/usr/include/SDL2'])
+    env.Append(CPPPATH = ['/usr/local/include/SDL2'])
 
 #SDL for OSX uses Cocoa
 if sys.platform == 'darwin':
@@ -57,10 +71,21 @@ if sys.platform == 'darwin':
 
 sourceObjs = env.Object( Glob('../../src/core/*.c'))\
            + env.Object( Glob('../../src/core/mmu/*.c'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/*.c'))\
+           + env.Object( Glob('../../src/core/audio/*.cpp'))\
            + env.Object( Glob('../../src/platforms/standard/*.c'))\
            + env.Object( Glob('../../src/shared_libs/*.c'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))
+
+if framework == 'sdl':
+    sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL/*.c'))
+
+elif framework == 'sdl2':
+    sourceObjs += env.Object( Glob('../../src/shared_libs/SDL2/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL2/audio/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))
+
 
 env.Program('gb_emu',sourceObjs)
+
+

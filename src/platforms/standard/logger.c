@@ -35,7 +35,12 @@ void log_message(LogLevel ll, const char *fmt, ...) {
     
     if(ll <= LOG_OFF && ll >= current_log_level) {
         // Choose output stream based on current log level
+
+        #ifndef EMSCRIPTEN
         FILE *stream = (ll == LOG_INFO) ? stdout : stderr;
+        #else
+        FILE *stream = stdout;
+        #endif
 
         log_time(stream);
         // Log message level

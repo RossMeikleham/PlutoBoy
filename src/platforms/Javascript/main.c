@@ -14,8 +14,6 @@ int main() {
 
     ClientOrServer cs = NO_CONNECT;
 
-    printf("hello there\n");
-
     if (!init_emu(file_name, debug, dmg, cs)) {
         return 1;
     }

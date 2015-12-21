@@ -61,6 +61,7 @@ src_dir = "../../../src"
 # Get all the the source files
 sourceObjs = env.Object( Glob(src_dir + '/core/*.c'))\
            + env.Object( Glob(src_dir + '/core/mmu/*.c'))\
+           + env.Object( Glob(src_dir + '/core/audio/*.cpp'))\
            + env.Object( Glob(src_dir + '/shared_libs/SDL/*.c'))\
            + env.Object( Glob(src_dir + '/platforms/standard/*.c'))\
            + env.Object( Glob(src_dir + '/shared_libs/*.c'))\
