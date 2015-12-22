@@ -2,19 +2,23 @@
 #include "../../non_core/logger.h"
 
 #include <SDL.h>
-
+#include <SDL/SDL_endian.h>
 
 static SDL_Surface *screen;
-static Uint32 *pixels;
-static Uint32 previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
+static uint32_t *pixels;
+static uint32_t previous[GB_PIXELS_Y][GB_PIXELS_X]; //Store last frame's pixels 
 static int screen_width;
 static int screen_height;
+
+#ifdef PSP
 static SDL_Joystick *stick;
+#endif
+
 
 /*  Initialise graphics and create win_x by win_y pixel
  *  screen. Keeps track of GB_PIXELS_Y by GB_PIXELS_X screen. 
  *  return  1 if successful, 0 otherwise */
-int init_screen(int win_x, int win_y, Uint32 *p) {
+int init_screen(int win_x, int win_y, uint32_t *p) {
     
     screen_width = win_x;
     screen_height = win_y;
