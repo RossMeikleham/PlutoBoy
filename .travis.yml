@@ -10,11 +10,18 @@ env:
     - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL MODE=release
     - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2 MODE=release
     - BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release
-    - BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=debug
+    - BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release
     - BUILD=psp CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release
     - BUILD=emscripten CC=clang CXX=clang++ FRAMEWORK=SDL2 MODE=release
-#    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
+    - BUILD=IOS
+    #- BUILD=dreamcast CC=gcc CXX=g++ MODE=release
 
+matrix:
+  exclude:
+    - os: linux
+      env: BUILD=IOS
+    - os: osx
+      env: CC=gcc
 
 
 before_install:
@@ -124,6 +131,18 @@ install:
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../kos-ports; fi
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
 
+#Setup SDL2 framework for XCode IOS
+    - if [ "$BUILD" == "IOS" ]; then git clone https://github.com/manifest/sdl-ios-framework; fi
+    - if [ "$BUILD" == "IOS" ]; then cd sdl-ios-framework; fi 
+    - if [ "$BUILD" == "IOS" ]; then gem install colorize; fi 
+    - if [ "$BUILD" == "IOS" ]; then rake SDL2:build; fi
+    - if [ "$BUILD" == "IOS" ]; then mkdir ~/Library/Frameworks/; fi 
+    - if [ "$BUILD" == "IOS" ]; then cp -r build/sdl/SDL2.framework ~/Library/Frameworks/; fi 
+#    - if [ "$BUILD" == "IOS" ]; then ; fi 
+
+
+
+
 after_failure:
     tail ~/error.log --lines=1000
 
@@ -145,3 +164,8 @@ script:
     #Dreamcast builds for Linux
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
+    
+    # IOS Build
+    - if [ "$BUILD" == "IOS" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/IOS; fi
+    - if [ "$BUILD" == "IOS" ]; then xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO; fi
+    
