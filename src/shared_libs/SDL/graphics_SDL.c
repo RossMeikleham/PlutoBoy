@@ -2,7 +2,10 @@
 #include "../../non_core/logger.h"
 
 #include <SDL.h>
+
+#ifdef DREAMCAST
 #include <SDL/SDL_endian.h>
+#endif
 
 static SDL_Surface *screen;
 static uint32_t *pixels;
