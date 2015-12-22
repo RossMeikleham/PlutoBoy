@@ -54,9 +54,6 @@ matrix:
       env: BUILD=psp
       language: c
       
-    # OSX version installs the PSP Toolchain + SDK correctly,
-    # except for some reason it doesn't install the SDL library.
-    # Need to look into this.
     - os: osx
       env: BUILD=psp
       language: c
@@ -74,9 +71,6 @@ matrix:
 
   allow_failures:
     - env: BUILD=dreamcast
-    
-    - os: osx
-      env: BUILD=psp
     
     - os: linux
       env: BUILD=emscripten
@@ -165,7 +159,7 @@ install:
     - if [ "$BUILD" == "psp" ]; then ~/build/RossMeikleham/PlutoBoy/build/PSP/buildPspToolchainTravis.sh; fi
     - if [ "$BUILD" == "psp" ]; then export PSPDEV=/usr/local/pspdev; fi
     - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
-    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then git clone https://github.com/pspdev/psplibraries && cd psplibraries && ./libraries.sh; fi
+    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then git clone https://github.com/pspdev/psplibraries && cd psplibraries && sudo ./libraries.sh; fi
 
 
    # Install KOS Toolchain 
