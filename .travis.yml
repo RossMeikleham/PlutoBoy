@@ -165,6 +165,7 @@ install:
     - if [ "$BUILD" == "psp" ]; then ~/build/RossMeikleham/PlutoBoy/build/PSP/buildPspToolchainTravis.sh; fi
     - if [ "$BUILD" == "psp" ]; then export PSPDEV=/usr/local/pspdev; fi
     - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
+    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then git clone https://github.com/pspdev/psplibraries && cd psplibraries && ./libraries.sh; fi
 
 
    # Install KOS Toolchain 
