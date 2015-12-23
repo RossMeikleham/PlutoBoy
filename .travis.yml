@@ -60,7 +60,7 @@ matrix:
       
     # Dreamcast Builds
     # Dreamcast Linux build was working before Travis upgraded their
-    # infrastructure in Dec 2015. Need to look into why these are broken.
+    # infrastructure in Dec 2015. Need to look into why it's broken.
     - os: linux
       env: BUILD=dreamcast
       language: c
@@ -70,7 +70,8 @@ matrix:
       language: c
 
   allow_failures:
-    - env: BUILD=dreamcast
+    - os : linux
+      env: BUILD=dreamcast
     
     - os: linux
       env: BUILD=emscripten
