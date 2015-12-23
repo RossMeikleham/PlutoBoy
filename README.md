@@ -1,22 +1,19 @@
+#PlutoBoy 
+
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, iOS, Web Browsers, and Sony PSP.
+
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
 
-
-| Platform   | CI Build Status | 
-|------------|-----------------|
-| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | 
-| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | BROKEN |
-
-
-Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, iOS, Web Browsers, and PSP.
-The desktop versions can use either SDL or SDL2. Emscripten and iOS uses SDL2. The PSP version uses SDL.
-
-The PSP version can be run through the PSP emulator (PPSSPP) for Android.
+| Platform   | CI Build Status | SDL 1.2 | SDL 2 |
+|------------|-----------------|---------|-------|
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
+| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ |
+| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
 
 Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
 
@@ -30,7 +27,7 @@ all original Gameboy games are backwards compatible in CGB mode:
 ![poke_no_col](/images/blue_nocol.png?raw=true)
 ![poke_mid_col](/images/blue_col.png?raw=true)
 
-Some Color ROMS are backwards compatible and can also be run in DMG mode:
+Some Color ROMS can also be run in DMG mode:
 
 
 ![poke_no_col](/images/gold_nocol.png?raw=true)
