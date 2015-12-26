@@ -10,7 +10,7 @@
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 
 #include <SDL2/SDL.h>

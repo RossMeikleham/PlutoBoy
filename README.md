@@ -1,6 +1,6 @@
-#PlutoBoy 
+#Plutoboy 
 
-A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, iOS, Web Browsers, and Sony PSP.
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, and Sony PSP.
 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
@@ -9,7 +9,8 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 |------------|-----------------|---------|-------|
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
+|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
@@ -184,6 +185,38 @@ Raspberry Pi 2
 - The Windows folder should now contain a release folder containing the emulator executable.
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
+
+## Android
+### Required 
+  - Mercurial
+  - Ant
+  - Android NDK (> r7)
+  - Android SDK 15 
+
+> ***Note*** README-android.txt in the latest development version of SDL2 explains the build process in more detail.
+
+### Building (Command Line)
+- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
+- navigate to the `build\Android` folder. 
+- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Generate the `default.properties` file with `android update project -p .`
+- Replace the dummy `rom.gb` file in the `assets` folder with a chosen gameboy/gameboy color ROM named `rom.gb`
+- Compile the C/C++ source with `ndk-build`
+- Run `ant clean` then `ant release` which should generate the APK file in the `build` folder.
+
+### Building (Eclipse)
+- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
+- navigate to the `build\Android` folder. 
+- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Replace the dummy `rom.gb` file in the `assets` folder with a chosen gameboy/gameboy color ROM named `rom.gb`
+- Compile the C/C++ sources with `ndk-build`
+- Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
+- You should now be able to build and test on emulators/devices through Eclipse.
+
+#TODO
+    - Visual touch screen buttons
+    - Selecting ROM files from the app to load
+    - SRAM loads + saves
 
 ## iOS
 ### Required:

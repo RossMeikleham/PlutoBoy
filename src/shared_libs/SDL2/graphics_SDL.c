@@ -1,7 +1,7 @@
 #include "../../non_core/graphics_out.h"
 #include "../../non_core/logger.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 
 #include <SDL2/SDL.h>
