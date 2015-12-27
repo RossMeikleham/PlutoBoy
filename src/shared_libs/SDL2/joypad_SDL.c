@@ -8,12 +8,22 @@
 
 #include "stdlib.h"
 #include "../../core/mmu/mbc.h"
+#include "../../non_core/logger.h"
+
+typedef struct {
+    int x;
+    int y;
+    int w;
+    int h;
+} b_rect;
 
 typedef struct {
     int key_code; // Key code on the keyboard which
                        // maps to the given gameboy button
     int state; // 1 pressed, 0 unpressed
+    b_rect rect;
 } button_state;
+
 
 enum {UP = 0, DOWN, LEFT, RIGHT, A, B, START, SELECT};
 
@@ -21,36 +31,53 @@ button_state buttons[8];
 
 #define TOTAL_BUTTONS (sizeof(buttons)/sizeof(buttons[0]))
 
+static SDL_DisplayMode current;
+
 /*  Intialize the joypad, should be called before any other
  *  joypad functions */
 void init_joypad() { 
+    
+    SDL_GetCurrentDisplayMode(0, &current);    
      
     buttons[UP].state = 0;
     buttons[UP].key_code = SDLK_UP;
+    b_rect rect_u = {DPAD_UP_X, DPAD_UP_Y(current.h), DPAD_UP_W, DPAD_UP_H};
+    buttons[UP].rect = rect_u;
 
     buttons[DOWN].state = 0;
     buttons[DOWN].key_code = SDLK_DOWN;
+    b_rect rect_d = {DPAD_DOWN_X, DPAD_DOWN_Y(current.h), DPAD_DOWN_W, DPAD_DOWN_H};
+    buttons[DOWN].rect = rect_d; 
 
     buttons[LEFT].state = 0;
     buttons[LEFT].key_code = SDLK_LEFT;
+    b_rect rect_l = {DPAD_LEFT_X, DPAD_LEFT_Y(current.h), DPAD_LEFT_W, DPAD_LEFT_H};
+    buttons[LEFT].rect = rect_l; 
 
     buttons[RIGHT].state = 0;
     buttons[RIGHT].key_code = SDLK_RIGHT;
+    b_rect rect_r = {DPAD_RIGHT_X, DPAD_RIGHT_Y(current.h), DPAD_RIGHT_W, DPAD_RIGHT_H};
+    buttons[RIGHT].rect = rect_r; 
 
     buttons[A].state = 0;
     buttons[A].key_code = SDLK_a;
+    b_rect rect_a = {A_X(current.w), A_Y(current.h), A_W, A_H};
+    buttons[A].rect = rect_a; 
 
     buttons[B].state = 0;
     buttons[B].key_code = SDLK_s;
+    b_rect rect_b = {B_X(current.w), B_Y(current.h), B_W, B_H};
+    buttons[B].rect = rect_b; 
 
     buttons[START].state = 0;
     buttons[START].key_code = SDLK_RETURN;
+    b_rect rect_st = {START_X, START_Y(current.h), START_W, START_H};
+    buttons[START].rect = rect_st; 
    
     buttons[SELECT].state = 0;
     buttons[SELECT].key_code = SDLK_SPACE;
-     
-    // Allow keys to be held down
-    //SDL_EnableKeyRepeat(0,0);
+    b_rect rect_se = {SELECT_X, SELECT_Y(current.h), SELECT_W, SELECT_H};
+    buttons[SELECT].rect = rect_se; 
 }
 
 /* Check each individual GameBoy key. Returns 1 if
@@ -77,26 +104,16 @@ static float last_touch_x = -1.0;
 static float last_touch_y = -1.0;
 
 void check_keys_pressed(float x, float y, int state) {
-    if (x <= 0.5) {
-        if (x <= 0.2 && y >= 0.2 && y <= 0.4) {
-            buttons[LEFT].state = state;
-        } else if (x > 0.2 && x < 0.4 && y > 0.6) {
-            buttons[DOWN].state = state;
-        } else if (x >= 0.4 && y >= 0.2 && y <= 0.4) {
-            buttons[RIGHT].state = state;
-        } else if (x > 0.2 && x < 0.4 && y <= 0.6) {
-            buttons[UP].state = state;
-        }
-    } else {
-        if (x <= 0.7 && y >= 0.2 && y <= 0.4) {
-            buttons[A].state = state;
-        } else if (x > 0.7 && x < 0.9 && y > 0.6) {
-            buttons[START].state = state;
-        } else if (x >= 0.9 && y >= 0.2 && y <= 0.4) {
-            buttons[SELECT].state = state;
-        } else if (x > 0.7 && x < 0.9 && y <= 0.6) {
-            buttons[B].state = state;
-        }
+    float p_x = x * current.w;
+    float p_y = y * current.h;
+    
+    for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
+        if (p_x >= buttons[i].rect.x && 
+                p_x <= buttons[i].rect.x + buttons[i].rect.w &&
+                p_y >= buttons[i].rect.y &&
+                p_y <= buttons[i].rect.y + buttons[i].rect.h) {
+            buttons[i].state = state;
+         }
     }
 }
 
