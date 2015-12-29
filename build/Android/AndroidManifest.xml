@@ -3,7 +3,7 @@
      com.gamemaker.game
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.libsdl.app"
+      package="org.plutoboy.plutoboy"
       android:versionCode="1"
       android:versionName="0.1.0"
       android:installLocation="auto">
@@ -33,6 +33,18 @@
                  android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
                  android:hardwareAccelerated="true" 
                  android:allowClearUserData="true" >
+                 
+        <activity android:name="PlutoboyActivity"
+                  android:label="@string/app_name"
+                  android:screenOrientation="landscape"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
         <activity android:name="SDLActivity"
                   android:label="@string/app_name"
                   android:screenOrientation="landscape"
@@ -42,15 +54,9 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Drop file event -->
-            <!--
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="*/*" />
-            </intent-filter>
-            -->
         </activity>
+        
+        
     </application>
 
 </manifest> 

@@ -6,6 +6,10 @@
 #include <SDL2/SDL.h>
 #endif
 
+#if defined(__ANDROID__) 
+#include <jni.h>
+#endif
+
 #include "stdlib.h"
 #include "../../core/mmu/mbc.h"
 #include "../../non_core/logger.h"
@@ -35,12 +39,48 @@ static SDL_DisplayMode current;
 static SDL_Haptic *haptic;
 static int rumble_on = 0; // If rumble is activated
 
+#if defined(__ANDROID__) 
+static void vibrate() {
+
+    // Retrieve the JNI environment
+    JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+
+    // retrieve the Java instance of the SDL Activity
+    jobject activity = (jobject)SDL_AndroidGetActivity();
+
+    // find the Java class of the activity. It should be SDLActivity or a subclass of it.
+    jclass c = (*env)->GetObjectClass(env, activity);
+    if (c == 0) {
+        log_message(LOG_ERROR, "JNI: Unable to find the \"PlutoboyActivity\" class\n");
+        return ; 
+    }
+
+    // Get the Vibrate method id
+    jmethodID mid = (*env)->GetMethodID(env, c, "vibrate", "()V");
+    if (mid == 0) {
+        log_message(LOG_ERROR, "JNI: Unable to find the \"vibrate\" method id\n");
+        return ; 
+    }
+    
+    (*env)->CallVoidMethod(env, activity, mid); 
+
+    // clean up the local references.
+    (*env)->DeleteLocalRef(env, activity);
+    (*env)->DeleteLocalRef(env, c);
+}
+#endif
+
 /*  Intialize the joypad, should be called before any other
  *  joypad functions */
 void init_joypad() { 
-   
-    rumble_on = 0;
 
+    #if defined(__ANDROID__)   
+    rumble_on = 1;
+    #else
+    rumble_on = 0;
+    #endif
+    
+    
     // Attempt to setup Haptic Feedback
     haptic = SDL_HapticOpen(0);
     if (haptic == NULL) {
@@ -117,13 +157,13 @@ int key_pressed() {
 }
 
 
-static float last_touch_x = -1.0;
-static float last_touch_y = -1.0;
-
+// Given relative screen x and y positions and an on/off state
+// sets any buttons those co-ordinates are in to the given state.
 void check_keys_pressed(float x, float y, int state) {
     float p_x = x * current.w;
     float p_y = y * current.h;
-    for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
+   
+     for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
         if (p_x >= buttons[i].rect.x && 
                 p_x <= buttons[i].rect.x + buttons[i].rect.w &&
                 p_y >= buttons[i].rect.y &&
@@ -132,12 +172,60 @@ void check_keys_pressed(float x, float y, int state) {
             // If activating button, send rumble feedback
             if (rumble_on && !buttons[i].state && state) {
                // SDL_HapticRumblePlay(haptic, 0.5, 100);
+               #if defined(__ANDROID__)
+                  vibrate();
+               #endif
             }
             buttons[i].state = state;
             
          }
     }
 }
+
+// Given new x/y relativ screen positions and x/y movement 
+// determines which keys are now pressed
+void check_keys_moved(float x, float y, float mv_x, float mv_y) {
+    // Pixel positions after movement
+    float p_x = x * current.w;
+    float p_y = y * current.h;
+
+    // Pixel positions before movement
+    float old_p_x = (x - mv_x) * current.w;
+    float old_p_y = (y - mv_y) * current.h;
+   
+    int activated = 0;
+
+     for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
+        int was_on = (old_p_x >= buttons[i].rect.x) &&
+                     (old_p_x <= buttons[i].rect.x + buttons[i].rect.w) &&
+                     (old_p_y >= buttons[i].rect.y) &&
+                     (old_p_y <= buttons[i].rect.y + buttons[i].rect.h);
+
+        int is_on = (p_x >= buttons[i].rect.x) && 
+                    (p_x <= buttons[i].rect.x + buttons[i].rect.w) &&
+                    (p_y >= buttons[i].rect.y) &&
+                    (p_y <= buttons[i].rect.y + buttons[i].rect.h);
+            
+        if (!was_on && is_on) {
+            activated = 1;
+            buttons[i].state = 1;           
+        }
+
+        if (was_on && !is_on) {
+            buttons[i].state = 0;
+        }    
+    } 
+
+         
+    // If activating button, send rumble feedback
+    if (rumble_on && activated) {
+        // SDL_HapticRumblePlay(haptic, 0.5, 100);
+        #if defined(__ANDROID__)
+        vibrate();
+        #endif
+    }
+}
+
 
 void unset_keys() {
     for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
@@ -191,12 +279,8 @@ void update_keys() {
                 // the size of the buttons. It would be more accurate in the future
                 // to keep track of finger ids for each button 
                 case SDL_FINGERMOTION:
-                    // Unset any buttons pushed with the finger before the motion
-                    check_keys_pressed(event.tfinger.x - event.tfinger.dx,
-                                       event.tfinger.y - event.tfinger.dy, 0);     
-                        
-                    // Set buttons currently being pushed by the finger
-                    check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
+                    check_keys_moved(event.tfinger.x, event.tfinger.y,
+                                     event.tfinger.dx, event.tfinger.dy);
                     break;
             }                   
         }
