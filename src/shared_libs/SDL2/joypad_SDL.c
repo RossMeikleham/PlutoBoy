@@ -32,11 +32,28 @@ button_state buttons[8];
 #define TOTAL_BUTTONS (sizeof(buttons)/sizeof(buttons[0]))
 
 static SDL_DisplayMode current;
+static SDL_Haptic *haptic;
+static int rumble_on = 0; // If rumble is activated
 
 /*  Intialize the joypad, should be called before any other
  *  joypad functions */
 void init_joypad() { 
+   
+    rumble_on = 0;
+
+    // Attempt to setup Haptic Feedback
+    haptic = SDL_HapticOpen(0);
+    if (haptic == NULL) {
+        log_message(LOG_WARN, "Unable to open haptic device %s\n", SDL_GetError());
+    } else {
+        if (haptic != NULL && SDL_HapticRumbleInit(haptic) != 0) {
+            rumble_on = 1;
+        } else {
+            log_message(LOG_WARN, "Unable to initialize rumble %s\n", SDL_GetError());
+        }
+    } 
     
+    // Setup buttons 
     SDL_GetCurrentDisplayMode(0, &current);    
      
     buttons[UP].state = 0;
@@ -106,13 +123,18 @@ static float last_touch_y = -1.0;
 void check_keys_pressed(float x, float y, int state) {
     float p_x = x * current.w;
     float p_y = y * current.h;
-    
     for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
         if (p_x >= buttons[i].rect.x && 
                 p_x <= buttons[i].rect.x + buttons[i].rect.w &&
                 p_y >= buttons[i].rect.y &&
                 p_y <= buttons[i].rect.y + buttons[i].rect.h) {
+            
+            // If activating button, send rumble feedback
+            if (rumble_on && !buttons[i].state && state) {
+               // SDL_HapticRumblePlay(haptic, 0.5, 100);
+            }
             buttons[i].state = state;
+            
          }
     }
 }
@@ -164,7 +186,19 @@ void update_keys() {
                 case SDL_FINGERUP:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 0);
                     break;
-            }
+
+                // Assume only one finger can be on a button at a time considering
+                // the size of the buttons. It would be more accurate in the future
+                // to keep track of finger ids for each button 
+                case SDL_FINGERMOTION:
+                    // Unset any buttons pushed with the finger before the motion
+                    check_keys_pressed(event.tfinger.x - event.tfinger.dx,
+                                       event.tfinger.y - event.tfinger.dy, 0);     
+                        
+                    // Set buttons currently being pushed by the finger
+                    check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
+                    break;
+            }                   
         }
 }
 

@@ -2,7 +2,7 @@
 #define JOYPAD_H
 
 //Virtual Button Positions for Mobile Devices
-#define DPAD_SIZE 72
+#define DPAD_SIZE 84
 #define H_BORDER (48 + DPAD_SIZE)
 #define W_BORDER 48
 
@@ -29,12 +29,12 @@
 #define SELECT_X (DPAD_RIGHT_X + DPAD_RIGHT_W + DPAD_SIZE)
 #define SELECT_Y(height) (DPAD_DOWN_Y(height))
 #define SELECT_W ((DPAD_SIZE * 3) / 2)
-#define SELECT_H (DPAD_SIZE / 2)
+#define SELECT_H ((DPAD_SIZE * 2)/ 3)
 
 #define START_X (SELECT_X + SELECT_W + (DPAD_SIZE / 2))
 #define START_Y(height) (DPAD_DOWN_Y(height))
 #define START_W ((DPAD_SIZE * 3) / 2)
-#define START_H (DPAD_SIZE / 2)
+#define START_H ((DPAD_SIZE * 2) / 3)
 
 #define A_X(width) (width - W_BORDER - DPAD_SIZE)
 #define A_Y(height) (DPAD_RIGHT_Y(height))

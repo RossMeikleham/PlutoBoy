@@ -75,7 +75,7 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
 
     pixels = p;
 
-    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK )==-1)) {
+    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC)==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
      }
