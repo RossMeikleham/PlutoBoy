@@ -200,7 +200,6 @@ Raspberry Pi 2
 - navigate to the `build\Android` folder. 
 - Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
 - Generate the `default.properties` file with `android update project -p .`
-- Replace the dummy `rom.gb` file in the `assets` folder with a chosen gameboy/gameboy color ROM named `rom.gb`
 - Compile the C/C++ source with `ndk-build`
 - Run `ant clean` then `ant release` which should generate the APK file in the `build` folder.
 
@@ -208,14 +207,11 @@ Raspberry Pi 2
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
 - navigate to the `build\Android` folder. 
 - Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
-- Replace the dummy `rom.gb` file in the `assets` folder with a chosen gameboy/gameboy color ROM named `rom.gb`
 - Compile the C/C++ sources with `ndk-build`
 - Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
 - You should now be able to build and test on emulators/devices through Eclipse.
 
 #TODO
-    - Visual touch screen buttons
-    - Selecting ROM files from the app to load
     - SRAM loads + saves
 
 ## iOS
@@ -228,15 +224,12 @@ Raspberry Pi 2
 - Copy `SDL2.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
 - Replace the dummy gameboy ROM `rom.gb` in the project `build\IOS\Rom_Folder` with the ROM you wish to run, and rename it as `rom.gb`.
 - Open `build\IOS\Plutoboy.xcodeproj` in XCode and build + run the app in the simulator.
-- There are touch screen controls, but they are currently rather horribly
-  implemented and don't have any visual indicators. Click around in the simulator
-  to find out where they are. 
+
 
 ![simulator](/images/sim.png?raw=true) 
 
 #TODO
     - Build/Run on actual devices
-    - Visual touch screen buttons
     - Selecting ROM files from the app to load
     - SRAM loads + saves
 
