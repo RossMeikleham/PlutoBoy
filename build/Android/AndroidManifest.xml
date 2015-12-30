@@ -5,7 +5,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.plutoboy.plutoboy"
       android:versionCode="1"
-      android:versionName="0.1.0"
+      android:versionName="0.0.1"
       android:installLocation="auto">
 
     <!-- Android 3.1 -->
