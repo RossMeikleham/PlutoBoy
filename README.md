@@ -1,21 +1,20 @@
+#Plutoboy 
+
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, and Sony PSP.
+
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
 
-
-| Platform   | CI Build Status | 
-|------------|-----------------|
-| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | 
-| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) |
-
-
-Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Web Browsers, and PSP.
-Uses SDL for input/output but can easily be expanded to include other frameworks.
-
-The PSP version can be run through the PSP emulator (PPSSPP) for Android/IOS platforms.
+| Platform   | CI Build Status | SDL 1.2 | SDL 2 |
+|------------|-----------------|---------|-------|
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
+| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
+|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
 
 Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
 
@@ -29,7 +28,7 @@ all original Gameboy games are backwards compatible in CGB mode:
 ![poke_no_col](/images/blue_nocol.png?raw=true)
 ![poke_mid_col](/images/blue_col.png?raw=true)
 
-Some Color ROMS are backwards compatible and can also be run in DMG mode:
+Some Color ROMS can also be run in DMG mode:
 
 
 ![poke_no_col](/images/gold_nocol.png?raw=true)
@@ -49,7 +48,8 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
 
 - LCD timings and handling.
 
-- Joypad support from Keyboard.
+- Joypad support from Keyboard, and touch screen
+  controls when using SDL2.
 
 - Serial I/O transfer implemented in TCP to emulate transfer of
   data through the link port. (Experimental) 
@@ -58,7 +58,7 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
   scanlines have been rendered the screen is displayed/updated 
   using SDL.
 
-- Support for regular 32kb, MBC1, MBC3, MBC5, HuC1, HuC3, and MMM01 chip ROMs. (Not including Real Time Clock or Rumble)
+- Support for regular 32KB, MBC1, MBC2, MBC3, MBC5, HuC1, HuC3, and MMM01 chip ROMs. (Not including Real Time Clock or Rumble)
 
 - Saving SRAM to and loading SRAM from file for games that support it.
 
@@ -77,7 +77,7 @@ Some Color ROMS are backwards compatible and can also be run in DMG mode:
 #Still to implement:
 
 - Support for Real Time Clock for MBC3 + HuC3, rumble for MBC5. 
-  MBC2, MBC6, MBC7, TAMA5, and Gameboy Camera Memory Controllers.
+  MBC6, MBC7, TAMA5, and Gameboy Camera Memory Controllers.
 
 - Updating screen information during the scan line instead
   of all at once when H-Blank occurs. 
@@ -114,16 +114,16 @@ The -d flag starts the emulator in debugging mode.
 
 ## Linux
 
-### Required: (All these should be easily installed using your package manager)
+### Required: (All these should be easily installed using the package manager provided by your Linux distribution)
 
-- SDL 1.2 libraries
-- SDL_net library
+- SDL2  
+- SDL2_net 
 - Scons 
-- Clang compiler 
+- Clang or GCC 
 
 ### How To Build:
 - Navigate to the project `build/Unix` folder.
-- Enter the command `./scons`
+- Enter the command `./scons cc=[compiler]` where `[compiler]` is either "gcc" or "clang". Leaving out the cc option compiles with clang by default.
  
 Raspberry Pi 1
  - Overclock the Pi to 1 Ghz to be able to run at full speed
@@ -137,8 +137,8 @@ Raspberry Pi 2
 
 ### Required: (All these can be easily installed using the homebrew package manager)
 
-- SDL 1.2 libraries
-- SDL_net library
+- SDL_2 
+- SDL2_net 
 - XCode + XCode Command Line tools 
 - Scons
 
@@ -160,7 +160,7 @@ Raspberry Pi 2
   the executable along with the required SDL DLLs should be in a new folder called `build` 
   inside the current `scons` folder
 
-## Winodws (Alternative Method)
+## Windows (Alternative Method)  - *CURRENTLY BROKEN* 
 ### Required:
 - Visual C++/ Visual Studio
 - SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
@@ -186,11 +186,54 @@ Raspberry Pi 2
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
+## Android
+### Required 
+  - Mercurial
+  - Ant
+  - Android NDK (> r7)
+  - Android SDK 15 
+
+> ***Note*** README-android.txt in the latest development version of SDL2 explains the build process in more detail.
+
+### Building (Command Line)
+- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
+- navigate to the `build\Android` folder. 
+- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Generate the `default.properties` file with `android update project -p .`
+- Compile the C/C++ source with `ndk-build`
+- Run `ant clean` then `ant release` which should generate the APK file in the `build` folder.
+
+### Building (Eclipse)
+- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
+- navigate to the `build\Android` folder. 
+- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Compile the C/C++ sources with `ndk-build`
+- Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
+- You should now be able to build and test on emulators/devices through Eclipse.
+
+## iOS
+### Required:
+- XCode 7
+
+### How To Build + Run in Simulator:
+
+- Setup the SDL2 iOS framework by generating the `SDL2.Framework` folder from [here](https://github.com/manifest/sdl-ios-framework)
+- Copy `SDL2.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
+- Replace the dummy gameboy ROM `rom.gb` in the project `build\IOS\Rom_Folder` with the ROM you wish to run, and rename it as `rom.gb`.
+- Open `build\IOS\Plutoboy.xcodeproj` in XCode and build + run the app in the simulator.
+
+
+![simulator](/images/sim.png?raw=true) 
+
+#TODO
+    - Build/Run on actual devices
+    - Selecting ROM files from the app to load
+    - SRAM loads + saves
 
 ## Web Browser
 
 ### Required:
-- Emscripten to compile the C/C++ sources to Javascript
+- [Emscripten]( https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) to compile the C/C++ sources to Javascript
 
 ### How to Build:
 - Navigate to the `build/Javascript` folder
@@ -198,10 +241,13 @@ Raspberry Pi 2
 - Enter the command `make`
 - gameboy.js and gameboy.html files should be generated.
 - To run games, open gameboy.html with a web browser.
+- In Google Chrome you may need to close all instances of chrome and then start a new one from the terminal/command line with the flag `--allow-file-access-from-files`.
 
 ### TODO
   - Need to make a way for the user to enter the address of a rom and attempt to load
-    it rather than hard coding one at compile time. Also need to add sound.
+    it rather than hard coding one at compile time. Sound is currently broken
+    due to the sound library using multithreading which isn't currently supported
+    very well. 
 
 
 

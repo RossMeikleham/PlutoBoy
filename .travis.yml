@@ -1,21 +1,98 @@
-# Unix builds
-
-language: c
-
-os:
-    - linux
-    - osx
-
-env:
-    - BUILD=native CC=clang CXX=clang++ MODE=release
-    - BUILD=native CC=clang CXX=clang++ MODE=debug
-    - BUILD=native CC=gcc CXX=g++ MODE=release
-    - BUILD=native CC=gcc CXX=g++ MODE=debug
-    - BUILD=psp CC=gcc CXX=g++ MODE=release
-    - BUILD=emscripten CC=clang CXX=clang++ MODE=release
-#    - BUILD=dreamcast CC=gcc CXX=g++ MODE=release
+# Travis CI builds
 
 
+# Unecessarily verbose build matrix. Including multiple environments
+# and using a few exclusion variables doesn't work as it should for
+# some reason, so need to define everything. Thanks Travis >.<
+matrix:
+  include:
+  # Native Builds
+    - language: c
+      os: linux
+      env: BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL
+      
+    - os: linux
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
+      language: c
+      
+    - os: osx
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
+      language: c
+      
+    - os: linux
+      env: BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL2 
+      language: c
+      
+    - os: linux
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
+      language: c
+     
+    - os: osx
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
+      language: c
+
+    # Android builds
+    - os: linux
+      env: BUILD=android 
+      language: android
+      android:
+        components:
+            - build-tools-21.1.1
+            - android-15
+            - sys-img-armeabi-v7a-android-15
+
+    - os: osx
+      env: BUILD=android
+      language: android
+      
+
+    # IOS builds 
+    - os: osx
+      env: BUILD=IOS
+      language: c
+      
+    # Emscripten Builds
+    
+    # Linux version doesn't have binaries for FastComp backend,
+    # so it needs to be built from source which almost is always
+    # longer than 50 mins. Need to precompile a binary for this
+    - os: linux 
+      env: BUILD=emscripten 
+      language: c
+      
+    - os: osx
+      env: BUILD=emscripten
+      language: c
+      
+    # PSP Builds
+    - os: linux
+      env: BUILD=psp
+      language: c
+      
+    - os: osx
+      env: BUILD=psp
+      language: c
+      
+    # Dreamcast Builds
+    # Dreamcast Linux build was working before Travis upgraded their
+    # infrastructure in Dec 2015. Need to look into why it's broken.
+    - os: linux
+      env: BUILD=dreamcast
+      language: c
+      
+    - os: osx
+      env: BUILD=dreamcast
+      language: c
+
+  allow_failures:
+    - os : linux
+      env: BUILD=dreamcast
+    
+    - os: linux
+      env: BUILD=emscripten
+      
+    - os: osx
+      env: BUILD=android
 
 before_install:
   - touch ~/error.log
@@ -24,17 +101,20 @@ before_install:
 install:    
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl1.2-dev; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -f install libsdl-net1.2-dev; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev libsdl-net1.2-dev; fi
     
-    # Native OSX Build setup
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl_mixer; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2" ]; then sudo apt-get -f install libsdl2-dev libsdl2-net-dev; fi
 
-   
-   
-    # Install Emscripten version on OSX/Linux
+
+    # Native OSX Build setup
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl2_net; fi
+
+    # Install Emscripten 
     
     # Update clang + python and install CMAKE on Linux
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
@@ -75,12 +155,12 @@ install:
     
 
  
-    # Install PSPToolChain on OSX/Linux
+    # Install PSPToolChain #
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo dpkg-reconfigure dash; fi 
-    
     
     - if [ "$BUILD" == "psp" ]; then git clone https://github.com/RossMeikleham/psptoolchain; fi
     - if [ "$BUILD" == "psp" ]; then cd psptoolchain; fi
+    
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get update; fi 
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip libsdl1.2debian; fi
     
@@ -93,34 +173,67 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo make install ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd .. ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then brew install doxygen ; fi
+    
     - if [ "$BUILD" == "psp" ]; then export CXXFLAGS='-w -Wno-unused-function'; fi
     - if [ "$BUILD" == "psp" ]; then export CFLAGS='-w -Wno-unused-function'; fi
     - if [ "$BUILD" == "psp" ]; then ~/build/RossMeikleham/PlutoBoy/build/PSP/buildPspToolchainTravis.sh; fi
     - if [ "$BUILD" == "psp" ]; then export PSPDEV=/usr/local/pspdev; fi
     - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
+    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then git clone https://github.com/pspdev/psplibraries && cd psplibraries && sudo ./libraries.sh; fi
 
 
-   # Install KOS Toolchain on Linux
+   # Install KOS Toolchain 
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install build-essential binutils texinfo; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo mkdir /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo chown -R travis:travis /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then git clone git://cadcdev.git.sourceforge.net/gitroot/cadcdev/KallistiOS; fi
-    
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then curl -L -o kos-ports.tar.gz http://sourceforge.net/projects/cadcdev/files/kallistios/2.0.0/kos-ports-2.0.0-src.tar.gz/download; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -zxvf kos-ports.tar.gz; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd KallistiOS/utils/dc-chain; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ./download.sh; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ./unpack.sh; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/output.sh; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cp ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/dreamcast_kos_env.sh /opt/toolchains/KallistiOS/environ.sh; fi     
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../../; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then source environ.sh; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install texinfo; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --reinstall build-essential binutils; fi
+    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then git clone https://github.com/TimSimpson/KosVM; fi
 
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../kos-ports; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
+    - if [ "$BUILD" == "dreamcast" ]; then sudo mkdir /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ]; then sudo chown -R $USER /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ]; then cd /opt/toolchains; fi
+    - if [ "$BUILD" == "dreamcast" ]; then git clone git://cadcdev.git.sourceforge.net/gitroot/cadcdev/KallistiOS; fi
+    - if [ "$BUILD" == "dreamcast" ]; then curl -L -o kos-ports.tar.gz http://sourceforge.net/projects/cadcdev/files/kallistios/2.0.0/kos-ports-2.0.0-src.tar.gz/download; fi
+    - if [ "$BUILD" == "dreamcast" ]; then tar -zxvf kos-ports.tar.gz; fi
+    - if [ "$BUILD" == "dreamcast" ]; then cd KallistiOS/utils/dc-chain; fi
+    - if [ "$BUILD" == "dreamcast" ]; then ./download.sh; fi
+    - if [ "$BUILD" == "dreamcast" ]; then ./unpack.sh; fi
+    - if [ "$BUILD" == "dreamcast" ]; then ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/output.sh; fi
+    - if [ "$BUILD" == "dreamcast" ]; then cp ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/dreamcast_kos_env.sh /opt/toolchains/KallistiOS/environ.sh; fi     
+    - if [ "$BUILD" == "dreamcast" ]; then cd ../../; fi
+    - if [ "$BUILD" == "dreamcast" ]; then source environ.sh; fi
+    - if [ "$BUILD" == "dreamcast" ]; then make; fi
+    - if [ "$BUILD" == "dreamcast" ]; then cd ../kos-ports; fi
+    - if [ "$BUILD" == "dreamcast" ]; then make; fi
+
+#Setup SDL2 framework for XCode IOS
+    - if [ "$BUILD" == "IOS" ]; then git clone https://github.com/manifest/sdl-ios-framework; fi
+    - if [ "$BUILD" == "IOS" ]; then cd sdl-ios-framework; fi 
+    - if [ "$BUILD" == "IOS" ]; then gem install colorize; fi 
+    - if [ "$BUILD" == "IOS" ]; then rake SDL2:build; fi
+    - if [ "$BUILD" == "IOS" ]; then mkdir ~/Library/Frameworks/; fi 
+    - if [ "$BUILD" == "IOS" ]; then cp -r build/sdl/SDL2.framework ~/Library/Frameworks/; fi
+
+# Setting up Android build
+    
+    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install ant ; fi  
+    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin; fi
+
+    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ant android-sdk ; fi 
+    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export ANDROID_HOME=/usr/local/opt/android-sdk; fi
+    
+
+    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-darwin-x86_64.bin -O ndk.bin; fi
+   
+   
+    - if [ "$BUILD" == "android" ]; then chmod a+x ndk.bin; fi     
+    - if [ "$BUILD" == "android" ]; then ./ndk.bin > /dev/null; fi   
+    - if [ "$BUILD" == "android" ]; then mv android-ndk-r10e android-ndk; fi
+    - if [ "$BUILD" == "android" ]; then export PATH=`pwd`/android-ndk:$PATH; fi     
+    - if [ "$BUILD" == "android" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Android ; fi     
+    
+    - if [ "$BUILD" == "android" ]; then android update project -p .; fi     
+    - if [ "$BUILD" == "android" ]; then hg clone http://hg.libsdl.org/SDL jni/SDL; fi     
+  
 
 after_failure:
     tail ~/error.log --lines=1000
@@ -129,17 +242,25 @@ after_failure:
 script:
     # Native builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
-    - if [ "$BUILD" == "native" ]; then scons cc=$CC mode=$MODE; fi
+    - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
     
-    #PSP builds, having problems with OSX installing the PSP SDL lib, so disable
-    #OSX PSP build for now
-    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "linux"]; then cd ~/build/RossMeikleham/PlutoBoy/build/PSP; fi
-    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "linux"];  then make; fi
+    #PSP builds
+    - if [ "$BUILD" == "psp" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/PSP; fi
+    - if [ "$BUILD" == "psp" ];  then make; fi
     
     # Emscripten Builds
     - if [ "$BUILD" == "emscripten" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Javascript; fi
     - if [ "$BUILD" == "emscripten" ]; then make; fi
 
-    #Dreamcast builds for Linux
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then make; fi
+    #Dreamcast Builds
+    - if [ "$BUILD" == "dreamcast" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
+    - if [ "$BUILD" == "dreamcast" ]; then make; fi
+    
+    # IOS Builds
+    - if [ "$BUILD" == "IOS" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/IOS; fi
+    - if [ "$BUILD" == "IOS" ]; then xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO; fi
+
+    # Android Builds
+    - if [ "$BUILD" == "android" ]; then ndk-build; fi     
+    - if [ "$BUILD" == "android" ]; then ant clean; fi     
+    - if [ "$BUILD" == "android" ]; then ant release; fi     

@@ -5,6 +5,7 @@ MMU_DIR=$(CORE_DIR)/mmu
 IO_DIR=../../src/shared_libs/SDL
 SOUND_DIR=../../src/shared_libs/SDL/audio
 NON_CORE_DIR=../../src/shared_libs
+AUDIO_DIR=$(CORE_DIR)/audio
 
 MAIN_DIR_FILES = $(wildcard $(MAIN_DIR)/*.c)
 COMMON_DIR_FILES = $(wildcard $(COMMON_DIR)/*.c)
@@ -14,8 +15,9 @@ NON_CORE_FILES = $(wildcard $(NON_CORE_DIR)/*.c)
 IO_DIR_FILES = $(wildcard $(IO_DIR)/*.c)
 IO_DIR_FILES2 = $(wildcard $(IO_DIR)/*.cpp)
 SOUND_FILES = $(wildcard $(SOUND_DIR)/*.cpp)
+AUDIO_FILES = $(wildcard $(AUDIO_DIR)/*.cpp)
 
-C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(NON_CORE_FILES) $(IO_DIR_FILES) $(IO_DIR_FILES2) $(SOUND_FILES)
+C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(NON_CORE_FILES) $(IO_DIR_FILES) $(IO_DIR_FILES2) $(SOUND_FILES) $(AUDIO_FILES)
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES)))
 
 TARGET = gameboy

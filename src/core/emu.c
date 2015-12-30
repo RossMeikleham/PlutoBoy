@@ -29,8 +29,16 @@ int breakpoint = BREAKPOINT_OFF;
  * otherwise */
 int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
-    unsigned char buffer[MAX_FILE_SIZE];
+    unsigned char *buffer;
     unsigned long size;
+
+    buffer = malloc (MAX_FILE_SIZE * sizeof(unsigned char));
+
+    if (buffer == NULL) {
+        log_message(LOG_ERROR, 
+            "Failed to allocate %u byte buffer to read ROM\n", MAX_FILE_SIZE);
+        return 0;
+    }
 
     //Start logger
     set_log_level(LOG_INFO);
@@ -45,8 +53,11 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
 
     if (!load_rom(file_path, buffer, size, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
+        free(buffer);
         return 0;
     }
+
+    free(buffer);
     
     if (!init_gfx()) {
         log_message(LOG_ERROR, "failed to initialize graphics\n");

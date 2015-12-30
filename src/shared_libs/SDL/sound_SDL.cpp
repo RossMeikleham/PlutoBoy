@@ -1,11 +1,11 @@
 #include "../../core/sound.h"
+#include "../../core/audio/Gb_Apu.h"
+#include "../../core/audio/Multi_Buffer.h"
 
 #include <cstdio>
 #include "SDL.h"
 
-#include "audio/Gb_Apu.h"
 #include "audio/Sound_Queue.h"
-#include "audio/Multi_Buffer.h"
 
 
 

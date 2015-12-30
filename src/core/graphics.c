@@ -14,10 +14,14 @@
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"
 
+
 // Store 5 bit color to output
 static int screen_buffer[144][160];
 static int old_buffer[144][160];
 static int cgb_bg_prio[144][160];
+
+// Stores 32 bit color representation of the screen_buffer
+static uint32_t rgb_pixels[144 * 160];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
@@ -30,12 +34,20 @@ typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
-    int result = init_screen(GB_PIXELS_X, GB_PIXELS_Y, screen_buffer);
+    int result = init_screen(GB_PIXELS_X, GB_PIXELS_Y, rgb_pixels);
     init_sprite_prio_list();    
         
     return result;
 }
 
+
+static uint32_t cgb_color_to_rgb(uint16_t c) {
+    uint8_t red =   ((c & 0x1F) * 255) / 31;
+    uint8_t green = (((c >> 5) & 0x1F) * 255) / 31;  
+    uint8_t blue =  (((c >> 10) & 0x1F)* 255) / 31; 
+
+    return (red << 16) | (green << 8) | (blue << 0); 
+}
 
 // Obtain 15 bit gameboy color for sprite palette
 static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
@@ -209,7 +221,9 @@ static void draw_sprite_row() {
                        old_buffer[row][x_pos + x] = color_id;
                    }
                 }
-            }     
+            } 
+            rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = 
+                cgb_color_to_rgb(screen_buffer[row][x_pos + x]);
              
         }
     }
@@ -313,6 +327,9 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                     old_buffer[row][i + j] = color_id;
                     cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0; 
                 }
+
+                rgb_pixels[(row * GB_PIXELS_X) + (i + j)] = 
+                    cgb_color_to_rgb(screen_buffer[row][i + j]);
             }
         }   
     }      
@@ -399,7 +416,10 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                     old_buffer[row][i + j] = color_id;
                     cgb_bg_prio[row][i + j] = bg_prio ? 1 : 0;
                    
-                }
+               }
+
+               rgb_pixels[(GB_PIXELS_X * row) + (i + j)] = 
+                    cgb_color_to_rgb(screen_buffer[row][i + j]);
             }
         }   
             
