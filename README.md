@@ -211,9 +211,6 @@ Raspberry Pi 2
 - Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
 - You should now be able to build and test on emulators/devices through Eclipse.
 
-#TODO
-    - SRAM loads + saves
-
 ## iOS
 ### Required:
 - XCode 7
