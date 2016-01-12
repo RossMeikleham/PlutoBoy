@@ -87,7 +87,13 @@ static void draw_pix(Uint32 color, int y, int x)
 void draw_screen() {
     for (int y = 0; y < GB_PIXELS_Y; y++) {
         for (int x = 0; x < GB_PIXELS_X; x++) {
+            
+            #if !defined(PSP) 
             Uint32 current_pix = SDL_Swap32(pixels[(y * GB_PIXELS_X) + x]);
+            #else
+            Uint32 current_pix = SDL_Swap32(pixels[(y * GB_PIXELS_X) + x] << 8); 
+            #endif
+
             //No need to redraw unchanged pixels
             if (previous[y][x] != current_pix) {
                 draw_pix(current_pix, y, x);
