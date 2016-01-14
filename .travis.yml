@@ -94,11 +94,11 @@ matrix:
     - os: osx
       env: BUILD=android
     
-    -os: osx
-     env: BUILD=dreamcast
+    - os: osx
+      env: BUILD=dreamcast
     
-    -os: osx
-     env: BUILD=IOS
+    - os: osx
+      env: BUILD=IOS
 
 before_install:
   - touch ~/error.log
