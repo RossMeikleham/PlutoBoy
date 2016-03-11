@@ -132,7 +132,7 @@ static void draw_sprite_row() {
         int16_t x_pos = get_mem(SPRITE_ATTRIBUTE_TABLE_START + (sprite_no * 4) + 1) - 8;
         
         //If sprite doesn't intersect current line, no need to draw
-        if (y_pos > row || row >= y_pos + height || x_pos >= 160 || x_pos == 0) {
+        if (y_pos > row || row >= y_pos + height || x_pos >= 160) {
             continue;
         }
         
