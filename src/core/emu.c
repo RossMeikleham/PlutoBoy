@@ -23,7 +23,7 @@ int breakpoint = BREAKPOINT_OFF;
 
 /* Intialize emulator with given ROM file, and
  * specify whether or not debug mode is active
- * (0 for OFF, any other value is on) 
+ * (0 for OFF, any other value is on)
  *
  * returns 1 if successfully initialized, 0
  * otherwise */
@@ -35,18 +35,19 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     buffer = malloc (MAX_FILE_SIZE * sizeof(unsigned char));
 
     if (buffer == NULL) {
-        log_message(LOG_ERROR, 
-            "Failed to allocate %u byte buffer to read ROM\n", MAX_FILE_SIZE);
+        log_message(LOG_ERROR,
+                    "Failed to allocate %u byte buffer to read ROM\n", MAX_FILE_SIZE);
         return 0;
     }
 
     //Start logger
     set_log_level(LOG_INFO);
-    
+
     log_message(LOG_INFO, "About to open file %s\n", file_path);
 
     if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
+        free(buffer);
         return 0;
     }
     log_message(LOG_INFO, "File loaded %s\n", file_path);
@@ -58,7 +59,7 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     }
 
     free(buffer);
-    
+
     if (!init_gfx()) {
         log_message(LOG_ERROR, "failed to initialize graphics\n");
         return 0;
@@ -70,16 +71,16 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     init_joypad();
     init_apu(); // Initialize sound
     reset_cpu();
-    
-     
+
+
     if (debugger) {
         debug = 1;
     }
 
     cgb_features = is_colour_compatible() || is_colour_only();
-    
+
     //Log ROM info
-    char name_buf[100]; 
+    char name_buf[100];
     int i;
     for(i = ROM_NAME_START; i <= ROM_NAME_END; i++) {
         name_buf[i - ROM_NAME_START] = get_mem(i);
@@ -91,23 +92,23 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     log_message(LOG_INFO,"Destination: %s\n", get_destination_code());
     log_message(LOG_INFO,"ROM size: %dKB\n",get_rom_size());
     log_message(LOG_INFO,"RAM save size: %dKB\n",get_ram_save_size());
-    
+
     const char *c_type = get_cartridge_type();
     log_message(LOG_INFO,"Cartridge Type: %s\n",c_type != NULL ? c_type : "Unknown");
 
-    
+
     log_message(LOG_INFO, "Has Gameboy Color features: %s\n", is_colour_compatible() || is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
-    
-    
-    return 1;    
+
+
+    return 1;
 }
 
 
 static long current_cycles;
 static int skip_bug = 0;
-static long cycles = 0;    
+static long cycles = 0;
 
 
 void add_current_cycles(unsigned c) {
@@ -127,8 +128,8 @@ void run_one_frame() {
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);
-       
-            // If Key pressed in "stop" mode, then gameboy is "unstopped" 
+
+            // If Key pressed in "stop" mode, then gameboy is "unstopped"
             if (stopped) {
                 if(key_pressed()) {
                     stopped = 0;
@@ -141,7 +142,7 @@ void run_one_frame() {
         else if (!(halted || stopped)) {
             current_cycles = 0;
             current_cycles += exec_opcode(skip_bug);
-               
+
         }
 
         cycles += current_cycles;
@@ -156,7 +157,7 @@ void run_one_frame() {
             step_count = (flags & STEPS_SET) ? get_steps() : STEPS_OFF;
         }
     }
-    
+
 }
 
 void setup_debug() {
@@ -164,19 +165,16 @@ void setup_debug() {
         int flags = get_command();
         step_count = (flags & STEPS_SET) ?  get_steps() : STEPS_OFF;
 
-        breakpoint =  (flags & BREAKPOINT_SET) ? 
-            get_breakpoint() : BREAKPOINT_OFF;
+        breakpoint =  (flags & BREAKPOINT_SET) ?
+                      get_breakpoint() : BREAKPOINT_OFF;
     }
 
 
 }
-    
+
 void run() {
     setup_debug();
-    for(;;) {run_one_frame();} 
+    for(;;) {
+        run_one_frame();
+    }
 }
-        
-
-
-
-

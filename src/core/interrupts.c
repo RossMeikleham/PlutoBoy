@@ -5,7 +5,7 @@
 #include "cpu.h"
 #include "rom_info.h"
 
-//Interrupt Service Routine Addresses
+// Interrupt Service Routine Addresses
 #define VBLANK_ISR_ADDR  0x40
 #define LCD_ISR_ADDR     0x48
 #define TIMER_ISR_ADDR   0x50
