@@ -1,4 +1,4 @@
-#Plutoboy 
+# Plutoboy 
 
 A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, and Sony PSP.
 
@@ -37,7 +37,7 @@ Some Color ROMS can also be run in DMG mode:
 ![mario_mid_col](/images/mario_col.png?raw=true)
 
 
-#Currently Implemented
+# Currently Implemented
 
 - Complete instruction set of the Gameboy's modified 
   Z80 processor with correct timings with respect to 
@@ -74,7 +74,7 @@ Some Color ROMS can also be run in DMG mode:
 
 
 
-#Still to implement:
+# Still to implement:
 
 - Support for Real Time Clock for MBC3 + HuC3, rumble for MBC5. 
   MBC6, MBC7, TAMA5, and Gameboy Camera Memory Controllers.
@@ -225,7 +225,7 @@ Raspberry Pi 2
 
 ![simulator](/images/sim.png?raw=true) 
 
-#TODO
+# TODO
     - Build/Run on actual devices
     - Selecting ROM files from the app to load
     - SRAM loads + saves
@@ -278,7 +278,7 @@ If running on an actual PSP
 
 > ***Note*** Psp version will need to be built on a Linux/OSX machine or Windows with Cygwin. Sound is currently disabled in the PSP version, when enabled it temporarily works but freezes after a couple of minutes. 
 
-#Link Cable guide
+# Link Cable guide
 Currently serial I/O implementation is rather buggy with regards to a few
 games, it works perfectly fine with others. It currently only works with
 2 emulators on the same machine (localhost), but it's trivial to adjust the ports and the server
@@ -293,13 +293,13 @@ and you should be able to play some multiplayer games.
 
 ![2Player](/images/linkcable.png?raw=true)
 
-#Current Accuracy Test Tesults
+# Current Accuracy Test Tesults
 
 ![Instructions](/images/instrs.png?raw=true)![Instruction Timing](/images/timing.png?raw=true)![Instructions](/images/mem_timing.png?raw=true)
 
 
 
-#Screenshots
+# Screenshots
 
 ![crystal](/images/crystal.png?raw=true) ![dk](/images/dk.png?raw=true)
 
