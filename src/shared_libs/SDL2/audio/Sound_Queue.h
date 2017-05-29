@@ -6,10 +6,6 @@
 #ifndef SOUND_QUEUE_H
 #define SOUND_QUEUE_H
 
-#ifdef __APPLE__
-#define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
-#endif
-
 #if defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 

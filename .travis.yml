@@ -68,11 +68,7 @@ matrix:
     - os: linux
       env: BUILD=psp
       language: c
-      
-    - os: osx
-      env: BUILD=psp
-      language: c
-      
+       
     # Dreamcast Builds
     # Dreamcast Linux build was working before Travis upgraded their
     # infrastructure in Dec 2015. Need to look into why it's broken.
@@ -99,6 +95,10 @@ matrix:
     
     - os: osx
       env: BUILD=IOS
+    
+    - os: osx
+      env: BUILD=psp
+      language: c
 
 before_install:
   - touch ~/error.log
@@ -145,13 +145,9 @@ install:
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-dist/bin:$PATH; fi
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/bin/c++:/usr/bin/make; fi
     
-    # Install Python on OSX
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then sudo ln -sf /usr/bin/python2.7 /usr/local/bin/python2; fi
-   
     - if [ "$BUILD" == "emscripten" ]; then wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz; fi
     - if [ "$BUILD" == "emscripten" ]; then tar zxvf emsdk-portable.tar.gz; fi
-    - if [ "$BUILD" == "emscripten" ]; then cd emsdk_portable; fi
+    - if [ "$BUILD" == "emscripten" ]; then cd emsdk-portable; fi
     - if [ "$BUILD" == "emscripten" ]; then ./emsdk update; fi
     - if [ "$BUILD" == "emscripten" ]; then ./emsdk install latest; fi
     - if [ "$BUILD" == "emscripten" ]; then ./emsdk activate latest; fi
@@ -169,12 +165,14 @@ install:
     
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get update; fi 
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip libsdl1.2debian; fi
+   
     
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then rvm get head; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo ./prepare-mac-os.sh; fi 
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then curl -o automake.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then tar -zxvf automake.tar.gz ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd automake-1.9.6 ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then ./configure --prefix=/usr --program-suffix=-1.9 ; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then ./configure --prefix=/usr/local --program-suffix=-1.9 ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then make ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo make install ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd .. ; fi
