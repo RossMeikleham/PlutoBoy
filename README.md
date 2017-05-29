@@ -9,7 +9,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 |------------|-----------------|---------|-------|
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/67nw3gdrcqbte26o/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
 |![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
