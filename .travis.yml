@@ -68,11 +68,7 @@ matrix:
     - os: linux
       env: BUILD=psp
       language: c
-      
-    - os: osx
-      env: BUILD=psp
-      language: c
-      
+       
     # Dreamcast Builds
     # Dreamcast Linux build was working before Travis upgraded their
     # infrastructure in Dec 2015. Need to look into why it's broken.
@@ -99,6 +95,10 @@ matrix:
     
     - os: osx
       env: BUILD=IOS
+    
+    - os: osx
+      env: BUILD=psp
+      language: c
 
 before_install:
   - touch ~/error.log
