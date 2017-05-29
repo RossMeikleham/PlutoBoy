@@ -145,10 +145,6 @@ install:
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-dist/bin:$PATH; fi
     - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/bin/c++:/usr/bin/make; fi
     
-    # Install Python on OSX
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install python; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then sudo ln -sf /usr/bin/python2.7 /usr/local/bin/python2; fi
-   
     - if [ "$BUILD" == "emscripten" ]; then wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz; fi
     - if [ "$BUILD" == "emscripten" ]; then tar zxvf emsdk-portable.tar.gz; fi
     - if [ "$BUILD" == "emscripten" ]; then cd emsdk_portable; fi
@@ -174,7 +170,7 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then curl -o automake.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.gz; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then tar -zxvf automake.tar.gz ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd automake-1.9.6 ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then ./configure --prefix=/usr --program-suffix=-1.9 ; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then ./configure --prefix=/usr/local --program-suffix=-1.9 ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then make ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo make install ; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd .. ; fi
