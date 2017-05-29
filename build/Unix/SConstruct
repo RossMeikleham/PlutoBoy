@@ -56,14 +56,18 @@ env.Replace(CC = compiler)
 env.Replace(CXX = cxxcompiler)
 
 if framework == 'SDL':
+    env.Append(LIBPATH = ['/usr/local/lib'])
     env.Append(LIBS = ['SDL','SDL_net'])
     env.Append(CPPPATH = ['/usr/include/SDL'])
     env.Append(CPPPATH = ['/usr/local/include/SDL'])
+    env.Append(CPPPATH = ['/usr/local/include'])
 
 elif framework == 'SDL2':
+    env.Append(LIBPATH = ['/usr/local/lib'])
     env.Append(LIBS = ['SDL2','SDL2_net'])
     env.Append(CPPPATH = ['/usr/include/SDL2'])
     env.Append(CPPPATH = ['/usr/local/include/SDL2'])
+    env.Append(CPPPATH = ['/usr/local/include'])
 
 #SDL for OSX uses Cocoa
 if sys.platform == 'darwin':
