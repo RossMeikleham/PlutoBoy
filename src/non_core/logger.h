@@ -8,6 +8,7 @@ extern "C"{
 // Different Logging levels
 typedef enum {LOG_INFO = 0, LOG_WARN = 1, LOG_ERROR = 2, LOG_OFF = 3} LogLevel;
 
+void clear_log();
 // Set one of the 4 specified logging levels
 void set_log_level(LogLevel ll);
 

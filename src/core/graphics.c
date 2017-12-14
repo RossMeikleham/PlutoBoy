@@ -13,7 +13,12 @@
 
 #include "../non_core/graphics_out.h"
 #include "../non_core/framerate.h"
+#include "../non_core/logger.h"
 
+#ifdef PSP2 //VITA
+#define VITA_PIX_X 960
+#define VITA_PIX_Y 544
+#endif
 
 // Store 5 bit color to output
 static int screen_buffer[144][160];
@@ -34,8 +39,13 @@ typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
-    int result = init_screen(GB_PIXELS_X, GB_PIXELS_Y, rgb_pixels);
-    init_sprite_prio_list();    
+
+#ifdef PSP2 //VITA
+	int result = init_screen(VITA_PIX_X, VITA_PIX_Y, rgb_pixels);
+#else
+    int result = init_screen(960, 544, rgb_pixels);
+#endif    
+	init_sprite_prio_list();    
         
     return result;
 }
@@ -223,7 +233,7 @@ static void draw_sprite_row() {
                 }
             } 
             rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = 
-                cgb_color_to_rgb(screen_buffer[row][x_pos + x]);
+                0xFF000000 | cgb_color_to_rgb(screen_buffer[row][x_pos + x]);
              
         }
     }
@@ -329,7 +339,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
                 }
 
                 rgb_pixels[(row * GB_PIXELS_X) + (i + j)] = 
-                    cgb_color_to_rgb(screen_buffer[row][i + j]);
+                    0xFF000000 | cgb_color_to_rgb(screen_buffer[row][i + j]);
             }
         }   
     }      
@@ -419,7 +429,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
                }
 
                rgb_pixels[(GB_PIXELS_X * row) + (i + j)] = 
-                    cgb_color_to_rgb(screen_buffer[row][i + j]);
+                    0xFF000000 | cgb_color_to_rgb(screen_buffer[row][i + j]);
             }
         }   
             

@@ -12,11 +12,9 @@
 #include <SDL2/SDL.h>
 #endif
 
-
 static SDL_Window *screen;
 static SDL_Renderer *renderer;
-static SDL_Texture *texture;
-static Uint32 *pixels;
+static SDL_Texture *texture; static Uint32 *pixels;
 
 static SDL_Texture *overlay_t;
 
@@ -75,7 +73,7 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
 
     pixels = p;
 
-    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC)==-1)) {
+    if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER/*| SDL_INIT_HAPTIC*/)==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
      }
@@ -104,7 +102,7 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
     
     // Setup texture for blitting the pixels
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                    SDL_TEXTUREACCESS_STREAMING, screen_width, screen_height);
+                    SDL_TEXTUREACCESS_STREAMING, GB_PIXELS_X, GB_PIXELS_Y);
 
 
     if (texture == NULL) {
@@ -125,9 +123,9 @@ void draw_screen() {
     SDL_RenderCopy(renderer, texture, NULL, NULL);
    
     // Render the virtual keyboard if using a mobile device 
-    #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IPHONE)  
+#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IPHONE)  
     SDL_RenderCopy(renderer, overlay_t, NULL, NULL);
-    #endif
+#endif
 
     SDL_RenderPresent(renderer);
 }

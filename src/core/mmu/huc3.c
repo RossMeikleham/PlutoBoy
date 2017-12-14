@@ -37,7 +37,7 @@ void setup_HUC3(int flags) {
 
 
 void update_clock() {
-	uint64_t now = get_time();
+	uint64_t now = 0; // get_time();
     uint64_t elapsed = now - clock_time;
 	
 	// Get Years 4 bits
