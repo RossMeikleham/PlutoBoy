@@ -67,7 +67,9 @@ matrix:
     # PSP Builds
     - os: linux
       env: BUILD=psp
-      language: c
+      language: ruby
+      services:
+        - docker
        
     # Dreamcast Builds
     # Dreamcast Linux build was working before Travis upgraded their
@@ -102,10 +104,6 @@ matrix:
     - os: osx
       env: BUILD=IOS
     
-    - os: osx
-      env: BUILD=psp
-      language: c
-
 before_install:
   - touch ~/error.log
 
@@ -113,6 +111,9 @@ before_install:
 install:   
     - if [ "$BUILD" == "vita" ]; then docker build -t plutoboy_vita -f build/Vita/Dockerfile .; fi 
     - if [ "$BUILD" == "vita" ]; then docker run plutoboy_vita; fi
+    
+    - if [ "$BUILD" == "psp" ]; then docker build -t plutoboy_psp -f build/PSP/Dockerfile . ; fi
+    - if [ "$BUILD" == "psp" ]; then docker run plutoboy_psp; fi
      
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
@@ -164,37 +165,6 @@ install:
     - if [ "$BUILD" == "emscripten" ]; then cd ../build/Javascript; fi
     - if [ "$BUILD" == "emscripten" ]; then make; fi
     
-
- 
-    # Install PSPToolChain #
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo dpkg-reconfigure dash; fi 
-    
-    - if [ "$BUILD" == "psp" ]; then git clone https://github.com/RossMeikleham/psptoolchain; fi
-    - if [ "$BUILD" == "psp" ]; then cd psptoolchain; fi
-    
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get update; fi 
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "psp" ]; then sudo apt-get install g++ build-essential autoconf automake automake1.9 cmake doxygen bison flex libncurses5-dev libsdl1.2-dev libreadline-dev libusb-dev texinfo libgmp3-dev libmpfr-dev libelf-dev libmpc-dev libfreetype6-dev zlib1g-dev libtool subversion tcl unzip libsdl1.2debian; fi
-   
-    
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then rvm get head; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo ./prepare-mac-os.sh; fi 
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then curl -o automake.tar.gz http://ftp.gnu.org/gnu/automake/automake-1.9.6.tar.gz; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then tar -zxvf automake.tar.gz ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd automake-1.9.6 ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then ./configure --prefix=/usr/local --program-suffix=-1.9 ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then make ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then sudo make install ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then cd .. ; fi
-    - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "psp" ]; then brew install doxygen ; fi
-    
-    - if [ "$BUILD" == "psp" ]; then export CXXFLAGS='-w -Wno-unused-function'; fi
-    - if [ "$BUILD" == "psp" ]; then export CFLAGS='-w -Wno-unused-function'; fi
-    - if [ "$BUILD" == "psp" ]; then ~/build/RossMeikleham/PlutoBoy/build/PSP/buildPspToolchainTravis.sh; fi
-    - if [ "$BUILD" == "psp" ]; then export PSPDEV=/usr/local/pspdev; fi
-    - if [ "$BUILD" == "psp" ]; then export PATH=$PATH:$PSPDEV/bin; fi
-    - if [ "$BUILD" == "psp" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then git clone https://github.com/pspdev/psplibraries && cd psplibraries && sudo ./libraries.sh; fi
-
-
    # Install KOS Toolchain 
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install texinfo; fi
