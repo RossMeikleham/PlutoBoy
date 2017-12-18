@@ -10,9 +10,15 @@
 #include <jni.h>
 #endif
 
+#ifdef PSVITA
+#include <psp2/ctrl.h>
+#endif
+
 #include "stdlib.h"
 #include "../../core/mmu/mbc.h"
 #include "../../non_core/logger.h"
+
+SDL_Joystick *joystick;
 
 typedef struct {
     int x;
@@ -30,6 +36,30 @@ typedef struct {
 
 
 enum {UP = 0, DOWN, LEFT, RIGHT, A, B, START, SELECT};
+
+#ifndef PSVITA
+int button_config[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_a, SDLK_s, SDLK_RETURN, SDLK_SPACE};
+#else
+
+#define SDLK_VITA_TRIANGLE 0
+#define SDLK_VITA_CIRCLE 1 
+#define SDLK_VITA_CROSS 2
+#define SDLK_VITA_SQUARE 3
+
+#define SDLK_VITA_LTRIGGER 4
+#define SDLK_VITA_RTRIGGER 5
+
+#define SDLK_VITA_DOWN 6
+#define SDLK_VITA_LEFT 7
+#define SDLK_VITA_UP 8
+#define SDLK_VITA_RIGHT 9
+
+#define SDLK_VITA_SELECT 10
+#define SDLK_VITA_START 11
+
+int button_config[] = {SDLK_VITA_UP, SDLK_VITA_DOWN, SDLK_VITA_LEFT, SDLK_VITA_RIGHT
+    , SDLK_VITA_CROSS, SDLK_VITA_CIRCLE, SDLK_VITA_START, SDLK_VITA_SELECT};
+#endif
 
 button_state buttons[8];
 
@@ -79,8 +109,13 @@ void init_joypad() {
     #else
     rumble_on = 0;
     #endif
-    
-    
+
+    joystick = 0;
+    if (SDL_NumJoysticks() > 0) {
+        joystick = SDL_JoystickOpen(0);
+    }
+
+#ifndef PSVITA 
     // Attempt to setup Haptic Feedback
     haptic = SDL_HapticOpen(0);
     if (haptic == NULL) {
@@ -92,47 +127,47 @@ void init_joypad() {
             log_message(LOG_WARN, "Unable to initialize rumble %s\n", SDL_GetError());
         }
     } 
-    
+#endif
     // Setup buttons 
     SDL_GetCurrentDisplayMode(0, &current);    
      
     buttons[UP].state = 0;
-    buttons[UP].key_code = SDLK_UP;
+    buttons[UP].key_code = button_config[UP];
     b_rect rect_u = {DPAD_UP_X, DPAD_UP_Y(current.h), DPAD_UP_W, DPAD_UP_H};
     buttons[UP].rect = rect_u;
 
     buttons[DOWN].state = 0;
-    buttons[DOWN].key_code = SDLK_DOWN;
+    buttons[DOWN].key_code = button_config[DOWN];
     b_rect rect_d = {DPAD_DOWN_X, DPAD_DOWN_Y(current.h), DPAD_DOWN_W, DPAD_DOWN_H};
     buttons[DOWN].rect = rect_d; 
 
     buttons[LEFT].state = 0;
-    buttons[LEFT].key_code = SDLK_LEFT;
+    buttons[LEFT].key_code = button_config[LEFT];
     b_rect rect_l = {DPAD_LEFT_X, DPAD_LEFT_Y(current.h), DPAD_LEFT_W, DPAD_LEFT_H};
     buttons[LEFT].rect = rect_l; 
 
     buttons[RIGHT].state = 0;
-    buttons[RIGHT].key_code = SDLK_RIGHT;
+    buttons[RIGHT].key_code = button_config[RIGHT];
     b_rect rect_r = {DPAD_RIGHT_X, DPAD_RIGHT_Y(current.h), DPAD_RIGHT_W, DPAD_RIGHT_H};
     buttons[RIGHT].rect = rect_r; 
 
     buttons[A].state = 0;
-    buttons[A].key_code = SDLK_a;
+    buttons[A].key_code = button_config[A];
     b_rect rect_a = {A_X(current.w), A_Y(current.h), A_W, A_H};
     buttons[A].rect = rect_a; 
 
     buttons[B].state = 0;
-    buttons[B].key_code = SDLK_s;
+    buttons[B].key_code = button_config[B];
     b_rect rect_b = {B_X(current.w), B_Y(current.h), B_W, B_H};
     buttons[B].rect = rect_b; 
 
     buttons[START].state = 0;
-    buttons[START].key_code = SDLK_RETURN;
+    buttons[START].key_code = button_config[START];
     b_rect rect_st = {START_X, START_Y(current.h), START_W, START_H};
     buttons[START].rect = rect_st; 
    
     buttons[SELECT].state = 0;
-    buttons[SELECT].key_code = SDLK_SPACE;
+    buttons[SELECT].key_code = button_config[SELECT];
     b_rect rect_se = {SELECT_X, SELECT_Y(current.h), SELECT_W, SELECT_H};
     buttons[SELECT].rect = rect_se; 
 }
@@ -182,7 +217,7 @@ void check_keys_pressed(float x, float y, int state) {
     }
 }
 
-// Given new x/y relativ screen positions and x/y movement 
+// Given new x/y relative screen positions and x/y movement 
 // determines which keys are now pressed
 void check_keys_moved(float x, float y, float mv_x, float mv_y) {
     // Pixel positions after movement
@@ -237,13 +272,17 @@ void unset_keys() {
  * other external actions for the emulator */
 void update_keys() {
         SDL_Event event;
+
         if (SDL_PollEvent(&event)) {
+
             switch (event.type) {
                     // exit if the window is closed
                 case SDL_QUIT:
                             write_SRAM();
                             exit(0);
                             break;
+
+#ifndef PSVITA
                 case SDL_KEYDOWN: // Key pressed
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         write_SRAM();
@@ -266,7 +305,19 @@ void update_keys() {
                             }
                         }
                     break;
-                
+
+#else
+                case SDL_JOYBUTTONDOWN:
+                case SDL_JOYBUTTONUP:
+                    for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
+                        if (buttons[i].key_code == event.jbutton.button) {
+                            buttons[i].state = (event.jbutton.state == SDL_PRESSED);
+                            break;
+                        }
+                    }
+                break;
+
+#endif           
                 case SDL_FINGERDOWN:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
                     break;

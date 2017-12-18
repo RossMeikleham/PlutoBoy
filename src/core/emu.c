@@ -32,7 +32,7 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     unsigned char *buffer;
     unsigned long size;
 
-    buffer = malloc (MAX_FILE_SIZE * sizeof(unsigned char));
+	buffer = malloc (MAX_FILE_SIZE * sizeof(unsigned char));
 
     if (buffer == NULL) {
         log_message(LOG_ERROR,
@@ -45,33 +45,37 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
 
     log_message(LOG_INFO, "About to open file %s\n", file_path);
 
-    if (!(size = load_rom_from_file(file_path, buffer))) {
+      if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
         free(buffer);
         return 0;
     }
-    log_message(LOG_INFO, "File loaded %s\n", file_path);
-
+    
+	log_message(LOG_INFO, "File loaded %s\n", file_path);
     if (!load_rom(file_path, buffer, size, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         free(buffer);
         return 0;
     }
+    log_message(LOG_INFO, "about to init graphx\n");
 
     free(buffer);
 
     if (!init_gfx()) {
         log_message(LOG_ERROR, "failed to initialize graphics\n");
+		free(buffer);
         return 0;
     }
+    log_message(LOG_INFO, "init'd graphx\n");
 
-    if (!setup_serial_io(cs, 5000)) {
+     if (!setup_serial_io(cs, 5000)) {
         log_message(LOG_INFO, "No client or server created\n");
     }
     init_joypad();
     init_apu(); // Initialize sound
     reset_cpu();
 
+    log_message(LOG_INFO, "init'd joypad, apu, cpu\n");
 
     if (debugger) {
         debug = 1;
@@ -101,7 +105,7 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
 
-
+	free(buffer);
     return 1;
 }
 
@@ -123,7 +127,6 @@ void run_one_frame() {
 
     while (!frame_drawn) {
         if (halted || stopped) {
-
             long current_cycles = cgb_speed ? 2 : 4;
             update_timers(current_cycles);
             sound_add_cycles(current_cycles);
@@ -173,7 +176,9 @@ void setup_debug() {
 }
 
 void run() {
+    log_message(LOG_INFO, "About to setup debug\n");
     setup_debug();
+    log_message(LOG_INFO, "About to run\n");
     for(;;) {
         run_one_frame();
     }
