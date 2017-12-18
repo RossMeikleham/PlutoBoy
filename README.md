@@ -1,6 +1,6 @@
 # Plutoboy 
 
-A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, and Sony PSP.
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, Sony PSP, and PSP Vita.
 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
@@ -15,6 +15,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
+| ![VitaIcon](/images/ps-vita.png?raw=true) PSP Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
 
 Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
 
@@ -277,6 +278,27 @@ If running on an actual PSP
 
 
 > ***Note*** Psp version will need to be built on a Linux/OSX machine or Windows with Cygwin. Sound is currently disabled in the PSP version, when enabled it temporarily works but freezes after a couple of minutes. 
+
+## PSP Vita
+
+### Building VPK with Docker
+```
+git clone 
+docker build -t plutoboy_vita -f build/Vita/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_vita
+```
+
+### Building VPK from scratch
+
+Requires installing the [VitaSDK toolchain](https://vitasdk.org/)
+
+```
+cd build/Vita
+mkdir build
+cd build
+cmake ..
+make
+```
 
 # Link Cable guide
 Currently serial I/O implementation is rather buggy with regards to a few
