@@ -16,7 +16,6 @@ int main(int argc, char *argv[])
     int dmg_mode = 0;
 
     set_log_level(LOG_INFO);
-    clear_log();
 
 	const char *file_name = dir_browse("ux0:/data");
 	log_message(LOG_INFO, "Starting Emulator\n");

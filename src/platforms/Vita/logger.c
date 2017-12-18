@@ -6,19 +6,23 @@ static LogLevel current_log_level = LOG_OFF;
 
 static const char *logfile = "ux0:/data/plutoboy.log";
 
+void clear_log() {
+   FILE *f = fopen(logfile, "w"); 
+   fprintf(f, "Plutoboy Logfile\n----------------\n");
+   fclose(f);
+}
+
 void set_log_level(LogLevel ll) {
     
+	if (current_log_level == LOG_OFF) {
+		clear_log();
+	}
+
     if (ll >= LOG_OFF) {
         current_log_level = LOG_OFF;
     } else {
         current_log_level = ll;
     }
-}
-
-void clear_log() {
-   FILE *f = fopen(logfile, "w"); 
-   fprintf(f, "Plutoboy Logfile\n----------------\n");
-   fclose(f);
 }
 
 void log_message(LogLevel ll, const char *fmt, ...) {
