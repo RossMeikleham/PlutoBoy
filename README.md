@@ -257,33 +257,41 @@ Raspberry Pi 2
 The PSP version doesn't run anywhere near close to full speed, optimisations needs
 to be made to the emulator for speeding it up to where it can run on it at full speed.
 
-### Required:
+### Building using Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+docker build -t plutoboy_psp -f build/PSP/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_psp
+```
+
+### Building from scratch
+#### Required:
 
 - PSP ToolChain (can be found [here](https://github.com/pspdev/psptoolchain)
-- Follow the instructions to install, and ensure all environment variables are set
+- PSP Libraries (can be found [here](https://github.com/pspdev/psplibraries)
 
-### How To Build:
+#### How To Build:
 - Navigate to the `build/PSP` folder
 - Enter the command `make` then `make directory`
 
-If running on PPSSPP emulator
+## Running 
+#### If running on PPSSPP emulator
 - copy ROMS into the Gameboy folder generated or a subfolder of it. Navigate to the Gameboy folder from PPSSPP and run the program.
 
-If running on an actual PSP
+#### If running on an actual PSP
 - Copy the Gameboy folder to PSP/GAME folder on the PSP memory stick.
 - Upgrade to kernel/firmware version 6.60 or 6.61
 - Copy/run the Pro update for either version to run homebrew
 - Run the emulator from the PSP
 
 
-
-> ***Note*** Psp version will need to be built on a Linux/OSX machine or Windows with Cygwin. Sound is currently disabled in the PSP version, when enabled it temporarily works but freezes after a couple of minutes. 
+> ***Note*** Sound is currently disabled in the PSP version, when enabled it temporarily works but freezes after a couple of minutes. 
 
 ## PSP Vita
 
 ### Building VPK with Docker
 ```
-git clone 
+git clone https://github.com/RossMeikleham/PlutoBoy
 docker build -t plutoboy_vita -f build/Vita/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_vita
 ```
