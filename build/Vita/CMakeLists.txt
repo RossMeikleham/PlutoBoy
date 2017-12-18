@@ -14,7 +14,7 @@ include("${VITASDK}/share/vita.cmake" REQUIRED)
 add_definitions(-DPSVITA)
 
 set(VITA_APP_NAME "Plutoboy")
-set(VITA_TITLEID  "VSDK00013")
+set(VITA_TITLEID  "PLUTO0013")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -std=gnu11")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++11")
@@ -32,6 +32,8 @@ file(GLOB plutoboy_src
     "../../src/core/audio/*.h"
     "../../src/non_core/*.h"
     "../../src/platforms/Vita/*.c"
+    "../../src/platforms/Vita/file_browser/*.h"
+    "../../src/platforms/Vita/file_browser/*.c"
     "../../src/platforms/Vita/*.h"
     "../../src/shared_libs/SDL2/*.c"
     "../../src/shared_libs/SDL2/*.cpp"

@@ -1,9 +1,6 @@
 #include "../../non_core/logger.h"
 #include <stdarg.h>
 #include <stdio.h>
-#include "debugScreen.h"
-
-#define printf psvDebugScreenPrintf
 
 static LogLevel current_log_level = LOG_OFF;
 

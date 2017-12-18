@@ -4,12 +4,13 @@
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
 #include "../../non_core/logger.h"
+#include "file_browser/file_browser.h"
 
 #include <stdio.h>
 
 int main(int argc, char *argv[]) 
 {
-    const char *file_name = "tetris.gb";
+   // const char *file_name = "ux0:data/Gold.gbc";
     ClientOrServer cs = NO_CONNECT;
     int debug = 0;
     int dmg_mode = 0;
@@ -17,7 +18,8 @@ int main(int argc, char *argv[])
     set_log_level(LOG_INFO);
     clear_log();
 
-    log_message(LOG_INFO, "Starting Emulator\n");
+	const char *file_name = dir_browse("ux0:/data");
+	log_message(LOG_INFO, "Starting Emulator\n");
     
      if (!init_emu(file_name, debug, dmg_mode, cs)) {
         log_message(LOG_ERROR, "Failed to initialize emulator\n");
