@@ -227,10 +227,6 @@ script:
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
     - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
     
-    #PSP builds
-    - if [ "$BUILD" == "psp" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/PSP; fi
-    - if [ "$BUILD" == "psp" ];  then make; fi
-    
     # Emscripten Builds
     - if [ "$BUILD" == "emscripten" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Javascript; fi
     - if [ "$BUILD" == "emscripten" ]; then make; fi
