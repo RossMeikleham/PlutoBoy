@@ -112,7 +112,7 @@ before_install:
 
 install:   
     - if [ "$BUILD" == "vita" ]; then docker build -t plutoboy_vita -f build/Vita/Dockerfile .; fi 
-    - if [" $BUILD" == "vita" ]; then docker run plutoboy_vita; fi
+    - if [ "$BUILD" == "vita" ]; then docker run plutoboy_vita; fi
      
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
