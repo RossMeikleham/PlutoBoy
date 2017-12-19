@@ -34,7 +34,7 @@ OBJS		= $(OBJ_FILES)
 CFLAGS		= -O2 -Wall 
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
-PORTS = -s USE_SDL=2 
+PORTS = -s USE_SDL=2 -s TOTAL_MEMORY=33554432
 CC = emcc
 CXX = em++
 

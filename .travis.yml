@@ -52,17 +52,11 @@ matrix:
       language: c
       
     # Emscripten Builds
-    
-    # Linux version doesn't have binaries for FastComp backend,
-    # so it needs to be built from source which almost is always
-    # longer than 50 mins. Need to precompile a binary for this
     - os: linux 
       env: BUILD=emscripten 
-      language: c
-      
-    - os: osx
-      env: BUILD=emscripten
-      language: c
+      language: ruby
+      services:
+        - docker
       
     # PSP Builds
     - os: linux
@@ -92,9 +86,6 @@ matrix:
     - os : linux
       env: BUILD=dreamcast
     
-    - os: linux
-      env: BUILD=emscripten
-      
     - os: osx
       env: BUILD=android
     
@@ -114,7 +105,10 @@ install:
     
     - if [ "$BUILD" == "psp" ]; then docker build -t plutoboy_psp -f build/PSP/Dockerfile . ; fi
     - if [ "$BUILD" == "psp" ]; then docker run plutoboy_psp; fi
-     
+    
+    - if [ "$BUILD" == "emscripten" ]; then docker build -t plutoboy_js -f build/Javascript/Dockerfile . ; fi 
+    - if [ "$BUILD" == "emscripten" ]; then docker run plutoboy_js; fi 
+    
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
@@ -130,41 +124,6 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl2_net; fi
 
-    # Install Emscripten 
-    
-    # Update clang + python and install CMAKE on Linux
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:kubuntu-ppa/backports; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.6 main'; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq update; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install build-essential; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get -qq install python llvm-3.6-dev libclang-3.6-dev clang-3.6; fi
-   
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export CC=clang CXX=clang++; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /usr/bin/clang; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm -rf /usr/bin/clang++; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/clang-3.6 /usr/bin/clang; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo ln -s /usr/bin/clang++-3.6 /usr/bin/clang++; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm /usr/local/clang-3.4/bin/clang; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo rm /usr/local/clang-3.4/bin/clang++; fi
-
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://cmake.org/files/v3.4/cmake-3.4.0-Linux-x86_64.tar.gz --no-check-certificate; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then mkdir cmake-dist; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then tar -xzf cmake-3.4.0-Linux-x86_64.tar.gz -C cmake-dist --strip-components=1; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PWD/cmake-dist/bin:$PATH; fi
-    - if [ "$BUILD" == "emscripten" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then export PATH=$PATH:/opt/local/bin:/opt/local/sbin:/usr/bin/c++:/usr/bin/make; fi
-    
-    - if [ "$BUILD" == "emscripten" ]; then wget https://s3.amazonaws.com/mozilla-games/emscripten/releases/emsdk-portable.tar.gz; fi
-    - if [ "$BUILD" == "emscripten" ]; then tar zxvf emsdk-portable.tar.gz; fi
-    - if [ "$BUILD" == "emscripten" ]; then cd emsdk-portable; fi
-    - if [ "$BUILD" == "emscripten" ]; then ./emsdk update; fi
-    - if [ "$BUILD" == "emscripten" ]; then ./emsdk install latest; fi
-    - if [ "$BUILD" == "emscripten" ]; then ./emsdk activate latest; fi
-    - if [ "$BUILD" == "emscripten" ]; then source ./emsdk_env.sh; fi
-    - if [ "$BUILD" == "emscripten" ]; then cd ../build/Javascript; fi
-    - if [ "$BUILD" == "emscripten" ]; then make; fi
-    
    # Install KOS Toolchain 
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install texinfo; fi
@@ -227,10 +186,6 @@ script:
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
     - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
     
-    # Emscripten Builds
-    - if [ "$BUILD" == "emscripten" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Javascript; fi
-    - if [ "$BUILD" == "emscripten" ]; then make; fi
-
     #Dreamcast Builds
     - if [ "$BUILD" == "dreamcast" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
     - if [ "$BUILD" == "dreamcast" ]; then make; fi
