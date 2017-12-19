@@ -233,10 +233,19 @@ Raspberry Pi 2
 
 ## Web Browser
 
-### Required:
+### Building using Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+cp Path/To/GameboyRom.gb build/Javascript/rom.gb
+docker build -t plutoboy_js -f build/Javascript/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_js
+```
+
+### Building from scratch
+#### Required:
 - [Emscripten]( https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) to compile the C/C++ sources to Javascript
 
-### How to Build:
+#### How to Build:
 - Navigate to the `build/Javascript` folder
 - Place the rom you want to run in the same folder with the name "rom.gb"
 - Enter the command `make`
