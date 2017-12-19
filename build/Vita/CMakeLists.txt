@@ -16,8 +16,8 @@ add_definitions(-DPSVITA)
 set(VITA_APP_NAME "Plutoboy")
 set(VITA_TITLEID  "PLUTO0013")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -std=gnu11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -std=gnu11 -mtune=cortex-a9")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -mtune=cortex-a9")
 
 include_directories(
   ../common
@@ -53,6 +53,7 @@ target_link_libraries(${SHORT_NAME}
   SceGxm_stub
   SceCommonDialog_stub
   SceTouch_stub
+  ScePower_stub
   m 
 )
 

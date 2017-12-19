@@ -6,11 +6,16 @@
 #include "../../non_core/logger.h"
 #include "file_browser/file_browser.h"
 
+#include <psp2/kernel/processmgr.h>
+#include <psp2/power.h>
+
 #include <stdio.h>
 
 int main(int argc, char *argv[]) 
 {
-   // const char *file_name = "ux0:data/Gold.gbc";
+    scePowerSetArmClockFrequency(444);
+   
+    // const char *file_name = "ux0:data/Gold.gbc";
     ClientOrServer cs = NO_CONNECT;
     int debug = 0;
     int dmg_mode = 0;
