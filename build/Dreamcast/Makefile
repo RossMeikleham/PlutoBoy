@@ -20,7 +20,7 @@ AUDIO_FILES = $(wildcard $(AUDIO_DIR)/*.cpp)
 C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILES) $(NON_CORE_FILES) $(IO_DIR_FILES) $(IO_DIR_FILES2) $(SOUND_FILES) $(AUDIO_FILES)
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES)))
 
-TARGET = gameboy
+TARGET = PlutoboyDC
 
 OPTFLAGS=-std=c99 -O3 -fomit-frame-pointer
 CFLAGS = -DDREAMCAST

@@ -66,16 +66,12 @@ matrix:
         - docker
        
     # Dreamcast Builds
-    # Dreamcast Linux build was working before Travis upgraded their
-    # infrastructure in Dec 2015. Need to look into why it's broken.
     - os: linux
       env: BUILD=dreamcast
-      language: c
+      language: ruby
+      services:
+        - docker
       
-    - os: osx
-      env: BUILD=dreamcast
-      language: c
-
     - os: linux
       env: BUILD=vita
       language: ruby
@@ -83,14 +79,8 @@ matrix:
         - docker
 
   allow_failures:
-    - os : linux
-      env: BUILD=dreamcast
-    
     - os: osx
       env: BUILD=android
-    
-    - os: osx
-      env: BUILD=dreamcast
     
     - os: osx
       env: BUILD=IOS
@@ -108,7 +98,10 @@ install:
     
     - if [ "$BUILD" == "emscripten" ]; then docker build -t plutoboy_js -f build/Javascript/Dockerfile . ; fi 
     - if [ "$BUILD" == "emscripten" ]; then docker run plutoboy_js; fi 
-    
+   
+    - if [ "$BUILD" == "dreamcast" ]; then docker build -t plutoboy_dc -f build/Dreamcast/Dockerfile . ; fi 
+    - if [ "$BUILD" == "dreamcast" ]; then docker run plutoboy_dc; fi
+
      # Native Linux build setup
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
@@ -123,29 +116,6 @@ install:
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl2_net; fi
-
-   # Install KOS Toolchain 
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install texinfo; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install --reinstall build-essential binutils; fi
-    - if [ "$BUILD" == "dreamcast" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then git clone https://github.com/TimSimpson/KosVM; fi
-
-    - if [ "$BUILD" == "dreamcast" ]; then sudo mkdir /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ]; then sudo chown -R $USER /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ]; then cd /opt/toolchains; fi
-    - if [ "$BUILD" == "dreamcast" ]; then git clone git://cadcdev.git.sourceforge.net/gitroot/cadcdev/KallistiOS; fi
-    - if [ "$BUILD" == "dreamcast" ]; then curl -L -o kos-ports.tar.gz http://sourceforge.net/projects/cadcdev/files/kallistios/2.0.0/kos-ports-2.0.0-src.tar.gz/download; fi
-    - if [ "$BUILD" == "dreamcast" ]; then tar -zxvf kos-ports.tar.gz; fi
-    - if [ "$BUILD" == "dreamcast" ]; then cd KallistiOS/utils/dc-chain; fi
-    - if [ "$BUILD" == "dreamcast" ]; then ./download.sh; fi
-    - if [ "$BUILD" == "dreamcast" ]; then ./unpack.sh; fi
-    - if [ "$BUILD" == "dreamcast" ]; then ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/output.sh; fi
-    - if [ "$BUILD" == "dreamcast" ]; then cp ~/build/RossMeikleham/PlutoBoy/build/Dreamcast/dreamcast_kos_env.sh /opt/toolchains/KallistiOS/environ.sh; fi     
-    - if [ "$BUILD" == "dreamcast" ]; then cd ../../; fi
-    - if [ "$BUILD" == "dreamcast" ]; then source environ.sh; fi
-    - if [ "$BUILD" == "dreamcast" ]; then make; fi
-    - if [ "$BUILD" == "dreamcast" ]; then cd ../kos-ports; fi
-    - if [ "$BUILD" == "dreamcast" ]; then make; fi
 
 #Setup SDL2 framework for XCode IOS
     - if [ "$BUILD" == "IOS" ]; then git clone https://github.com/manifest/sdl-ios-framework; fi
@@ -185,10 +155,6 @@ script:
     # Native builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
     - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
-    
-    #Dreamcast Builds
-    - if [ "$BUILD" == "dreamcast" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Dreamcast; fi
-    - if [ "$BUILD" == "dreamcast" ]; then make; fi
     
     # IOS Builds
     - if [ "$BUILD" == "IOS" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/IOS; fi
