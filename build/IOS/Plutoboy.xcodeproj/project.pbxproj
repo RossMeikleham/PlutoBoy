@@ -54,6 +54,9 @@
 		9100D7DD1C280D2900559E43 /* logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D91C280D2900559E43 /* logger.c */; };
 		9100D7DE1C280D2900559E43 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7DA1C280D2900559E43 /* main.c */; };
 		9100D7E01C2811F500559E43 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9100D7DF1C2811F500559E43 /* Default-568h@2x.png */; };
+		91985D751FEA9D7F004D85B8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */; };
+		91985D771FEA9D8A004D85B8 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D761FEA9D8A004D85B8 /* GameController.framework */; };
+		91985D791FEAA4CD004D85B8 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D781FEAA4CD004D85B8 /* CoreMotion.framework */; };
 		91C0E9EF1C28311300FAE37B /* rom.gb in Resources */ = {isa = PBXBuildFile; fileRef = 91C0E9EE1C28311300FAE37B /* rom.gb */; };
 /* End PBXBuildFile section */
 
@@ -107,6 +110,9 @@
 		9100D7D91C280D2900559E43 /* logger.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = logger.c; path = ../../src/platforms/IOS/logger.c; sourceTree = "<group>"; };
 		9100D7DA1C280D2900559E43 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../src/platforms/IOS/main.c; sourceTree = "<group>"; };
 		9100D7DF1C2811F500559E43 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		91985D761FEA9D8A004D85B8 /* GameController.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameController.framework; path = System/Library/Frameworks/GameController.framework; sourceTree = SDKROOT; };
+		91985D781FEAA4CD004D85B8 /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
 		91C0E9EE1C28311300FAE37B /* rom.gb */ = {isa = PBXFileReference; lastKnownFileType = file; name = rom.gb; path = rom_folder/rom.gb; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,6 +121,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91985D791FEAA4CD004D85B8 /* CoreMotion.framework in Frameworks */,
+				91985D771FEA9D8A004D85B8 /* GameController.framework in Frameworks */,
+				91985D751FEA9D7F004D85B8 /* MediaPlayer.framework in Frameworks */,
 				9100D7191C28012700559E43 /* CoreAudio.framework in Frameworks */,
 				9100D7171C28012700559E43 /* QuartzCore.framework in Frameworks */,
 				9100D7131C28012700559E43 /* CoreGraphics.framework in Frameworks */,
@@ -189,6 +198,9 @@
 		9100D70D1C28012700559E43 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				91985D781FEAA4CD004D85B8 /* CoreMotion.framework */,
+				91985D761FEA9D8A004D85B8 /* GameController.framework */,
+				91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */,
 				9100D70E1C28012700559E43 /* UIKit.framework */,
 				9100D7101C28012700559E43 /* Foundation.framework */,
 				9100D7121C28012700559E43 /* CoreGraphics.framework */,
