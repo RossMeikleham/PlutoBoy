@@ -57,25 +57,20 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
         free(buffer);
         return 0;
     }
-    log_message(LOG_INFO, "about to init graphx\n");
 
     free(buffer);
 
     if (!init_gfx()) {
-        log_message(LOG_ERROR, "failed to initialize graphics\n");
-		free(buffer);
+        log_message(LOG_ERROR, "Failed to initialize graphics\n");
         return 0;
     }
-    log_message(LOG_INFO, "init'd graphx\n");
 
-     if (!setup_serial_io(cs, 5000)) {
+    if (!setup_serial_io(cs, 5000)) {
         log_message(LOG_INFO, "No client or server created\n");
     }
     init_joypad();
     init_apu(); // Initialize sound
     reset_cpu();
-
-    log_message(LOG_INFO, "init'd joypad, apu, cpu\n");
 
     if (debugger) {
         debug = 1;
@@ -105,7 +100,6 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
 
-	free(buffer);
     return 1;
 }
 
