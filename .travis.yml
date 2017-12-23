@@ -1,9 +1,3 @@
-# Travis CI builds
-
-
-# Unecessarily verbose build matrix. Including multiple environments
-# and using a few exclusion variables doesn't work as it should for
-# some reason, so need to define everything. Thanks Travis >.<
 matrix:
   include:
   # Native Builds
@@ -31,41 +25,28 @@ matrix:
       env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
       language: c
 
-    # Android builds
     - os: linux
       env: BUILD=android 
-      language: android
-      android:
-        components:
-            - build-tools-21.1.1
-            - android-15
-            - sys-img-armeabi-v7a-android-15
+      language: ruby
+      services:
+        - docker
 
-    - os: osx
-      env: BUILD=android
-      language: android
-      
-
-    # IOS builds 
     - os: osx
       env: BUILD=IOS
       language: c
       
-    # Emscripten Builds
     - os: linux 
       env: BUILD=emscripten 
       language: ruby
       services:
         - docker
       
-    # PSP Builds
     - os: linux
       env: BUILD=psp
       language: ruby
       services:
         - docker
        
-    # Dreamcast Builds
     - os: linux
       env: BUILD=dreamcast
       language: ruby
@@ -77,14 +58,6 @@ matrix:
       language: ruby
       services:
         - docker
-
-  allow_failures:
-    - os: osx
-      env: BUILD=android
-    
-before_install:
-  - touch ~/error.log
-
 
 install:   
     - if [ "$BUILD" == "vita" ]; then docker build -t plutoboy_vita -f build/Vita/Dockerfile .; fi 
@@ -99,10 +72,12 @@ install:
     - if [ "$BUILD" == "dreamcast" ]; then docker build -t plutoboy_dc -f build/Dreamcast/Dockerfile . ; fi 
     - if [ "$BUILD" == "dreamcast" ]; then docker run plutoboy_dc; fi
 
+    - if [ "$BUILD" == "android" ]; then docker build -t plutoboy_android -f build/Android/Dockerfile . ; fi
+    - if [ "$BUILD" == "android" ]; then docker run plutoboy_android; fi
+
      # Native Linux build setup
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get update; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" = "native" ]; then sudo apt-get update; fi
+    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" = "native" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev libsdl-net1.2-dev; fi
     
@@ -122,31 +97,6 @@ install:
     - if [ "$BUILD" == "IOS" ]; then mkdir ~/Library/Frameworks/; fi 
     - if [ "$BUILD" == "IOS" ]; then cp -r build/sdl/SDL2.framework ~/Library/Frameworks/; fi
 
-# Setting up Android build
-    
-    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install ant ; fi  
-    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "linux" ]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin; fi
-
-    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install ant android-sdk ; fi 
-    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then export ANDROID_HOME=/usr/local/opt/android-sdk; fi
-    
-
-    - if [ "$BUILD" == "android" ] && [ "$TRAVIS_OS_NAME" == "osx" ]; then wget http://dl.google.com/android/ndk/android-ndk-r10e-darwin-x86_64.bin -O ndk.bin; fi
-   
-   
-    - if [ "$BUILD" == "android" ]; then chmod a+x ndk.bin; fi     
-    - if [ "$BUILD" == "android" ]; then ./ndk.bin > /dev/null; fi   
-    - if [ "$BUILD" == "android" ]; then mv android-ndk-r10e android-ndk; fi
-    - if [ "$BUILD" == "android" ]; then export PATH=`pwd`/android-ndk:$PATH; fi     
-    - if [ "$BUILD" == "android" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/Android ; fi     
-    
-    - if [ "$BUILD" == "android" ]; then android update project -p .; fi     
-    - if [ "$BUILD" == "android" ]; then hg clone http://hg.libsdl.org/SDL jni/SDL; fi     
-  
-
-after_failure:
-    tail ~/error.log --lines=1000
-
 
 script:
     # Native builds
@@ -156,8 +106,3 @@ script:
     # IOS Builds
     - if [ "$BUILD" == "IOS" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/IOS; fi
     - if [ "$BUILD" == "IOS" ]; then xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO; fi
-
-    # Android Builds
-    - if [ "$BUILD" == "android" ]; then ndk-build; fi     
-    - if [ "$BUILD" == "android" ]; then ant clean; fi     
-    - if [ "$BUILD" == "android" ]; then ant release; fi     

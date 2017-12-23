@@ -32,6 +32,7 @@ EXTRA_FILES = $(wildcard $(SHARED_DIR)/*.c)
 GB_FILES = $(MAIN_FILES) $(CORE_FILES) $(MMU_FILES) $(AUDIO_FILES) $(SDL2_FILES) $(SDL2_CPP_FILES) $(SDL2_AUDIO_FILES) $(EXTRA_FILES)
 
 LOCAL_CFLAGS += -std=c99 -O2
+LOCAL_CPPFLAGS += -std=c++11 -O2
 LOCAL_DISABLE_FORMAT_STRING_CHECKS := true
 
 # Add your application source files here...
