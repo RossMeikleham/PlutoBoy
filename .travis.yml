@@ -1,35 +1,63 @@
+
 matrix:
   include:
-    # Native OSX builds
+    # Native OSX, and IOS builds
     - os: osx
-      env: 
-        - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
-        - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
       language: c
-
-    # IOS build
+          
+    - os: osx   
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
+      language: c
+      
     - os: osx
       env: BUILD=IOS BUILD_FOLDER=build/IOS
       language: c
-       
-    # Linux and other X-platform Docker builds
+           
+    # Linux and other X-platform Docker builds     
     - os: linux
-      env: 
-        global:
-            - DOCKER=YES
-        matrix:
-            - BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix
-            - BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix
-            - BUILD=psp BUILD_FOLDER=build/PSP
-            - BUILD=dreamcast BUILD_FOLDER=build/Dreamcast
-            - BUILD=vita BUILD_FOLDER=build/Vita
-            - BUILD=emscripten BUILD_FOLDER=build/Javascript
-            - BUILD=android BUILD_FOLDER=build/Android
-  language: ruby
-  services:
-    - docker
-       
-      
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix
+      language: ruby
+      services:
+        - docker
+        
+    - os: linux
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix
+      language: ruby
+      services:
+        - docker
+    
+    - os: linux
+      env: DOCKER=YES BUILD=psp BUILD_FOLDER=build/PSP
+      language: ruby
+      services:
+        - docker
+            
+    - os: linux
+      env: DOCKER=YES BUILD=dreamcast BUILD_FOLDER=build/Dreamcast
+      language: ruby
+      services:
+        - docker
+        
+    - os: linux
+      env: DOCKER=YES BUILD=vita BUILD_FOLDER=build/Vita
+      language: ruby
+      services:
+        - docker
+    
+    - os: linux
+      env: DOCKER=YES BUILD=emscripten BUILD_FOLDER=build/Javascript
+      language: ruby
+      services:
+        - docker
+            
+    - os: linux
+      env: DOCKER=YES BUILD=android BUILD_FOLDER=build/Android
+      language: ruby
+      services:
+        - docker
+
+  
 install: 
     # Docker build setup  
     - if [ "$DOCKER" == "YES" ]; then docker build -t plutoboy -f $BUILD_FOLDER/Dockerfile .; fi 
@@ -52,10 +80,10 @@ install:
 
 script: 
     # Docker linux build
-    - if [ "$BUILD" == "linux" ]; then docker run -e cc=$CC -e framework=$FRAMEWORK -e mode=$MODE plutoboy_linux; fi
+    - if [ "$BUILD" == "linux" ]; then docker run -e cc=$CC -e framework=$FRAMEWORK -e mode=$MODE plutoboy; fi
 
     # Docker x-platform builds
-    - if [ "$BUILD" != "linux" ] && [ "$DOCKER" == "YES" ]; then docker run $CONTAINER_NAME
+    - if [ "$BUILD" != "linux" ] && [ "$DOCKER" == "YES" ]; then docker run plutoboy; fi
 
     # Native OSX builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi

@@ -44,7 +44,7 @@ RUN sdkmanager --list \
 # Install NDK
 RUN curl -o ndk.bin http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
 RUN chmod a+x ndk.bin
-RUN ./ndk.bin
+RUN ./ndk.bin > /dev/null
 ENV PATH /android-ndk-r10e:$PATH
 
 # Download SDL
