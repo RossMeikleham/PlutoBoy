@@ -188,7 +188,17 @@ Raspberry Pi 2
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
 ## Android
-### Required 
+
+### Building using Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+docker build -t plutoboy_android -f build/Android/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_android
+```
+
+### Building from scratch
+
+#### Required 
   - Mercurial
   - Ant
   - Android NDK (> r7)
@@ -196,18 +206,20 @@ Raspberry Pi 2
 
 > ***Note*** README-android.txt in the latest development version of SDL2 explains the build process in more detail.
 
-### Building (Command Line)
+#### Building (Command Line)
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
 - navigate to the `build\Android` folder. 
 - Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from SDL to `build/Android/src/org/libsdl/app/SDLActivity.java`
 - Generate the `default.properties` file with `android update project -p .`
 - Compile the C/C++ source with `ndk-build`
 - Run `ant clean` then `ant release` which should generate the APK file in the `build` folder.
 
-### Building (Eclipse)
+#### Building (Eclipse)
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
 - navigate to the `build\Android` folder. 
 - Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
+- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from SDL to `build/Android/src/org/libsdl/app/SDLActivity.java`
 - Compile the C/C++ sources with `ndk-build`
 - Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
 - You should now be able to build and test on emulators/devices through Eclipse.
