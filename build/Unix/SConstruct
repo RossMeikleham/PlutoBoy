@@ -90,6 +90,4 @@ elif framework == 'SDL2':
                 + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))
 
 
-env.Program('gb_emu',sourceObjs)
-
-
+env.Program('plutoboy',sourceObjs)

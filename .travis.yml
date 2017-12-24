@@ -1,95 +1,47 @@
 matrix:
   include:
-  # Native Builds
-    - language: c
-      os: linux
-      env: BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL
-      
-    - os: linux
-      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
-      language: c
-      
+    # Native OSX builds
     - os: osx
-      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
-      language: c
-      
-    - os: linux
-      env: BUILD=native CC=gcc CXX=g++ FRAMEWORK=SDL2 
-      language: c
-      
-    - os: linux
-      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
-      language: c
-     
-    - os: osx
-      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
+      env: 
+        - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
+        - BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
       language: c
 
-    - os: linux
-      env: BUILD=android 
-      language: ruby
-      services:
-        - docker
-
+    # IOS build
     - os: osx
-      env: BUILD=IOS
+      env: BUILD=IOS BUILD_FOLDER=build/IOS
       language: c
-      
-    - os: linux 
-      env: BUILD=emscripten 
-      language: ruby
-      services:
-        - docker
-      
-    - os: linux
-      env: BUILD=psp
-      language: ruby
-      services:
-        - docker
        
+    # Linux and other X-platform Docker builds
     - os: linux
-      env: BUILD=dreamcast
-      language: ruby
-      services:
-        - docker
+      env: 
+        global:
+            - DOCKER=YES
+        matrix:
+            - BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix
+            - BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix
+            - BUILD=psp BUILD_FOLDER=build/PSP
+            - BUILD=dreamcast BUILD_FOLDER=build/Dreamcast
+            - BUILD=vita BUILD_FOLDER=build/Vita
+            - BUILD=emscripten BUILD_FOLDER=build/Javascript
+            - BUILD=android BUILD_FOLDER=build/Android
+  language: ruby
+  services:
+    - docker
+       
       
-    - os: linux
-      env: BUILD=vita
-      language: ruby
-      services:
-        - docker
+install: 
+    # Docker build setup  
+    - if [ "$DOCKER" == "YES" ]; then docker build -t plutoboy -f $BUILD_FOLDER/Dockerfile .; fi 
 
-install:   
-    - if [ "$BUILD" == "vita" ]; then docker build -t plutoboy_vita -f build/Vita/Dockerfile .; fi 
-    - if [ "$BUILD" == "vita" ]; then docker run plutoboy_vita; fi
-    
-    - if [ "$BUILD" == "psp" ]; then docker build -t plutoboy_psp -f build/PSP/Dockerfile . ; fi
-    - if [ "$BUILD" == "psp" ]; then docker run plutoboy_psp; fi
-    
-    - if [ "$BUILD" == "emscripten" ]; then docker build -t plutoboy_js -f build/Javascript/Dockerfile . ; fi 
-    - if [ "$BUILD" == "emscripten" ]; then docker run plutoboy_js; fi 
-   
-    - if [ "$BUILD" == "dreamcast" ]; then docker build -t plutoboy_dc -f build/Dreamcast/Dockerfile . ; fi 
-    - if [ "$BUILD" == "dreamcast" ]; then docker run plutoboy_dc; fi
-
-    - if [ "$BUILD" == "android" ]; then docker build -t plutoboy_android -f build/Android/Dockerfile . ; fi
-    - if [ "$BUILD" == "android" ]; then docker run plutoboy_android; fi
-
-     # Native Linux build setup
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" = "native" ]; then sudo apt-get update; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" = "native" ]; then sudo add-apt-repository -y ppa:zoogie/sdl2-snapshots; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$BUILD" == "native" ]; then sudo apt-get install scons; fi
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL" ]; then sudo apt-get -f install libsdl1.2-dev libsdl-net1.2-dev; fi
-    
-    - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$FRAMEWORK" == "SDL2" ]; then sudo apt-get -f install libsdl2-dev libsdl2-net-dev; fi
-
-
-    # Native OSX Build setup
+    # OSX/IOS build setup 
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
+
+    # Native OSX build setup
     - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$BUILD" == "native" ]; then brew install scons; fi
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl sdl2 sdl_net sdl2_net; fi
 
-#Setup SDL2 framework for XCode IOS
+    #Setup SDL2 framework for XCode IOS
     - if [ "$BUILD" == "IOS" ]; then git clone https://github.com/manifest/sdl-ios-framework; fi
     - if [ "$BUILD" == "IOS" ]; then cd sdl-ios-framework; fi 
     - if [ "$BUILD" == "IOS" ]; then gem install colorize; fi 
@@ -98,11 +50,17 @@ install:
     - if [ "$BUILD" == "IOS" ]; then cp -r build/sdl/SDL2.framework ~/Library/Frameworks/; fi
 
 
-script:
-    # Native builds
+script: 
+    # Docker linux build
+    - if [ "$BUILD" == "linux" ]; then docker run -e cc=$CC -e framework=$FRAMEWORK -e mode=$MODE plutoboy_linux; fi
+
+    # Docker x-platform builds
+    - if [ "$BUILD" != "linux" ] && [ "$DOCKER" == "YES" ]; then docker run $CONTAINER_NAME
+
+    # Native OSX builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
     - if [ "$BUILD" == "native" ]; then scons cc=$CC framework=$FRAMEWORK mode=$MODE; fi
-    
+   
     # IOS Builds
     - if [ "$BUILD" == "IOS" ]; then cd ~/build/RossMeikleham/PlutoBoy/build/IOS; fi
     - if [ "$BUILD" == "IOS" ]; then xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO; fi
