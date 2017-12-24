@@ -55,7 +55,7 @@ script:
     - if [ "$BUILD" == "linux" ]; then docker run -e cc=$CC -e framework=$FRAMEWORK -e mode=$MODE plutoboy_linux; fi
 
     # Docker x-platform builds
-    - if [ "$BUILD" != "linux" ] && [ "$DOCKER" == "YES" ]; then docker run $CONTAINER_NAME
+    - if [ "$BUILD" != "linux" ] && [ "$DOCKER" == "YES" ]; then docker run $CONTAINER_NAME; fi
 
     # Native OSX builds
     - if [ "$BUILD" == "native" ]; then cd build/Unix; fi
