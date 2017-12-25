@@ -36,8 +36,8 @@ ENV PATH ${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}
 RUN sdkmanager --list \
   && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platform-tools" \
   && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager build-tools;21.1.2" \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager sources;android-15" \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platforms;android-15" \
+  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager sources;android-21" \
+  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platforms;android-21" \
   && sdkmanager --list
 
 
@@ -48,9 +48,9 @@ RUN ./ndk.bin > /dev/null
 ENV PATH /android-ndk-r10e:$PATH
 
 # Download SDL
-RUN wget https://www.libsdl.org/release/SDL2-2.0.3.tar.gz
-RUN tar -xf SDL2-2.0.3.tar.gz 
-RUN mv SDL2-2.0.3 /SDL
+RUN wget https://www.libsdl.org/release/SDL2-2.0.5.tar.gz
+RUN tar -xf SDL2-2.0.5.tar.gz 
+RUN mv SDL2-2.0.5 /SDL
 
 
 #Setup workdir
@@ -64,7 +64,8 @@ RUN ln -s /SDL  /plutoboy_android/build/Android/jni/SDL
 # symlink SDLActivity.java from SDL2
 RUN ln -s /SDL/android-project/src/org/libsdl  /plutoboy_android/build/Android/src/org/libsdl
 
-CMD ndk-build;\ 
+CMD ndk-clean;\
+ndk-build;\ 
 ant clean;\
 ant release;\ 
 cd bin;\
