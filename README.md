@@ -202,7 +202,10 @@ docker run -v $(pwd):/mnt plutoboy_android
   - Mercurial
   - Ant
   - Android NDK (> r7)
-  - Android SDK 15 
+  - Android SDK 21
+  - Android SDK Tools r25.2.5
+  - Android Build Tools 21.1.2 
+  - SDL2-2.0.5 Sources
 
 > ***Note*** README-android.txt in the latest development version of SDL2 explains the build process in more detail.
 
@@ -211,9 +214,8 @@ docker run -v $(pwd):/mnt plutoboy_android
 - navigate to the `build\Android` folder. 
 - Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
 - Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from SDL to `build/Android/src/org/libsdl/app/SDLActivity.java`
-- Generate the `default.properties` file with `android update project -p .`
 - Compile the C/C++ source with `ndk-build`
-- Run `ant clean` then `ant release` which should generate the APK file in the `build` folder.
+- Run `ant clean` then `ant release` which should generate the APK file in the `build` folder. The resulting APK will need to be signed before being able to run, if just wanting to run then `ant debug` which will generate a signed debug apk which can be installed/run straight away.
 
 #### Building (Eclipse)
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
