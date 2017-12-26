@@ -115,21 +115,33 @@ The -d flag starts the emulator in debugging mode.
 
 ## Linux
 
-### Required: (All these should be easily installed using the package manager provided by your Linux distribution)
+### Building for x86 using Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
+docker build -t plutoboy_linux -f build/Unix/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_linux
+```
+
+### Building from scratch
+
+#### Required: (All these should be easily installed using the package manager provided by your Linux distribution)
 
 - SDL2  
 - SDL2_net 
 - Scons 
 - Clang or GCC 
 
-### How To Build:
+#### How To Build:
 - Navigate to the project `build/Unix` folder.
 - Enter the command `./scons cc=[compiler]` where `[compiler]` is either "gcc" or "clang". Leaving out the cc option compiles with clang by default.
  
-Raspberry Pi 1
+### Notes 
+
+#### Raspberry Pi 1
  - Overclock the Pi to 1 Ghz to be able to run at full speed
  
-Raspberry Pi 2
+#### Raspberry Pi 2
  - Works fine at base cpu speed of 900mhz, if wanting to run more programs at the same time
    and retain full emulation speed, consider overclocking to at least 1Ghz
 
