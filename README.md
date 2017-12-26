@@ -192,6 +192,7 @@ Raspberry Pi 2
 ### Building using Docker
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
 docker build -t plutoboy_android -f build/Android/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_android
 ```
@@ -199,7 +200,6 @@ docker run -v $(pwd):/mnt plutoboy_android
 ### Building from scratch
 
 #### Required 
-  - Mercurial
   - Ant
   - Android NDK (> r7)
   - Android SDK 21
@@ -212,16 +212,16 @@ docker run -v $(pwd):/mnt plutoboy_android
 #### Building (Command Line)
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
 - navigate to the `build\Android` folder. 
-- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
-- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from SDL to `build/Android/src/org/libsdl/app/SDLActivity.java`
+- Obtain a copy of [SDL2-2.0.5.zip](https://www.libsdl.org/release/SDL2-2.0.5.zip), unzip and copy the extracted `SDL` folder to `jni/SDL`
+- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from extracted SDL2 to `build/Android/src/org/libsdl/app/SDLActivity.java`
 - Compile the C/C++ source with `ndk-build`
 - Run `ant clean` then `ant release` which should generate the APK file in the `build` folder. The resulting APK will need to be signed before being able to run, if just wanting to run then `ant debug` which will generate a signed debug apk which can be installed/run straight away.
 
 #### Building (Eclipse)
 - Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
 - navigate to the `build\Android` folder. 
-- Clone the SDL2 Mercurial Repository to the `jni` folder: `hg clone http://hg.libsdl.org/SDL jni/SDL`
-- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from SDL to `build/Android/src/org/libsdl/app/SDLActivity.java`
+- Obtain a copy of [SDL2-2.0.5.zip](https://www.libsdl.org/release/SDL2-2.0.5.zip), unzip and copy the extracted `SDL` folder to `jni/SDL`
+- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from extracted SDL2 to `build/Android/src/org/libsdl/app/SDLActivity.java`
 - Compile the C/C++ sources with `ndk-build`
 - Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
 - You should now be able to build and test on emulators/devices through Eclipse.
@@ -250,6 +250,7 @@ docker run -v $(pwd):/mnt plutoboy_android
 ### Building using Docker
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
 cp Path/To/GameboyRom.gb build/Javascript/rom.gb
 docker build -t plutoboy_js -f build/Javascript/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_js
@@ -283,6 +284,7 @@ to be made to the emulator for speeding it up to where it can run on it at full 
 ### Building using Docker
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
 docker build -t plutoboy_psp -f build/PSP/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_psp
 ```
@@ -315,6 +317,7 @@ docker run -v $(pwd):/mnt plutoboy_psp
 ### Building VPK with Docker
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
 docker build -t plutoboy_vita -f build/Vita/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_vita
 ```
