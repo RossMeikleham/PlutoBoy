@@ -402,14 +402,6 @@ int load_rom(char const *filename, unsigned char *file_data, size_t size, int co
         return 0;
     }
 
-
-    // Dump ROM into memory banks
-    unsigned rom_bank_count = rom_size / 0x4000;
-      
-    for (unsigned n = 0; n < rom_bank_count; n++) {
-        memcpy(ROM_banks[n], file_data + (0x4000 * n), 0x4000);
-    }
-    
     cgb = !dmg_mode;
     io_mem  = cgb ? io_mem_cgb : io_mem_dmg;
 

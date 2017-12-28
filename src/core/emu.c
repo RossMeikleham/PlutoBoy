@@ -5,6 +5,7 @@
 #include "lcd.h"
 #include "interrupts.h"
 #include "mmu/memory.h"
+#include "mmu/mbc.h"
 #include "sound.h"
 #include "emu.h"
 #include "serial_io.h"
@@ -29,16 +30,8 @@ int breakpoint = BREAKPOINT_OFF;
  * otherwise */
 int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
-    unsigned char *buffer;
+    unsigned char *buffer = (unsigned char *)(ROM_banks);
     unsigned long size;
-
-	buffer = malloc (MAX_FILE_SIZE * sizeof(unsigned char));
-
-    if (buffer == NULL) {
-        log_message(LOG_ERROR,
-                    "Failed to allocate %u byte buffer to read ROM\n", MAX_FILE_SIZE);
-        return 0;
-    }
 
     //Start logger
     set_log_level(LOG_INFO);
@@ -47,18 +40,14 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
 
       if (!(size = load_rom_from_file(file_path, buffer))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
-        free(buffer);
         return 0;
     }
     
 	log_message(LOG_INFO, "File loaded %s\n", file_path);
     if (!load_rom(file_path, buffer, size, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
-        free(buffer);
         return 0;
     }
-
-    free(buffer);
 
     if (!init_gfx()) {
         log_message(LOG_ERROR, "Failed to initialize graphics\n");

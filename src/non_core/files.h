@@ -1,8 +1,8 @@
 #ifndef FILES_H
 #define FILES_H
 
-#define MAX_FILE_SIZE 0x400000 //8MB Roms
-#define MAX_SRAM_SIZE 0x8000
+#define MAX_FILE_SIZE 0x800000 //8MB Roms
+#define MAX_SRAM_SIZE 0x8000 // 128KB SRAM
 
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
