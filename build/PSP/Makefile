@@ -35,7 +35,7 @@ PSP_MAINTHREAD_STACK_SIZE_KB = 1024
  
 INCDIR		=
 PSPBIN = $(PSPSDK)/../bin
-CFLAGS		= -g -std=c99 -G4 -Wall -O2
+CFLAGS		= -std=c99 -G0 -Wall -O3
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
 OUTDIR = Gameboy

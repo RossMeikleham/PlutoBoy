@@ -26,11 +26,6 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
     screen_width = win_x;
     screen_height = win_y;
 
-//#ifdef PSP
-//    screen_width = 640;
-//    screen_height = 480;
-//#endif
-
     pixels = p;
 
     if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK )==-1)) {

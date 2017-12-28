@@ -40,10 +40,10 @@ int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
 
-#ifdef PSP2 //VITA
+#ifdef PSVITA //VITA
 	int result = init_screen(VITA_PIX_X, VITA_PIX_Y, rgb_pixels);
 #else
-    int result = init_screen(960, 544, rgb_pixels);
+    int result = init_screen(GB_PIXELS_X, GB_PIXELS_Y, rgb_pixels);
 #endif    
 	init_sprite_prio_list();    
         
