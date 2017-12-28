@@ -15,7 +15,7 @@
 #include "../non_core/framerate.h"
 #include "../non_core/logger.h"
 
-#ifdef PSP2 //VITA
+#ifdef PSVITA
 #define VITA_PIX_X 960
 #define VITA_PIX_Y 544
 #endif
