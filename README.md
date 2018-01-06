@@ -8,6 +8,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | Platform   | CI Build Status | SDL 1.2 | SDL 2 |
 |------------|-----------------|---------|-------|
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
+| ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
 | ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
 |![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
@@ -119,8 +120,16 @@ The -d flag starts the emulator in debugging mode.
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
 cd Plutoboy
-docker build -t plutoboy_linux -f build/Unix/Dockerfile .
+docker build -t plutoboy_linux -f build/Unix/x86/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_linux
+```
+
+### Building for ARM/Raspberry Pi using Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
+docker build -t plutoboy_linux_arm -f build/Unix/ARM/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_linux_arm
 ```
 
 ### Building from scratch

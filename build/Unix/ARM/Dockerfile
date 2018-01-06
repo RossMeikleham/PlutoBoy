@@ -1,11 +1,16 @@
-FROM jameyhicks/ubuntu-clang-scons
+FROM resin/rpi-raspbian
 
 USER root
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
-    && apt-get install -y libsdl1.2-dev libsdl-net1.2-dev\
+    && apt-get install -y \ 
+        gcc \
+        g++ \
+        scons \
+        libsdl1.2-dev \
+        libsdl-net1.2-dev \
         libsdl2-dev \
         libsdl2-net-dev
 
@@ -21,3 +26,4 @@ ENV cc="gcc" framework="SDL2" mode="release"
 
 CMD cd /plutoboy_linux/build/Unix \
     && scons cc=${cc} framework=${framework} mode=${mode} \
+    && cp plutoboy /mnt

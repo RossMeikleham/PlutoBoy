@@ -7,7 +7,7 @@ matrix:
       language: c
           
     - os: osx   
-      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL
+      env: BUILD=native CC=clang CXX=clang++ FRAMEWORK=SDL2
       language: c
       
     - os: osx
@@ -16,16 +16,28 @@ matrix:
            
     # Linux and other X-platform Docker builds     
     - os: linux
-      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix/x86
       language: ruby
       services:
         - docker
         
     - os: linux
-      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix/x86
       language: ruby
       services:
         - docker
+    
+    - os: linux
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix/ARM
+      language: ruby
+      services:
+        - docker
+    
+    - os: linux
+      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix/ARM
+      language: ruby
+      services:
+        - docker 
     
     - os: linux
       env: DOCKER=YES BUILD=psp BUILD_FOLDER=build/PSP
