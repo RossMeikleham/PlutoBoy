@@ -9,8 +9,6 @@ RUN apt-get update \
         gcc \
         g++ \
         scons \
-        libsdl1.2-dev \
-        libsdl-net1.2-dev \
         libsdl2-dev \
         libsdl2-net-dev
 

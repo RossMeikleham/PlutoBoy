@@ -28,13 +28,7 @@ matrix:
         - docker
     
     - os: linux
-      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL MODE=release BUILD_FOLDER=build/Unix/ARM
-      language: ruby
-      services:
-        - docker
-    
-    - os: linux
-      env: DOCKER=YES BUILD=linux CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix/ARM
+      env: DOCKER=YES BUILD=linux ARCH=arm CC=gcc CXX=g++ FRAMEWORK=SDL2 MODE=release BUILD_FOLDER=build/Unix/ARM
       language: ruby
       services:
         - docker 
@@ -70,7 +64,9 @@ matrix:
         - docker
 
   
-install: 
+install:
+    - if [ "$ARCH" == "arm" ]; then sudo apt-get --yes --no-install-recommends install binfmt-support qemu-user-static; fi
+ 
     # Docker build setup  
     - if [ "$DOCKER" == "YES" ]; then docker build -t plutoboy -f $BUILD_FOLDER/Dockerfile .; fi 
 
