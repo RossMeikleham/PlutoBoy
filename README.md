@@ -18,7 +18,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
 | ![VitaIcon](/images/ps-vita.png?raw=true) PSP Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
 
-Play a demo game in the browser [here](http://rossmeikleham.github.io/PlutoBoy/).
+Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
 
 The emulator supports 2 modes DMG (Dot Matrix Gameboy) and CGB (Color Gameboy),
 all original Gameboy games are backwards compatible in CGB mode:
@@ -275,7 +275,12 @@ cd Plutoboy
 cp Path/To/GameboyRom.gb build/WebAsm/rom.gb
 docker build -t plutoboy_webasm -f build/WebAsm/Dockerfile .
 docker run -v $(pwd):/mnt plutoboy_webasm
+
+cd WebAsmFiles
+docker run -dit --name plutoboy_webasm_app -p 8080:80 -v "$PWD":/usr/local/apache2/htdocs/ httpd:2.4
 ```
+
+Then navigate to "http://localhost:8080/" in a Web Browser.
 
 ### Building from scratch
 #### Required:
