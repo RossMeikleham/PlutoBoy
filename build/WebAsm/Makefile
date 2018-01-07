@@ -28,13 +28,13 @@ CPP_FILES = $(IO_DIR_FILES2) $(SOUND_FILES) $(AUDIO_FILES)
 
 OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES))) $(addsuffix .o, $(basename $(CPP_FILES)))
 
-TARGET		= gameboy.html
+TARGET		= plutoboy.html
 OBJS		= $(OBJ_FILES)
 
 CFLAGS		= -O2 -Wall 
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
-PORTS = -s USE_SDL=2 -s TOTAL_MEMORY=33554432
+PORTS = -s USE_SDL=2 -s TOTAL_MEMORY=33554432 -s WASM=1 #-s USE_PTHREADS=1
 CC = emcc
 CXX = em++
 
@@ -48,4 +48,4 @@ all:
 clean:
 	rm -rf *.o
 	rm $(TARGET)
-	rm gameboy.js
+	rm plutoboy.js

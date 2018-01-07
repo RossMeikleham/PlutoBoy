@@ -52,7 +52,7 @@ matrix:
         - docker
     
     - os: linux
-      env: DOCKER=YES BUILD=emscripten BUILD_FOLDER=build/Javascript
+      env: DOCKER=YES BUILD=emscripten BUILD_FOLDER=build/WebAsm
       language: ruby
       services:
         - docker

@@ -13,7 +13,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
 |![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
-| ![jsIcon](/images/jsIcon.png?raw=true) Javascript | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
+| ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
 | ![VitaIcon](/images/ps-vita.png?raw=true) PSP Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
@@ -266,34 +266,34 @@ docker run -v $(pwd):/mnt plutoboy_android
     - Selecting ROM files from the app to load
     - SRAM loads + saves
 
-## Web Browser
+## Web Assembly
 
 ### Building using Docker
 ```
 git clone https://github.com/RossMeikleham/PlutoBoy
 cd Plutoboy
-cp Path/To/GameboyRom.gb build/Javascript/rom.gb
-docker build -t plutoboy_js -f build/Javascript/Dockerfile .
-docker run -v $(pwd):/mnt plutoboy_js
+cp Path/To/GameboyRom.gb build/WebAsm/rom.gb
+docker build -t plutoboy_webasm -f build/WebAsm/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_webasm
 ```
 
 ### Building from scratch
 #### Required:
-- [Emscripten]( https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) to compile the C/C++ sources to Javascript
+- [Emscripten]( https://kripken.github.io/emscripten-site/docs/getting_started/downloads.html) to compile the C/C++ sources to Web Assembly
 
 #### How to Build:
 - Navigate to the `build/Javascript` folder
 - Place the rom you want to run in the same folder with the name "rom.gb"
 - Enter the command `make`
-- gameboy.js and gameboy.html files should be generated.
-- To run games, open gameboy.html with a web browser.
+- plutoboy.js, plutoboy.webasm, and plutoboy.html files should be generated.
+- To run games, open plutoboy.html with a web browser.
 - In Google Chrome you may need to close all instances of chrome and then start a new one from the terminal/command line with the flag `--allow-file-access-from-files`.
 
 ### TODO
   - Need to make a way for the user to enter the address of a rom and attempt to load
     it rather than hard coding one at compile time. Sound is currently broken
     due to the sound library using multithreading which isn't currently supported
-    very well. 
+    by Web Assembly, but hopefully should be int he near future. 
 
 
 
