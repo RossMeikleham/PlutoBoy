@@ -10,11 +10,11 @@ int main() {
     
     int debug = 0;
     char *file_name = "rom.gb";
+    int dmg = 0;
+
     ClientOrServer cs = NO_CONNECT;
 
-    printf("hello there\n");
-
-    if (!init(file_name, debug, cs)) {
+    if (!init_emu(file_name, debug, dmg, cs)) {
         return 1;
     }
 

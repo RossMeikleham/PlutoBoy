@@ -13,36 +13,69 @@ static uint64_t current_ticks = 0;
 
 #ifdef _WIN32
 #include <windows.h>
+#include <time.h>
 
-int gettimeofday( struct timeval *tv, struct timezone *tz ) {
-    time_t rawtime;
+#if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
+#define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
+#else
+#define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
+#endif
 
-    time(&rawtime);
-    tv->tv_sec = (long)rawtime;
+static struct timezone
+{
+	int  tz_minuteswest; /* minutes W of Greenwich */
+	int  tz_dsttime;     /* type of dst correction */
+};
 
-    LARGE_INTEGER tickPerSecond;
-    LARGE_INTEGER tick; // a point in time
+static int gettimeofday(struct timeval *tv, struct timezone *tz)
+{
+	FILETIME ft;
+	unsigned __int64 tmpres = 0;
+	static int tzflag = 0;
 
-    QueryPerformanceFrequency(&tickPerSecond);
+	if (NULL != tv)
+	{
+		GetSystemTimeAsFileTime(&ft);
 
-    QueryPerformanceCounter(&tick);
+		tmpres |= ft.dwHighDateTime;
+		tmpres <<= 32;
+		tmpres |= ft.dwLowDateTime;
 
-    tv->tv_usec = (tick.QuadPart % tickPerSecond.QuadPart);
+		tmpres /= 10;  /*convert into microseconds*/
+		/*converting file time to unix epoch*/
+		tmpres -= DELTA_EPOCH_IN_MICROSECS;
+		tv->tv_sec = (long)(tmpres / 1000000UL);
+		tv->tv_usec = (long)(tmpres % 1000000UL);
+	}
 
-    return 0;
+	if (NULL != tz)
+	{
+		if (!tzflag)
+		{
+			_tzset();
+			tzflag++;
+		}
+		tz->tz_minuteswest = _timezone / 60;
+		tz->tz_dsttime = _daylight;
+	}
+
+	return 0;
 }
+
+
 
 #elif !defined(EMSCRIPTEN)
 #include <sys/time.h>
 #endif
 
-uint64_t get_timestamp_micro() {
 #ifndef EMSCRIPTEN
+uint64_t get_timestamp_micro() {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	return tv.tv_sec * 1000000ull + tv.tv_usec;
-#endif
 }
+#endif
+
 
 //Assign Framerate in FPS and start counter
 void start_framerate(float f) {
@@ -56,7 +89,8 @@ void start_framerate(float f) {
 /* Check time elapsed after one frame, hold up
  * the program if not enough tim has elapsed */
 void adjust_to_framerate() {
-#ifndef EMSCRIPTEN
+// EMSCRIPTEN had its own ways to run frames at certain FPS
+#ifndef EMSCRIPTEN 
 
     char title_buf[100];
 
@@ -71,13 +105,13 @@ void adjust_to_framerate() {
     // cpu cycles to wait for the rest of the time
     if (framerate_ticks < 1000000) {        
 	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
-	if (delay_time >= 20000) {
+	if (delay_time >= 5000) {
 		//casting uint64_t into uint32_t, not really safe
 		// but we will never be delaying for more than 1000ms which is well in range
-		SDL_Delay( (uint32_t) ((delay_time - 20000)/1000));
-	}
-	while(get_timestamp_micro() < estimated_ticks)
-		;;
+ 		SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
+	}	
+    while(get_timestamp_micro() < estimated_ticks)
+  		;;
 	
     } 
    

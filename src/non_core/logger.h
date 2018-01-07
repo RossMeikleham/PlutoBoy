@@ -6,7 +6,7 @@ extern "C"{
 #endif
 
 // Different Logging levels
-typedef enum {LOG_INFO, LOG_WARN, LOG_ERROR, LOG_OFF} LogLevel;
+typedef enum {LOG_INFO = 0, LOG_WARN = 1, LOG_ERROR = 2, LOG_OFF = 3} LogLevel;
 
 // Set one of the 4 specified logging levels
 void set_log_level(LogLevel ll);

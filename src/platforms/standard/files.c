@@ -41,7 +41,7 @@ unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned lon
     log_message(LOG_INFO, "Attempting to load SRAM for file: %s\n",file_path);
 
     if(!(file = fopen(file_path,"rb"))) {
-        log_message(LOG_INFO, "Error opening file: %s\n SRAM not loaded",file_path);
+        log_message(LOG_INFO, "Error opening file: %s. SRAM not loaded\n",file_path);
         return 0;
     }
     
@@ -61,7 +61,7 @@ unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned lon
 /* Given a file_path, save data and the size of save data, attempts to
  * save the data to the given file. Returns 1 if successful, 0 otherwise */
 int save_SRAM(const char *file_path, const unsigned char *data, unsigned long size) {
-    
+     
     FILE *file;
     log_message(LOG_INFO, "Attempting to write SRAM for file: %s\n",file_path);
     
@@ -80,5 +80,9 @@ int save_SRAM(const char *file_path, const unsigned char *data, unsigned long si
     }
         
     fclose(file);   
-    return 1;
-}                                      
+    return 1; 
+}            
+
+// Write a given RTC time to a file, includes the current system time since 
+// the Unix epoch in milliseconds
+                          

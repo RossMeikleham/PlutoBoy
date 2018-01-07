@@ -1,0 +1,22 @@
+version: '{branch}-{build}'
+
+environment:
+
+  matrix:
+    - platform: x64 
+      PYTHON: "C:\\Python27"
+      FRAMEWORK: "SDL"
+
+    - platform: x64 
+      PYTHON: "C:\\Python27"
+      FRAMEWORK: "SDL2"
+
+install:
+  - SET "PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - easy_install scons
+
+build_script:
+    - python --version
+    - scons --version
+    - cd build/Windows/scons
+    - scons framework=%FRAMEWORK%

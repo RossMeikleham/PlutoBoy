@@ -3,8 +3,9 @@
 #include "memory_layout.h"
 #include "bits.h"
 #include "cpu.h"
+#include "rom_info.h"
 
-//Interrupt Service Routine Addresses
+// Interrupt Service Routine Addresses
 #define VBLANK_ISR_ADDR  0x40
 #define LCD_ISR_ADDR     0x48
 #define TIMER_ISR_ADDR   0x50
@@ -75,7 +76,9 @@ int handle_interrupts() {
                  * 1st byte of instruction to be repeated */
                 else if (halted) {
                     halted = 0;
-                    return 1;
+                    if (!cgb) {
+                        return 1;
+                    }
                 }
             }
         }

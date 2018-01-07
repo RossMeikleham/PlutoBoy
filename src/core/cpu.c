@@ -14,6 +14,7 @@
 #include "lcd.h"
 #include "sound.h"
 #include "serial_io.h"
+#include "rom_info.h"
 
 #include "../non_core/logger.h"
 
@@ -66,6 +67,16 @@ typedef struct {
 
 } Instructions;
 
+
+void update_all_cycles(long cycles) {    
+    if (cgb_speed) {
+        cycles /= 2;
+    }   
+        update_timers(cycles); 
+        long updated_cycles = update_graphics(cycles); 
+        sound_add_cycles(updated_cycles);
+        inc_serial_cycles(updated_cycles);
+}
 
 
 /* ***************Opcodes ********************* */
@@ -182,10 +193,7 @@ void invalid_op(){
 
 /* Load immediate value into memory location HL */
  static void LD_memHL_n() {
-    update_timers(4); 
-    update_graphics(4); 
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);   
     timer_cycles_passed = 4; 
     set_mem(reg.HL, IMMEDIATE_8_BIT);
 }
@@ -196,10 +204,8 @@ void invalid_op(){
 
 /* Load value at memory address given by immediate 16 bits into A */
  static void LD_A_memnn() { 
-    update_timers(8); 
-    update_graphics(8);
-    sound_add_cycles(8);
-    inc_serial_cycles(8);
+    update_all_cycles(8);   
+    
     reg.A = get_mem(IMMEDIATE_16_BIT);
     timer_cycles_passed = 8;
 }
@@ -212,10 +218,7 @@ void invalid_op(){
 
 /*  Load A into memory address given by immediate 16 bits */
  static void LD_memnn_A() { 
-    update_timers(8);
-    update_graphics(8);
-    sound_add_cycles(8);
-    inc_serial_cycles(8);
+    update_all_cycles(8);   
     set_mem(IMMEDIATE_16_BIT, reg.A);
     timer_cycles_passed = 8;
 }
@@ -234,20 +237,14 @@ void invalid_op(){
 
 /* Put A into memory address $FF00+n*/
  static void LDH_n_A() { 
-    update_timers(4);
-    update_graphics(4); 
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);   
     set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);
     timer_cycles_passed = 4;
 }
 
 /* Put memory address $FF00+n into A */
  static void LDH_A_n() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);   
     reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); 
     timer_cycles_passed = 4;
 }
@@ -517,10 +514,7 @@ void invalid_op(){
  static void INC_L(){reg.L = INC_8(reg.L);} 
  static void INC_memHL(){ 
     uint8_t inc = INC_8(get_mem(reg.HL));
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, inc);
     timer_cycles_passed = 4;
 }
@@ -546,10 +540,7 @@ void invalid_op(){
  static void DEC_L(){reg.L = DEC_8(reg.L);} 
  static void DEC_memHL(){ 
     uint8_t dec = DEC_8(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, dec);
     timer_cycles_passed = 4;
 }
@@ -621,15 +612,9 @@ void invalid_op(){
  static void SWAP_L(){reg.L = SWAP_n(reg.L);}
 
  static void SWAP_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = SWAP_n(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -679,7 +664,24 @@ void invalid_op(){
  static void HALT() {halted = 1;}
 
 /*  Halt CPU and LCD until button pressed */
- static void STOP() {stopped = 1;}
+ static void STOP() {
+    stopped = 1;
+
+    /* If in Gameboy Color mode and a speed switch has been prepared
+     *  switch the processor speed and unset bit 0 and set bit 7 if new speed is double
+     *  speed or 0 otherwise in the KEY1 Register */
+    if (cgb && (is_booting || cgb_features)) {
+        int speed = get_mem(KEY1_REG);
+        int switch_speed = speed & BIT_0;
+
+        if (switch_speed) {
+            cgb_speed = !(speed & BIT_7);
+            io_write_override(KEY1_REG - 0xFF00, !(speed & BIT_7) * 0x80);
+            // Actually stopping doesn't make sense, this needs to be double checked though
+            stopped = 0;
+        }
+    }
+}
 
 
 /*  Disable interrupts */
@@ -760,15 +762,9 @@ void invalid_op(){
  static void RLC_L() { reg.L = RLC_N(reg.L);}
 
  static void RLC_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t res = RLC_N(get_mem(reg.HL));
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, res);
 }
 
@@ -796,15 +792,9 @@ void invalid_op(){
  static void RL_L() {reg.L = RL_N(reg.L);}
 
  static void RL_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = RL_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -829,15 +819,9 @@ void invalid_op(){
  static void RRC_L() {reg.L = RRC_N(reg.L);}
 /*  12 cycles */
  static void RRC_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = RRC_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -863,15 +847,9 @@ void invalid_op(){
  static void RR_L() {reg.L = RR_N(reg.L);}
 /*  12 cycles */
  static void RR_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = RR_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -898,15 +876,9 @@ void invalid_op(){
  static void SLA_L() {reg.L = SLA_N(reg.L);}
 /*  12 cycles */
  static void SLA_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = SLA_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -932,15 +904,9 @@ void invalid_op(){
  static void SRA_L() {reg.L = SRA_N(reg.L);}
 /*  12 cycles */
  static void SRA_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = SRA_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -966,15 +932,9 @@ void invalid_op(){
  static void SRL_L() {reg.L = SRL_N(reg.L);}
 /*  16 cycles */
  static void SRL_memHL() {
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = SRL_N(get_mem(reg.HL));
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(reg.HL, result);
 }
 
@@ -1054,59 +1014,35 @@ void invalid_op(){
 
 /*  16 cycles */
  static void BIT_memHL_0() { 
-    update_timers(4); 
-    sound_add_cycles(4);
-    update_graphics(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),0);
 }
  static void BIT_memHL_1() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),1);
 }
  static void BIT_memHL_2() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),2);
 }
  static void BIT_memHL_3() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),3);
 }
  static void BIT_memHL_4() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),4);
 }
  static void BIT_memHL_5() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),5);
 }
  static void BIT_memHL_6() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),6);
 }
  static void BIT_memHL_7() { 
-    update_timers(4); 
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     BIT_b_r(get_mem(reg.HL),7);
 }  
 
@@ -1120,15 +1056,9 @@ void invalid_op(){
 
  static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
 
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = SET_b_r(get_mem(addr), bit);
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(addr, result);
 }
 
@@ -1216,15 +1146,9 @@ void invalid_op(){
 
  static void RES_b_mem(uint16_t addr, uint8_t bit) {
 
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     uint8_t result = RES_b_r(get_mem(addr), bit);
-    update_timers(4);
-    update_graphics(4);
-    sound_add_cycles(4);
-    inc_serial_cycles(4);
+    update_all_cycles(4);
     set_mem(addr, result);
 }
 
@@ -1629,9 +1553,9 @@ void master_interrupts_enable() {
 
 
 void reset_cpu() {
-    /*  Default starting values for normal GB */
-    //TODO A is 0x01 for GB, 0x11 for CGB
-    reg.AF = 0x01B0;
+    cgb_speed = 0;
+    // A is 0x01 for GB, 0x11 for CGB
+    reg.AF = cgb ? 0x11B0 : 0x01B0;
     reg.BC = 0x0013;
     reg.DE = 0x00D8;
     reg.HL = 0x014D;
@@ -1645,12 +1569,12 @@ void reset_cpu() {
 
 
 void print_regs() {
-   // printf("AF:%x-%x\n",reg.A,reg.F);
-   // printf("BC:%x-%x\n",reg.B,reg.C);
-   // printf("DE:%x-%x\n",reg.D,reg.E);
-   // printf("HL:%x-%x\n",reg.H,reg.L);
-   // printf("PC:%x\n",reg.PC);
-   // printf("SP:%x\n",reg.SP);
+    printf("AF:%x-%x\n",reg.A,reg.F);
+    printf("BC:%x-%x\n",reg.B,reg.C);
+    printf("DE:%x-%x\n",reg.D,reg.E);
+    printf("HL:%x-%x\n",reg.H,reg.L);
+    printf("PC:%x\n",reg.PC);
+    printf("SP:%x\n",reg.SP);
 }
 
 /*  Executes the next processor instruction and returns
@@ -1663,8 +1587,8 @@ int exec_opcode(int skip_bug) {
     }
     
     opcode = get_mem(reg.PC); /*  fetch */
-   // dasm_instruction(reg.PC, stdout);
-   //printf("\nOPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
+//    dasm_instruction(reg.PC, stdout);
+  // printf("OPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
     if (skip_bug) {
         reg.PC--;
     }
@@ -1673,21 +1597,17 @@ int exec_opcode(int skip_bug) {
          
         instructions.instruction_set[opcode].operation();
         int cycles = instructions.instruction_set[opcode].cycles;
-        update_timers(cycles - timer_cycles_passed);
-        update_graphics(cycles - timer_cycles_passed);
-        sound_add_cycles(cycles - timer_cycles_passed);
-        inc_serial_cycles(cycles - timer_cycles_passed);
+        update_all_cycles(cycles - timer_cycles_passed);
         timer_cycles_passed = 0;
+
+        //0 here
         return cycles;
 
     } else { /*  extended instruction */
 
         opcode = IMMEDIATE_8_BIT;
         instructions.ext_instruction_set[opcode].operation();  
-        update_timers(8);   
-        update_graphics(8);  
-        sound_add_cycles(8);
-        inc_serial_cycles(8);
+        update_all_cycles(8);
         return instructions.ext_instruction_set[opcode].cycles;
     }
 }

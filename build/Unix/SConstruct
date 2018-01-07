@@ -1,38 +1,73 @@
 import sys
 
 #Release environment
-release_env = Environment(CC = 'clang', 
-                  CCFLAGS = '-O3 -fomit-frame-pointer -W -Wall -Wextra'
-		 )
+release_env = Environment( 
+                CCFLAGS = '-O2 -fomit-frame-pointer -W -Wall -Wextra'
+		    )
 
 #Profile environment
-profile_env = Environment(CC = 'clang',
-		  CCFLAGS = '-pg -O2 -W -Wall -Wextra',
-		  LINKFLAGS = '-pg'
-                 )
+profile_env = Environment(
+		        CCFLAGS = '-pg -O2 -W -Wall -Wextra',
+		        LINKFLAGS = '-pg'
+            )
 
 #Debug environment
-debug_env = Environment(CC = 'clang',
-		  CCFLAGS = '-g -O1 -W -Wall -Wextra'
-		  )
+debug_env = Environment(CCFLAGS = '-g -W -Wall -Wextra')
 
-env = Environment()
+env = release_env
+compiler = 'clang'
+framework = 'SDL2'
 
-debug = ARGUMENTS.get('debug',0)
-prof  = ARGUMENTS.get('prof',0)
+cxxcompiler = 'clang++'
 
-if int(debug):
-	env = debug_env
-elif int(prof):
-	env = profile_env
-else:
-	env = release_env 
+for key, value in ARGLIST:
+    if key == 'cc':
+        if value == 'gcc':
+            compiler = 'gcc -std=c99'
+            cxxcompiler = 'g++'
+        elif value == 'clang':
+            compiler = 'clang'
+            cxxcompiler = 'clang++'
+        else:
+            print("build error expected cc=clang or cc=gcc");
+    
+    elif key == 'mode':
+        if value == 'prof':
+            env = profile_env
+        elif value == 'debug':
+            env = debug_env
+        elif value == 'release':
+            env = release_env
+        else:
+            print("unknown mode, expected either prof, debug, or release")
+    
+    elif key == 'framework':
+        if value == 'SDL':
+            framework = 'SDL'
+        elif value == 'SDL2':
+            framework = 'SDL2'
+        else:
+            printf("Unknown framework, expecting either SDL or SDL2");
+    else:
+        print("Unknown setting:" + key)
 
 
-env.Append(CPPPATH = ['/usr/include/SDL'])
-env.Append(CPPPATH = ['/usr/local/include/SDL'])
-env.Append(LIBS = ['SDL','SDL_net'])
-env.Append(LINKFLAGS = '')
+env.Replace(CC = compiler)
+env.Replace(CXX = cxxcompiler)
+
+if framework == 'SDL':
+    env.Append(LIBPATH = ['/usr/local/lib'])
+    env.Append(LIBS = ['SDL','SDL_net'])
+    env.Append(CPPPATH = ['/usr/include/SDL'])
+    env.Append(CPPPATH = ['/usr/local/include/SDL'])
+    env.Append(CPPPATH = ['/usr/local/include'])
+
+elif framework == 'SDL2':
+    env.Append(LIBPATH = ['/usr/local/lib'])
+    env.Append(LIBS = ['SDL2','SDL2_net'])
+    env.Append(CPPPATH = ['/usr/include/SDL2'])
+    env.Append(CPPPATH = ['/usr/local/include/SDL2'])
+    env.Append(CPPPATH = ['/usr/local/include'])
 
 #SDL for OSX uses Cocoa
 if sys.platform == 'darwin':
@@ -40,13 +75,19 @@ if sys.platform == 'darwin':
 
 sourceObjs = env.Object( Glob('../../src/core/*.c'))\
            + env.Object( Glob('../../src/core/mmu/*.c'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/*.c'))\
+           + env.Object( Glob('../../src/core/audio/*.cpp'))\
            + env.Object( Glob('../../src/platforms/standard/*.c'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
-           + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))
+           + env.Object( Glob('../../src/shared_libs/*.c'))\
 
-#OSX needs to link SDLmain.m to be able to work with SDL
-#if sys.platform == 'darwin':
-#	sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/OSX/*.m'))
+if framework == 'SDL':
+    sourceObjs += env.Object( Glob('../../src/shared_libs/SDL/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL/audio/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL/*.c'))
 
-env.Program('gb_emu',sourceObjs)
+elif framework == 'SDL2':
+    sourceObjs += env.Object( Glob('../../src/shared_libs/SDL2/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL2/audio/*.cpp'))\
+                + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))
+
+
+env.Program('plutoboy',sourceObjs)

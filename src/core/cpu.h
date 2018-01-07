@@ -10,6 +10,9 @@ int stopped;
 /*  Call interrupt handler code */
 void restart(uint8_t addr);
 
+
+void update_all_cycles(long cycles);
+
 /*  Check if master interrupts are enabled */
 int master_interrupts_enabled();
 void master_interrupts_disable();

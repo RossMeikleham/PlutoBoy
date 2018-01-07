@@ -4,33 +4,62 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define ARG_ERR printf("usage ./%s \"game\" [-d] [client/server port]",argv[0]); return 1
+static char *prog_name;
 
-ClientOrServer getConnection(int count, char *argv[]) {
-    if (!strcmp(argv[count],"client")) {return CLIENT;}
-    else if(!strcmp(argv[count], "server")) {return SERVER;}
-    else return NO_CONNECT;
+#define ARG_ERR {printf("usage %s [options] rom_file\n", prog_name);\
+                printf("type %s -help for detailed help\n", prog_name);\
+                exit(0);}
+
+ClientOrServer getConnection(char *arg) {
+    if (!strcmp(arg, "client")) {return CLIENT;}
+    else if(!strcmp(arg, "server")) {return SERVER;}
+    else ARG_ERR;
 }
 
+
+void print_help() {
+    printf("Usage: gb_emu [options] rom_file\n");
+    printf(" -debug \t\t\t start emulator in debug mode\n");
+    printf(" -dmg   \t\t\t run emulator in dot matrix mode instead of color mode\n");
+    printf(" -connect=client/server  \t run emulator as client or server mode for linking\n");
+    printf(" -h     \t\t\t display this help and exit\n");
+    exit(0);
+}
 
 int main(int argc, char* argv[]) {
     
     int debug = 0;
     char *file_name = NULL;
+    int dmg_mode = 0;
     ClientOrServer cs = NO_CONNECT;
+    prog_name = argv[0];   
+    
+    if (argc < 2) {
+        ARG_ERR;
+    }
 
-    switch (argc) {
-      case 4: if ((cs = getConnection(3, argv)) == NO_CONNECT) {ARG_ERR;}
-              
-      case 3: if (argv[2][0] == '-' && argv[2][1] == 'd') {debug = 1;}
-              else if ((cs = getConnection(2, argv)) == NO_CONNECT) {ARG_ERR;}
-                
-      case 2: file_name = argv[1];
-      case 1: if (argc < 2) {ARG_ERR;} break;
-      default: ARG_ERR;
-    } 
+    for (int i = 1; i < argc; i++) {
+        if (strncmp(argv[i], "-", 1) == 0) {
 
-    if (!init(file_name, debug, cs)) {
+            if (strcmp(argv[i], "-debug") == 0) {debug = 1;}
+            else if (strcmp(argv[i], "-dmg") == 0) {dmg_mode = 1;}
+            else if (strcmp(argv[i], "-h") == 0) {print_help();}
+            else if (strncmp(argv[i], "-connect=", strlen("-connect=")) == 0) {
+                cs = getConnection(argv[i] + strlen("-connect"));
+                if (cs == NO_CONNECT) {
+                    ARG_ERR;
+                }
+            }
+            else {ARG_ERR;}
+
+        } else if(i != argc - 1) {
+            ARG_ERR;
+        }
+    }
+
+    file_name = argv[argc - 1];
+
+    if (!init_emu(file_name, debug, dmg_mode, cs)) {
         return 1;
     }
         

@@ -40,9 +40,10 @@ int get_gb_file(char *file_name) {
 	b.cur_i = 0;
 	b.max_col = 10;
     int file_selected = 0;
+    int dmg = 0; // DMG mode activated
 
 	while(active == 1) {
-
+        
 		char str[255];
 		SDL_FillRect(front, 0,0);
 		SDL_BlitSurface(bg, 0, front, 0);
@@ -50,6 +51,7 @@ int get_gb_file(char *file_name) {
 		sprintf(str, "Index: %d Total: %d", b.cur_i+1, b.length);
 		SDL_PrintText(front, the_font, 420,10, SDL_MapRGB(front->format, 255, 255, 255), str);
 		if(SDL_PollEvent(&e)) {
+            dmg = (e.type == 1);
 			switch(e.type) {
 				case SDL_QUIT:
 					active = 0;
@@ -65,8 +67,7 @@ int get_gb_file(char *file_name) {
 							if(b.cur_i+1 < b.length)
 								b.cur_i++;
 							break;
-						case 7:// move left
-							if(b.cur_i+1-b.max_col > 0)
+						case 7:// move left if(b.cur_i+1-b.max_col > 0)
 								b.cur_i -= b.max_col;
 							break;
 						case 9://move right
@@ -115,5 +116,5 @@ int get_gb_file(char *file_name) {
 	SDL_JoystickClose(stick);
 	SDL_Quit();
 
-	return file_selected;
+	return dmg;
 }

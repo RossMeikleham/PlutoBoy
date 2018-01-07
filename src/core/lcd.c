@@ -1,142 +1,285 @@
 #include "lcd.h"
 #include "timers.h"
 #include "mmu/memory.h"
+#include "mmu/hdma.h"
 #include "memory_layout.h"
 #include "interrupts.h"
 #include "graphics.h"
 #include "bits.h"
+#include "rom_info.h"
 #include <stdint.h>
 
 
 #define MAX_SL_CYCLES 456
 
 static long current_cycles = 0;
-static int screen_off = 1; //Stores whether screen is on or off
-static int current_lcd_mode;
-static int current_lcd_stat = 0;
-int frame_drawn = 0;
+static long current_aux_cycles = 0;
+static long screen_enable_delay_cycles = 0;
+static int screen_off = 0; //Stores whether screen is on or off
+static int current_lcd_mode = 1;
+static uint8_t stat_interrupt_signal = 0;
+static uint8_t ly_counter = 144; 
+static uint8_t hide_frames = 0;
+static uint8_t window_line = 0;
+static uint8_t vblank_line = 0;
+static uint8_t scanline_transferred = 0;
+
+int screen_enabled() {
+    return !screen_off;
+}
+
+void reset_window_line() {
+    uint8_t win_y = get_mem(WY_REG);
+    if ((window_line == 0) && (ly_counter < 144) && (ly_counter > win_y)) {
+        window_line = 144;
+    }
+}
+
+void enable_screen() {
+    if (screen_off) {
+        screen_enable_delay_cycles = 244;
+    }
+}
+
+
+void disable_screen() {
+    screen_off = 1;
+    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), 0);
+    uint8_t stat = get_mem(STAT_REG);
+    stat &= 0x7C;
+    io_write_override(GLOBAL_TO_IO_ADDR(STAT_REG), stat);
+    current_lcd_mode = 0;
+    current_cycles = 0;
+    current_aux_cycles = 0;
+    ly_counter = 0;
+    stat_interrupt_signal = 0;
+}
+
+uint8_t get_interrupt_signal() {
+    return stat_interrupt_signal;
+}
+
+void set_interrupt_signal(uint8_t s) {
+    stat_interrupt_signal = s;
+}
+
+int get_lcd_mode() {
+    return current_lcd_mode;
+}
+
+int lcd_hblank_mode() {
+    return current_lcd_mode == 0;
+}
 
 static void update_stat() {
-
-    current_lcd_stat = (get_mem(STAT_REG) & (~7)) | (current_lcd_stat & 0x7);
+    io_write_override(STAT_REG - 0xFF00, (get_mem(STAT_REG) & 0xFC) | (current_lcd_mode & 0x3)); 
 }
 
 /* Given lcd_stat returns the new lcd_stat with the coincidence bit
  * set if there is a coincidence, unset if there isn't. Also
  * if there is a coincidence and coincidence flag is set
  * then a lcd interrupt is raised */
-static uint8_t check_lcd_coincidence(uint8_t const lcd_stat) {
+void check_lcd_coincidence() {
    
-    int coincidence = (get_mem(LY_REG) == get_mem(LYC_REG));
-    
-    // Check interrupt flag is enabled for coincidence interrupt
-    // as well as an actual coincidence
-    if (coincidence && (lcd_stat & BIT_6)) {
-        raise_interrupt(LCD_INT);
+    if (!screen_off) {   
+        uint8_t stat = get_mem(STAT_REG);
+        
+        // Check we have a "coincidence" i.e. lyc == ly        
+        if (get_mem(LYC_REG) == ly_counter) {
+            stat |= BIT_2;
+             // Check interrupt flag is enabled for a coincidence interrupt
+            if (stat & BIT_6) {
+                if (!stat_interrupt_signal) {
+                    raise_interrupt(LCD_INT);
+                }
+                stat_interrupt_signal |= BIT_3;  
+            } 
+        } else {
+            stat &= ~BIT_2;
+            stat_interrupt_signal &= ~BIT_3;
+        }
+
+        io_write_override(STAT_REG - 0xFF00, stat);
     }
-    // Set/Unset the coincidence bit in lcd_stat
-    return (lcd_stat & (~0x4)) |  (coincidence << 2);
 }
 
 
-/*  Increment the Y Line Counter. If LY increments from 143
- *  to 144 it raises a V-Blank interrupt. LY resets after
- *  incrementing from 153. */
-static void inc_ly() {
 
-    uint8_t ly = get_mem(LY_REG);
-    ly = (ly + 1) % 154; //0 <= ly <= 153
-    if (ly == 144) {
-        raise_interrupt(VBLANK_INT);
-        output_screen();
-        frame_drawn = 1;
-    } else {
-        frame_drawn = 0;
-    }
+/* Update the LCD with given number of clock cycles */
+static long update_lcd(long cycles) {
       
-   //Directly write ly into memory bypassing reset
-   io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly);
-}   
-
-
-/* Update the turned on LCD given the number of cycles, and the current lcd
- *status and control registers */
-static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
-    #define MODE2_CYCLES 80 // Mode 2 lasts from 0 -> 80 cycles
-    #define MODE3_CYCLES 172 // Mode 3 lasts from  80 -> (172 + 80) cycles
-    #define SET_LCD_MODE(x) (lcd_stat & (0xFF - 0x3)) | x
-               
-    static int HBlank_entry = 0;
-    uint8_t new_lcd_mode = current_lcd_mode;
-    
     current_cycles += cycles;
+    int vblank = 0;
+    if (!screen_off) {
 
     switch (current_lcd_mode) {
         case 0 : // H-Blank 
-                if (HBlank_entry) { // Entering H-Blank
-                    HBlank_entry = 0;  
-                    draw_row();
-                }
+
                 //Can either change from H-Blank to mode 2 or
                 //V-Blank when moving to next scanline
-                if (current_cycles >= MAX_SL_CYCLES) {
-                    current_cycles -= MAX_SL_CYCLES;
-                    new_lcd_mode = 2;
-                    inc_ly();
-                    lcd_stat = check_lcd_coincidence(lcd_stat); 
-                    // H-Blank to V-Blank, change to mode 2
-                    if (get_mem(LY_REG) == 144) {
-                        new_lcd_mode = 1;
+                if (current_cycles >= 204) {
+                    current_cycles -= 204;
+                    current_lcd_mode = 2;
+                    ly_counter++;
+                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                    check_lcd_coincidence(); 
+
+                    // Check if HDMA transfer needs to take place in CGB mode
+                    if (cgb && (is_booting || cgb_features) && hdma_in_progress && (!halted ||
+                        interrupt_about_to_raise())) {
+                        long hdma_cycles = perform_hdma();
+                        current_cycles += hdma_cycles;
+                        cycles += hdma_cycles;
+
                     }
-                }
-                break;
+
+                    // H-Blank to V-Blank, change to mode 2
+                    // and raise a VBLANK interrupt
+                    if (get_mem(LY_REG) == 144) {
+                        current_lcd_mode = 1;
+                        vblank_line = 0;
+                        current_aux_cycles = current_cycles;
+                        raise_interrupt(VBLANK_INT);
+                        
+                        stat_interrupt_signal &= 0x9;
+                        uint8_t stat = get_mem(STAT_REG);
+                        if (stat & BIT_4) {
+                            if (!((stat_interrupt_signal & BIT_0) || 
+                                  (stat_interrupt_signal & BIT_3))) {
+                                raise_interrupt(LCD_INT);
+                            }
+                            stat_interrupt_signal |= BIT_1;
+                        }
+                        stat_interrupt_signal &= 0x0E;
+
+                        if (hide_frames > 0) {
+                            hide_frames--;
+                        } else {
+                            vblank = 1;
+                        }
+
+                        window_line = 0;
+
+                    } else {
+                        stat_interrupt_signal &= 0x9;
+                        uint8_t stat = get_mem(STAT_REG);
+                        if (stat & BIT_5) {
+                            if (stat_interrupt_signal == 0) {
+                                raise_interrupt(LCD_INT);
+                            }
+                            stat_interrupt_signal |= BIT_2;
+                        }
+                        stat_interrupt_signal &= 0xE;                
+                    }
+
+                    update_stat();
+                 }
+                 break;
 
         case 1 : // V-Blank
-                HBlank_entry = 1;
-                //Disabling LCD can only happen during V-Blank
-                if (!(lcd_ctrl & BIT_7)) { 
-                    screen_off = 1;
-                    set_mem(LY_REG, 0); //Reset LY by writing to it
-                    lcd_stat = check_lcd_coincidence(lcd_stat);
-                    new_lcd_mode = 0;
-                } 
                 
-                else if (current_cycles >= MAX_SL_CYCLES) {
-                    current_cycles -= MAX_SL_CYCLES;
-                    inc_ly();
-                    lcd_stat = check_lcd_coincidence(lcd_stat); 
-                    
-                    if (get_mem(LY_REG) == 0) { //V-Blank over
-                        new_lcd_mode = 2;
-                        //lcd_stat = check_lcd_coincidence(lcd_stat);
+                current_aux_cycles += cycles;
+                if (current_aux_cycles >= 456) {
+                    current_aux_cycles -= 456;
+                    vblank_line++;
+                    if (vblank_line <= 9) {
+                        ly_counter++;
+                        io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                        check_lcd_coincidence(); 
                     }
                 }
+                
+                // LY resets after 153
+                if ((current_cycles >= 4104) && (current_aux_cycles >= 4) && (ly_counter == 153)) {
+                    ly_counter = 0;
+                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                }
+
+                if (current_cycles >= 4560) {
+                    current_cycles -= 4560;
+                    current_lcd_mode = 2;
+                    update_stat();
+                    stat_interrupt_signal &= 0x7;
+                    check_lcd_coincidence();
+                    stat_interrupt_signal &= 0xA;
+                    uint8_t stat = get_mem(STAT_REG);
+                    if (stat & BIT_5) {
+                        if (stat_interrupt_signal == 0) {
+                            raise_interrupt(LCD_INT);
+                        } 
+                        stat_interrupt_signal |= BIT_2;
+                    }
+                    stat_interrupt_signal &= 0xD;
+                } 
                 break;
+
        case 2: // OAM read
-                HBlank_entry = 1;
-                if (current_cycles >= MODE2_CYCLES) { 
-                    new_lcd_mode = 3;
+                if (current_cycles >= 80) { 
+                    current_cycles -= 80;
+                    current_lcd_mode = 3;
+                    scanline_transferred = 0;
+                    stat_interrupt_signal &= 0x8;
+                    update_stat();
                 }
                 break;
 
       case 3: 
-                HBlank_entry = 1;
-                if (current_cycles >= 252) {//MODE2_CYCLES + MODE3_CYCLES) {
-                    new_lcd_mode = 0;    
+                
+                // Data to LCD driver transfer
+                if (!scanline_transferred && (current_cycles >= (ly_counter == 0 ? 160 : 48))) {                    
+                    scanline_transferred = 1;
+                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                    draw_row();        
+                }                
+
+                if (current_cycles >= 172) {
+                    current_cycles -= 172;
+                    current_lcd_mode = 0;
+                    update_stat();
+
+                    stat_interrupt_signal &= 0x8;
+                    uint8_t stat = get_mem(STAT_REG);
+
+                    if (stat & BIT_3) {
+                        if (!(stat_interrupt_signal & BIT_3)) {
+                            raise_interrupt(LCD_INT);
+                        }
+                        stat_interrupt_signal |= BIT_0;
+                    }
+
                 }
+                break;
+    }
+    // Screen off
+    } else {
+        if (screen_enable_delay_cycles > 0) {
+            screen_enable_delay_cycles -= cycles;
+
+            if (screen_enable_delay_cycles <= 0) {
+                screen_enable_delay_cycles = 0;
+                screen_off = 0;
+                hide_frames = 3;
+                current_lcd_mode = 0;
+                current_cycles = 0;
+                current_aux_cycles = 0;
+                ly_counter = 0;
+                window_line = 0;
+                vblank_line = 0;
+                io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                stat_interrupt_signal = 0;
+
+                uint8_t stat = get_mem(STAT_REG);
+                if (stat & BIT_5) {
+                    raise_interrupt(LCD_INT);
+                    stat_interrupt_signal |= BIT_2;
+                }
+                check_lcd_coincidence();
+
+            }
+        }    
     }
 
-    // Check if LCD interrupt needs to be raised from mode change
-    if (new_lcd_mode != 3 && (current_lcd_mode != new_lcd_mode)) {
-       
-        if (lcd_stat & (1 << (new_lcd_mode + 3))) { //Check interrupt bit set
-            raise_interrupt(LCD_INT);
-        }
-    }
-    lcd_stat = SET_LCD_MODE(new_lcd_mode);
-    set_mem(STAT_REG, lcd_stat);
-    current_lcd_stat = lcd_stat;
-    current_lcd_mode = new_lcd_mode;
+    return cycles;
 }
 
 
@@ -145,22 +288,7 @@ static void update_on_lcd(uint8_t lcd_stat, uint8_t lcd_ctrl, long cycles) {
  * modes, registers and if a Vertical Blank occurs redisplays
  * the screen. Returns 1 if an entire frame has finished drawing,
  * 0 otherwise. */
-void update_graphics(long cycles) {
+long update_graphics(long cycles) {
   
-    update_stat();
-    uint8_t lcd_stat = current_lcd_stat;
-    uint8_t lcd_ctrl = get_mem(LCDC_REG);
-
-    // Turning screen from off to on
-    if (screen_off && (lcd_ctrl & BIT_7))  {
-        screen_off = 0;
-        current_lcd_mode = 2;
-        lcd_stat = (lcd_stat & (~3)) +  2; // Mode 2
-        current_cycles = 4;
-        update_timers(current_cycles);
-    } 
-
-    if (!screen_off) {
-        update_on_lcd(lcd_stat, lcd_ctrl, cycles);
-    } 
+    return update_lcd(cycles);
 }  

@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\core\cpu.c" />
+    <ClCompile Include="..\..\..\..\src\core\disasm.c" />
+    <ClCompile Include="..\..\..\..\src\core\emu.c" />
+    <ClCompile Include="..\..\..\..\src\core\graphics.c" />
+    <ClCompile Include="..\..\..\..\src\core\interrupts.c" />
+    <ClCompile Include="..\..\..\..\src\core\lcd.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\hdma.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\mbc.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\mbc0.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\mbc1.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\mbc3.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\mbc5.c" />
+    <ClCompile Include="..\..\..\..\src\core\mmu\memory.c" />
+    <ClCompile Include="..\..\..\..\src\core\rom_info.c" />
+    <ClCompile Include="..\..\..\..\src\core\serial_io.c" />
+    <ClCompile Include="..\..\..\..\src\core\sprite_priorities.c" />
+    <ClCompile Include="..\..\..\..\src\core\timers.c" />
+    <ClCompile Include="..\..\..\..\src\platforms\standard\debugger.c" />
+    <ClCompile Include="..\..\..\..\src\platforms\standard\files.c" />
+    <ClCompile Include="..\..\..\..\src\platforms\standard\logger.c" />
+    <ClCompile Include="..\..\..\..\src\platforms\standard\main.c" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Blip_Buffer.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Effects_Buffer.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Gb_Apu.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Gb_Apu_State.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Gb_Oscs.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Multi_Buffer.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\audio\Sound_Queue.cpp" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\framerate_SDL.c" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\graphics_SDL.c" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\joypad_SDL.c" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\serial_io_SDL.c" />
+    <ClCompile Include="..\..\..\..\src\shared_libs\SDL\sound_SDL.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\core\bits.h" />
+    <ClInclude Include="..\..\..\..\src\core\cpu.h" />
+    <ClInclude Include="..\..\..\..\src\core\disasm.h" />
+    <ClInclude Include="..\..\..\..\src\core\emu.h" />
+    <ClInclude Include="..\..\..\..\src\core\graphics.h" />
+    <ClInclude Include="..\..\..\..\src\core\interrupts.h" />
+    <ClInclude Include="..\..\..\..\src\core\lcd.h" />
+    <ClInclude Include="..\..\..\..\src\core\memory_layout.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\hdma.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\mbc.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\mbc0.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\mbc1.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\mbc3.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\mbc5.h" />
+    <ClInclude Include="..\..\..\..\src\core\mmu\memory.h" />
+    <ClInclude Include="..\..\..\..\src\core\rom_info.h" />
+    <ClInclude Include="..\..\..\..\src\core\serial_io.h" />
+    <ClInclude Include="..\..\..\..\src\core\sound.h" />
+    <ClInclude Include="..\..\..\..\src\core\sprite_priorities.h" />
+    <ClInclude Include="..\..\..\..\src\core\timers.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\debugger.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\files.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\framerate.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\graphics_out.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\joypad.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\logger.h" />
+    <ClInclude Include="..\..\..\..\src\non_core\serial_io_transfer.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\blargg_common.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\blargg_config.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\blargg_source.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Blip_Buffer.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Blip_Synth.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Effects_Buffer.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Gb_Apu.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Gb_Oscs.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Multi_Buffer.h" />
+    <ClInclude Include="..\..\..\..\src\shared_libs\SDL\audio\Sound_Queue.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{34523D4B-E868-419D-BD36-CFE3C79E6BC8}</ProjectGuid>
+    <RootNamespace>Windows</RootNamespace>
+    <ProjectName>GB Emu</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>C:\Users\Ross\Desktop\GameBoyEmulator\src\platforms\standard\Windows\Windows\SDL-1.2.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Ross\Desktop\GameBoyEmulator\src\platforms\standard\Windows\Windows\SDL-1.2.15\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>C:\Users\Ross\Downloads\SDL2_net-2.0.0\include;C:\Users\Ross\Projects\plutoboy\build\Windows\scons\SDL-1.2.15\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Ross\Downloads\SDL2_net-2.0.0\lib\x86;C:\Users\Ross\Projects\plutoboy\build\Windows\scons\SDL-1.2.15\lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <CompileAs>CompileAsC</CompileAs>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <StackReserveSize>50000000</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <OmitFramePointers>true</OmitFramePointers>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>SDL2_net.lib;SDL.lib;SDLmain.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>20000000</StackReserveSize>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
