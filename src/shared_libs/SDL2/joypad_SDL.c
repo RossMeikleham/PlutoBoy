@@ -322,7 +322,7 @@ void update_keys() {
                 case SDL_FINGERDOWN:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
                     break;
-      a          
+                
                 case SDL_FINGERUP:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 0);
                     break;
