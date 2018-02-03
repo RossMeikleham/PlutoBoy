@@ -317,11 +317,12 @@ void update_keys() {
                     }
                 break;
 
-#endif           
+#endif
+#ifndef PSVITA          
                 case SDL_FINGERDOWN:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
                     break;
-                
+      a          
                 case SDL_FINGERUP:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 0);
                     break;
@@ -333,6 +334,7 @@ void update_keys() {
                     check_keys_moved(event.tfinger.x, event.tfinger.y,
                                      event.tfinger.dx, event.tfinger.dy);
                     break;
+#endif
             }                   
         }
 }
