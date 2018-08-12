@@ -10,7 +10,11 @@
 #define MAC_OS_X_VERSION_MIN_REQUIRED MAC_OS_X_VERSION_10_5
 #endif
 
+#if defined THREE_DS
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 
 // Simple SDL sound wrapper that has a synchronous interface
 class Sound_Queue {

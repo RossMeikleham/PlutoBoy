@@ -3,6 +3,7 @@
 #include "hdma.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "../memory_layout.h"
 #include "../rom_info.h"
@@ -134,6 +135,9 @@ static uint8_t bg_palette_mem[0x40] =
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
   0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F};           
 */
+
+
+bool palette_dirty = true;
 
 static uint8_t bg_palette_mem[0x40] = {
      0xFF, 0x7F, 0xBF, 0x03, 0x1F, 0x00, 0x00, 0x00,
@@ -416,6 +420,9 @@ int load_rom(char const *filename, unsigned char *file_data, size_t size, int co
     return 1;
 } 
 
+uint8_t *get_bg_palette() {
+    return bg_palette_mem;
+}
 
 /* Write to OAM given OAM address 0x0 - 0xA0
  * Does nothing if address > 0xA0 */
@@ -440,7 +447,7 @@ static void oam_set_mem(uint8_t addr, uint8_t val) {
 
 /* Read from OAM given OAM address 0 - A0
  * Returns 0x0 if address > 0xA0 */
-static uint8_t oam_get_mem(uint8_t addr) {
+uint8_t oam_get_mem(uint8_t addr) {
     //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
     return (addr < 0xA0) ? oam_mem[addr] : 0;
 }
@@ -487,7 +494,7 @@ static void joypad_write(uint8_t joypad_state) {
     io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
 }
 
-static uint8_t io_read_mem(uint8_t addr) {
+uint8_t io_read_mem(uint8_t addr) {
     switch (addr + 0xFF00) {
         case LY_REG:
             return screen_enabled() ? io_mem[addr] : 0x00; 
@@ -671,7 +678,9 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         uint8_t bgpi = io_read_mem(BGPI - 0xFF00);
                        // uint8_t address = bgpi & 0x3F
                        // uint8_t index = bgpi & 0x3F;
+                        int old_palette_mem = bg_palette_mem[bgpi & 0x3F];
                         bg_palette_mem[bgpi & 0x3F] = val;
+                        palette_dirty |= (old_palette_mem != val);
 
                         /* Check if Auto Increment bit is set in Background Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */

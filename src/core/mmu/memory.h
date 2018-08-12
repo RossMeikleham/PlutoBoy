@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
+extern bool palette_dirty;
 
 // 1 if gameboy is booting up, 0 otherwise
 int is_booting; 
@@ -25,6 +27,10 @@ uint8_t get_vram(uint16_t addr, int bank);
 uint8_t get_vram0(uint16_t addr);
 
 uint8_t get_vram1(uint16_t addr);
+
+uint8_t oam_get_mem(uint8_t addr);
+
+uint8_t io_read_mem(uint8_t addr);
 
 // Read contents from given 16 bit memory address
 uint8_t get_mem(uint16_t addr);
@@ -49,6 +55,8 @@ int load_rom(char const * filename, unsigned char *file_data, size_t size,
 
 // read a value from gameboy color background palette RAM
 uint8_t read_bg_color_palette(int addr);
+
+uint8_t *get_bg_palette();
 
 // Read a vlue from gameboy color sprite palette RAM
 uint8_t read_sprite_color_palette(int addr);

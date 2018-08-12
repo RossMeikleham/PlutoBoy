@@ -1,4 +1,8 @@
+#ifdef THREE_DS
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include "stdlib.h"
@@ -103,7 +107,7 @@ void adjust_to_framerate() {
     // sleep might go over the time we want to wait
     // so attempt to come out of sleep early and use 
     // cpu cycles to wait for the rest of the time
-    if (framerate_ticks < 1000000) {        
+    /*if (framerate_ticks < 1000000) {        
 	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
 	if (delay_time >= 5000) {
 		//casting uint64_t into uint32_t, not really safe
@@ -114,14 +118,13 @@ void adjust_to_framerate() {
   		;;
 	
     } 
-   
+   */
     current_ticks = get_timestamp_micro();
-    
     count = (count + 1) % 60;
     if (count == 0) {
 	//printf("speed %u\n", current_ticks - last_ticks);
         float fps = 1000000.0 / (current_ticks - last_ticks);
-        sprintf(title_buf, "Gameboy fps:%.2f",fps);
+        printf("Gameboy fps:%.2f\n",fps);
         SDL_WM_SetCaption(title_buf,"");
     }
     last_ticks = current_ticks;
