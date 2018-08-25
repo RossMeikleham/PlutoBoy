@@ -23,8 +23,10 @@
   
 static uint8_t mem[0xDFFF - 0x8000];
 
+uint8_t *oam_mem_ptr;
+
 // OAM Ram 0xFE00 - 0xFE9F
-static uint8_t oam_mem[0xA0] = {
+uint8_t oam_mem[0xA0] = {
     0xBB, 0xD8, 0xC4, 0x04, 0xCD, 0xAC, 0xA1, 0xC7,
     0x7D, 0x85, 0x15, 0xF0, 0xAD, 0x19, 0x11, 0x6A,
     0xBA, 0xC7, 0x76, 0xF8, 0x5C, 0xA0, 0x67, 0x0A,
@@ -104,7 +106,7 @@ static uint8_t io_mem_cgb[0x100] = {
 };
 
 
-static uint8_t *io_mem;
+uint8_t *io_mem;
 
 /* Gameboy colour has 8 internal RAM banks, bank 0 is from 0xC000 - 0xCFFF and is
  * fixed in both color gameboy and original gameboy. Banks 1-7 are switchable in 0xD000 - 0xDFFF in 
@@ -123,22 +125,7 @@ static uint8_t vram_bank_1[0x2000];
 
 /* 64 Bytes of background palette memory (Gameboy Color only)
  * Holds 8 different background palettes, each with 4 colors.
- * Each color is represented by 2 bytes, initially set to white */
-/*  
-static uint8_t bg_palette_mem[0x40] = 
- {0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F,           
-  0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F, 0xFF, 0x7F};           
-*/
-
-
-bool palette_dirty = true;
-
+ * Each color is represented by 2 bytes, */
 static uint8_t bg_palette_mem[0x40] = {
      0xFF, 0x7F, 0xBF, 0x03, 0x1F, 0x00, 0x00, 0x00,
      0xFF, 0x7F, 0x80, 0x69, 0x1F, 0x00, 0x00, 0x00,
@@ -147,6 +134,7 @@ static uint8_t bg_palette_mem[0x40] = {
      0xFF, 0x7F, 0x94, 0x7E, 0x80, 0x69, 0x00, 0x00,
      0xFF, 0x7F, 0xF7, 0x63, 0x80, 0x69, 0x00, 0x00,
      0xC0, 0x00, 0xC0, 0x00, 0xC0, 0x00, 0xC0, 0x00};
+bool bg_palette_dirty = true;
   
     
 /* 64 Bytes of background palette memory (Gameboy Color only)
@@ -154,6 +142,7 @@ static uint8_t bg_palette_mem[0x40] = {
  * (color 0 is always transparent)
  * Each color is represented by 2 bytes */
 static uint8_t sprite_palette_mem[0x40];
+bool sprite_palette_dirty = true;
 
 
 /*  Gameboy bootstrap ROM for startup.
@@ -386,6 +375,8 @@ void check_mmm01_format(unsigned char *file_data, size_t size) {
 
 int load_rom(char const *filename, unsigned char *file_data, size_t size, int const dmg_mode) {
 
+    oam_mem_ptr = oam_mem;
+
     /* Check the file length given to us is long enough
      * to obtain what the size of the file should be */   
     if (size < CARTRIDGE_ROM_SIZE + 1) {
@@ -424,6 +415,10 @@ uint8_t *get_bg_palette() {
     return bg_palette_mem;
 }
 
+uint8_t *get_sprite_palette() {
+    return sprite_palette_mem;
+}
+
 /* Write to OAM given OAM address 0x0 - 0xA0
  * Does nothing if address > 0xA0 */
 static void oam_set_mem(uint8_t addr, uint8_t val) {
@@ -443,17 +438,6 @@ static void oam_set_mem(uint8_t addr, uint8_t val) {
         }
     }
 }
-
-
-/* Read from OAM given OAM address 0 - A0
- * Returns 0x0 if address > 0xA0 */
-uint8_t oam_get_mem(uint8_t addr) {
-    //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
-    return (addr < 0xA0) ? oam_mem[addr] : 0;
-}
-
-
-
 
 /* Transfer 160 bytes to sprite memory starting from
  * address XX00 */
@@ -491,40 +475,19 @@ static void joypad_write(uint8_t joypad_state) {
         raise_interrupt(JOYPAD_INT);
     }
 
-    io_mem[GLOBAL_TO_IO_ADDR(P1_REG)] = joypad_state;
-}
-
-uint8_t io_read_mem(uint8_t addr) {
-    switch (addr + 0xFF00) {
-        case LY_REG:
-            return screen_enabled() ? io_mem[addr] : 0x00; 
-
-        case BGPI:
-        case SPPI:
-            return ((cgb && (is_booting || cgb_features)) ? 
-                io_mem[addr] : 0xC0);
-
-       case BGPD:
-       case SPPD:
-            return ((cgb && (is_booting || cgb_features)) ?
-                io_mem[addr] : 0xFF);
-
-       default:
-            return io_mem[addr];
-    }
+    io_mem[P1_REG] = joypad_state;
 }
 
 /* Write to IO memory given address 0 - 0xFF */
-static void io_write_mem(uint8_t addr, uint8_t val) {
+void io_write_mem(uint8_t addr, uint8_t val) {
 
-    uint16_t global_addr = addr + 0xFF00;
-    if (global_addr >= 0xFF10 && global_addr <= 0xFF3F) {
+    if (addr >= 0x10 && addr <= 0x3F) {
         io_mem[addr] = val;
-        write_apu(global_addr, val); 
+        write_apu(addr + 0xFF00, val); 
         return;
     }
 
-    switch (global_addr) {
+    switch (addr) {
         /* Check Joypad values */
         case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
         /*  Attempting to set DIV reg resets it to 0 */
@@ -549,7 +512,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             uint8_t current_stat = io_mem[addr] & 0x7;
             uint8_t new_stat = (val & 0x78) | (current_stat & 0x7);
             io_mem[addr] = new_stat;
-            uint8_t lcdc = io_mem[LCDC_REG - 0xFF00];
+            uint8_t lcdc = io_mem[LCDC_REG];
             uint8_t lcd_interrupt_signal = get_interrupt_signal();
             uint8_t mode = get_lcd_mode();
             lcd_interrupt_signal &= ((new_stat >> 3) & 0x0F);
@@ -580,7 +543,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         }
 
         case LY_REG : {
-            uint8_t ly = io_mem[LY_REG - 0xFF00];
+            uint8_t ly = io_mem[LY_REG];
             if ((ly & BIT_7) && !(val & BIT_7)) {
                 disable_screen();
             }
@@ -591,7 +554,7 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             uint8_t current_lyc = io_mem[addr];
             if (current_lyc != val) {
                 io_mem[addr] = val;
-                uint8_t lcdc = io_mem[LCDC_REG - 0xFF00];
+                uint8_t lcdc = io_mem[LCDC_REG];
                 if (lcdc & BIT_7) {
                     check_lcd_coincidence();
                 }
@@ -666,7 +629,9 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
         case BGPI : 
                     io_mem[addr] = val;
                     if (cgb && (cgb_features || is_booting)) {
-                        io_mem[BGPD - 0xFF00] = bg_palette_mem[val & 0x3F];
+                        io_mem[BGPD] = bg_palette_mem[val & 0x3F];
+                    } else {
+                        io_mem[BGPD] = 0xC0;
                     }
                     break;
 
@@ -675,12 +640,12 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Write data to Gameboy background palette.
                          * Use the Background Palette Index to select the location
                          * to write the value to in Background Palette memory */
-                        uint8_t bgpi = io_read_mem(BGPI - 0xFF00);
+                        uint8_t bgpi = io_mem[BGPI];
                        // uint8_t address = bgpi & 0x3F
                        // uint8_t index = bgpi & 0x3F;
                         int old_palette_mem = bg_palette_mem[bgpi & 0x3F];
                         bg_palette_mem[bgpi & 0x3F] = val;
-                        palette_dirty |= (old_palette_mem != val);
+                        bg_palette_dirty |= (old_palette_mem != val);
 
                         /* Check if Auto Increment bit is set in Background Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
@@ -689,19 +654,21 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                             address++;
                             address &= 0x3F;
                             bgpi = (bgpi & 0x80) | address;
-                            io_mem[BGPI - 0xFF00] = bgpi;
-                            io_mem[SPPD - 0xFF00] = bg_palette_mem[bgpi & 0x3F];
+                            io_mem[BGPI] = bgpi;
+                            io_mem[SPPD] = bg_palette_mem[bgpi & 0x3F];
                         } 
 
                     } else {
-                        io_mem[addr] = 0;
+                        io_mem[addr] = 0xFF;
                     }
                     break;
 
         case SPPI : 
                     io_mem[addr] = val;
                     if (cgb && (cgb_features || is_booting)) {
-                        io_mem[SPPD - 0xFF00] = sprite_palette_mem[val & 0x3F];
+                        io_mem[SPPD] = sprite_palette_mem[val & 0x3F];
+                    } else {
+                        io_mem[BGPD] = 0xC0;
                     }
                     break;
         
@@ -710,9 +677,11 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                         /* Write data to Gameboy sprite palette.
                          * Use the Sprite Palette Index to select the location
                          * to write the value to in Sprite Palette memory */
-                        uint8_t sppi = io_read_mem(SPPI - 0xFF00);
+                        uint8_t sppi = io_mem[SPPI];
+                        uint8_t old_val = sprite_palette_mem[sppi & 0x3F];
                         sprite_palette_mem[sppi & 0x3F] = val;
-
+                        sprite_palette_dirty |= (old_val != val);
+                        
                         /* Check if Auto Increment bit is set in Sprite Palette Index,
                            and increment the index if so. Index is between 0x0 and 0x3F */
                         if (sppi & 0x80) {
@@ -720,13 +689,13 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
                             address++;
                             address &= 0x3F;
                             sppi = (sppi & 0x80) | address;
-                            io_mem[SPPI - 0xFF00] = sppi;
-                            io_mem[SPPD - 0xFF00] = sprite_palette_mem[sppi & 0x3F];
+                            io_mem[SPPI] = sppi;
+                            io_mem[SPPD] = sprite_palette_mem[sppi & 0x3F];
                         } 
 
 
                     } else {
-                        io_mem[SPPD - 0xFF00] = 0;
+                        io_mem[SPPD] = 0xFF;
                     }
                     break;
 
@@ -741,31 +710,35 @@ static void io_write_mem(uint8_t addr, uint8_t val) {
             break;
 
         // Can only set bit 0 to Prepare for a speed change
-        case 0xFF4D: if (cgb && (cgb_features || is_booting)) {
+        case 0x4D: if (cgb && (cgb_features || is_booting)) {
             io_mem[addr] = ((io_mem[addr] & 0x80) | (val & 0x1));
         }
         break;
 
         // Undocumented Registers
-        case 0xFF6C:
+        case 0x6C:
             io_mem[addr] = (cgb && (is_booting || cgb_features)) ? val & 0x1 : cgb ? 0xFF : val;
             break;
 
-        case 0xFF74:
+        case 0x74:
             io_mem[addr] = (cgb && !(is_booting || cgb_features)) ? 0xFF : val;
             break;
 
-        case 0xFF75:
+        case 0x75:
             // Bits 4-6 Readable/Writeable
             io_mem[addr] = cgb ? val & 0x60 : val;
             break;
 
-        case 0xFF76:
+        case 0x76:
             io_mem[addr] = cgb ? 0 : val;
             break;
 
-        case 0xFF77:
+        case 0x77:
             io_mem[addr] = cgb ? 0 : val;
+            break;
+
+        case BOOT_ROM_DISABLE: 
+            is_booting = 0;
             break;
 
        default:
@@ -790,7 +763,7 @@ void io_write_override(uint8_t addr, uint8_t val) {
 
 /*  Write an 8 bit value to the given 16 bit address */
 void set_mem(uint16_t addr, uint8_t const val) {
-    
+  
     //Check if memory bank controller chip is being accessed 
     if (addr < 0x8000 || ((uint16_t)(addr - 0xA000) < 0x2000)) {
         write_MBC(addr, val); 
@@ -829,10 +802,6 @@ void set_mem(uint16_t addr, uint8_t const val) {
     }
     /*  IO being written to */
     if (addr >= 0xFF00) {
-        // Boot ROM finished
-        if (addr == 0xFF50) { 
-            is_booting = 0;
-        }
         io_write_mem(addr - 0xFF00, val);
     }
 }
@@ -907,7 +876,7 @@ uint8_t get_mem(uint16_t addr) {
     if (addr >= 0xFF10 && addr <= 0xFF3F) {
         return read_apu(addr);
     }
-    return io_read_mem(addr - 0xFF00);
+    return io_mem[addr - 0xFF00];
 
 }
 

@@ -270,7 +270,7 @@ void unset_keys() {
 
 /* Update current state of GameBoy keys as well as control
  * other external actions for the emulator */
-void update_keys() {
+int update_keys() {
         SDL_Event event;
 
         if (SDL_PollEvent(&event)) {
@@ -279,14 +279,14 @@ void update_keys() {
                     // exit if the window is closed
                 case SDL_QUIT:
                             write_SRAM();
-                            exit(0);
+                            return 1;
                             break;
 
 #ifndef PSVITA
                 case SDL_KEYDOWN: // Key pressed
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         write_SRAM();
-                        exit(0);
+                        return 1;
                     }
 
                     for (size_t i = 0; i < TOTAL_BUTTONS; i++) {
@@ -335,6 +335,8 @@ void update_keys() {
                     break;
             }                   
         }
+
+        return 0;
 }
 
 

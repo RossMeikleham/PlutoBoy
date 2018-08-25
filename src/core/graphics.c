@@ -21,8 +21,6 @@
 #define VITA_PIX_Y 544
 #endif
 
-// Store 5 bit color to output
-static int screen_buffer[144][160];
 static int old_buffer[144][160];
 static int cgb_bg_prio[144][160];
 
@@ -31,14 +29,17 @@ static uint32_t rgb_pixels[144 * 160];
 
 // Stores the processed bg palette colours
 static uint32_t rendered_bg_palette[0x20];
+static uint32_t rendered_sprite_palette[0x20];
 
 static uint8_t row;
 static uint8_t lcd_ctrl;
 static uint8_t *bg_palette;
+static uint8_t *sprite_palette;
 
 int frame_drawn = 0;
 
 static void refresh_gbc_bg_palettes();
+static void refresh_gbc_sprite_palettes();
 
 /*  A color in GBC is represented by 3 5 bit numbers stored within 2 bytes.*/
 typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
@@ -47,7 +48,9 @@ int init_gfx() {
    
     start_framerate(DEFAULT_FPS); 
     bg_palette = get_bg_palette();
+    sprite_palette = get_sprite_palette();
     refresh_gbc_bg_palettes();
+    refresh_gbc_sprite_palettes();
 
 #ifdef PSVITA //VITA
 	int result = init_screen(VITA_PIX_X, VITA_PIX_Y, rgb_pixels);
@@ -64,12 +67,12 @@ static uint32_t cgb_color_to_rgb(uint16_t c) {
     uint8_t green = (((c >> 5) & 0x1F) * 255) / 31;  
     uint8_t blue =  (((c >> 10) & 0x1F)* 255) / 31; 
 
-    return (0xFF << 24) | (red << 16) | (green << 8) | (blue << 0); 
+   return (0xFF << 24) | (red << 16) | (green << 8) | (blue << 0); 
 }
 
 static void refresh_gbc_bg_palettes() {
 
-    if (palette_dirty) {
+    if (bg_palette_dirty) {
    
         for (int i = 0; i < 0x20; i++) {
             // Obtain 15 bit gameboy color for background palette
@@ -77,35 +80,39 @@ static void refresh_gbc_bg_palettes() {
             rendered_bg_palette[i] = cgb_color_to_rgb(gb_color);
         }
     
-        palette_dirty = false;
+        bg_palette_dirty = false;
     }
 }
 
+static void refresh_gbc_sprite_palettes() {
 
-// Obtain 15 bit gameboy color for sprite palette
-static uint16_t get_cgb_sprite_col(int palette_no, int color_no) {
-
-    int base = palette_no * 8;
-    uint8_t byte0 = read_sprite_color_palette(base + (color_no * 2));
-    uint8_t byte1 = read_sprite_color_palette(base + (color_no * 2) + 1);
-    return byte0 | ((byte1 & 0x7F) << 8);
+    if (sprite_palette_dirty) {
+   
+        for (int i = 0; i < 0x20; i++) {
+            // Obtain 15 bit gameboy color for sprite palette
+            uint16_t gb_color = sprite_palette[i * 2] | ((sprite_palette[(i * 2) + 1] & 0x7F) << 8);
+            rendered_sprite_palette[i] = cgb_color_to_rgb(gb_color);
+        }
+    
+        sprite_palette_dirty = false;
+    }
 }
 
 // Convert dot matrix gameboy's 2 bit color into a 15bit color
-static uint16_t get_dmg_sprite_col(int c, int palette_no) {
+static uint32_t get_dmg_sprite_col(int c, int palette_no) {
     if (cgb) {
-        return get_cgb_sprite_col(palette_no, c);    
+        return rendered_sprite_palette[(palette_no * 4) +  c];    
     }
     switch (c) {
-        case 0: return 0x7FFF;
-        case 1: return 0x56B5;
-        case 2: return 0x294A;
-        case 3: return 0x0000;
-        default : return 0x0;
+        case 0: return cgb_color_to_rgb(0x7FFF);
+        case 1: return cgb_color_to_rgb(0x56B5);
+        case 2: return cgb_color_to_rgb(0x294A);
+        case 3: return cgb_color_to_rgb(0x0000);
+        default : return cgb_color_to_rgb(0x0);
     }
 }
 
-static uint16_t get_dmg_bg_col(int c) {
+static uint32_t get_dmg_bg_col(int c) {
     if (cgb) {
         return rendered_bg_palette[c];
     }
@@ -122,11 +129,13 @@ static uint16_t get_dmg_bg_col(int c) {
 
 static void draw_sprite_row() {
    
+    refresh_gbc_sprite_palettes();
+
     // 8x16 or 8x8
     int height = lcd_ctrl & BIT_2 ? 16 : 8;
 
-    uint8_t obp_0 = io_read_mem(OBP0_REG - 0xFF00); 
-    uint8_t obp_1 = io_read_mem(OBP1_REG - 0xFF00); 
+    uint8_t obp_0 = io_mem[OBP0_REG]; 
+    uint8_t obp_1 = io_mem[OBP1_REG]; 
     int palletes[2][4];
 
     //Calculate both color palletes
@@ -225,26 +234,22 @@ static void draw_sprite_row() {
             if (!sprite_prio) {
                 if (color_id != 0 && (!cgb_bg_prio[row][x_pos + x] && !old_buffer[row][x_pos + x])) {
                     if (!cgb || !(is_booting || cgb_features)) {
-                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
+                       rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = rendered_sprite_palette[(pal_no * 4) + final_color_id];
                        old_buffer[row][x_pos + x] = color_id;
                    } else {                        
-                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = rendered_sprite_palette[(cgb_palette_number * 4) + color_id];
                        old_buffer[row][x_pos + x] = color_id;
                    }
-                rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = 
-                    0xFF000000 | cgb_color_to_rgb(screen_buffer[row][x_pos + x]);
                 }               
             } else  {
                 if (color_id != 0 && (!cgb || (!cgb_bg_prio[row][x_pos + x] || !old_buffer[row][x_pos + x]))) {
                     if (!cgb || !(is_booting || cgb_features)) {
-                       screen_buffer[row][x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
+                       rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = get_dmg_sprite_col(final_color_id, pal_no);
                        old_buffer[row][x_pos + x] = color_id;
                    } else {
-                       screen_buffer[row][x_pos + x] = get_cgb_sprite_col(cgb_palette_number, color_id);
+                       rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = rendered_sprite_palette[(cgb_palette_number * 4) + color_id];
                        old_buffer[row][x_pos + x] = color_id;
                    }
-                rgb_pixels[(row * GB_PIXELS_X) + x_pos + x] = 
-                    0xFF000000 | cgb_color_to_rgb(screen_buffer[row][x_pos + x]);
                 }
             } 
              
@@ -257,7 +262,7 @@ static void draw_sprite_row() {
 
 static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
    
-    uint8_t bgp = io_read_mem(BGP_REF - 0xFF00);
+    uint8_t bgp = io_mem[BGP_REF];
     int pallete[4];
     //Calculate color pallete
     pallete[0] =  bgp  & 0x3;
@@ -265,12 +270,12 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
     pallete[2] = (bgp >> 4) & 0x3;
     pallete[3] = (bgp >> 6) & 0x3;
     
-    uint8_t win_y = io_read_mem(WY_REG - 0xFF00);//window_line;
+    uint8_t win_y = io_mem[WY_REG];//window_line;
     int16_t y_pos = row - win_y; // Get line 0 - 255 being drawn    
     uint16_t tile_row = (y_pos >> 3); // Get row 0 - 31 of tile
-    int16_t win_x = io_read_mem(WX_REG - 0xFF00) - 7;
+    int16_t win_x = io_mem[WX_REG] - 7;
     
-    if (win_x > 159 || io_read_mem(WY_REG - 0xFF00) > 143 || row < win_y) {
+    if (win_x > 159 || io_mem[WY_REG] > 143 || row < win_y) {
         return;
     }
     
@@ -358,7 +363,7 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
 
 //Render the supplied row with background tiles
 static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
-    uint8_t bgp = io_read_mem(BGP_REF - 0xFF00);
+    uint8_t bgp = io_mem[BGP_REF];
     int pallete[4];
     //Calculate color pallete
     pallete[0] =  bgp  & 0x3;
@@ -366,9 +371,9 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
     pallete[2] = (bgp >> 4) & 0x3;
     pallete[3] = (bgp >> 6) & 0x3;
     
-    uint8_t y_pos = row + io_read_mem(SCROLL_Y_REG - 0xFF00);  
+    uint8_t y_pos = row + io_mem[SCROLL_Y_REG];  
     int tile_row = y_pos >> 3; // Get row 0 - 31 of tile
-    uint8_t scroll_x = io_read_mem(SCROLL_X_REG - 0xFF00);
+    uint8_t scroll_x = io_mem[SCROLL_X_REG];
    
     int skew_left = scroll_x & 0x7;
     int skew_right = (8 - skew_left) & 0x7;
@@ -453,7 +458,7 @@ static void draw_tile_bg_row(uint16_t tile_mem, uint16_t bg_mem) {
 
 static void draw_tile_row() {
  
-    uint8_t win_y_pos = io_read_mem(WY_REG - 0xFF00);
+    uint8_t win_y_pos = io_mem[WY_REG];
 
     uint16_t tile_mem; // Either tile set 0 or 1
 
@@ -482,8 +487,8 @@ void output_screen() {
 //Render the row number stored in the LY register
 void draw_row() {
 
-    lcd_ctrl = io_read_mem(LCDC_REG - 0xFF00);
-    row = io_read_mem(LY_REG - 0xFF00);
+    lcd_ctrl = io_mem[LCDC_REG];
+    row = io_mem[LY_REG];
 
     //Render only if screen is on
     if ((lcd_ctrl & BIT_7)) {

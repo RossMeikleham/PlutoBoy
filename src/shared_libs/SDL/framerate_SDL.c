@@ -1,4 +1,5 @@
 #ifdef THREE_DS
+#include "../../platforms/3DS/debug_info.h"
 #include "SDL/SDL.h"
 #else
 #include "SDL.h"
@@ -7,6 +8,8 @@
 #include <stdio.h>
 #include "stdlib.h"
 #include "../../non_core/framerate.h"
+
+int limiter = 1;
 
 #ifndef EMSCRIPTEN
 static uint64_t last_ticks;
@@ -90,6 +93,8 @@ void start_framerate(float f) {
 #endif
 }
 
+static int forgiveness_frame = 1; 
+
 /* Check time elapsed after one frame, hold up
  * the program if not enough tim has elapsed */
 void adjust_to_framerate() {
@@ -107,25 +112,39 @@ void adjust_to_framerate() {
     // sleep might go over the time we want to wait
     // so attempt to come out of sleep early and use 
     // cpu cycles to wait for the rest of the time
-    /*if (framerate_ticks < 1000000) {        
-	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
-	if (delay_time >= 5000) {
-		//casting uint64_t into uint32_t, not really safe
-		// but we will never be delaying for more than 1000ms which is well in range
- 		SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
-	}	
-    while(get_timestamp_micro() < estimated_ticks)
-  		;;
-	
-    } 
-   */
+    if (limiter && framerate_ticks < 1000000) {        
+	    uint64_t delay_time = 1000000/framerate - ticks_elapsed;
+	    if (delay_time >= 5000) {
+		    //casting uint64_t into uint32_t, not really safe
+		    // but we will never be delaying for more than 1000ms which is well in range
+ 		    SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
+	    }	
+        while(get_timestamp_micro() < estimated_ticks)
+  		    ;;
+        }   
+
     current_ticks = get_timestamp_micro();
     count = (count + 1) % 60;
     if (count == 0) {
 	//printf("speed %u\n", current_ticks - last_ticks);
         float fps = 1000000.0 / (current_ticks - last_ticks);
-        printf("Gameboy fps:%.2f\n",fps);
+        //printf("Gameboy fps:%.2f\n",fps);
         SDL_WM_SetCaption(title_buf,"");
+        
+        #ifdef THREE_DS
+        int fps_i = (int)fps;
+        if (fps_i > 35) {
+            show_fps(fps);
+            forgiveness_frame = 1;
+        } else if (forgiveness_frame) { // Benefit of the doubt
+            forgiveness_frame = 0;
+        } else { // Beyond the forgiveness threshold, framerate is low
+            show_fps(fps);
+        }
+
+        show_battery();
+        show_fps_limiter();
+        #endif
     }
     last_ticks = current_ticks;
 #endif

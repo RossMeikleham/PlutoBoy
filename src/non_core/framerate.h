@@ -3,6 +3,8 @@
 
 #define DEFAULT_FPS 59.7
 
+extern int limiter; // FPS limiter ON or OFF
+
 //Set a framerate and start the counter
 void start_framerate(float fps);
 

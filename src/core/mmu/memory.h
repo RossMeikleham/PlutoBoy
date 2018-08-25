@@ -5,17 +5,28 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-extern bool palette_dirty;
+extern bool bg_palette_dirty;
+extern bool sprite_palette_dirty;
 
 // 1 if gameboy is booting up, 0 otherwise
 int is_booting; 
+
+
+// io mem
+extern uint8_t *io_mem;
+extern uint8_t *oam_mem_ptr;
+
+/* Read from OAM given OAM address 0 - A0
+ * Returns 0x0 if address > 0xA0 */
+static inline uint8_t oam_get_mem(uint8_t addr) {
+    //Check not unusable RAM (i.e. not 0xFEA0 - 0xFEFF)
+    return (addr < 0xA0) ? oam_mem_ptr[addr] : 0;
+}
 
 /* Directly inject a value into IO memory without performing
  * any checks or operations on the data. Should be used by
  * controllers that have direct access to modifying this memory
  * and not the CPU. */
-void io_write_override(uint8_t loc, uint8_t val);
-
 void set_mem_override(uint16_t loc, uint8_t val); 
 
 // Read a value from a VRAM bank
@@ -30,7 +41,7 @@ uint8_t get_vram1(uint16_t addr);
 
 uint8_t oam_get_mem(uint8_t addr);
 
-uint8_t io_read_mem(uint8_t addr);
+void io_write_mem(uint8_t addr, uint8_t val);
 
 // Read contents from given 16 bit memory address
 uint8_t get_mem(uint16_t addr);
@@ -57,6 +68,8 @@ int load_rom(char const * filename, unsigned char *file_data, size_t size,
 uint8_t read_bg_color_palette(int addr);
 
 uint8_t *get_bg_palette();
+
+uint8_t *get_sprite_palette();
 
 // Read a vlue from gameboy color sprite palette RAM
 uint8_t read_sprite_color_palette(int addr);

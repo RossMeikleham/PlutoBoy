@@ -1,8 +1,6 @@
-#ifdef THREE_DS
+#ifndef THREE_DS
 #include "SDL/SDL.h"
-#else
 #include "SDL.h"
-#endif
 #include "stdlib.h"
 #include "../../non_core/joypad.h"
 #include "../../core/mmu/mbc.h"
@@ -76,14 +74,14 @@ int key_pressed() {
 
 /* Update current state of GameBoy keys as well as control
  * other external actions for the emulator */
-void update_keys() {
+int update_keys() {
         SDL_Event event;
         if (SDL_PollEvent(&event)) {
             switch (event.type) {
                     // exit if the window is closed
                 case SDL_QUIT:
                             write_SRAM();
-                            exit(0);
+                            return 1;
                             break;
 #ifndef PSP
                 case SDL_KEYDOWN: // Key pressed
@@ -91,7 +89,7 @@ void update_keys() {
                     keys[event.key.keysym.sym] = 1;
                     if (keys[SDLK_ESCAPE]) {
                         write_SRAM();
-                        exit(0);
+                        return 1;
                     }
                         break;
 
@@ -112,13 +110,7 @@ void update_keys() {
                 
              }
         }
+        return 0;
 }
 
-
-
-
-
-
-
-
-
+#endif

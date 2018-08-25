@@ -51,8 +51,9 @@
 void init_joypad();
 
 /* Update current state of GameBoy keys as well as control
- * other external actions for the emulator */
-void update_keys();
+ * other external actions for the emulator, returns 1 if
+ * quitting, 0 otherwise */
+int update_keys();
 
 /* Return state of one of the 8 GameBoy keys
  * 0 for unpressed, 1 for pressed */

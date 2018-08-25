@@ -16,6 +16,7 @@
 #include "../non_core/logger.h"
 #include "../non_core/debugger.h"
 
+int quit = 0;
 
 // Debug options
 int debug = 0;
@@ -133,7 +134,7 @@ void run_one_frame() {
 
         cycles += current_cycles;
         if (cycles > 15000) {
-            update_keys();
+            quit |= update_keys();
             cycles = 0;
         }
         skip_bug = handle_interrupts();
@@ -162,7 +163,7 @@ void run() {
     log_message(LOG_INFO, "About to setup debug\n");
     setup_debug();
     log_message(LOG_INFO, "About to run\n");
-    for(;;) {
+    while(!quit) {
         run_one_frame();
     }
 }

@@ -238,22 +238,22 @@ void invalid_op(){
 /* Put A into memory address $FF00+n*/
  static void LDH_n_A() { 
     update_all_cycles(4);   
-    set_mem(0xFF00 + IMMEDIATE_8_BIT, reg.A);
+    io_write_mem(IMMEDIATE_8_BIT, reg.A);
     timer_cycles_passed = 4;
 }
 
 /* Put memory address $FF00+n into A */
  static void LDH_A_n() { 
     update_all_cycles(4);   
-    reg.A = get_mem(0xFF00 + IMMEDIATE_8_BIT); 
+    reg.A = io_mem[IMMEDIATE_8_BIT]; 
     timer_cycles_passed = 4;
 }
 
 /* Put memory address $FF00 + C into A */
- static void LDH_A_C() {reg.A = get_mem(0xFF00 + reg.C);}
+ static void LDH_A_C() {reg.A = io_mem[reg.C];}
 
 /* Put A into memory address $FF00 + C */
- static void LDH_C_A() {set_mem(0xFF00 + reg.C, reg.A);}
+ static void LDH_C_A() {io_write_mem(reg.C, reg.A);}
 
 
 
@@ -666,17 +666,17 @@ void invalid_op(){
 /*  Halt CPU and LCD until button pressed */
  static void STOP() {
     stopped = 1;
-
     /* If in Gameboy Color mode and a speed switch has been prepared
      *  switch the processor speed and unset bit 0 and set bit 7 if new speed is double
      *  speed or 0 otherwise in the KEY1 Register */
     if (cgb && (is_booting || cgb_features)) {
-        int speed = get_mem(KEY1_REG);
+        int speed = io_mem[KEY1_REG];
         int switch_speed = speed & BIT_0;
 
         if (switch_speed) {
+            printf("Speed switched!\n");
             cgb_speed = !(speed & BIT_7);
-            io_write_override(KEY1_REG - 0xFF00, !(speed & BIT_7) * 0x80);
+            io_mem[KEY1_REG] = !(speed & BIT_7) * 0x80;
             // Actually stopping doesn't make sense, this needs to be double checked though
             stopped = 0;
         }

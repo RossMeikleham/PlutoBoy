@@ -3,8 +3,6 @@
 
 #include "serial_io.h"
 
-
-
 /* Intialize emulator with given ROM file, and
  * specify whether or not debug mode is active
  * (0 for OFF, any other value is on) 

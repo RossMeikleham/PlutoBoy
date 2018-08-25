@@ -55,101 +55,101 @@
 #define SPRITE_ATTRIBUTE_TABLE_START 0xFE00
 #define SPRITE_ATTRIBUTE_TABLE_END   0xFE9F
 
+
+/*  -------------IO ports/registers ------------------*/
+//Convert between local IO memory address and global address
+#define IO_TO_GLOBAL_ADDR(A) (A | 0xFF00)
+
 #define UNUSABLE_MEM_START 0xFEA0
 #define UNUSABLE_MEM_END 0xFEFF
 
-#define IO_PORTS_START 0xFF00
-#define IO_PORTS_END 0xFF7F
+#define IO_PORTS_START 0x00
+#define IO_PORTS_END 0x7F
 
-#define ZERO_PAGE_START 0xFF80
-#define ZERO_PAGE_END 0xFFFE
+#define ZERO_PAGE_START 0x80
+#define ZERO_PAGE_END 0xFE
 
-#define INTERRUPT_ENABLE_REG 0xFFFF
-/* -------------------------------------*/ 
+#define INTERRUPT_ENABLE_REG 0xFF
 
-//Convert between local IO memory address and global address
-#define GLOBAL_TO_IO_ADDR(A) A - 0xFF00
-#define IO_TO_GLOBAL_ADDR(A) A + 0xFF00
-
-/*  -------------IO ports/registers ------------------*/
-#define P1_REG 0xFF00 /*  Register for reading joy pad info */
-#define SB_REG 0xFF01 /*  Serial transfer data */
-#define SC_REG 0xFF02 /*  SIO control */
-#define DIV_REG 0xFF04 /*  Divider register*/
-#define TIMA_REG 0xFF05 /*  Timer Counter */
-#define TMA_REG 0xFF06 /*  Timer Modulo  */
-#define TAC_REG 0xFF07 /*  Timer Control */
-#define INTERRUPT_REG 0xFF0F /*  Interrupt Flag */
+#define P1_REG 0x00 /*  Register for reading joy pad info */
+#define SB_REG 0x01 /*  Serial transfer data */
+#define SC_REG 0x02 /*  SIO control */
+#define DIV_REG 0x04 /*  Divider register*/
+#define TIMA_REG 0x05 /*  Timer Counter */
+#define TMA_REG 0x06 /*  Timer Modulo  */
+#define TAC_REG 0x07 /*  Timer Control */
+#define INTERRUPT_REG 0x0F /*  Interrupt Flag */
 
 /*   Sound Mode 1 registers */
-#define NR_10_REG 0xFF10 /*  Sweep */
-#define NR_11_REG 0xFF11 /*  Length wave pattern*/
-#define NR_12_REG 0xFF12 /*  Envelope */
-#define NR_13_REG 0xFF12 /*  Frequency Lo */
-#define NR_14_REG 0xFF14 /*  Frequency Hi */
+#define NR_10_REG 0x10 /*  Sweep */
+#define NR_11_REG 0x11 /*  Length wave pattern*/
+#define NR_12_REG 0x12 /*  Envelope */
+#define NR_13_REG 0x12 /*  Frequency Lo */
+#define NR_14_REG 0x14 /*  Frequency Hi */
 
 /*   Sound Mode 2 registers */
-#define NR_21_REG 0xFF16 /*  Length wave pattern*/
-#define NR_22_REG 0xFF17 /*  Envelope */
-#define NR_23_REG 0xFF18 /*  Frequency Lo */
-#define NR_24_REG 0xFF19 /*  Frequency Hi */
+#define NR_21_REG 0x16 /*  Length wave pattern*/
+#define NR_22_REG 0x17 /*  Envelope */
+#define NR_23_REG 0x18 /*  Frequency Lo */
+#define NR_24_REG 0x19 /*  Frequency Hi */
 
 /*   Sound Mode 3 registers */
-#define NR_30_REG 0xFF1A /*  Sound on/off*/
-#define NR_31_REG 0xFF1B /*  Sound length */
-#define NR_32_REG 0xFF1C /*  Select output level */
-#define NR_33_REG 0xFF1D /*  Frequency Lo */
-#define NR_34_REG 0xFF1E /*  Frequency Hi */
+#define NR_30_REG 0x1A /*  Sound on/off*/
+#define NR_31_REG 0x1B /*  Sound length */
+#define NR_32_REG 0x1C /*  Select output level */
+#define NR_33_REG 0x1D /*  Frequency Lo */
+#define NR_34_REG 0x1E /*  Frequency Hi */
 
 /*   Sound Mode 4 registers */
-#define NR_41_REG 0xFF20 /*  Sound length */
-#define NR_42_REG 0xFF21 /*  Envelope */
-#define NR_43_REG 0xFF22 /*  Polynomial Counter */
-#define NR_44_REG 0xFF23 /*  Counter/Consecutive; initial */
+#define NR_41_REG 0x20 /*  Sound length */
+#define NR_42_REG 0x21 /*  Envelope */
+#define NR_43_REG 0x22 /*  Polynomial Counter */
+#define NR_44_REG 0x23 /*  Counter/Consecutive; initial */
 
-#define NR_50_REG 0xFF24 /*  Channel Control/on-off/Volume */
-#define NR_51_REG 0xFF25 /*  Selection of Sound output terminal */
-#define NR_52_REG 0xFF26 /*  Sound on/off */
+#define NR_50_REG 0x24 /*  Channel Control/on-off/Volume */
+#define NR_51_REG 0x25 /*  Selection of Sound output terminal */
+#define NR_52_REG 0x26 /*  Sound on/off */
 
 /*  Waveform Storage for Arbitrary Sound data */
-#define WAVE_PATTERN_RAM_START 0xFF30
-#define WAVE_PATTERN_RAM_END   0xFF3F
+#define WAVE_PATTERN_RAM_START 0x30
+#define WAVE_PATTERN_RAM_END   0x3F
 
 /* ------Screen/Graphics register locations------- */
-#define LCDC_REG 0xFF40 /*  LCD Control */
-#define STAT_REG 0xFF41 /*  LCD status */
-#define SCROLL_Y_REG 0xFF42 /*  8 bit value to scroll BG Y pos */
-#define SCROLL_X_REG 0xFF43 /*  8 bit value to scroll BG X pos */
-#define LY_REG 0xFF44 /*  LCDC Y-Coordinate */
-#define LYC_REG 0xFF45 /*  LY Compare */
-#define DMA_REG 0xFF46 /*  DMA Transfer and Start Address */
-#define BGP_REF 0xFF47 /*  BG and Window Palette Data */
-#define OBP0_REG 0xFF48 /*  Object Palette 0 Data */
-#define OBP1_REG 0xFF49 /*  Object Palette 1 Data */
-#define WY_REG 0xFF4A /*  Window Y Position; 0 <= WY <= 143*/
-#define WX_REG 0xFF4B /*  Window X Position; 0 <= WX <= 166 */
+#define LCDC_REG 0x40 /*  LCD Control */
+#define STAT_REG 0x41 /*  LCD status */
+#define SCROLL_Y_REG 0x42 /*  8 bit value to scroll BG Y pos */
+#define SCROLL_X_REG 0x43 /*  8 bit value to scroll BG X pos */
+#define LY_REG 0x44 /*  LCDC Y-Coordinate */
+#define LYC_REG 0x45 /*  LY Compare */
+#define DMA_REG 0x46 /*  DMA Transfer and Start Address */
+#define BGP_REF 0x47 /*  BG and Window Palette Data */
+#define OBP0_REG 0x48 /*  Object Palette 0 Data */
+#define OBP1_REG 0x49 /*  Object Palette 1 Data */
+#define BOOT_ROM_DISABLE 0x50 /* If boot rom executing, remaps the first 0x100 cartidge bytes back in*/
+#define WY_REG 0x4A /*  Window Y Position; 0 <= WY <= 143*/
+#define WX_REG 0x4B /*  Window X Position; 0 <= WX <= 166 */
 
 /* DMA tranfer for Gameboy Color */
-#define HDMA1_REG 0xFF51
-#define HDMA2_REG 0xFF52
-#define HDMA3_REG 0xFF53
-#define HDMA4_REG 0xFF54
-#define HDMA5_REG 0xFF55
+#define HDMA1_REG 0x51
+#define HDMA2_REG 0x52
+#define HDMA3_REG 0x53
+#define HDMA4_REG 0x54
+#define HDMA5_REG 0x55
 
-#define KEY1_REG 0xFF4D /* Prepare Speed switch for Gameboy Color, used to switch clock speed */
+#define KEY1_REG 0x4D /* Prepare Speed switch for Gameboy Color, used to switch clock speed */
 
-#define VBANK_REG 0xFF4F /* Select which VRAM bank to use in Gameboy color */
+#define VBANK_REG 0x4F /* Select which VRAM bank to use in Gameboy color */
 
-#define INFRARED_REG 0xFF56 /* Infrared Communications Port for Gameboy Color */
+#define INFRARED_REG 0x56 /* Infrared Communications Port for Gameboy Color */
 
-#define BGPI 0xFF68 // Background Palette index for Gameboy Color
-#define BGPD 0xFF69 // Background Palette data for Gameboy Color
-#define SPPI 0xFF6A // Sprite Palette index for Gameboy Color
-#define SPPD 0xFF6B // Sprite Palette data for Gameboy Color
+#define BGPI 0x68 // Background Palette index for Gameboy Color
+#define BGPD 0x69 // Background Palette data for Gameboy Color
+#define SPPI 0x6A // Sprite Palette index for Gameboy Color
+#define SPPD 0x6B // Sprite Palette data for Gameboy Color
 
-#define SRAM_BANK 0xFF70 // Register to select internal RAM banks for Gameboy Color
+#define SRAM_BANK 0x70 // Register to select internal RAM banks for Gameboy Color
 
-#define INTERRUPT_ENABLE_REG 0xFFFF /*  Interrupt Enable Register */
+#define INTERRUPT_ENABLE_REG 0xFF /*  Interrupt Enable Register */
 
 /* ************************************************** */
 
