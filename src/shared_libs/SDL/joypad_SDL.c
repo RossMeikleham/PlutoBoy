@@ -85,7 +85,6 @@ int update_keys() {
                             break;
 #ifndef PSP
                 case SDL_KEYDOWN: // Key pressed
-                    printf("key pressed\n");
                     keys[event.key.keysym.sym] = 1;
                     if (keys[SDLK_ESCAPE]) {
                         write_SRAM();

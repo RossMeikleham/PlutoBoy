@@ -5,6 +5,7 @@
 
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
+#include "../../core/mmu/mbc.h"
 #include "../../non_core/logger.h"
 #include "debug_info.h"
 
@@ -67,9 +68,12 @@ int main(int argc, char **argv) {
     }
     
     log_message(LOG_INFO, "Running emu\n");
-	run();
 
+    while (aptMainLoop()) {
+        run_one_frame();
+    }
 
+    write_SRAM();
     cleanup();
 	return 0;
 }

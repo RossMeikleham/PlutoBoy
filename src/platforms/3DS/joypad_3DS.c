@@ -27,12 +27,8 @@ int key_pressed() {
     || a_pressed() || b_pressed() || start_pressed() || select_pressed();
 }
 
-int update_keys() {
 
-    if (!aptMainLoop()) {
-		write_SRAM();
-		return 1;
-    }
+int update_keys() {
 
     hidScanInput();
     
