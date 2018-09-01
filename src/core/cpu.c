@@ -244,13 +244,14 @@ void invalid_op(){
 
 /* Put memory address $FF00+n into A */
  static void LDH_A_n() { 
-    update_all_cycles(4);   
-    reg.A = io_mem[IMMEDIATE_8_BIT]; 
+    update_all_cycles(4);
+    uint8_t val = IMMEDIATE_8_BIT;   
+    reg.A = ((val >= 0x10) && (val <= 0x3F)) ? read_apu(val | 0xFF00) : io_mem[val];
     timer_cycles_passed = 4;
 }
 
 /* Put memory address $FF00 + C into A */
- static void LDH_A_C() {reg.A = io_mem[reg.C];}
+ static void LDH_A_C() {reg.A = ((reg.C >= 0x10) && (reg.C <= 0x3F)) ? read_apu(reg.C | 0xFF00) : io_mem[reg.C];}
 
 /* Put A into memory address $FF00 + C */
  static void LDH_C_A() {io_write_mem(reg.C, reg.A);}
