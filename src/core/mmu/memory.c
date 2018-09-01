@@ -17,6 +17,7 @@
 
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"
+#include "../../non_core/files.h"
 
 #include <string.h>
 
@@ -353,7 +354,7 @@ static uint8_t cgb_boot_rom[] = {
 // of the ROM instead of at the beginning
 void check_mmm01_format(unsigned char *file_data, size_t size) {
     if (size < 0x8000) {
-        return;;
+        return;
     }
     
     unsigned char const *header_data = file_data + (size - 0x8000);
@@ -373,39 +374,68 @@ void check_mmm01_format(unsigned char *file_data, size_t size) {
     }
 }
 
-int load_rom(char const *filename, unsigned char *file_data, size_t size, int const dmg_mode) {
+int load_rom(char const *filename, uint8_t header[0x50], int const dmg_mode) {
 
     oam_mem_ptr = oam_mem;
-
-    /* Check the file length given to us is long enough
-     * to obtain what the size of the file should be */   
-    if (size < CARTRIDGE_ROM_SIZE + 1) {
-        log_message(LOG_ERROR, "Error: Cartridge size is too small (%lu bytes)\n",size);
-        return 0;
-    }
-    
-    check_mmm01_format(file_data, size);
-
-    // Obtain rom size in KB
-    size_t rom_size = id_to_rom_size(file_data[CARTRIDGE_ROM_SIZE]) * 1024;
-
-    // Data read in doesn't match header information
-    if (size != rom_size) {
-
-        log_message(LOG_ERROR, "Error: Cartridge header info on its size (%lu bytes) \
-            doesn't match file size (%lu bytes)\n",rom_size, size);
-        return 0;
-    }
-
+ 
     cgb = !dmg_mode;
     io_mem  = cgb ? io_mem_cgb : io_mem_dmg;
 
+    uint8_t rom_bank_info = header[CARTRIDGE_ROM_SIZE - 0x100];
+    int rom_banks = 0;
+    if (rom_bank_info <= 8) {
+        rom_banks = 2 << rom_bank_info; 
+    } else {
+        switch (rom_bank_info) {
+            case 0x52: rom_banks = 72; break;
+            case 0x53: rom_banks = 80; break;
+            case 0x54: rom_banks = 96; break;
+            default: {
+                log_message(LOG_ERROR, "Unsupported value for ROM size in header: 0x%X\n"
+                            , rom_bank_info);
+                return 0;
+            }
+        }
+    }
+
+    uint8_t ram_bank_info = header[CARTRIDGE_RAM_SIZE - 0x100];
+    int ram_banks;
+    switch (ram_bank_info) {
+        case 0: ram_banks = 0;  break;
+        case 1: ram_banks = 1;  break; 
+        case 2: ram_banks = 1;  break;
+        case 3: ram_banks = 4;  break;
+        case 4: ram_banks = 16; break;
+        case 5: ram_banks = 8;  break;
+        default: {
+            log_message(LOG_ERROR, "Unsupported value for RAM size in header: 0x%X\n"
+                        , ram_bank_info);
+            return 0;
+        }
+    }
+
     // Setup the memory bank controller 
-    if(!setup_MBC(file_data[CARTRIDGE_TYPE], 
-        (id_to_ram_save_size(file_data[CARTRIDGE_RAM_SIZE]) * 0x400) / 0x2000, 
-        filename)) {
+    if(!setup_MBC(header[CARTRIDGE_TYPE - 0x100], ram_banks, rom_banks, filename)) {
         return 0;
     }
+
+    size_t rom_size = rom_banks * ROM_BANK_SIZE;
+    size_t read_size;
+    if (!(read_size = load_rom_from_file(filename, ROM_banks))) {
+        log_message(LOG_ERROR, "failed to load ROM\n");
+        return 0;
+    }
+    
+    check_mmm01_format(ROM_banks, read_size);
+
+    // Data read in doesn't match header information
+    if (read_size != rom_size) {
+
+        log_message(LOG_ERROR, "Error: Cartridge header info on its size (%lu bytes) \
+            doesn't match file size (%lu bytes)\n",rom_size, read_size);
+        return 0;
+    }
+
    
     is_booting = 1; 
     return 1;
@@ -905,5 +935,10 @@ uint8_t read_bg_color_palette(int addr) {
 // Read a vlue from gameboy color sprite palette RAM
 uint8_t read_sprite_color_palette(int addr) {
     return sprite_palette_mem[addr];
+}
+
+
+void teardown_memory() {
+    teardown_MBC();
 }
 

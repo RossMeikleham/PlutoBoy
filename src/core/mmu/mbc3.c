@@ -60,20 +60,20 @@ uint8_t read_MBC3(uint16_t addr) {
      case 0x1000:
      case 0x2000: 
      case 0x3000: // Reading from fixed Bank 0 
-                return ROM_banks[0][addr]; 
+                return ROM_banks[addr]; 
                 break;
         
      case 0x4000:
      case 0x5000:
      case 0x6000:
      case 0x7000: // Reading from current ROM bank 1 
-                return ROM_banks[cur_ROM_bank][addr - 0x4000];
+                return ROM_banks[(cur_ROM_bank * ROM_BANK_SIZE) | (addr - 0x4000)];
                 break;
         
      case 0xA000:
      case 0xB000: // Read from RAM bank (if RAM banking enabled)
                 if (ram_enabled && cur_RAM_bank <= 0x3) {
-                   return RAM_banks[cur_RAM_bank][addr - 0xA000];
+                   return RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)];
                 
 				// Read from RTC register
 				} else {
@@ -124,7 +124,7 @@ void write_MBC3(uint16_t addr, uint8_t val) {
         case 0xA000:
         case 0xB000: // Write to external RAM bank if RAM banking enabled 
                     if (ram_enabled && cur_RAM_bank <= 0x3) {
-                        RAM_banks[cur_RAM_bank][addr - 0xA000] = val; 
+                        RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)] = val; 
                     // Write to RTC
                     } else if (ram_enabled && rtc_enabled) {
                     	switch (cur_RAM_bank) {

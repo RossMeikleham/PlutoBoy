@@ -11,6 +11,9 @@
  * otherwise */
 int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs);
 
+// Free up all resources, preparing to exit
+void finalize_emu();
+
 // Execute until a single frame has been rendered
 void run_one_frame();
 

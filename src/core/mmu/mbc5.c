@@ -26,19 +26,19 @@ uint8_t read_MBC5(uint16_t addr) {
      case 0x0000:
      case 0x1000:
      case 0x2000: // Reading from fixed Bank 0
-     case 0x3000: return ROM_banks[0][addr]; 
+     case 0x3000: return ROM_banks[addr]; 
                   break;
         
      case 0x4000:
      case 0x5000:
      case 0x6000:
      case 0x7000: // Reading from current ROM bank 1 
-                return ROM_banks[(rom_bank_hi_bit << 8) | rom_bank_low][addr - 0x4000];
+                return ROM_banks[(((rom_bank_hi_bit << 8) | rom_bank_low) * ROM_BANK_SIZE) | (addr - 0x4000)];
                 break;
         
      case 0xA000:
      case 0xB000: // Read from RAM bank (if RAM banking enabled)
-                 return ram_banking ? RAM_banks[cur_RAM_bank][addr - 0xA000] : 0;
+                 return ram_banking ? RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)] : 0;
                  break;
     };
     // Failed to read
@@ -69,7 +69,7 @@ void write_MBC5(uint16_t addr, uint8_t val) {
         case 0xA000:
         case 0xB000: // Write to external RAM bank if RAM banking enabled 
                     if (ram_banking) {
-                        RAM_banks[cur_RAM_bank][addr - 0xA000] = val; 
+                        RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)] = val; 
                     }
                     break;
     }    

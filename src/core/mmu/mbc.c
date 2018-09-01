@@ -8,11 +8,15 @@
 #include "huc1.h"
 #include "huc3.h"
 
-
 #include "../../non_core/logger.h"
 #include "../../non_core/files.h"
 
-#include "string.h"
+#include <string.h>
+#include <stdlib.h>
+
+uint8_t *RAM_banks; // max 16 * 8KB ram banks (128KB) 0x2000
+uint8_t *ROM_banks; // max 512 * 16KB rom banks (8MB) 0x4000
+
 
 #define MAX_SRAM_FNAME_SIZE 256
 
@@ -21,16 +25,16 @@ static unsigned RAM_bank_count = 0;
 static int mbc3_rtc = 0;
 
 void write_SRAM() {
-    save_SRAM(SRAM_filename, RAM_banks[0], RAM_bank_count * 0x2000);
+    save_SRAM(SRAM_filename, RAM_banks, RAM_bank_count * 0x2000);
 }
 
 
 void read_SRAM() {
 
     size_t len;
-    if((len = load_SRAM(SRAM_filename, RAM_banks[0], RAM_bank_count * 0x2000))) {
+    if((len = load_SRAM(SRAM_filename, RAM_banks, RAM_bank_count * 0x2000))) {
         if (len !=( RAM_bank_count * 0x2000)) { // Not enough read in
-            memset(RAM_banks[0],0,len); //"Erase" what just got read into memory
+            memset(RAM_banks, 0, len); //"Erase" what just got read into memory
         }
     }
 }
@@ -81,10 +85,29 @@ static void create_SRAM_filename(const char *filename) {
 }
 
 
-int setup_MBC(int MBC_no, unsigned ram_banks, const char *filename) {
+void teardown_MBC() {
+   free(RAM_banks); 
+   free(ROM_banks); 
+}
+
+int setup_MBC(int MBC_no, unsigned ram_banks, unsigned rom_banks, const char *filename) {
 
     create_SRAM_filename(filename);
     RAM_bank_count = ram_banks;
+
+
+    RAM_banks = malloc(ram_banks * RAM_BANK_SIZE);
+    if (RAM_banks == NULL) {
+        log_message(LOG_ERROR, "Unable to allocate memory for RAM banks\n");
+        return 0;
+    }
+
+    ROM_banks = malloc(rom_banks * ROM_BANK_SIZE);
+    if (ROM_banks == NULL) {
+        log_message(LOG_ERROR, "Unable to allocate memory for ROM banks\n");
+        free(RAM_banks);
+        return 0;
+    }
 
     int flags = 0;
     // MMBC0

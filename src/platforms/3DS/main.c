@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <3ds.h>
+#include "SDL/SDL.h"
 
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
@@ -9,9 +10,21 @@
 
 #include "3DES/3des.h"
 
+//u32 __stacksize__ = 64 * (1024 * 1024); // 20MB stack size
+
 int64_t higherClkRate = 0;
 int64_t L2CacheEnabled = 0;
 int64_t clkRate = 0;
+
+void cleanup() {
+    
+    finalize_emu();
+    gfxFlushBuffers();
+	gfxSwapBuffers();
+	gspWaitForVBlank();
+    gfxExit();
+    mcuHwcExit();
+}
 
 int main(int argc, char **argv) {
 
@@ -22,7 +35,7 @@ int main(int argc, char **argv) {
     int cgb_mode = 0;
     char file_name[1024];
     if (!selectFile(&cgb_mode, file_name)) {
-        gfxExit();
+        cleanup();
         return 0;
     };
 
@@ -49,13 +62,14 @@ int main(int argc, char **argv) {
 
     if (!init_emu(file_name, debug, !cgb_mode, cs)) {
         log_message(LOG_ERROR, "Failed to initialize emulator\n");
-        gfxExit();
+        cleanup();
         return 1;
     }
     
     log_message(LOG_INFO, "Running emu\n");
 	run();
 
-    gfxExit();
+
+    cleanup();
 	return 0;
 }

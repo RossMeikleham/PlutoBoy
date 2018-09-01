@@ -60,9 +60,10 @@ uint16_t get_mem_16(uint16_t const loc);
     
 /* Given the ROM data, load the ROM into
  * Gameboy memory and setup banks */
-int load_rom(char const * filename, unsigned char *file_data, size_t size,
-             int const dmg_mode);
+int load_rom(char const * filename, uint8_t header[0x50], int const dmg_mode);
 
+// deallocate all allocated memory
+void teardown_memory();
 
 // read a value from gameboy color background palette RAM
 uint8_t read_bg_color_palette(int addr);
