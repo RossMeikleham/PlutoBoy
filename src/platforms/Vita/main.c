@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     set_log_level(LOG_INFO);
 
-	const char *file_name = dir_browse("ux0:/data");
+	const char *file_name = dir_browse("ux0:");
 	log_message(LOG_INFO, "Starting Emulator\n");
     
      if (!init_emu(file_name, debug, dmg_mode, cs)) {

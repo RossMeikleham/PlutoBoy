@@ -141,6 +141,7 @@ void run_one_frame() {
         }
 
         cycles += current_cycles;
+      
         if (cycles > 15000) {
             quit |= update_keys();
             cycles = 0;
