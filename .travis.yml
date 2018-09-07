@@ -50,6 +50,11 @@ matrix:
       language: ruby
       services:
         - docker
+
+    - os: linux
+      env: DOCKER=YES BUILD=3ds BUILD_FOLDER=build/3DS
+      services:
+        - docker
     
     - os: linux
       env: DOCKER=YES BUILD=emscripten BUILD_FOLDER=build/WebAsm
