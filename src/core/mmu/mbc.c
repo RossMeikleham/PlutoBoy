@@ -21,7 +21,7 @@ uint8_t *ROM_banks; // max 512 * 16KB rom banks (8MB) 0x4000
 #define MAX_SRAM_FNAME_SIZE 256
 
 static char SRAM_filename[MAX_SRAM_FNAME_SIZE + 1];
-static unsigned RAM_bank_count = 0;
+unsigned RAM_bank_count = 0;
 static int mbc3_rtc = 0;
 
 void write_SRAM() {

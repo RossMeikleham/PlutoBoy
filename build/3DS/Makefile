@@ -29,6 +29,10 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
+APP_TITLE		:= Plutoboy
+APP_DESCRIPTION := Gameboy/Gameboy Color Emulator
+APP_AUTHOR		:= Ross Meikleham
+
 TARGET		:=	Plutoboy
 BUILD		:=	build
 SOURCES		:=	../../src/platforms/3DS\
@@ -153,7 +157,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf
+	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET).cia
 
 
 #---------------------------------------------------------------------------------

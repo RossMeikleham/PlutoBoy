@@ -1,20 +1,20 @@
 BasicInfo:
-  Title                   : "3DES"
+  Title                   : "Plutoboy"
   CompanyCode             : "00"
-  ProductCode             : "CTR-P-3DES"
+  ProductCode             : "Plutoboy1"
   ContentType             : Application
   Logo                    : Homebrew # Nintendo / Licensed / Distributed / iQue / iQueForSystem
 
 TitleInfo:
-  UniqueId                : 0xF100D
+  UniqueId                : 0xA064F
   Category                : Application
 
 Option:
   UseOnSD                 : true # true if App is to be installed to SD
-  FreeProductCode         : true # Removes limitations on ProductCode
-  MediaFootPadding        : false # If true CCI files are created with padding
-  EnableCrypt             : false # Enables encryption for NCCH and CIA
   EnableCompress          : true # Compresses exefs code
+  FreeProductCode         : true # Removes limitations on ProductCode
+  EnableCrypt             : false # Enables encryption for NCCH and CIA
+  MediaFootPadding        : false # If true CCI files are created with padding
 
 AccessControlInfo:
   #UseExtSaveData : false

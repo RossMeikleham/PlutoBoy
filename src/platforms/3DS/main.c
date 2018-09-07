@@ -57,6 +57,7 @@ int main(int argc, char **argv) {
 
     ClientOrServer cs = NO_CONNECT;
     
+    consoleSelect(&debug_screen); 
     set_log_level(LOG_INFO);
 
     osSetSpeedupEnable(1);
