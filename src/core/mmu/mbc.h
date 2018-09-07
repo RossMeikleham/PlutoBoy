@@ -3,8 +3,13 @@
 
 #include <stdint.h>
 
-uint8_t RAM_banks[16][0x2000];  // max 16 * 8KB ram banks (128KB)
-uint8_t ROM_banks[512][0x4000];// max 512 * 16KB rom banks (8MB)
+#define RAM_BANK_SIZE 0x2000 // 8KB
+#define ROM_BANK_SIZE 0x4000 // 16KB
+
+extern uint8_t *RAM_banks;//[][0x2000];  // max 16 * 8KB ram banks (128KB) 0x2000
+extern uint8_t *ROM_banks;//[][0x4000];// max 512 * 16KB rom banks (8MB) 0x4000
+
+extern unsigned RAM_bank_count;
 
 typedef enum {SRAM = 0x1, BATTERY = 0x2, RTC = 0x4, RUMBLE = 0x8, ACCELEROMETER = 0x10} features;
 
@@ -25,7 +30,11 @@ typedef struct {
 /*  Setup a memory bank controller for the given
  *  cartridge type id. Returns 1 if successful,
  *  0 if not implemented or invalid. */
-int setup_MBC(int no, unsigned ram_banks, char const *file_name);
+int setup_MBC(int no, unsigned ram_banks, unsigned rom_banks, char const *file_name);
+
+
+// Frees RAM/ROM banks
+void teardown_MBC();
 
 
 /* Writes/Reads ROM SRAM from file, used for

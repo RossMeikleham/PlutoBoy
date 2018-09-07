@@ -34,21 +34,21 @@ void setup_MMM01(int flags) {
 uint8_t read_MMM01(uint16_t addr) {
     if ((addr & 0x8000) == 0x0000) {
         if (rom_mode == 0) {
-            return ROM_banks[addr/0x4000][addr & 0x3FFF];
+            return ROM_banks[addr];
         }
      }
 
      if ((addr & 0xC000) == 0x0000) {
-        return ROM_banks[rom_base + 2][addr]; //1st 2 banks used by game menu
+        return ROM_banks[((rom_base + 2) * ROM_BANK_SIZE) | addr]; //1st 2 banks used by game menu
      }
 
      if ((addr & 0xC000) == 0x4000) {
-        return ROM_banks[1 + rom_base + rom_select + (addr/0x4000)][addr & 0x3FFF];
+        return ROM_banks[((1 + rom_base + rom_select) * ROM_BANK_SIZE) + addr];
      }
 
      if ((addr & 0xE000) == 0xA000) {
         if (ram_banking) {
-            return RAM_banks[ram_select][addr & 0x1FFF];   
+            return RAM_banks[(ram_select * RAM_BANK_SIZE) | (addr & 0x1FFF)];   
         }
      }
 
@@ -94,7 +94,7 @@ void write_MMM01(uint16_t addr, uint8_t val) {
         case 0xA000:
         case 0xB000: // Write to RAM bank if RAM banking enabled 
                     if (ram_banking) {
-                        RAM_banks[ram_select][addr - 0xA000] = val; 
+                        RAM_banks[(ram_select * RAM_BANK_SIZE) | (addr - 0xA000)] = val; 
                     }
                     break;
     }    

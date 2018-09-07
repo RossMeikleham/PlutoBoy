@@ -16,6 +16,7 @@
 #include "../non_core/logger.h"
 #include "../non_core/debugger.h"
 
+int quit = 0;
 
 // Debug options
 int debug = 0;
@@ -30,21 +31,29 @@ int breakpoint = BREAKPOINT_OFF;
  * otherwise */
 int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
-    unsigned char *buffer = (unsigned char *)(ROM_banks);
+    uint8_t rom_header[0x50];
     unsigned long size;
 
     //Start logger
     set_log_level(LOG_INFO);
 
     log_message(LOG_INFO, "About to open file %s\n", file_path);
-
-      if (!(size = load_rom_from_file(file_path, buffer))) {
-        log_message(LOG_ERROR, "failed to load ROM\n");
+    FILE *file;
+    if (!(file = fopen(file_path,"rb"))) {
+        log_message(LOG_ERROR, "Error opening file %s\n", file_path);
         return 0;
     }
-    
-	log_message(LOG_INFO, "File loaded %s\n", file_path);
-    if (!load_rom(file_path, buffer, size, dmg_mode)) {
+
+    if ((fseek(file, 0x100, SEEK_SET) != 0) 
+        || (fread(rom_header, 1, sizeof(rom_header), file) != sizeof(rom_header))) {
+        log_message(LOG_ERROR, "Error reading ROM header info\n");
+        fclose(file);
+        return 0;    
+    };
+    fclose(file);
+
+	log_message(LOG_INFO, "ROM Header loaded %s\n", file_path);
+    if (!load_rom(file_path, rom_header, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }
@@ -132,8 +141,9 @@ void run_one_frame() {
         }
 
         cycles += current_cycles;
-        if (cycles > 5000) {
-            update_keys();
+      
+        if (cycles > 15000) {
+            quit |= update_keys();
             cycles = 0;
         }
         skip_bug = handle_interrupts();
@@ -162,7 +172,11 @@ void run() {
     log_message(LOG_INFO, "About to setup debug\n");
     setup_debug();
     log_message(LOG_INFO, "About to run\n");
-    for(;;) {
+    while(!quit) {
         run_one_frame();
     }
+}
+
+void finalize_emu() {
+    teardown_memory();
 }

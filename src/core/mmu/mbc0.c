@@ -13,7 +13,7 @@
 uint8_t read_MBC0(uint16_t addr) {
     
     if (addr <= 0x8000) {
-        return ROM_banks[0][addr];
+        return ROM_banks[addr];
     }
     
     return 0x0;

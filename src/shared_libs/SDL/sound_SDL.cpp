@@ -3,7 +3,12 @@
 #include "../../core/audio/Multi_Buffer.h"
 
 #include <cstdio>
+
+#if defined THREE_DS
+#include "SDL/SDL.h"
+#else
 #include "SDL.h"
+#endif
 
 #include "audio/Sound_Queue.h"
 

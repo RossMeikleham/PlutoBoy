@@ -1,6 +1,7 @@
 //HDMA CGB module
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 #include "hdma.h"
 #include "memory.h"
 
@@ -15,16 +16,16 @@ void check_cgb_dma(uint8_t value) {
     
     if (hdma_in_progress) {
         if (value & BIT_7) {
-            io_write_override(HDMA5_REG - 0xFF00, value & 0x7F); // Transferring
+            io_mem[HDMA5_REG] = value & 0x7F; // Transferring
         } else {
-            io_write_override(HDMA5_REG - 0xFF00, 0xFF); // Finished transferring
+            io_mem[HDMA5_REG] = 0xFF; // Finished transferring
             hdma_in_progress = 0;
         }
     
     } else {
         if (value & BIT_7) {
             hdma_in_progress = 1;
-            io_write_override(HDMA5_REG - 0xFF00, value & 0x7F);
+            io_mem[HDMA5_REG] = value & 0x7F;
             if (lcd_hblank_mode()) {
                 long cycles = perform_hdma();
                 add_current_cycles(cycles);
@@ -60,16 +61,16 @@ long perform_hdma() {
         hdma_source = 0xA000;
     }
 
-    io_write_override(HDMA1_REG - 0xFF00, hdma_source >> 8); 
-    io_write_override(HDMA2_REG - 0xFF00, hdma_source & 0xFF);
-    io_write_override(HDMA3_REG - 0xFF00, hdma_dest >> 8);
-    io_write_override(HDMA4_REG - 0xFF00, hdma_dest & 0xFF);
+    io_mem[HDMA1_REG] = hdma_source >> 8; 
+    io_mem[HDMA2_REG] = hdma_source & 0xFF;
+    io_mem[HDMA3_REG] = hdma_dest >> 8;
+    io_mem[HDMA4_REG] = hdma_dest & 0xFF;
 
     hdma_bytes -= 0x10;
 
-    io_write_override(HDMA5_REG - 0xFF00, get_mem(HDMA5_REG) - 1); // 1 less block to transfer
+    io_mem[HDMA5_REG]--; // 1 less block to transfer
 
-    if (get_mem(HDMA5_REG) == 0xFF || hdma_bytes == 0) {
+    if (io_mem[HDMA5_REG] == 0xFF || hdma_bytes == 0) {
         hdma_in_progress = 0;
     }
        
@@ -85,11 +86,7 @@ void perform_gdma(uint8_t value) {
         set_mem(dest + i, get_mem(source + i));       
     }
 
-    io_write_override(HDMA1_REG - 0xFF00, 0xFF); 
-    io_write_override(HDMA2_REG - 0xFF00, 0xFF);
-    io_write_override(HDMA3_REG - 0xFF00, 0xFF);
-    io_write_override(HDMA4_REG - 0xFF00, 0xFF);
-    io_write_override(HDMA5_REG - 0xFF00, 0xFF); 
+    memset(io_mem + HDMA1_REG, 0xFF, HDMA5_REG - HDMA1_REG + 1);
 
     hdma_source += hdma_bytes;
     hdma_dest += hdma_bytes;

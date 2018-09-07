@@ -1,6 +1,6 @@
 # Plutoboy 
 
-A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, Sony PSP, and PSP Vita.
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, PSP, PSP Vita, and 3DS.
 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
@@ -17,6 +17,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
 | ![VitaIcon](/images/ps-vita.png?raw=true) PSP Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
+| ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 
 Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
 
@@ -41,8 +42,7 @@ Some Color ROMS can also be run in DMG mode:
 
 # Currently Implemented
 
-- Complete instruction set of the Gameboy's modified 
-  Z80 processor with correct timings with respect to 
+- Complete instruction set of the Gameboy's Sharp LR35902 processor with correct timings with respect to 
   execution of instructions and memory accesses.
   (according to Blargg's test ROMs)
 
@@ -68,7 +68,7 @@ Some Color ROMS can also be run in DMG mode:
 
 - Support for most Gameboy Color ROMs 
 
-- Simple debugger which can:  
+- Simple debugger (for desktop platforms) which can:  
    - Step through instructions,
    - Set breakpoints,
    - View the contents of memory and registers
@@ -91,28 +91,28 @@ Some Color ROMS can also be run in DMG mode:
 
 - Fixes for graphical glitches and bugs in some ROMS. 
 
-#Using Desktop
-`gb_emu_c [options] romfile`
+# Using Desktop
+`plutoboy [options] romfile`
 use the `-h` option to display help info
 
 The -d flag starts the emulator in debugging mode.
-##Controls:
+## Controls:
   - a -> a
   - s -> b
   - enter -> start
   - spacebar -> select
   - arrows keys -> d-pad
 
-#Using PSP
+# Using PSP
   Select the Gameboy file with "X" to run in cgb mode or "O" to run in dmg mode.
-##Controls:
+## Controls:
   - X -> A
   - O -> B
   - Start -> Start
   - Select -> Select
   - Joypad uses the PSP Joypad
 
-#Build Instructions
+# Build Instructions
 
 ## Linux
 
@@ -360,15 +360,38 @@ cmake ..
 make
 ```
 
-# Link Cable guide
+# 3DS
+
+### Building with Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
+docker build -t plutoboy_3ds -f build/3DS/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_3ds
+```
+
+This should produce a `Plutoboy.3dsx` file and a `Plutoboy.cia` file.
+
+The 3dsx file can be loaded through the 3ds homebrew launcher using the netloader (press Y in the app), and use the 3dslink program to transfer the app.
+
+The cia file can be installed onto the 3DS using the fbi app installer.
+
+It should run at the full 59.7 fps on the new 2DS/3DS, with the original 2DS/3DS it runs very slow.
+
+R button turns the frame limiter off, L button turns it back on.
+
+File I/O for some reason is very slow with 3DS homebrew, games which rapidly save to SRAM and turn it off may slowdown for a while due to this.
+
+
+# Link Cable guide (Desktop platforms Windows/Linux/OSX)
 Currently serial I/O implementation is rather buggy with regards to a few
 games, it works perfectly fine with others. It currently only works with
 2 emulators on the same machine (localhost), but it's trivial to adjust the ports and the server
 the client connects to by editing the server address in the serial SDL file, and recompiling.
-I hope to fix the bugs and improve this feature at a later date.
+I hope to fix the bugs and improve this feature at a later date. (Synchronization needs fixed)
 
-First run an emulator instance as server `gb game [-d] server`, then 
-run another emulator instance as a client `gb game [-d] client`.
+First run an emulator instance as server `plutoboy game [-d] server`, then 
+run another emulator instance as a client `plutoboy game [-d] client`.
 
 Each instance of the emulator should now act like it is connected by a link cable,
 and you should be able to play some multiplayer games.
