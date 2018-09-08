@@ -273,8 +273,11 @@ static void draw_tile_window_row(uint16_t tile_mem, uint16_t bg_mem) {
     uint8_t win_y = io_mem[WY_REG];//window_line;
     int16_t y_pos = row - win_y; // Get line 0 - 255 being drawn    
     uint16_t tile_row = (y_pos >> 3); // Get row 0 - 31 of tile
-    int16_t win_x = io_mem[WX_REG] - 7;
     
+    /* WX_REG values < 7 are treated as WX_REG = 7, fixes clipping
+     * of the podracer in star wars episode 1 - racer */
+    int16_t win_x = io_mem[WX_REG] < 7 ? 0 : io_mem[WX_REG] - 7;
+   
     if (win_x > 159 || io_mem[WY_REG] > 143 || row < win_y) {
         return;
     }
