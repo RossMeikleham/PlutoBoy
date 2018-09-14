@@ -208,7 +208,7 @@ void check_keys_pressed(float x, float y, int state) {
             if (rumble_on && !buttons[i].state && state) {
                // SDL_HapticRumblePlay(haptic, 0.5, 100);
                #if defined(__ANDROID__)
-                  vibrate();
+                  //vibrate(); too slow atm
                #endif
             }
             buttons[i].state = state;
