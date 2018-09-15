@@ -18,6 +18,7 @@ static uint8_t *control;
 
 int setup_serial_io(ClientOrServer cs, unsigned port) {
     if (cs == CLIENT) {
+        printf("setting up client!\n");
         return setup_client(port);
     } else if (cs == SERVER) {
         return setup_server(port);

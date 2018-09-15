@@ -18,7 +18,7 @@
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
     !defined(__ANDROID__) &&\
-    defined(VITASDK)
+    !defined(VITASDK)
 #include "SDL_net.h"
 #endif
 
@@ -29,7 +29,7 @@ static int connection_up = 0;
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
     !defined(__ANDROID__) &&\
-    defined(VITASDK)
+    !defined(VITASDK)
 static TCPsocket client = NULL;
 static TCPsocket server = NULL;
 static SDLNet_SocketSet socketset; 
@@ -41,10 +41,9 @@ int setup_client(unsigned port) {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
     !defined(__ANDROID__) &&\
-    defined(VITASDK)
-    
-    is_client = 1;
+    !defined(VITASDK)
 
+    is_client = 1;
     log_message(LOG_INFO, "Attempting to connect to server on port %u\n",port);
     //SDL_INIT(SDL_INIT_EVERYTHING); 
     SDLNet_Init();   
@@ -54,8 +53,13 @@ int setup_client(unsigned port) {
     //the future
     SDLNet_ResolveHost(&ip, "localhost", port);
 
-    client =  SDLNet_TCP_Open(&ip);
+    while (client == NULL) {
+        client =  SDLNet_TCP_Open(&ip);
+        SDL_Delay(1000);
+    }
+
     socketset = SDLNet_AllocSocketSet(1); 
+    
     char buf[100];
     int i = SDLNet_TCP_Recv(client, buf, 100);
     for (int j = 0; j < i; j++) {
@@ -77,7 +81,7 @@ int setup_server(unsigned port) {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
     !defined(__ANDROID__) &&\
-    defined(VITASDK)
+    !defined(VITASDK)
     
     is_server = 1;
 
@@ -114,7 +118,7 @@ int transfer(uint8_t data, uint8_t *recv, int ext) {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
      !defined(__ANDROID__) &&\
-     defined(VITASDK) 
+     !defined(VITASDK) 
     
     log_message(LOG_INFO, "Sending byte %x\n", data);
     if ((is_server || is_client) && !ext) {
@@ -159,7 +163,7 @@ void quit_io() {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
  !defined(__ANDROID__) &&\
- defined(VITASDK)
+ !defined(VITASDK)
     client = NULL;
     server = NULL;
     SDLNet_Quit();
@@ -173,7 +177,7 @@ int transfer_ext(uint8_t data, uint8_t *recv) {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
  !defined(__ANDROID__) &&\
- defined(VITASDK)
+ !defined(VITASDK)
 
     if ( (is_client || is_server) &&
          (SDLNet_CheckSockets(socketset, 0) > 0) &&
@@ -192,7 +196,7 @@ uint8_t transfer_int(uint8_t data) {
 #if !defined(PSP) && !defined(EMSCRIPTEN) && !defined(DREAMCAST) &&\
     !(defined(__APPLE__) && TARGET_OS_IPHONE) &&\
  !defined(__ANDROID__) &&\
- defined(VITASDK)
+ !defined(VITASDK)
     
     uint8_t res;
     if (transfer(data, &res, 0)) {

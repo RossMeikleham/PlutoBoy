@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
             else if (strcmp(argv[i], "-h") == 0) {print_help(argv);}
             else if (strcmp(argv[i], "-help") == 0) {print_help(argv);}
             else if (strncmp(argv[i], "-connect=", strlen("-connect=")) == 0) {
-                cs = getConnection(argv[i] + strlen("-connect"));
+                cs = getConnection(argv[i] + strlen("-connect="));
                 if (cs == NO_CONNECT) {
                     ARG_ERR;
                 }
