@@ -17,8 +17,8 @@ ClientOrServer getConnection(char *arg) {
 }
 
 
-void print_help() {
-    printf("Usage: gb_emu [options] rom_file\n");
+void print_help(char **argv) {
+    printf("Usage: %s [options] rom_file\n", argv[0]);
     printf(" -debug \t\t\t start emulator in debug mode\n");
     printf(" -dmg   \t\t\t run emulator in dot matrix mode instead of color mode\n");
     printf(" -connect=client/server  \t run emulator as client or server mode for linking\n");
@@ -43,7 +43,8 @@ int main(int argc, char* argv[]) {
 
             if (strcmp(argv[i], "-debug") == 0) {debug = 1;}
             else if (strcmp(argv[i], "-dmg") == 0) {dmg_mode = 1;}
-            else if (strcmp(argv[i], "-h") == 0) {print_help();}
+            else if (strcmp(argv[i], "-h") == 0) {print_help(argv);}
+            else if (strcmp(argv[i], "-help") == 0) {print_help(argv);}
             else if (strncmp(argv[i], "-connect=", strlen("-connect=")) == 0) {
                 cs = getConnection(argv[i] + strlen("-connect"));
                 if (cs == NO_CONNECT) {

@@ -95,7 +95,7 @@ static int help(char *buf) {
                "continue:    execute forever\n"
                "setb [n]:    set a breakpoint for address n\n"
                "showmem [n]: display contents of memory address n\n"
-               "disasm [n]:  dissasemble instruction at address n \n");
+               "disasm [n]:  disassemble instruction at address n \n");
         return 1;
     }
     return 0;
