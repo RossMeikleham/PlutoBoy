@@ -100,6 +100,19 @@ static void vibrate() {
 }
 #endif
 
+
+static int isValidEvent(void * userdata, SDL_Event* event)
+{
+    return event->type == SDL_QUIT ||
+           event->type == SDL_KEYDOWN || 
+           event->type == SDL_KEYUP || 
+           event->type == SDL_JOYBUTTONDOWN || 
+           event->type == SDL_JOYBUTTONUP || 
+           event->type == SDL_FINGERUP || 
+           event->type == SDL_FINGERDOWN || 
+           event->type == SDL_FINGERMOTION; 
+}
+
 /*  Intialize the joypad, should be called before any other
  *  joypad functions */
 void init_joypad() { 
@@ -170,6 +183,8 @@ void init_joypad() {
     buttons[SELECT].key_code = button_config[SELECT];
     b_rect rect_se = {SELECT_X, SELECT_Y(current.h), SELECT_W, SELECT_H};
     buttons[SELECT].rect = rect_se; 
+
+    SDL_SetEventFilter(isValidEvent, NULL);
 }
 
 /* Check each individual GameBoy key. Returns 1 if
@@ -208,7 +223,7 @@ void check_keys_pressed(float x, float y, int state) {
             if (rumble_on && !buttons[i].state && state) {
                // SDL_HapticRumblePlay(haptic, 0.5, 100);
                #if defined(__ANDROID__)
-                  //vibrate(); too slow atm
+                  vibrate();
                #endif
             }
             buttons[i].state = state;
@@ -268,6 +283,7 @@ void unset_keys() {
     }
 }
 
+
 /* Update current state of GameBoy keys as well as control
  * other external actions for the emulator */
 int update_keys() {
@@ -322,7 +338,7 @@ int update_keys() {
                 case SDL_FINGERDOWN:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 1);
                     break;
-                
+
                 case SDL_FINGERUP:
                     check_keys_pressed(event.tfinger.x, event.tfinger.y, 0);
                     break;
@@ -334,17 +350,12 @@ int update_keys() {
                     check_keys_moved(event.tfinger.x, event.tfinger.y,
                                      event.tfinger.dx, event.tfinger.dy);
                     break;
+                default: 
+                    printf("%d\n",  event.type);
+                    
 #endif
             }                   
         }
 
         return 0;
 }
-
-
-
-
-
-
-
-
