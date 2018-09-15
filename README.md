@@ -16,7 +16,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
-| ![VitaIcon](/images/ps-vita.png?raw=true) PSP Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
+| ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
 | ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
 
 Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
