@@ -33,6 +33,8 @@ void check_lcd_coincidence();
 
 int screen_enabled();
 
+int lcd_vblank_mode();
+
 int lcd_hblank_mode();
 
 #endif //LCD_H

@@ -66,6 +66,10 @@ int get_lcd_mode() {
     return current_lcd_mode;
 }
 
+int lcd_vblank_mode() {
+    return current_lcd_mode == 1;    
+}
+
 int lcd_hblank_mode() {
     return current_lcd_mode == 0;
 }

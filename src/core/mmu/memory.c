@@ -548,8 +548,10 @@ void io_write_mem(uint8_t addr, uint8_t val) {
             lcd_interrupt_signal &= ((new_stat >> 3) & 0x0F);
             set_interrupt_signal(lcd_interrupt_signal);
             
-            // DMG STAT bug
-            if (!cgb) {
+            // DMG STAT bug, whenever STAT register is written to in DMG
+            // when the screen is enabled and in HBLANK or VBLANK, a STAT interrupt
+            // is enabled
+            if (!cgb && screen_enabled() && (lcd_hblank_mode() || lcd_vblank_mode())) {
                 raise_interrupt(LCD_INT);
             }
 
