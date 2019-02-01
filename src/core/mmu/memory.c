@@ -547,6 +547,11 @@ void io_write_mem(uint8_t addr, uint8_t val) {
             uint8_t mode = get_lcd_mode();
             lcd_interrupt_signal &= ((new_stat >> 3) & 0x0F);
             set_interrupt_signal(lcd_interrupt_signal);
+            
+            // DMG STAT bug
+            if (!cgb) {
+                raise_interrupt(LCD_INT);
+            }
 
             if (lcdc & BIT_7) {
                 if ((new_stat & BIT_3) && (mode == 0)) {
