@@ -33,4 +33,8 @@ void set_timer_frequency(unsigned int n);
 * the last time this function was called. */
 void update_timers(long cycles);
 
+/* Calculates the number of cycles until any of the timer
+ * IO registers are written to */
+long timer_cycles_til_external_state_change();
+
 #endif //TIMERS_H

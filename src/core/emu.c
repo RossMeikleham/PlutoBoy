@@ -9,6 +9,7 @@
 #include "sound.h"
 #include "emu.h"
 #include "serial_io.h"
+#include "cycle_handler.h"
 #include <stdio.h>
 
 #include "../non_core/joypad.h"
@@ -120,7 +121,7 @@ void run_one_frame() {
     while (!frame_drawn) {
         if (halted || stopped) {
             long current_cycles = cgb_speed ? 2 : 4;
-            update_timers(current_cycles);
+            //update_timers(current_cycles);
             sound_add_cycles(current_cycles);
             inc_serial_cycles(current_cycles);
 
@@ -137,7 +138,11 @@ void run_one_frame() {
         else if (!(halted || stopped)) {
             current_cycles = 0;
             current_cycles += exec_opcode(skip_bug);
+            cur_io_cycles += current_cycles;
+        }
 
+        if (cur_io_cycles > io_cycles_til_change) {
+            invalidate_current_cycle_run();
         }
 
         cycles += current_cycles;
@@ -172,6 +177,8 @@ void run() {
     log_message(LOG_INFO, "About to setup debug\n");
     setup_debug();
     log_message(LOG_INFO, "About to run\n");
+    
+    invalidate_current_cycle_run();
     while(!quit) {
         run_one_frame();
     }

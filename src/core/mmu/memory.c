@@ -14,6 +14,7 @@
 #include "../sound.h"
 #include "../serial_io.h"
 #include "../lcd.h"
+#include "../cycle_handler.h"
 
 #include "../../non_core/joypad.h"
 #include "../../non_core/logger.h"
@@ -782,6 +783,8 @@ void io_write_mem(uint8_t addr, uint8_t val) {
             io_mem[addr] = val;
             break;
     }
+
+    invalidate_current_cycle_run();
 }
 
 

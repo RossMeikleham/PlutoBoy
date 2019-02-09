@@ -9,7 +9,19 @@ static const long timer_frequencies[] = {1024, 16, 64, 256};
 
 static long timer_frequency = -1;
 static long timer_counter = 0;
+static long divider_counter = 0;
 static uint64_t clocks = 0;
+
+static long get_timer_frequency() {
+    return cgb_speed ? timer_frequency / 2 : timer_frequency;
+}
+
+long timer_cycles_til_external_state_change() {
+    long tima_inc = get_timer_frequency() - timer_counter;
+    long div_inc = (cgb_speed ? 128 : 256) - divider_counter; 
+	
+    return tima_inc < div_inc ? tima_inc : div_inc;
+}
 
 /* Change the timer frequency to another of the possible
  * frequencies, resets the timer_counter 
@@ -18,10 +30,6 @@ void set_timer_frequency(unsigned int n) {
     if (n < TIMER_FREQUENCIES_LEN) {
         timer_frequency = timer_frequencies[n];
     }
-}
-
-long get_timer_frequency() {
-    return cgb_speed ? timer_frequency / 2 : timer_frequency;
 }
 
 /*  Increments the TIMA register
@@ -49,8 +57,6 @@ void increment_div() {
 
 void update_divider_reg(long cycles) {
     
-    static long divider_counter = 0;
-
 	divider_counter += cycles;
 	long div_cycles = cgb_speed ? 128 : 256;
 	while (divider_counter >= div_cycles) {

@@ -72,7 +72,7 @@ void update_all_cycles(long cycles) {
     if (cgb_speed) {
         cycles /= 2;
     }   
-        update_timers(cycles); 
+//        update_timers(cycles); 
         long updated_cycles = update_graphics(cycles); 
         sound_add_cycles(updated_cycles);
         inc_serial_cycles(updated_cycles);
