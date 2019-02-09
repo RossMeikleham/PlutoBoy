@@ -41,8 +41,8 @@ void check_cgb_dma(uint8_t value) {
 // returns the amount of machine cycles taken
 long perform_hdma() {
 
-    uint16_t source = hdma_source & 0xFFF0;
-    uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
+    uint16_t source = hdma_source;
+    uint16_t dest = hdma_dest | 0x8000;
 
     for (int i = 0; i < 0x10; i++) {
         set_mem(dest + i, get_mem(source + i));       
