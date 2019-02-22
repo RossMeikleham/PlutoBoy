@@ -14,7 +14,7 @@ static void min_cycles_til_next_external_state_change() {
 }
 
 void invalidate_current_cycle_run() {
-    update_timers(cur_io_cycles);
+    //update_timers(cur_io_cycles);
     cur_io_cycles = 0;
 
     current_cycles_valid = true;

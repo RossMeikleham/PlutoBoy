@@ -41,8 +41,8 @@ void check_cgb_dma(uint8_t value) {
 // returns the amount of machine cycles taken
 long perform_hdma() {
 
-    uint16_t source = hdma_source & 0xFFF0;
-    uint16_t dest = (hdma_dest & 0x1FF0) | 0x8000;
+    uint16_t source = hdma_source;
+    uint16_t dest = (hdma_dest) | 0x8000;
 
     for (int i = 0; i < 0x10; i++) {
         set_mem(dest + i, get_mem(source + i));       
@@ -73,7 +73,7 @@ long perform_hdma() {
     if (io_mem[HDMA5_REG] == 0xFF || hdma_bytes == 0) {
         hdma_in_progress = 0;
     }
-       
+
     return (cgb_speed ? 68 : 36); 
 }
 

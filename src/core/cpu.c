@@ -28,8 +28,8 @@ static int interrupts_enabled = 1;
 static int interrupts_enabled_timer = 0;
 static uint8_t opcode;
 
-static int timer_cycles_passed = 0;
-
+static void (*intermediate_instruction)() = NULL;
+static int intermediate_cycles = 0;
 
 static union {
   struct{uint16_t AF,BC,DE,HL,SP,PC;};
@@ -72,7 +72,7 @@ void update_all_cycles(long cycles) {
     if (cgb_speed) {
         cycles /= 2;
     }   
-//        update_timers(cycles); 
+        update_timers(cycles); 
         long updated_cycles = update_graphics(cycles); 
         sound_add_cycles(updated_cycles);
         inc_serial_cycles(updated_cycles);
@@ -191,23 +191,34 @@ void invalid_op(){
  static void LD_memHL_L() {set_mem(reg.HL, reg.L);}
 
 
+static void LD_memHL_n_part2() {
+    set_mem(reg.HL, IMMEDIATE_8_BIT);
+    intermediate_cycles = 8;
+}
+
 /* Load immediate value into memory location HL */
  static void LD_memHL_n() {
-    update_all_cycles(4);   
-    timer_cycles_passed = 4; 
-    set_mem(reg.HL, IMMEDIATE_8_BIT);
+    // Part 1 acts like NOP
+    //timer_cycles_passed = 4;
+    intermediate_instruction = LD_memHL_n_part2;
 }
+
 
 /*  Load value at mem address given by combined registers into A */
  static void LD_A_memBC() { reg.A = get_mem(reg.BC); }
  static void LD_A_memDE() { reg.A = get_mem(reg.DE); }
 
 /* Load value at memory address given by immediate 16 bits into A */
- static void LD_A_memnn() { 
-    update_all_cycles(8);   
-    
+ static void LD_A_memnn_part2() { 
     reg.A = get_mem(IMMEDIATE_16_BIT);
-    timer_cycles_passed = 8;
+    intermediate_cycles = 8;
+}
+
+static void LD_A_memnn() { 
+    /*update_all_cycles(8);   
+    reg.A = get_mem(IMMEDIATE_16_BIT);
+    timer_cycles_passed = 8;*/
+    intermediate_instruction = LD_A_memnn_part2;
 }
 
 /* Load A into memory address contained at register BC */
@@ -217,10 +228,16 @@ void invalid_op(){
  static void LD_memDE_A() { set_mem(reg.DE, reg.A); }
 
 /*  Load A into memory address given by immediate 16 bits */
- static void LD_memnn_A() { 
-    update_all_cycles(8);   
+ static void LD_memnn_A_part2() { 
     set_mem(IMMEDIATE_16_BIT, reg.A);
-    timer_cycles_passed = 8;
+    intermediate_cycles = 8;
+}
+
+static void LD_memnn_A() { 
+   /*update_all_cycles(8);   
+    set_mem(IMMEDIATE_16_BIT, reg.A);
+    timer_cycles_passed = 8;*/
+    intermediate_instruction = LD_memnn_A_part2;
 }
 
 /* Put value at address HL into A, then decrement HL */
@@ -236,18 +253,32 @@ void invalid_op(){
  static void LDI_HL_A() { set_mem(reg.HL, reg.A); reg.HL++; }
 
 /* Put A into memory address $FF00+n*/
- static void LDH_n_A() { 
-    update_all_cycles(4);   
+ static void LDH_n_A_part2() { 
     io_write_mem(IMMEDIATE_8_BIT, reg.A);
-    timer_cycles_passed = 4;
+    intermediate_cycles = 4;
+}
+ 
+ static void LDH_n_A() { 
+    /*update_all_cycles(4);   
+    io_write_mem(IMMEDIATE_8_BIT, reg.A);
+    timer_cycles_passed = 4;*/
+    intermediate_instruction = LDH_n_A_part2;
 }
 
 /* Put memory address $FF00+n into A */
- static void LDH_A_n() { 
-    update_all_cycles(4);
+ static void LDH_A_n_part2() { 
     uint8_t val = IMMEDIATE_8_BIT;   
     reg.A = ((val >= 0x10) && (val <= 0x3F)) ? read_apu(val | 0xFF00) : io_mem[val];
-    timer_cycles_passed = 4;
+    intermediate_cycles = 4;
+    //timer_cycles_passed = 4;
+}
+
+ static void LDH_A_n() { 
+    /*update_all_cycles(4);
+    uint8_t val = IMMEDIATE_8_BIT;   
+    reg.A = ((val >= 0x10) && (val <= 0x3F)) ? read_apu(val | 0xFF00) : io_mem[val];
+    timer_cycles_passed = 4;*/
+    intermediate_instruction = LDH_A_n_part2;
 }
 
 /* Put memory address $FF00 + C into A */
@@ -513,11 +544,19 @@ void invalid_op(){
  static void INC_E(){reg.E = INC_8(reg.E);} 
  static void INC_H(){reg.H = INC_8(reg.H);} 
  static void INC_L(){reg.L = INC_8(reg.L);} 
+
+ static uint8_t inc_arg = 0;
+ static void INC_memHL_part2(){ 
+    set_mem(reg.HL, inc_arg);
+    intermediate_cycles = 8;
+}
+
  static void INC_memHL(){ 
-    uint8_t inc = INC_8(get_mem(reg.HL));
-    update_all_cycles(4);
+    inc_arg = INC_8(get_mem(reg.HL));
+    intermediate_instruction = INC_memHL_part2;
+    /*update_all_cycles(4);
     set_mem(reg.HL, inc);
-    timer_cycles_passed = 4;
+    timer_cycles_passed = 4;*/
 }
 
 
@@ -539,11 +578,19 @@ void invalid_op(){
  static void DEC_E(){reg.E = DEC_8(reg.E);} 
  static void DEC_H(){reg.H = DEC_8(reg.H);} 
  static void DEC_L(){reg.L = DEC_8(reg.L);} 
+ 
+ static uint8_t dec_arg = 0;
+ static void DEC_memHL_part2(){ 
+    set_mem(reg.HL, dec_arg);
+    intermediate_cycles = 8;
+}
+ 
  static void DEC_memHL(){ 
-    uint8_t dec = DEC_8(get_mem(reg.HL));
-    update_all_cycles(4);
+    dec_arg = DEC_8(get_mem(reg.HL));
+    /*update_all_cycles(4);
     set_mem(reg.HL, dec);
-    timer_cycles_passed = 4;
+    timer_cycles_passed = 4;*/
+    intermediate_instruction = DEC_memHL_part2;
 }
 
 
@@ -611,12 +658,25 @@ void invalid_op(){
  static void SWAP_E(){reg.E = SWAP_n(reg.E);}
  static void SWAP_H(){reg.H = SWAP_n(reg.H);}
  static void SWAP_L(){reg.L = SWAP_n(reg.L);}
+ 
+ static uint8_t SWAP_mem_result = 0;
+ static void SWAP_memHL_part3() {
+    set_mem(reg.HL, SWAP_mem_result);
+    intermediate_cycles = 8;
+ }
+
+ static void SWAP_memHL_part2() {
+    SWAP_mem_result = SWAP_n(get_mem(reg.HL));
+    intermediate_instruction = SWAP_memHL_part3;
+    intermediate_cycles = 4;
+ }
 
  static void SWAP_memHL() {
-    update_all_cycles(4);
+    /*update_all_cycles(4);
     uint8_t result = SWAP_n(get_mem(reg.HL));
     update_all_cycles(4);
-    set_mem(reg.HL, result);
+    set_mem(reg.HL, result);*/
+    intermediate_instruction = SWAP_memHL_part2;
 }
 
 /*  Decimal adjust register A so that correct 
@@ -762,14 +822,28 @@ void invalid_op(){
  static void RLC_H() { reg.H = RLC_N(reg.H);}
  static void RLC_L() { reg.L = RLC_N(reg.L);}
 
+ static uint8_t RLC_mem_result = 0;
+ static void RLC_memHL_part3() {
+    set_mem(reg.HL, RLC_mem_result);
+    intermediate_cycles = 8;
+ 
+ }
+
+ static void RLC_memHL_part2() {
+    RLC_mem_result = RLC_N(get_mem(reg.HL));
+    intermediate_instruction = RLC_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
  static void RLC_memHL() {
+    intermediate_instruction = RLC_memHL_part2;
+    /* 
     update_all_cycles(4);
     uint8_t res = RLC_N(get_mem(reg.HL));
     update_all_cycles(4);
     set_mem(reg.HL, res);
+    */
 }
-
-
 
 
 /*  Rotate n left through carry flag */
@@ -792,13 +866,28 @@ void invalid_op(){
  static void RL_H() {reg.H = RL_N(reg.H);}
  static void RL_L() {reg.L = RL_N(reg.L);}
 
- static void RL_memHL() {
-    update_all_cycles(4);
-    uint8_t result = RL_N(get_mem(reg.HL));
-    update_all_cycles(4);
-    set_mem(reg.HL, result);
-}
 
+ static uint8_t RL_mem_result = 0;
+ static void RL_memHL_part3() {
+    set_mem(reg.HL, RL_mem_result);
+    intermediate_cycles = 8;
+ }
+
+ static void RL_memHL_part2() {
+    RL_mem_result = RL_N(get_mem(reg.HL));
+    intermediate_instruction = RL_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
+ static void RL_memHL() {
+    intermediate_instruction = RL_memHL_part2;
+    /* 
+    update_all_cycles(4);
+    uint8_t res = RL_N(get_mem(reg.HL));
+    update_all_cycles(4);
+    set_mem(reg.HL, res);
+    */
+}
 
 /* Rotate N right, Old bit 0 to Carry flag */
  static uint8_t RRC_N(uint8_t val)
@@ -818,14 +907,29 @@ void invalid_op(){
  static void RRC_E() {reg.E = RRC_N(reg.E);}
  static void RRC_H() {reg.H = RRC_N(reg.H);}
  static void RRC_L() {reg.L = RRC_N(reg.L);}
-/*  12 cycles */
- static void RRC_memHL() {
-    update_all_cycles(4);
-    uint8_t result = RRC_N(get_mem(reg.HL));
-    update_all_cycles(4);
-    set_mem(reg.HL, result);
-}
+/*  12 cycles */ 
+ static uint8_t RRC_mem_result = 0;
+ static void RRC_memHL_part3() {
+    set_mem(reg.HL, RRC_mem_result);
+    intermediate_cycles = 8;
+ 
+ }
 
+ static void RRC_memHL_part2() {
+    RRC_mem_result = RRC_N(get_mem(reg.HL));
+    intermediate_instruction = RRC_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
+ static void RRC_memHL() {
+    intermediate_instruction = RRC_memHL_part2;
+    /* 
+    update_all_cycles(4);
+    uint8_t res = RRC_N(get_mem(reg.HL));
+    update_all_cycles(4);
+    set_mem(reg.HL, res);
+    */
+}
 
 /*  Rotate N right through Carry flag */
  static uint8_t RR_N(uint8_t val)
@@ -847,15 +951,29 @@ void invalid_op(){
  static void RR_H() {reg.H = RR_N(reg.H);}
  static void RR_L() {reg.L = RR_N(reg.L);}
 /*  12 cycles */
+ static uint8_t RR_mem_result = 0;
+ static void RR_memHL_part3() {
+    set_mem(reg.HL, RR_mem_result);
+    intermediate_cycles = 8;
+ 
+ }
+
+ static void RR_memHL_part2() {
+    RR_mem_result = RR_N(get_mem(reg.HL));
+    intermediate_instruction = RR_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
  static void RR_memHL() {
+    intermediate_instruction = RR_memHL_part2;
+    /* 
     update_all_cycles(4);
-    uint8_t result = RR_N(get_mem(reg.HL));
+    uint8_t res = RR_N(get_mem(reg.HL));
     update_all_cycles(4);
-    set_mem(reg.HL, result);
+    set_mem(reg.HL, res);
+    */
 }
-
-
-
+ 
  static uint8_t SLA_N(uint8_t val)
 {
     reg.C_FLAG = val > 0x7F;
@@ -876,14 +994,27 @@ void invalid_op(){
  static void SLA_H() {reg.H = SLA_N(reg.H);}
  static void SLA_L() {reg.L = SLA_N(reg.L);}
 /*  12 cycles */
+ static uint8_t SLA_mem_result = 0;
+ static void SLA_memHL_part3() {
+    set_mem(reg.HL, SLA_mem_result);
+    intermediate_cycles = 8;
+ }
+
+ static void SLA_memHL_part2() {
+    SLA_mem_result = SLA_N(get_mem(reg.HL));
+    intermediate_instruction = SLA_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
  static void SLA_memHL() {
+    intermediate_instruction = SLA_memHL_part2;
+    /* 
     update_all_cycles(4);
-    uint8_t result = SLA_N(get_mem(reg.HL));
+    uint8_t res = SLA_N(get_mem(reg.HL));
     update_all_cycles(4);
-    set_mem(reg.HL, result);
+    set_mem(reg.HL, res);
+    */
 }
-
-
 
 /* Shift n right into Carry. MSB unchanged.*/
  static uint8_t SRA_N(uint8_t val)
@@ -904,14 +1035,27 @@ void invalid_op(){
  static void SRA_H() {reg.H = SRA_N(reg.H);}
  static void SRA_L() {reg.L = SRA_N(reg.L);}
 /*  12 cycles */
+ static uint8_t SRA_mem_result = 0;
+ static void SRA_memHL_part3() {
+    set_mem(reg.HL, SRA_mem_result);
+    intermediate_cycles = 8;
+ }
+
+ static void SRA_memHL_part2() {
+    SRA_mem_result = SRA_N(get_mem(reg.HL));
+    intermediate_instruction = SRA_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
  static void SRA_memHL() {
+    intermediate_instruction = SRA_memHL_part2;
+    /* 
     update_all_cycles(4);
-    uint8_t result = SRA_N(get_mem(reg.HL));
+    uint8_t res = SRA_N(get_mem(reg.HL));
     update_all_cycles(4);
-    set_mem(reg.HL, result);
+    set_mem(reg.HL, res);
+    */
 }
-
-
 
 /* Shift n right into Carry, MSB set to 0 */
  static uint8_t SRL_N(uint8_t val)
@@ -932,11 +1076,26 @@ void invalid_op(){
  static void SRL_H() {reg.H = SRL_N(reg.H);}
  static void SRL_L() {reg.L = SRL_N(reg.L);}
 /*  16 cycles */
+ static uint8_t SRL_mem_result = 0;
+ static void SRL_memHL_part3() {
+    set_mem(reg.HL, SRL_mem_result);
+    intermediate_cycles = 8;
+ }
+
+ static void SRL_memHL_part2() {
+    SRL_mem_result = SRL_N(get_mem(reg.HL));
+    intermediate_instruction = SRL_memHL_part3;
+    intermediate_cycles = 4;
+ }
+
  static void SRL_memHL() {
+    intermediate_instruction = SRL_memHL_part2;
+    /* 
     update_all_cycles(4);
-    uint8_t result = SRL_N(get_mem(reg.HL));
+    uint8_t res = SRL_N(get_mem(reg.HL));
     update_all_cycles(4);
-    set_mem(reg.HL, result);
+    set_mem(reg.HL, res);
+    */
 }
 
 /**** Bit Opcodes ****/
@@ -1014,40 +1173,79 @@ void invalid_op(){
  static void BIT_L_7() {BIT_b_r(reg.L, 7);}
 
 /*  16 cycles */
+ static void BIT_memHL_0_part2() {
+    BIT_b_r(get_mem(reg.HL),0); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_0() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),0);
+    intermediate_instruction = BIT_memHL_0_part2;
 }
+ 
+ static void BIT_memHL_1_part2() {
+    BIT_b_r(get_mem(reg.HL),1); 
+    intermediate_cycles = 12;
+ }
+ 
  static void BIT_memHL_1() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),1);
+    //update_all_cycles(4);
+    //BIT_b_r(get_mem(reg.HL),1);
+    intermediate_instruction = BIT_memHL_1_part2;
 }
+ 
+ static void BIT_memHL_2_part2() {
+    BIT_b_r(get_mem(reg.HL),2); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_2() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),2);
+    intermediate_instruction = BIT_memHL_2_part2;
 }
+
+ static void BIT_memHL_3_part2() {
+    BIT_b_r(get_mem(reg.HL),3); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_3() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),3);
+    intermediate_instruction = BIT_memHL_3_part2;
 }
+
+ static void BIT_memHL_4_part2() {
+    BIT_b_r(get_mem(reg.HL),4); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_4() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),4);
+    intermediate_instruction = BIT_memHL_4_part2;
 }
+
+ static void BIT_memHL_5_part2() {
+    BIT_b_r(get_mem(reg.HL),5); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_5() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),5);
+    intermediate_instruction = BIT_memHL_5_part2;
 }
+
+ static void BIT_memHL_6_part2() {
+    BIT_b_r(get_mem(reg.HL),6); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_6() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),6);
+    intermediate_instruction = BIT_memHL_6_part2;
 }
+
+ static void BIT_memHL_7_part2() {
+    BIT_b_r(get_mem(reg.HL),7); 
+    intermediate_cycles = 12;
+ }
+
  static void BIT_memHL_7() { 
-    update_all_cycles(4);
-    BIT_b_r(get_mem(reg.HL),7);
+    intermediate_instruction = BIT_memHL_7_part2;
 }  
-
-
 
 /*  Set bit b in register r */
  static uint8_t SET_b_r(uint8_t const val, uint8_t const bit)
@@ -1055,12 +1253,30 @@ void invalid_op(){
     return val | (0x1 << bit);
 }
 
- static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
+ static uint8_t SET_b_mem_result = 0;
+ static uint16_t SET_b_mem_addr = 0;
+ static uint8_t SET_b_mem_bit = 0;
+ static void SET_b_mem_part3() {
+    set_mem(SET_b_mem_addr, SET_b_mem_result);
+    intermediate_cycles = 8;
+ }
 
+ static void SET_b_mem_part2() {
+    SET_b_mem_result = SET_b_r(get_mem(SET_b_mem_addr), SET_b_mem_bit);
+    intermediate_instruction = SET_b_mem_part3;
+    intermediate_cycles = 4;
+ }
+
+ static void SET_b_mem(uint16_t const addr, uint8_t const bit) {
+    intermediate_instruction = SET_b_mem_part2;
+    SET_b_mem_addr = addr;
+    SET_b_mem_bit = bit;
+/*  
     update_all_cycles(4);
     uint8_t result = SET_b_r(get_mem(addr), bit);
     update_all_cycles(4);
     set_mem(addr, result);
+*/
 }
 
 /*  8 cyles */
@@ -1145,12 +1361,30 @@ void invalid_op(){
     return val & ~(0x1 << bit);
 }
 
- static void RES_b_mem(uint16_t addr, uint8_t bit) {
+ static uint8_t RES_b_mem_result = 0;
+ static uint16_t RES_b_mem_addr = 0;
+ static uint8_t RES_b_mem_bit = 0;
+ static void RES_b_mem_part3() {
+    set_mem(RES_b_mem_addr, RES_b_mem_result);
+    intermediate_cycles = 8;
+ }
 
+ static void RES_b_mem_part2() {
+    RES_b_mem_result = RES_b_r(get_mem(RES_b_mem_addr), RES_b_mem_bit);
+    intermediate_instruction = RES_b_mem_part3;
+    intermediate_cycles = 4;
+ }
+
+ static void RES_b_mem(uint16_t addr, uint8_t bit) {
+    intermediate_instruction = RES_b_mem_part2;
+    RES_b_mem_addr = addr;
+    RES_b_mem_bit = bit;
+/*
     update_all_cycles(4);
     uint8_t result = RES_b_r(get_mem(addr), bit);
     update_all_cycles(4);
     set_mem(addr, result);
+*/
 }
 
 
@@ -1346,7 +1580,7 @@ Instruction ins[UINT8_MAX + 1] = {
 
     //0x30 - 0x3F
     {8, JR_NC_n}, {12, LD_SP_IM}, {8, LDD_HL_A}, {8, INC_SP},
-    {12, INC_memHL}, {12, DEC_memHL}, {12, LD_memHL_n}, {4, SCF},
+    {4, INC_memHL}, {4, DEC_memHL}, {4, LD_memHL_n}, {4, SCF},
     {8, JR_C_n}, {8, ADD_HL_SP}, {8, LDD_A_HL}, {8, DEC_SP},
     {4, INC_A}, {4, DEC_A}, {8, LD_A_IM}, {4, CCF},
 
@@ -1411,99 +1645,99 @@ Instruction ins[UINT8_MAX + 1] = {
     {12, CALL_C_nn}, {0,  invalid_op}, {8,  SBC_A_Im8}, {16 ,RST_18},
 
     //0xE0 - 0xEF
-    {12, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
+    {4, LDH_n_A}, {12, POP_HL}, {8, LDH_C_A}, {0, invalid_op},       
     {0, invalid_op}, {16, PUSH_HL}, {8, AND_A_Im8},{16, RST_20},
-    {16, ADD_SP_IM8}, {4, JP_HL}, {16, LD_memnn_A}, {0, invalid_op},       
+    {16, ADD_SP_IM8}, {4, JP_HL}, {8, LD_memnn_A}, {0, invalid_op},       
     {0, invalid_op}, {0, invalid_op}, {8, XOR_A_Im8}, {16, RST_28},
     
     //0xF0 - 0xFF                                                              
-    {12, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
+    {4, LDH_A_n}, {12, POP_AF}, {8, LDH_A_C}, {4 ,DI},
     {0,invalid_op}, {16, PUSH_AF}, {8, OR_A_Im8}, {16, RST_30},
-    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {16, LD_A_memnn}, {4, EI},
+    {12, LD_HL_SP_n}, {8, LD_SP_HL}, {8, LD_A_memnn}, {4, EI},
     {0 , invalid_op}, {0, invalid_op}, {8, CP_A_Im8}, {16, RST_38}
 };
 
 static Instruction ext_ins[UINT8_MAX+1] = {
     // 0x0X
     {8, RLC_B}, {8, RLC_C}, {8, RLC_D},      {8, RLC_E}, 
-    {8, RLC_H}, {8, RLC_L}, {16, RLC_memHL}, {8, RLC_A}, 
+    {8, RLC_H}, {8, RLC_L}, {4, RLC_memHL}, {8, RLC_A}, 
     {8, RRC_B}, {8, RRC_C}, {8, RRC_D},      {8, RRC_E},
-    {8, RRC_H}, {8, RRC_L}, {16, RRC_memHL}, {8, RRC_A},
+    {8, RRC_H}, {8, RRC_L}, {4, RRC_memHL}, {8, RRC_A},
     //0x1X
     {8, RL_B}, {8, RL_C}, {8, RL_D},      {8, RL_E},
-    {8, RL_H}, {8, RL_L}, {16, RL_memHL}, {8, RL_A}, 
+    {8, RL_H}, {8, RL_L}, {4, RL_memHL}, {8, RL_A}, 
     {8, RR_B}, {8, RR_C}, {8, RR_D},      {8, RR_E},
-    {8, RR_H}, {8, RR_L}, {16, RR_memHL}, {8, RR_A},
+    {8, RR_H}, {8, RR_L}, {4, RR_memHL}, {8, RR_A},
     //0x2x
     {8, SLA_B}, {8, SLA_C}, {8, SLA_D},      {8, SLA_E},
-    {8, SLA_H}, {8, SLA_L}, {16, SLA_memHL}, {8, SLA_A}, 
+    {8, SLA_H}, {8, SLA_L}, {4, SLA_memHL}, {8, SLA_A}, 
     {8, SRA_B}, {8, SRA_C}, {8, SRA_D},      {8, SRA_E},
-    {8, SRA_H}, {8, SRA_L}, {16, SRA_memHL}, {8, SRA_A},
+    {8, SRA_H}, {8, SRA_L}, {4, SRA_memHL}, {8, SRA_A},
     //0x3x
     {8, SWAP_B}, {8, SWAP_C}, {8, SWAP_D},      {8, SWAP_E},
-    {8, SWAP_H}, {8, SWAP_L}, {16, SWAP_memHL}, {8, SWAP_A}, 
+    {8, SWAP_H}, {8, SWAP_L}, {4, SWAP_memHL}, {8, SWAP_A}, 
     {8, SRL_B},  {8, SRL_C},  {8, SRL_D},       {8, SRL_E},
-    {8, SRL_H},  {8, SRL_L},  {16, SRL_memHL},  {8, SRL_A},
+    {8, SRL_H},  {8, SRL_L},  {4, SRL_memHL},  {8, SRL_A},
     //0x4x
     {8, BIT_B_0}, {8, BIT_C_0}, {8, BIT_D_0},      {8, BIT_E_0},
-    {8, BIT_H_0}, {8, BIT_L_0}, {16, BIT_memHL_0}, {8, BIT_A_0},
+    {8, BIT_H_0}, {8, BIT_L_0}, {4, BIT_memHL_0}, {8, BIT_A_0},
     {8, BIT_B_1}, {8, BIT_C_1}, {8, BIT_D_1},      {8, BIT_E_1}, 
-    {8, BIT_H_1}, {8, BIT_L_1}, {16, BIT_memHL_1}, {8, BIT_A_1},
+    {8, BIT_H_1}, {8, BIT_L_1}, {4, BIT_memHL_1}, {8, BIT_A_1},
     //0x5x
     {8, BIT_B_2}, {8, BIT_C_2}, {8, BIT_D_2},      {8, BIT_E_2}, 
-    {8, BIT_H_2}, {8, BIT_L_2}, {16, BIT_memHL_2}, {8, BIT_A_2}, 
+    {8, BIT_H_2}, {8, BIT_L_2}, {4, BIT_memHL_2}, {8, BIT_A_2}, 
     {8, BIT_B_3}, {8, BIT_C_3}, {8, BIT_D_3},      {8, BIT_E_3}, 
-    {8, BIT_H_3}, {8, BIT_L_3}, {16, BIT_memHL_3}, {8, BIT_A_3},
+    {8, BIT_H_3}, {8, BIT_L_3}, {4, BIT_memHL_3}, {8, BIT_A_3},
     //0x6x
     {8, BIT_B_4}, {8, BIT_C_4}, {8, BIT_D_4},      {8, BIT_E_4}, 
-    {8, BIT_H_4}, {8, BIT_L_4}, {16, BIT_memHL_4}, {8, BIT_A_4},
+    {8, BIT_H_4}, {8, BIT_L_4}, {4, BIT_memHL_4}, {8, BIT_A_4},
     {8, BIT_B_5}, {8, BIT_C_5}, {8, BIT_D_5},      {8, BIT_E_5}, 
-    {8, BIT_H_5}, {8, BIT_L_5}, {16, BIT_memHL_5}, {8, BIT_A_5},
+    {8, BIT_H_5}, {8, BIT_L_5}, {4, BIT_memHL_5}, {8, BIT_A_5},
     //0x7x
     {8, BIT_B_6}, {8, BIT_C_6}, {8, BIT_D_6},      {8, BIT_E_6}, 
-    {8, BIT_H_6}, {8, BIT_L_6}, {16, BIT_memHL_6}, {8, BIT_A_6}, 
+    {8, BIT_H_6}, {8, BIT_L_6}, {4, BIT_memHL_6}, {8, BIT_A_6}, 
     {8, BIT_B_7}, {8, BIT_C_7}, {8, BIT_D_7},      {8, BIT_E_7},
-    {8, BIT_H_7}, {8, BIT_L_7}, {16, BIT_memHL_7}, {8, BIT_A_7},
+    {8, BIT_H_7}, {8, BIT_L_7}, {4, BIT_memHL_7}, {8, BIT_A_7},
     //0x8x
     {8, RES_B_0}, {8, RES_C_0}, {8, RES_D_0},      {8, RES_E_0}, 
-    {8, RES_H_0}, {8, RES_L_0}, {16, RES_memHL_0}, {8, RES_A_0},
+    {8, RES_H_0}, {8, RES_L_0}, {4, RES_memHL_0}, {8, RES_A_0},
     {8, RES_B_1}, {8, RES_C_1}, {8, RES_D_1},      {8, RES_E_1}, 
-    {8, RES_H_1}, {8, RES_L_1}, {16, RES_memHL_1}, {8, RES_A_1},
+    {8, RES_H_1}, {8, RES_L_1}, {4, RES_memHL_1}, {8, RES_A_1},
     //0x9x 
     {8, RES_B_2}, {8, RES_C_2}, {8, RES_D_2},      {8, RES_E_2}, 
-    {8, RES_H_2}, {8, RES_L_2}, {16, RES_memHL_2}, {8, RES_A_2}, 
+    {8, RES_H_2}, {8, RES_L_2}, {4, RES_memHL_2}, {8, RES_A_2}, 
     {8, RES_B_3}, {8, RES_C_3}, {8, RES_D_3},      {8, RES_E_3}, 
-    {8, RES_H_3}, {8, RES_L_3}, {16, RES_memHL_3}, {8, RES_A_3},
+    {8, RES_H_3}, {8, RES_L_3}, {4, RES_memHL_3}, {8, RES_A_3},
     //0xAx
     {8, RES_B_4}, {8, RES_C_4}, {8, RES_D_4},      {8, RES_E_4}, 
-    {8, RES_H_4}, {8, RES_L_4}, {16, RES_memHL_4}, {8, RES_A_4},
+    {8, RES_H_4}, {8, RES_L_4}, {4, RES_memHL_4}, {8, RES_A_4},
     {8, RES_B_5}, {8, RES_C_5}, {8, RES_D_5},      {8, RES_E_5}, 
-    {8, RES_H_5}, {8, RES_L_5}, {16, RES_memHL_5}, {8, RES_A_5},
+    {8, RES_H_5}, {8, RES_L_5}, {4, RES_memHL_5}, {8, RES_A_5},
     //0xBx 
     {8, RES_B_6}, {8, RES_C_6}, {8, RES_D_6},      {8, RES_E_6},
-    {8, RES_H_6}, {8, RES_L_6}, {16, RES_memHL_6}, {8, RES_A_6}, 
+    {8, RES_H_6}, {8, RES_L_6}, {4, RES_memHL_6}, {8, RES_A_6}, 
     {8, RES_B_7}, {8, RES_C_7}, {8, RES_D_7},      {8, RES_E_7}, 
-    {8, RES_H_7}, {8, RES_L_7}, {16, RES_memHL_7}, {8, RES_A_7},      
+    {8, RES_H_7}, {8, RES_L_7}, {4, RES_memHL_7}, {8, RES_A_7},      
     //0xCx
     {8, SET_B_0}, {8, SET_C_0}, {8, SET_D_0},      {8, SET_E_0}, 
-    {8, SET_H_0}, {8, SET_L_0}, {16, SET_memHL_0}, {8, SET_A_0},
+    {8, SET_H_0}, {8, SET_L_0}, {4, SET_memHL_0}, {8, SET_A_0},
     {8, SET_B_1}, {8, SET_C_1}, {8, SET_D_1},      {8, SET_E_1}, 
-    {8, SET_H_1}, {8, SET_L_1}, {16, SET_memHL_1}, {8, SET_A_1}, 
+    {8, SET_H_1}, {8, SET_L_1}, {4, SET_memHL_1}, {8, SET_A_1}, 
     //0xDx
     {8, SET_B_2}, {8, SET_C_2}, {8, SET_D_2},      {8, SET_E_2}, 
-    {8, SET_H_2}, {8, SET_L_2}, {16, SET_memHL_2}, {8, SET_A_2}, 
+    {8, SET_H_2}, {8, SET_L_2}, {4, SET_memHL_2}, {8, SET_A_2}, 
     {8, SET_B_3}, {8, SET_C_3}, {8, SET_D_3},      {8, SET_E_3}, 
-    {8, SET_H_3}, {8, SET_L_3}, {16, SET_memHL_3}, {8, SET_A_3},
+    {8, SET_H_3}, {8, SET_L_3}, {4, SET_memHL_3}, {8, SET_A_3},
     //0xEx
     {8, SET_B_4}, {8, SET_C_4}, {8, SET_D_4},      {8, SET_E_4}, 
-    {8, SET_H_4}, {8, SET_L_4}, {16, SET_memHL_4}, {8, SET_A_4},
+    {8, SET_H_4}, {8, SET_L_4}, {4, SET_memHL_4}, {8, SET_A_4},
     {8, SET_B_5}, {8, SET_C_5}, {8, SET_D_5},      {8, SET_E_5}, 
-    {8, SET_H_5}, {8, SET_L_5}, {16, SET_memHL_5}, {8, SET_A_5},
+    {8, SET_H_5}, {8, SET_L_5}, {4, SET_memHL_5}, {8, SET_A_5},
     //0xFx 
     {8, SET_B_6}, {8, SET_C_6}, {8, SET_D_6},      {8, SET_E_6}, 
-    {8, SET_H_6}, {8, SET_L_6}, {16, SET_memHL_6}, {8, SET_A_6}, 
+    {8, SET_H_6}, {8, SET_L_6}, {4, SET_memHL_6}, {8, SET_A_6}, 
     {8, SET_B_7}, {8, SET_C_7}, {8, SET_D_7},      {8, SET_E_7}, 
-    {8, SET_H_7}, {8, SET_L_7}, {16, SET_memHL_7}, {8, SET_A_7}
+    {8, SET_H_7}, {8, SET_L_7}, {4, SET_memHL_7}, {8, SET_A_7}
 };
 
 
@@ -1586,29 +1820,38 @@ int exec_opcode(int skip_bug) {
             interrupts_enabled = 1;
             interrupts_enabled_timer = 0; //Unset timer
     }
+
+    // Already within an instruction
+    if (intermediate_instruction != NULL) {
+        void (*cur_int_ins)() = intermediate_instruction;
+        intermediate_instruction = NULL;
+        cur_int_ins();
+        update_all_cycles(intermediate_cycles);
+        return intermediate_cycles;
+    } else {
     
-    opcode = get_mem(reg.PC); /*  fetch */
-//    dasm_instruction(reg.PC, stdout);
-  // printf("OPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
-    if (skip_bug) {
-        reg.PC--;
-    }
-    reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
-    if (opcode != 0xCB) {
+        opcode = get_mem(reg.PC); /*  fetch */
+        //    dasm_instruction(reg.PC, stdout);
+        // printf("OPCODE:%X,PC:%X SP:%X A:%X F:%X B:%X C:%X D:%X E:%X H:%X L:%X\n",opcode,reg.PC,reg.SP,reg.A,reg.F,reg.B,reg.C,reg.D,reg.E,reg.H,reg.L);    
+        if (skip_bug) {
+            reg.PC--;
+        }
+        reg.PC += instructions.words[opcode]; /*  increment PC to next instruction */    
+        if (opcode != 0xCB) {
          
-        instructions.instruction_set[opcode].operation();
-        int cycles = instructions.instruction_set[opcode].cycles;
-        update_all_cycles(cycles - timer_cycles_passed);
-        timer_cycles_passed = 0;
+            instructions.instruction_set[opcode].operation();
+            int cycles = instructions.instruction_set[opcode].cycles;
+            update_all_cycles(cycles);
 
-        //0 here
-        return cycles;
+            return cycles;
 
-    } else { /*  extended instruction */
+        } else { /*  extended instruction */
 
-        opcode = IMMEDIATE_8_BIT;
-        instructions.ext_instruction_set[opcode].operation();  
-        update_all_cycles(8);
-        return instructions.ext_instruction_set[opcode].cycles;
+            opcode = IMMEDIATE_8_BIT;
+            instructions.ext_instruction_set[opcode].operation();  
+            int cycles = instructions.ext_instruction_set[opcode].cycles;
+            update_all_cycles(cycles);
+            return cycles;
+        }
     }
 }
