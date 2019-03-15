@@ -270,7 +270,7 @@ void unset_keys() {
 
 /* Update current state of GameBoy keys as well as control
  * other external actions for the emulator */
-void update_keys() {
+int update_keys() {
         SDL_Event event;
 
         if (SDL_PollEvent(&event)) {
@@ -337,6 +337,7 @@ void update_keys() {
 #endif
             }                   
         }
+    return 0;
 }
 
 
