@@ -1,6 +1,6 @@
 # Plutoboy 
 
-A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, Web Browsers, PSP, PSP Vita, and 3DS.
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, UEFI, Web Browsers, PSP, PSP Vita, and 3DS.
 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
