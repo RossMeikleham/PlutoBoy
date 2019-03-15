@@ -1570,12 +1570,14 @@ void reset_cpu() {
 
 
 void print_regs() {
+#ifndef EFIAPI
     printf("AF:%x-%x\n",reg.A,reg.F);
     printf("BC:%x-%x\n",reg.B,reg.C);
     printf("DE:%x-%x\n",reg.D,reg.E);
     printf("HL:%x-%x\n",reg.H,reg.L);
     printf("PC:%x\n",reg.PC);
     printf("SP:%x\n",reg.SP);
+#endif
 }
 
 /*  Executes the next processor instruction and returns

@@ -20,7 +20,6 @@ static int ram_select = 0; // Current RAM bank 0x0 - 0x03
 static int ram_banking = 0;  // 0: RAM banking off, 1: RAM banking on
 static int battery = 0;
 static int rom_base = 0;
-static uint8_t mask = 0;
 
 void setup_MMM01(int flags) {
     battery = (flags & BATTERY) ? 1 : 0;

@@ -4,8 +4,8 @@
 
 #include <stdint.h>
 
-int halted;
-int stopped;
+extern int halted;
+extern int stopped;
 
 /*  Call interrupt handler code */
 void restart(uint8_t addr);

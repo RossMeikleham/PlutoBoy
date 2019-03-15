@@ -1,0 +1,62 @@
+## @file
+# Plutoboy UEFI build file
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = Plutoboy
+  FILE_GUID                      = 6987936E-ED34-44db-AE97-1FA5E4EDDEADBEEF
+  MODULE_TYPE                    = UEFI_APPLICATION
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = PlutoboyMain
+
+[Sources]
+  ../src/platforms/UEFI/main.c
+  ../src/platforms/UEFI/logger.c
+  ../src/platforms/UEFI/files.c
+  ../src/platforms/UEFI/debugger.c
+  ../src/platforms/UEFI/libs.c
+  ../src/core/emu.c
+  ../src/core/cpu.c  
+  ../src/core/rom_info.c  
+  ../src/core/graphics.c  
+  ../src/core/sprite_priorities.c    
+  ../src/core/timers.c
+  ../src/core/interrupts.c
+  ../src/core/lcd.c
+  ../src/core/serial_io.c
+  ../src/core/mmu/memory.c  
+  ../src/core/mmu/mbc.c  
+  ../src/core/mmu/hdma.c  
+  ../src/core/mmu/mmm01.c  
+  ../src/core/mmu/mbc0.c  
+  ../src/core/mmu/mbc1.c  
+  ../src/core/mmu/mbc2.c  
+  ../src/core/mmu/mbc3.c  
+  ../src/core/mmu/mbc5.c  
+  ../src/core/mmu/huc1.c  
+  ../src/core/mmu/huc3.c  
+  ../src/shared_libs/UEFI/framerate_UEFI.c
+  ../src/shared_libs/UEFI/graphics_UEFI.c
+  ../src/shared_libs/UEFI/joypad_UEFI.c
+  ../src/shared_libs/UEFI/serial_io_UEFI.c
+  ../src/shared_libs/UEFI/sound_UEFI.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  ShellPkg/ShellPkg.dec
+
+[LibraryClasses]
+  UefiApplicationEntryPoint
+  UefiLib
+  ShellCEntryLib
+  ShellLib
+  BaseLib
+  BaseMemoryLib
+  ShellCommandLib
+  LibC
+  LibString
+  LibStdio
+  LibGdtoa
+  LibWchar
+  LibGen

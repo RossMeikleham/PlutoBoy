@@ -16,7 +16,39 @@
 #include "../non_core/logger.h"
 #include "../non_core/debugger.h"
 
+#ifdef EFIAPI
+#include "../platforms/UEFI/libs.h"
+#include <Uefi.h>
+#include <Library/UefiApplicationEntryPoint.h>
+#include <Library/UefiLib.h>
+#include <Library/UefiBootServicesTableLib.h>
+#include <Library/DebugLib.h>
+#include <Library/PrintLib.h>
+#include <Protocol/GraphicsOutput.h>
+#include <Library/UefiRuntimeLib.h>
+
+#include <Protocol/SimpleFileSystem.h>
+#include <Protocol/LoadedImage.h>
+#include <Protocol/EfiShellInterface.h>
+#include <Protocol/EfiShellParameters.h>
+#define PB_FOPEN uefi_fopen
+#define PB_FSEEK uefi_fseek
+#define PB_FREAD uefi_fread
+#define PB_FCLOSE uefi_fclose
+#else
+#define PB_FOPEN fopen
+#define PB_FSEEK fseek 
+#define PB_FREAD fread
+#define PB_FCLOSE fclose
+#endif
+
 int quit = 0;
+int is_booting = 1;
+int cgb_speed = 0;
+int stopped = 0;
+int cgb_features = 0;
+int cgb = 0;
+int halted = 0;
 
 // Debug options
 int debug = 0;
@@ -32,25 +64,24 @@ int breakpoint = BREAKPOINT_OFF;
 int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer cs) {
 
     uint8_t rom_header[0x50];
-    unsigned long size;
-
+    
     //Start logger
     set_log_level(LOG_INFO);
 
     log_message(LOG_INFO, "About to open file %s\n", file_path);
     FILE *file;
-    if (!(file = fopen(file_path,"rb"))) {
+    if (!(file = PB_FOPEN(file_path,"rb"))) {
         log_message(LOG_ERROR, "Error opening file %s\n", file_path);
         return 0;
     }
 
-    if ((fseek(file, 0x100, SEEK_SET) != 0) 
-        || (fread(rom_header, 1, sizeof(rom_header), file) != sizeof(rom_header))) {
+    if ((PB_FSEEK(file, 0x100, SEEK_SET) != 0) 
+        || (PB_FREAD(rom_header, 1, sizeof(rom_header), file) != sizeof(rom_header))) {
         log_message(LOG_ERROR, "Error reading ROM header info\n");
         fclose(file);
         return 0;    
     };
-    fclose(file);
+    PB_FCLOSE(file);
 
 	log_message(LOG_INFO, "ROM Header loaded %s\n", file_path);
     if (!load_rom(file_path, rom_header, dmg_mode)) {
@@ -98,6 +129,7 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     log_message(LOG_INFO,"Gameboy Color Only Game:%s\n", is_colour_only() ? "Yes":"No");
     log_message(LOG_INFO,"Super Gameboy Features:%s\n", has_sgb_features() ? "Yes":"No");
 
+	
     return 1;
 }
 
@@ -142,7 +174,11 @@ void run_one_frame() {
 
         cycles += current_cycles;
       
-        if (cycles > 15000) {
+		#ifdef EFIAPI
+        if (cycles > 3000) {
+		#else
+		if (cycles > 15000) {
+		#endif
             quit |= update_keys();
             cycles = 0;
         }

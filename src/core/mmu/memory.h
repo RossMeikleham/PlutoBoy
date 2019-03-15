@@ -9,10 +9,8 @@ extern bool bg_palette_dirty;
 extern bool sprite_palette_dirty;
 
 // 1 if gameboy is booting up, 0 otherwise
-int is_booting; 
+extern int is_booting; 
 
-
-// io mem
 extern uint8_t *io_mem;
 extern uint8_t *oam_mem_ptr;
 

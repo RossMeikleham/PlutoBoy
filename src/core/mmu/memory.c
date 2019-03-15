@@ -21,6 +21,14 @@
 
 #include <string.h>
 
+// UEFI libc won't link memmove
+#ifdef EFIAPI
+#include "../platforms/UEFI/libs.h"
+#define PB_MEMMOVE uefi_memmove
+#else
+#define PB_MEMMOVE memmove
+#endif
+
   
 static uint8_t mem[0xDFFF - 0x8000];
 
@@ -368,7 +376,7 @@ void check_mmm01_format(unsigned char *file_data, size_t size) {
     
             unsigned char temp[0x8000];
             memcpy(temp, header_data, 0x8000);
-            memmove(file_data + 0x8000, file_data, size - 0x8000);
+            PB_MEMMOVE(file_data + 0x8000, file_data, size - 0x8000);
             memcpy(file_data, temp, 0x8000); 
     
     }

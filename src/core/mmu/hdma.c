@@ -10,6 +10,13 @@
 #include "../lcd.h"
 #include "../emu.h"
 
+int hdma_in_progress = 0;
+int gdma_in_progress = 0;
+int bytes_transferred = 0;
+uint16_t hdma_source = 0;
+uint16_t hdma_dest = 0;
+uint16_t hdma_bytes = 0;
+
 void check_cgb_dma(uint8_t value) {
 
     hdma_bytes = 0x10 + ((value & 0x7F) * 0x10);

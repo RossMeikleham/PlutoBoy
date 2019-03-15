@@ -112,7 +112,7 @@ void check_lcd_coincidence() {
 static long update_lcd(long cycles) {
       
     current_cycles += cycles;
-    int vblank = 0;
+    //int vblank = 0;
     if (!screen_off) {
 
     switch (current_lcd_mode) {
@@ -157,9 +157,9 @@ static long update_lcd(long cycles) {
 
                         if (hide_frames > 0) {
                             hide_frames--;
-                        } else {
+                        } /*else {
                             vblank = 1;
-                        }
+                        }*/
 
                         window_line = 0;
 

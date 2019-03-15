@@ -12,7 +12,7 @@
 #define CGB_CLOCK_SPEED_HZ 8388000 /* GameBoy Color Clock speed in HZ */
 #define DIV_TIMER_INC_FREQUENCY 16382
 
-int cgb_speed;
+extern int cgb_speed;
 
 void setup_timers();
 

@@ -67,8 +67,12 @@ matrix:
       language: ruby
       services:
         - docker
-
-  
+    - os: linux
+      env: DOCKER=YES build=uefi BUILD_FOLDER=build/UEFI
+      language: ruby
+      services:
+        - docker
+ 
 install:
     - if [ "$ARCH" == "arm" ]; then sudo apt-get --yes --no-install-recommends install binfmt-support qemu-user-static; fi
  

@@ -356,6 +356,5 @@ int update_keys() {
 #endif
             }                   
         }
-
-        return 0;
+    return 0;
 }

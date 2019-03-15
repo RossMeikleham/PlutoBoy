@@ -58,8 +58,8 @@ void write_RTC(rtc_regs_MBC3 rtc_regs);
 typedef uint8_t (*read_MBC_ptr)(uint16_t addr);
 typedef void   (*write_MBC_ptr)(uint16_t addr, uint8_t val);
 
-read_MBC_ptr read_MBC;
-write_MBC_ptr write_MBC; 
+extern read_MBC_ptr read_MBC;
+extern write_MBC_ptr write_MBC; 
 
 
 #endif //MBC_H

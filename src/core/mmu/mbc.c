@@ -14,9 +14,20 @@
 #include <string.h>
 #include <stdlib.h>
 
+#ifdef EFIAPI
+#include "../platforms/UEFI/libs.h"
+#define PB_STRNCPY uefi_strncpy
+#define PB_STRCAT uefi_strcat
+#else
+#define PB_STRNCPY strncpy
+#define PB_STRCAT strcat
+#endif
+
 uint8_t *RAM_banks; // max 16 * 8KB ram banks (128KB) 0x2000
 uint8_t *ROM_banks; // max 512 * 16KB rom banks (8MB) 0x4000
 
+read_MBC_ptr read_MBC = NULL;
+write_MBC_ptr write_MBC = NULL; 
 
 #define MAX_SRAM_FNAME_SIZE 256
 
@@ -80,8 +91,8 @@ static void create_SRAM_filename(const char *filename) {
            filename_len : 
            MAX_SRAM_FNAME_SIZE - extension_len;
     
-    strncpy(SRAM_filename, filename, end_pos);
-    strcat(SRAM_filename, extension); 
+    PB_STRNCPY(SRAM_filename, filename, end_pos);
+    PB_STRCAT(SRAM_filename, extension); 
 }
 
 
@@ -95,17 +106,21 @@ int setup_MBC(int MBC_no, unsigned ram_banks, unsigned rom_banks, const char *fi
     create_SRAM_filename(filename);
     RAM_bank_count = ram_banks;
 
-
-    RAM_banks = malloc(ram_banks * RAM_BANK_SIZE);
-    if (RAM_banks == NULL) {
-        log_message(LOG_ERROR, "Unable to allocate memory for RAM banks\n");
-        return 0;
-    }
+	RAM_banks = NULL;
+	if (RAM_bank_count > 0) {
+    	RAM_banks = malloc(ram_banks * RAM_BANK_SIZE);
+    	if (RAM_banks == NULL) {
+        	log_message(LOG_ERROR, "Unable to allocate memory for RAM banks\n");
+        	return 0;
+    	}
+	}
 
     ROM_banks = malloc(rom_banks * ROM_BANK_SIZE);
     if (ROM_banks == NULL) {
         log_message(LOG_ERROR, "Unable to allocate memory for ROM banks\n");
-        free(RAM_banks);
+        if (RAM_banks != NULL) {
+			free(RAM_banks);
+		}
         return 0;
     }
 
@@ -206,6 +221,3 @@ int setup_MBC(int MBC_no, unsigned ram_banks, unsigned rom_banks, const char *fi
 
    return 1;
 }
-
-
-
