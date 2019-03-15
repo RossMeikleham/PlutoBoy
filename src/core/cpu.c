@@ -675,7 +675,6 @@ void invalid_op(){
         int switch_speed = speed & BIT_0;
 
         if (switch_speed) {
-            printf("Speed switched!\n");
             cgb_speed = !(speed & BIT_7);
             io_mem[KEY1_REG] = !(speed & BIT_7) * 0x80;
             // Actually stopping doesn't make sense, this needs to be double checked though
