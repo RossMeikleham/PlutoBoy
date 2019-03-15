@@ -36,7 +36,7 @@ static const struct {
 void raise_interrupt(InterruptCode ic) {
     
     if (ic < TOTAL_INTERRUPTS) { // Set flag for interrupt
-        set_mem(INTERRUPT_REG, get_mem(INTERRUPT_REG) | BIT(ic));
+        io_mem[INTERRUPT_REG] |= BIT(ic);
     } 
 }
 
@@ -47,8 +47,8 @@ void raise_interrupt(InterruptCode ic) {
 int handle_interrupts() {
 
     // Get all interrupts which flag has been set and are enabled
-    uint8_t if_flags = get_mem(INTERRUPT_REG);
-    uint8_t possible_interrupts = if_flags & get_mem(INTERRUPT_ENABLE_REG) & 0xF;
+    uint8_t if_flags = io_mem[INTERRUPT_REG];
+    uint8_t possible_interrupts = if_flags & io_mem[INTERRUPT_ENABLE_REG] & 0xF;
 
     if (possible_interrupts != 0) {
         
@@ -63,7 +63,7 @@ int handle_interrupts() {
                      * unset master interrupts so interrupt handler routine
                      * isn't unecessarily interrupted and then call
                      * the interrupt handler */
-                    set_mem(INTERRUPT_REG, if_flags & ~flag);
+                    io_mem[INTERRUPT_REG] = if_flags & ~flag;
                     master_interrupts_disable(); 
                     restart(interrupts[i].isr_addr);
 

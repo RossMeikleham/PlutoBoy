@@ -2,9 +2,10 @@
 #define JOYPAD_H
 
 //Virtual Button Positions for Mobile Devices
-#define DPAD_SIZE 84
-#define H_BORDER (48 + DPAD_SIZE)
-#define W_BORDER 48
+#define SQUARE_SIZE (current.w / 25)
+#define DPAD_SIZE (SQUARE_SIZE * 2)
+#define H_BORDER (SQUARE_SIZE + DPAD_SIZE)
+#define W_BORDER SQUARE_SIZE
 
 #define DPAD_LEFT_X W_BORDER
 #define DPAD_LEFT_Y(height) (height - H_BORDER - DPAD_SIZE) 
@@ -51,8 +52,9 @@
 void init_joypad();
 
 /* Update current state of GameBoy keys as well as control
- * other external actions for the emulator */
-void update_keys();
+ * other external actions for the emulator, returns 1 if
+ * quitting, 0 otherwise */
+int update_keys();
 
 /* Return state of one of the 8 GameBoy keys
  * 0 for unpressed, 1 for pressed */

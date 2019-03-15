@@ -28,13 +28,13 @@ long get_timer_frequency() {
  *  if causes overflow, timer interrupt is raised*/
 void increment_tima() {
 
-    uint8_t tima = get_mem(TIMA_REG) + 1;
+    uint8_t tima = io_mem[TIMA_REG] + 1;
 
     if (tima == 0) { //Overflow
-        tima = get_mem(TMA_REG);
+        tima = io_mem[TMA_REG];
         raise_interrupt(TIMER_INT);
     }
-    io_write_override(GLOBAL_TO_IO_ADDR(TIMA_REG), tima);
+    io_mem[TIMA_REG] = tima;
     
 }
 
@@ -43,7 +43,7 @@ void increment_tima() {
  *  should be incremented at a frequency of 16382
  *  (once every 256 clock cycles)*/
 void increment_div() {
-    io_write_override(GLOBAL_TO_IO_ADDR(DIV_REG), get_mem(DIV_REG) + 1);
+    io_mem[DIV_REG] += 1;
 }
 
 
@@ -70,7 +70,7 @@ void update_timers(long cycles) {
         clocks -= 4 * 1024 * 1024;
     }
 
-	uint8_t timer_control = get_mem(TAC_REG);
+	uint8_t timer_control = io_mem[TAC_REG];
 
 	update_divider_reg(cycles);
 	//Clock enabled

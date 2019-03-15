@@ -8,9 +8,9 @@
 //{
 //#endif
 
-int cgb;
+extern int cgb;
 
-int cgb_features;
+extern int cgb_features;
 /* Information on game rom currently loaded
  * into memory */
 

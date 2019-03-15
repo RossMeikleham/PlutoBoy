@@ -37,7 +37,7 @@ uint8_t read_MBC1(uint16_t addr) {
      case 0x0000:
      case 0x1000:
      case 0x2000: // Reading from fixed Bank 0
-     case 0x3000: return ROM_banks[0][addr]; break;
+     case 0x3000: return ROM_banks[addr]; break;
         
      case 0x4000:
      case 0x5000:
@@ -45,16 +45,16 @@ uint8_t read_MBC1(uint16_t addr) {
      case 0x7000: // Reading from current ROM bank 1 
               //  printf("cur rom bank %d cur_ram bank %d\n",cur_ROM_bank, cur_RAM_bank);
                 return bank_mode == 0 ?
-                    ROM_banks[cur_RAM_bank << 5 | cur_ROM_bank][addr - 0x4000] :
-                    ROM_banks[cur_ROM_bank][addr - 0x4000];
+                    ROM_banks[((cur_RAM_bank << 5 | cur_ROM_bank) * ROM_BANK_SIZE) | (addr - 0x4000)] :
+                    ROM_banks[(cur_ROM_bank * ROM_BANK_SIZE) | (addr - 0x4000)];
                 break;
         
      case 0xA000:
      case 0xB000: // Read from RAM bank (if RAM banking enabled)
                 if (ram_banking) {
                    return bank_mode == 0 ? 
-                        RAM_banks[0][addr - 0xA000] : 
-                        RAM_banks[cur_RAM_bank][addr - 0xA000];
+                        RAM_banks[addr - 0xA000] : 
+                        RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)];
                 } break;
     };
     // Failed to read
@@ -93,7 +93,7 @@ void write_MBC1(uint16_t addr, uint8_t val) {
         case 0xB000: // Write to external RAM bank if RAM banking enabled 
                     if (ram_banking) {
                         int bank = (bank_mode != 0) ? 0 : cur_RAM_bank;
-                        RAM_banks[bank][addr - 0xA000] = val; 
+                        RAM_banks[(bank * RAM_BANK_SIZE) | (addr - 0xA000)]= val; 
                     }
                     break;
     }    

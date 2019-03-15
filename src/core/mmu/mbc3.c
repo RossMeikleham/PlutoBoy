@@ -12,6 +12,7 @@ static int last_latch = 0;
 
 static int battery = 0;
 static int rtc_enabled = 0;
+static int sram_modified = 0;
 
 static rtc_regs_MBC3 rtc_regs, latch_regs;
 
@@ -60,20 +61,20 @@ uint8_t read_MBC3(uint16_t addr) {
      case 0x1000:
      case 0x2000: 
      case 0x3000: // Reading from fixed Bank 0 
-                return ROM_banks[0][addr]; 
+                return ROM_banks[addr]; 
                 break;
         
      case 0x4000:
      case 0x5000:
      case 0x6000:
      case 0x7000: // Reading from current ROM bank 1 
-                return ROM_banks[cur_ROM_bank][addr - 0x4000];
+                return ROM_banks[(cur_ROM_bank * ROM_BANK_SIZE) | (addr - 0x4000)];
                 break;
         
      case 0xA000:
      case 0xB000: // Read from RAM bank (if RAM banking enabled)
                 if (ram_enabled && cur_RAM_bank <= 0x3) {
-                   return RAM_banks[cur_RAM_bank][addr - 0xA000];
+                   return RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)];
                 
 				// Read from RTC register
 				} else {
@@ -98,8 +99,9 @@ void write_MBC3(uint16_t addr, uint8_t val) {
         case 0x0000:
         case 0x1000: // Activate/Deactivate RAM banking/RTC
                     // From ON to OFF, save SRAM to file
-                    if (battery && ram_enabled && ((val & 0xF) != 0xA)) {
+                    if (battery && ram_enabled && ((val & 0xF) != 0xA) && sram_modified) {
                         write_SRAM();
+                        sram_modified = 0;
                     }
                     ram_enabled = ((val & 0xF) == 0xA);
                     break;
@@ -110,7 +112,7 @@ void write_MBC3(uint16_t addr, uint8_t val) {
                     break;
         case 0x4000: 
         case 0x5000: // Set current RAM/RTC mode and banks
-                    cur_RAM_bank =  val;
+                    cur_RAM_bank =  val & (RAM_bank_count - 1);
                     break;
         case 0x6000: 
         case 0x7000: //Latch to RTC reg if 0x0 followed by 0x1 written
@@ -124,7 +126,8 @@ void write_MBC3(uint16_t addr, uint8_t val) {
         case 0xA000:
         case 0xB000: // Write to external RAM bank if RAM banking enabled 
                     if (ram_enabled && cur_RAM_bank <= 0x3) {
-                        RAM_banks[cur_RAM_bank][addr - 0xA000] = val; 
+                        RAM_banks[(cur_RAM_bank * RAM_BANK_SIZE) | (addr - 0xA000)] = val;                       
+                        sram_modified = 1;
                     // Write to RTC
                     } else if (ram_enabled && rtc_enabled) {
                     	switch (cur_RAM_bank) {

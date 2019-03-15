@@ -105,6 +105,27 @@
   MpInitLib|UefiCpuPkg/Library/MpInitLib/DxeMpInitLib.inf
   SortLib|MdeModulePkg/Library/BaseSortLib/BaseSortLib.inf
   UefiBootManagerLib|MdeModulePkg/Library/UefiBootManagerLib/UefiBootManagerLib.inf
+  ShellLib|ShellPkg/Library/UefiShellLib/UefiShellLib.inf
+  ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf
+  HandleParsingLib|ShellPkg/Library/UefiHandleParsingLib/UefiHandleParsingLib.inf
+  ShellCEntryLib|ShellPkg/Library/UefiShellCEntryLib/UefiShellCEntryLib.inf
+  FileHandleLib|MdePkg/Library/UefiFileHandleLib/UefiFileHandleLib.inf
+  LibStdLib|StdLib/LibC/StdLib/StdLib.inf
+  LibCType|StdLib/LibC/Ctype/Ctype.inf
+  LibSignal|StdLib/LibC/Signal/Signal.inf
+  LibStdio|StdLib/LibC/Stdio/Stdio.inf
+  LibString|StdLib/LibC/String/String.inf
+  DevConsole|StdLib/LibC/Uefi/Devices/daConsole.inf
+  LibWchar|StdLib/LibC/Wchar/Wchar.inf
+  LibUefi|StdLib/LibC/Uefi/Uefi.inf
+  LibIIO|StdLib/LibC/Uefi/InteractiveIO/IIO.inf
+  DevUtility|StdLib/LibC/Uefi/Devices/daUtility.inf
+  LibContainer|StdLib/LibC/Containers/ContainerLib.inf
+  LibLocale|StdLib/LibC/Locale/Locale.inf
+  LibTime|StdLib/LibC/Time/Time.inf
+  LibGen|StdLib/PosixLib/Gen/LibGen.inf
+  LibGdtoa|StdLib/LibC/gdtoa/gdtoa.inf
+  LibC|StdLib/LibC/LibC.inf
 
   #
   # To save size, use NULL library for DebugLib and ReportStatusCodeLib.

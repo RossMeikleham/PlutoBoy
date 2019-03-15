@@ -32,19 +32,19 @@ uint8_t read_MBC2(uint16_t addr) {
      case 0x0000:
      case 0x1000:
      case 0x2000: // Reading from fixed Bank 0
-     case 0x3000: return ROM_banks[0][addr]; break;
+     case 0x3000: return ROM_banks[addr]; break;
         
      case 0x4000:
      case 0x5000:
      case 0x6000:
      case 0x7000: // Reading from current ROM bank 1 
-                  return ROM_banks[cur_ROM_bank][addr & 0x3FFF];
+                  return ROM_banks[(cur_ROM_bank * ROM_BANK_SIZE) | (addr & 0x3FFF)];
                   break;
         
      case 0xA000:
                  // Read from RAM bank (if RAM banking enabled)
                 if (ram_banking) {
-                    return RAM_banks[0][addr & 0x1FF];
+                    return RAM_banks[addr & 0x1FF];
                 } break;
     };
     // Failed to read
@@ -74,7 +74,7 @@ void write_MBC2(uint16_t addr, uint8_t val) {
         
         case 0xA000: // Write to RAM bank if RAM banking enabled
                     if (ram_banking) {
-                        RAM_banks[0][addr & 0x1FF] = val & 0xF; 
+                        RAM_banks[addr & 0x1FF] = val & 0xF; 
                     }
                     break;
     }    

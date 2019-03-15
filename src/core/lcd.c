@@ -29,7 +29,7 @@ int screen_enabled() {
 }
 
 void reset_window_line() {
-    uint8_t win_y = get_mem(WY_REG);
+    uint8_t win_y = io_mem[WY_REG];
     if ((window_line == 0) && (ly_counter < 144) && (ly_counter > win_y)) {
         window_line = 144;
     }
@@ -41,13 +41,12 @@ void enable_screen() {
     }
 }
 
-
 void disable_screen() {
     screen_off = 1;
-    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), 0);
-    uint8_t stat = get_mem(STAT_REG);
+    io_mem[LY_REG] = 0;
+    uint8_t stat = io_mem[STAT_REG];
     stat &= 0x7C;
-    io_write_override(GLOBAL_TO_IO_ADDR(STAT_REG), stat);
+    io_mem[STAT_REG] = stat;
     current_lcd_mode = 0;
     current_cycles = 0;
     current_aux_cycles = 0;
@@ -72,7 +71,7 @@ int lcd_hblank_mode() {
 }
 
 static void update_stat() {
-    io_write_override(STAT_REG - 0xFF00, (get_mem(STAT_REG) & 0xFC) | (current_lcd_mode & 0x3)); 
+    io_mem[STAT_REG] = (io_mem[STAT_REG] & 0xFC) | (current_lcd_mode & 0x3); 
 }
 
 /* Given lcd_stat returns the new lcd_stat with the coincidence bit
@@ -82,10 +81,10 @@ static void update_stat() {
 void check_lcd_coincidence() {
    
     if (!screen_off) {   
-        uint8_t stat = get_mem(STAT_REG);
+        uint8_t stat = io_mem[STAT_REG];
         
         // Check we have a "coincidence" i.e. lyc == ly        
-        if (get_mem(LYC_REG) == ly_counter) {
+        if (io_mem[LYC_REG] == ly_counter) {
             stat |= BIT_2;
              // Check interrupt flag is enabled for a coincidence interrupt
             if (stat & BIT_6) {
@@ -99,7 +98,7 @@ void check_lcd_coincidence() {
             stat_interrupt_signal &= ~BIT_3;
         }
 
-        io_write_override(STAT_REG - 0xFF00, stat);
+        io_mem[STAT_REG] = stat;
     }
 }
 
@@ -109,7 +108,7 @@ void check_lcd_coincidence() {
 static long update_lcd(long cycles) {
       
     current_cycles += cycles;
-    int vblank = 0;
+    //int vblank = 0;
     if (!screen_off) {
 
     switch (current_lcd_mode) {
@@ -121,7 +120,7 @@ static long update_lcd(long cycles) {
                     current_cycles -= 204;
                     current_lcd_mode = 2;
                     ly_counter++;
-                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                    io_mem[LY_REG] = ly_counter;
                     check_lcd_coincidence(); 
 
                     // Check if HDMA transfer needs to take place in CGB mode
@@ -135,14 +134,14 @@ static long update_lcd(long cycles) {
 
                     // H-Blank to V-Blank, change to mode 2
                     // and raise a VBLANK interrupt
-                    if (get_mem(LY_REG) == 144) {
+                    if (io_mem[LY_REG] == 144) {
                         current_lcd_mode = 1;
                         vblank_line = 0;
                         current_aux_cycles = current_cycles;
                         raise_interrupt(VBLANK_INT);
                         
                         stat_interrupt_signal &= 0x9;
-                        uint8_t stat = get_mem(STAT_REG);
+                        uint8_t stat = io_mem[STAT_REG];
                         if (stat & BIT_4) {
                             if (!((stat_interrupt_signal & BIT_0) || 
                                   (stat_interrupt_signal & BIT_3))) {
@@ -154,15 +153,15 @@ static long update_lcd(long cycles) {
 
                         if (hide_frames > 0) {
                             hide_frames--;
-                        } else {
+                        } /*else {
                             vblank = 1;
-                        }
+                        }*/
 
                         window_line = 0;
 
                     } else {
                         stat_interrupt_signal &= 0x9;
-                        uint8_t stat = get_mem(STAT_REG);
+                        uint8_t stat = io_mem[STAT_REG];
                         if (stat & BIT_5) {
                             if (stat_interrupt_signal == 0) {
                                 raise_interrupt(LCD_INT);
@@ -184,7 +183,7 @@ static long update_lcd(long cycles) {
                     vblank_line++;
                     if (vblank_line <= 9) {
                         ly_counter++;
-                        io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                        io_mem[LY_REG] = ly_counter;
                         check_lcd_coincidence(); 
                     }
                 }
@@ -192,7 +191,7 @@ static long update_lcd(long cycles) {
                 // LY resets after 153
                 if ((current_cycles >= 4104) && (current_aux_cycles >= 4) && (ly_counter == 153)) {
                     ly_counter = 0;
-                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                    io_mem[LY_REG] = ly_counter;
                 }
 
                 if (current_cycles >= 4560) {
@@ -202,7 +201,7 @@ static long update_lcd(long cycles) {
                     stat_interrupt_signal &= 0x7;
                     check_lcd_coincidence();
                     stat_interrupt_signal &= 0xA;
-                    uint8_t stat = get_mem(STAT_REG);
+                    uint8_t stat = io_mem[STAT_REG];
                     if (stat & BIT_5) {
                         if (stat_interrupt_signal == 0) {
                             raise_interrupt(LCD_INT);
@@ -228,7 +227,7 @@ static long update_lcd(long cycles) {
                 // Data to LCD driver transfer
                 if (!scanline_transferred && (current_cycles >= (ly_counter == 0 ? 160 : 48))) {                    
                     scanline_transferred = 1;
-                    io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                    io_mem[LY_REG] = ly_counter;
                     draw_row();        
                 }                
 
@@ -238,7 +237,7 @@ static long update_lcd(long cycles) {
                     update_stat();
 
                     stat_interrupt_signal &= 0x8;
-                    uint8_t stat = get_mem(STAT_REG);
+                    uint8_t stat = io_mem[STAT_REG];
 
                     if (stat & BIT_3) {
                         if (!(stat_interrupt_signal & BIT_3)) {
@@ -265,10 +264,10 @@ static long update_lcd(long cycles) {
                 ly_counter = 0;
                 window_line = 0;
                 vblank_line = 0;
-                io_write_override(GLOBAL_TO_IO_ADDR(LY_REG), ly_counter);
+                io_mem[LY_REG] = ly_counter;
                 stat_interrupt_signal = 0;
 
-                uint8_t stat = get_mem(STAT_REG);
+                uint8_t stat = io_mem[STAT_REG];
                 if (stat & BIT_5) {
                     raise_interrupt(LCD_INT);
                     stat_interrupt_signal |= BIT_2;
