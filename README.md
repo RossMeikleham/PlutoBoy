@@ -5,19 +5,20 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
 
-| Platform   | CI Build Status | SDL 1.2 | SDL 2 |
-|------------|-----------------|---------|-------|
-| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
-| ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
-| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | 
-|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
-| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
-| ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ |
-| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
-| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | 
-| ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | 
-| ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ |
+| Platform   | CI Build Status | SDL 1.2 | SDL 2 | Native API |
+|------------|-----------------|---------|-------|-----|
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ | N/A |
+| ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
+| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ | N/A |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | N/A | 
+|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
+| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
+| ![uefiIcon](/images/uefi.png?raw=true) UEFI | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✗ | ✔ |
+| ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A|
+| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
+| ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
+| ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
 
 Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
 
