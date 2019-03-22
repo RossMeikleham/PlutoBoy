@@ -146,8 +146,8 @@ const char *get_cartridge_type() {
 
 /*  Returns ram save size in KB, returns 255
  *  if unknown id currently in memory */
-uint8_t id_to_ram_save_size(uint8_t id) {
-    for (unsigned  i = 0; i < CARTRIDGE_RAM_SIZE; i++) {
+static uint8_t id_to_ram_save_size(uint8_t id) {
+    for (unsigned  i = 0; i < sizeof(ram_save_sizes)/sizeof(ram_save_sizes[0]); i++) {
         if (ram_save_sizes[i].id == id) {
             return ram_save_sizes[id].size_kb;
         }
