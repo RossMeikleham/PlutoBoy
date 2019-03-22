@@ -14,6 +14,13 @@ profile_env = Environment(
 #Debug environment
 debug_env = Environment(CCFLAGS = '-g -W -Wall -Wextra')
 
+
+# Sanitizer environment
+sani_env = Environment(
+	CCFLAGS = '-g -O0 -fsanitize=address,undefined',
+	LINKFLAGS = '-fsanitize=address,undefined'
+)
+
 env = release_env
 compiler = 'clang'
 framework = 'SDL2'
@@ -38,6 +45,8 @@ for key, value in ARGLIST:
             env = debug_env
         elif value == 'release':
             env = release_env
+        elif value == 'sani':
+            env = sani_env
         else:
             print("unknown mode, expected either prof, debug, or release")
     
