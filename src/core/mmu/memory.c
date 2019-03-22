@@ -30,7 +30,7 @@
 #endif
 
   
-static uint8_t mem[0xDFFF - 0x8000];
+static uint8_t mem[0xE000 - 0x8000];
 
 uint8_t *oam_mem_ptr;
 
