@@ -185,7 +185,7 @@ int setup_MBC(int MBC_no, unsigned ram_banks, unsigned rom_banks, const char *fi
    } else if (MBC_no >= 0x19 && MBC_no <= 0x1E) {
 
        switch (MBC_no) {
-           case 0x19: flags = 0;
+           case 0x19: flags = 0; break;
            case 0x1A: flags = SRAM; break;
            case 0x1B: flags = SRAM | BATTERY; break;
            case 0x1C: flags = RUMBLE; break;
