@@ -37,9 +37,21 @@ typedef struct {
 
 enum {UP = 0, DOWN, LEFT, RIGHT, A, B, START, SELECT};
 
-#ifndef PSVITA
-int button_config[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_a, SDLK_s, SDLK_RETURN, SDLK_SPACE};
-#else
+#if defined(__SWITCH__)
+#define JOY_A     0
+#define JOY_B     1
+#define JOY_X     2
+#define JOY_Y     3
+#define JOY_PLUS  10
+#define JOY_MINUS 11
+#define JOY_LEFT  12
+#define JOY_UP    13
+#define JOY_RIGHT 14
+#define JOY_DOWN  15
+
+int button_config[] = {JOY_UP, JOY_DOWN, JOY_LEFT, JOY_RIGHT, JOY_A, JOY_B, JOY_PLUS, JOY_MINUS};
+
+#elif defined(PSVITA)
 
 #define SDLK_VITA_TRIANGLE 0
 #define SDLK_VITA_CIRCLE 1 
@@ -59,6 +71,11 @@ int button_config[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_a, SDLK_s
 
 int button_config[] = {SDLK_VITA_UP, SDLK_VITA_DOWN, SDLK_VITA_LEFT, SDLK_VITA_RIGHT
     , SDLK_VITA_CROSS, SDLK_VITA_CIRCLE, SDLK_VITA_START, SDLK_VITA_SELECT};
+
+#else
+
+int button_config[] = {SDLK_UP, SDLK_DOWN, SDLK_LEFT, SDLK_RIGHT, SDLK_a, SDLK_s, SDLK_RETURN, SDLK_SPACE};
+
 #endif
 
 button_state buttons[8];
@@ -298,7 +315,7 @@ int update_keys() {
                             return 1;
                             break;
 
-#ifndef PSVITA
+#if !defined(PSVITA) && !defined(__SWITCH__)
                 case SDL_KEYDOWN: // Key pressed
                     if (event.key.keysym.sym == SDLK_ESCAPE) {
                         write_SRAM();

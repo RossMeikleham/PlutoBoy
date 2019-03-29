@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <switch.h>
-#include "SDL/SDL.h"
+#include <SDL2/SDL.h>
 
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
@@ -17,11 +17,13 @@ void cleanup() {
 int main(int argc, char **argv) {
 
     int debug = 0;
-    int cgb_mode = 0;
-    char file_name[1024] = "rom.gb";
+    int cgb_mode = 1;
+    char file_name[1024] = "sdmc:/rom.gb";
 
     ClientOrServer cs = NO_CONNECT;
-    
+   
+    printf("TEST HELLO WORLD\n"); 
+  
     set_log_level(LOG_INFO);
 
     if (!init_emu(file_name, debug, !cgb_mode, cs)) {

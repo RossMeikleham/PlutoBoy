@@ -4,7 +4,7 @@
 
 static LogLevel current_log_level = LOG_OFF;
 
-static const char *logfile = "plutoboy.log";
+static const char *logfile = "sdmc:/switch/plutoboy.log";
 
 void clear_log() {
    FILE *f = fopen(logfile, "w"); 
