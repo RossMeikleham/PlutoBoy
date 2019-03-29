@@ -1,4 +1,4 @@
-FROM java:8-jdk
+FROM debian:stretch
 
 USER root
 
@@ -9,17 +9,21 @@ ENV LC_ALL C.UTF-8
 
 ENV ANDROID_HOME /opt/android-sdk-linux
 
-RUN bash -c "echo deb http://ftp.debian.org/debian jessie-backports main >> /etc/apt/sources.list" \
-  && dpkg --add-architecture i386 \
-  && apt-get update && apt-get install -t jessie-backports -y --no-install-recommends expect \
+RUN dpkg --add-architecture i386 \
+  && apt-get update && apt-get install -y --no-install-recommends expect \
     libncurses5:i386 \
     libstdc++6:i386 \
     zlib1g:i386 \
     build-essential \
     openssh-client \
-	ant \
+	curl \
+    ant \
 	make \
 	file \
+    unzip \
+    wget \ 
+    gnupg \
+    openjdk-8-jdk \
   && apt-get install -y --no-install-recommends maven \
   && rm -rf /var/lib/apt/lists/*
 
