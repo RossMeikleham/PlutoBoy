@@ -9,6 +9,7 @@ ENV LC_ALL C.UTF-8
 
 ENV ANDROID_HOME /opt/android-sdk-linux
 
+RUN apt-get update && apt-get install -y apt-transport-https
 RUN bash -c "echo deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main >> /etc/apt/sources.list" \
   && dpkg --add-architecture i386 \
   && apt-get update && apt-get install -t jessie-backports -y --no-install-recommends expect \
