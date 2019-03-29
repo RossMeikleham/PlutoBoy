@@ -1,6 +1,6 @@
 # Plutoboy 
 
-A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, UEFI, Web Browsers, PSP, PSP Vita, and 3DS.
+A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix based systems, Android, iOS, UEFI, Web Browsers, PSP, PSP Vita, 3DS, and Switch.
 
 ![crystal](/images/shantae.png?raw=true) ![dk](/images/ages.png?raw=true)
 
@@ -19,6 +19,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
 | ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
 | ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
+| ![switchIcon](/images/switch.png?raw=true) Switch | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
 
 Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
 
@@ -382,6 +383,20 @@ It should run at the full 59.7 fps on the new 2DS/3DS, with the original 2DS/3DS
 R button turns the frame limiter off, L button turns it back on.
 
 File I/O for some reason is very slow with 3DS homebrew, games which rapidly save to SRAM and turn it off may slowdown for a while due to this.
+
+# Switch (Requires CFW to run)
+
+### Building with Docker
+```
+git clone https://github.com/RossMeikleham/PlutoBoy
+cd Plutoboy
+docker build -t plutoboy_switch -f build/Switch/Dockerfile .
+docker run -v $(pwd):/mnt plutoboy_switch
+```
+
+This should produce a `Plutoboy.nro` file.
+
+The nro file can be loaded through the Switch homebrew menu using the netloader (press Y in the app), and use the nxlink program to transfer the app.
 
 
 # Link Cable guide (Desktop platforms Windows/Linux/OSX)
