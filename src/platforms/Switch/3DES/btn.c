@@ -112,8 +112,8 @@ int btn_y_pressed(int *cgb_mode) {
       strcat(current_path, file_arr[selected+scroll].name);
       strcat(current_path, "/");
 
-     // consoleSelect(&debug_screen);
-     // printf("%snew path: %s%s\n", FG_GREEN, current_path, RESET);
+      //consoleSelect(&debug_screen);
+      //printf("%snew path: %s%s\n", FG_GREEN, current_path, RESET);
 
       fs_populate_filarr(current_path);
       draw_filearr(1);

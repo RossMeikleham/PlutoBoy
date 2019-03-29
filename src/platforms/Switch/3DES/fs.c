@@ -110,10 +110,10 @@ void fs_delete_dir_recursivley_(char path_to_delete[MAX_PATH_SIZE]) {
       if (dir->d_type == 8) {
         ret = remove(new_path_to_delete);
         if (ret) {
-         // printf("%sError: unable to delete file %s%s\n", BG_RED, dir->d_name, RESET);
+          //printf("%sError: unable to delete file %s%s\n", BG_RED, dir->d_name, RESET);
         }
         else {
-         // printf("%sDeleted file: %s%s\n", FG_MAGENTA, dir->d_name, RESET);
+          //printf("%sDeleted file: %s%s\n", FG_MAGENTA, dir->d_name, RESET);
         }
       }
       else {
@@ -126,7 +126,7 @@ void fs_delete_dir_recursivley_(char path_to_delete[MAX_PATH_SIZE]) {
       //printf("%sError: unable to delete dir%s\n", BG_RED, RESET);
     }
     else {
-      //printf("%sDeleted dir %s%s\n", FG_MAGENTA, path_to_delete, RESET);
+     // printf("%sDeleted dir %s%s\n", FG_MAGENTA, path_to_delete, RESET);
     }
   }
   else {

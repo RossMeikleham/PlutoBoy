@@ -34,6 +34,7 @@ APP_AUTHOR		:= Ross Meikleham
 TARGET		:=	Plutoboy
 BUILD		:=	build
 SOURCES		:=	../../src/platforms/Switch\
+				../../src/platforms/Switch/3DES\
 				../../src/core\
 				../../src/core/mmu\
 				../../src/shared_libs/SDL2\
@@ -62,7 +63,7 @@ ASFLAGS	:=	$(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #LIBS	:= -lSDL2_mixer -lSDL2 -lSDL2_image -lnx -lFLAC -lmikmod -lvorbisidec -logg -lm -lEGL -lGLESv2
-LIBS := -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lSDL2 \
+LIBS := -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lSDL2 -lpng\
 			-lpng -lz -ljpeg -lglad -lEGL -lglapi -ldrm_nouveau  \
 			-lvorbisidec -logg -lmpg123 -lmodplug -lstdc++ \
 			-lnx -lm -lbz2
