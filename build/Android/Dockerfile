@@ -1,4 +1,4 @@
-FROM java:8-jdk
+FROM adoptopenjdk/openjdk8:latest
 
 USER root
 
@@ -9,20 +9,23 @@ ENV LC_ALL C.UTF-8
 
 ENV ANDROID_HOME /opt/android-sdk-linux
 
-RUN apt-get update && apt-get install -y apt-transport-https
-RUN bash -c "echo deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main >> /etc/apt/sources.list" \
-  && dpkg --add-architecture i386 \
-  && apt-get update && apt-get install -t jessie-backports -y --no-install-recommends expect \
-    libncurses5:i386 \
-    libstdc++6:i386 \
-    zlib1g:i386 \
-    build-essential \
-    openssh-client \
-	ant \
-	make \
-	file \
-  && apt-get install -y --no-install-recommends maven \
-  && rm -rf /var/lib/apt/lists/*
+SHELL ["/bin/bash", "-c"]
+
+#RUN apt-get update && apt-get install -y apt-transport-https
+#RUN bash -c "echo deb [check-valid-until=no] http://archive.debian.org/debian jessie-backports main >> /etc/apt/sources.list" \
+#  && dpkg --add-architecture i386 \
+#  && apt-get update && apt-get install -t jessie-backports -y --no-install-recommends expect \
+#    libncurses5:i386 \
+#    libstdc++6:i386 \
+#    zlib1g:i386 \
+#    build-essential \
+#    openssh-client \
+#	ant \
+#	make \
+#	file \
+#  && apt-get install -y --no-install-recommends maven \
+#  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libncurses-dev build-essential openssh-client ant make file maven unzip expect wget && rm -rf /var/lib/apt/lists/* 
 
 # Install Android SDK installer
 RUN curl -o android-sdk.zip "https://dl.google.com/android/repository/tools_r25.2.5-linux.zip" \
@@ -30,16 +33,17 @@ RUN curl -o android-sdk.zip "https://dl.google.com/android/repository/tools_r25.
   && rm *.zip
   
 
-COPY build/Android/dockerscripts/ /opt/sdk-tools
+COPY build/Android/dockerscripts/android-accept-licenses.sh /opt/sdk-tools/android-accept-licenses.sh
 
 ENV PATH ${PATH}:${ANDROID_HOME}/tools/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:/opt/sdk-tools
 
-RUN sdkmanager --list \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platform-tools" \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager build-tools;21.1.2" \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager sources;android-21" \
-  && /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platforms;android-21" \
-  && sdkmanager --list
+COPY build/Android/dockerscripts/android-accept-licenses.sh /opt/sdk-tools/android-accept-licenses.sh
+RUN sdkmanager --list
+RUN /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platform-tools"
+RUN /opt/sdk-tools/android-accept-licenses.sh "sdkmanager build-tools;21.1.2"
+RUN /opt/sdk-tools/android-accept-licenses.sh "sdkmanager sources;android-21"
+RUN /opt/sdk-tools/android-accept-licenses.sh "sdkmanager platforms;android-21"
+RUN sdkmanager --list
 
 
 # Install NDK
