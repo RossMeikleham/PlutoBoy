@@ -22,6 +22,7 @@ RUN dpkg --add-architecture i386 \
 	file \
     unzip \
     wget \ 
+    gnupg \
   && apt-get install -y --no-install-recommends maven \
   && rm -rf /var/lib/apt/lists/*
 
