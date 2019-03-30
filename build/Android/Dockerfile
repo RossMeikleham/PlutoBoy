@@ -25,6 +25,12 @@ RUN dpkg --add-architecture i386 \
   && apt-get install -y --no-install-recommends maven \
   && rm -rf /var/lib/apt/lists/*
 
+RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
+RUN echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main" > /etc/apt/sources.list.d/webupd8team-java-trusty.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --force-yes --no-install-recommends oracle-java8-installer && apt-get clean all
+
+
 # Install Android SDK installer
 RUN curl -o android-sdk.zip "https://dl.google.com/android/repository/tools_r25.2.5-linux.zip" \
   && unzip -C android-sdk.zip -d "${ANDROID_HOME}" \
