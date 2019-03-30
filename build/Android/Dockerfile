@@ -23,7 +23,7 @@ RUN dpkg --add-architecture i386 \
     unzip \
     wget \ 
     gnupg \
-    apt-get install -y openjdk-8-jdk \
+    openjdk-8-jdk \
   && apt-get install -y --no-install-recommends maven \
   && rm -rf /var/lib/apt/lists/*
 
