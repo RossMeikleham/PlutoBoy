@@ -33,6 +33,7 @@ write_MBC_ptr write_MBC = NULL;
 
 static char SRAM_filename[MAX_SRAM_FNAME_SIZE + 1];
 unsigned RAM_bank_count = 0;
+unsigned ROM_bank_count = 0;
 static int mbc3_rtc = 0;
 
 void write_SRAM() {
@@ -123,6 +124,7 @@ int setup_MBC(int MBC_no, unsigned ram_banks, unsigned rom_banks, const char *fi
 		}
         return 0;
     }
+    ROM_bank_count = rom_banks;
 
     int flags = 0;
     // MMBC0

@@ -9,6 +9,7 @@
 extern uint8_t *RAM_banks;//[][0x2000];  // max 16 * 8KB ram banks (128KB) 0x2000
 extern uint8_t *ROM_banks;//[][0x4000];// max 512 * 16KB rom banks (8MB) 0x4000
 
+extern unsigned ROM_bank_count;
 extern unsigned RAM_bank_count;
 
 typedef enum {SRAM = 0x1, BATTERY = 0x2, RTC = 0x4, RUMBLE = 0x8, ACCELEROMETER = 0x10} features;
