@@ -13,6 +13,9 @@
 #define DIV_TIMER_INC_FREQUENCY 16382
 
 extern int cgb_speed;
+extern uint8_t timer_counter;
+extern uint8_t previous_timer_counter;
+extern uint8_t previous_DIV;
 
 void setup_timers();
 
@@ -20,7 +23,6 @@ void setup_timers();
 void set_clock_speed(long hz);
 long get_clock_speed();
 
-void increment_div();
 
 void increment_tima();
 
@@ -28,6 +30,8 @@ void increment_tima();
  * frequencies, resets the timer_counter 
  * If frequency number selected isn't valid then nothing happens*/
 void set_timer_frequency(unsigned int n);
+
+long get_timer_frequency();
 
 /* Update internal timers given the cycles executed since
 * the last time this function was called. */

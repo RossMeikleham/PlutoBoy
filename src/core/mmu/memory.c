@@ -29,7 +29,6 @@
 #define PB_MEMMOVE memmove
 #endif
 
-  
 static uint8_t mem[0xE000 - 0x8000];
 
 uint8_t *oam_mem_ptr;
@@ -528,9 +527,36 @@ void io_write_mem(uint8_t addr, uint8_t val) {
     switch (addr) {
         /* Check Joypad values */
         case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
-        /*  Attempting to set DIV reg resets it to 0 */
-        case DIV_REG  : io_mem[addr] = 0 ;break; 
-        
+        /*  Attempting to set DIV reg resets it to 0 
+         * DIV is also actually 16-bits with the lwoer bits being the timer_counter
+         * reset this too 
+         *
+         * If the bit in the timer counter with the frequency bit set for the
+         * current frequency, then the line is dropped low and a timer increment
+         * occurs */ 
+        case DIV_REG  : 
+            previous_DIV = io_mem[addr];
+            io_mem[addr] = 0;
+            previous_timer_counter = timer_counter; 
+            timer_counter = 0;
+            if ((previous_DIV << 8 | previous_timer_counter) & (get_timer_frequency() >> 1)) {
+                increment_tima();
+            }
+            break; 
+       
+        case TAC_REG:
+           // Disabiing the Timer can cause TIMA to increase
+           // if half its cycles are already reached
+           if (((io_mem[addr] & BIT_2) == BIT_2) && ((val & BIT_2) != BIT_2)) {
+               //printf("Disable timer 0x%x 0x%x  freq: 0x%lx\n\n", io_mem[DIV_REG], timer_counter, get_timer_frequency());
+               if ((io_mem[DIV_REG] << 8 | timer_counter) & (get_timer_frequency() >> 1)) {
+                   //printf("inc tima\n");
+                   increment_tima();
+               }
+           }
+           io_mem[addr] = val;
+           break;
+
         case LCDC_REG: {
             uint8_t current_lcdc = io_mem[addr];
             uint8_t new_lcdc = val;
