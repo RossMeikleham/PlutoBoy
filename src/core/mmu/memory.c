@@ -525,6 +525,7 @@ void io_write_mem(uint8_t addr, uint8_t val) {
     }
 
     switch (addr) {
+        
         /* Check Joypad values */
         case P1_REG  : io_mem[addr] = val; joypad_write(val); break;
         /*  Attempting to set DIV reg resets it to 0 
@@ -548,14 +549,14 @@ void io_write_mem(uint8_t addr, uint8_t val) {
            // Disabiing the Timer can cause TIMA to increase
            // if half its cycles are already reached
            if (((io_mem[addr] & BIT_2) == BIT_2) && ((val & BIT_2) != BIT_2)) {
-               //printf("Disable timer 0x%x 0x%x  freq: 0x%lx\n\n", io_mem[DIV_REG], timer_counter, get_timer_frequency());
                if ((io_mem[DIV_REG] << 8 | timer_counter) & (get_timer_frequency() >> 1)) {
-                   //printf("inc tima\n");
                    increment_tima();
                }
            }
            io_mem[addr] = val;
            break;
+        
+        case INTERRUPT_REG : io_mem[addr] = (val | 0xE0); break;
 
         case LCDC_REG: {
             uint8_t current_lcdc = io_mem[addr];

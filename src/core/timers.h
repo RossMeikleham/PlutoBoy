@@ -13,7 +13,7 @@
 #define DIV_TIMER_INC_FREQUENCY 16382
 
 extern int cgb_speed;
-extern uint8_t timer_counter;
+extern uint16_t timer_counter;
 extern uint8_t previous_timer_counter;
 extern uint8_t previous_DIV;
 

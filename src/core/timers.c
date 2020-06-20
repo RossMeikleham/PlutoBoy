@@ -6,11 +6,12 @@
 //Possible timer increment timer_frequencies in hz
 #define TIMER_FREQUENCIES_LEN sizeof (timer_frequencies) / sizeof (long)
 static const long timer_frequencies[] = {1024, 16, 64, 256}; 
-
+static const long timer_frequencies_bits[] = {10, 4, 6, 8};
 static long timer_frequency = -1;
+static long timer_frequency_bits = -1;
 static uint64_t clocks = 0;
 
-uint8_t timer_counter = 0;
+uint16_t timer_counter = 0;
 uint8_t previous_timer_counter = 0;
 uint8_t previous_DIV = 0;
 
@@ -20,6 +21,7 @@ uint8_t previous_DIV = 0;
 void set_timer_frequency(unsigned int n) {
     if (n < TIMER_FREQUENCIES_LEN) {
         timer_frequency = timer_frequencies[n];
+        timer_frequency_bits = timer_frequencies_bits[n];
     }
 }
 
@@ -68,11 +70,6 @@ void update_divider_reg(long cycles) {
 * the last time this function was called. */
 void update_timers(long cycles) {
 
-    if (cgb_speed)
-    {
-        cycles *= 2;
-    }
-
     clocks += cycles;
     // Inc MBC3 RTC seconds
     if (clocks >= 4 * 1024 * 1024) {
@@ -82,36 +79,29 @@ void update_timers(long cycles) {
 
 	uint8_t timer_control = io_mem[TAC_REG];
 
-    previous_timer_counter = timer_counter;
+    previous_timer_counter = timer_counter & 0xFF;
     timer_counter += cycles;
-    
+
     // Lower 8-bit overflows, increment the upper 8-bits i.e. the DIV register
     previous_DIV = io_mem[DIV_REG];
-    if (timer_counter < previous_timer_counter) {
+    while (timer_counter > 0xFF) {
         increment_div();
+        timer_counter -= 0x100;
     }
         
-    //printf("0x%x 0x%x, freq: 0x%x\n", previous_DIV, previous_timer_counter, timer_frequency);
-    //printf("0x%x 0x%x\n\n", io_mem[DIV_REG], timer_counter);
-    
-    //uint16_t full_timer = (io_mem[DIV_REG] << 8) | timer_counter;
-    uint16_t previous_full_timer = (previous_DIV << 8) | previous_timer_counter;
-
 	//Clock enabled
 	if ((timer_control & BIT_2) != 0) {
-	    set_timer_frequency(timer_control & 3);
-		/*if (timer_frequency == -1) { // If timer not set
-			set_timer_frequency(timer_control & 3);
-		}*/
+        set_timer_frequency(timer_control & 3);
+        // Check how many times the bit for the current frequency was "hit" 
+        uint16_t previous_full_timer = (previous_DIV << 8) | previous_timer_counter;
+        long full_timer = (io_mem[DIV_REG] << 8) | timer_counter;
+        full_timer = previous_full_timer > full_timer ? 0x1 << 16 | full_timer : full_timer;
 
-        uint16_t full_timer = (io_mem[DIV_REG] << 8) | timer_counter;
+        long timer_incs = (full_timer >> timer_frequency_bits) - (previous_full_timer >> timer_frequency_bits); 
 
-        //printf("prev: 0x%x new 0x%x\n", previous_full_timer, full_timer);
-        // Clock Frequency bit gone from high to low
-        if (((previous_full_timer & (timer_frequency >> 1)) != 0) &&
-            ((full_timer & (timer_frequency >> 1)) == 0)) {
-            //printf("inc tima clock\n");
+        for (long i = 0; i < timer_incs; i++)
+        {
             increment_tima();
-		}
+        }
 	}
 }

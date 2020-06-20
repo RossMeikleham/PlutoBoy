@@ -69,13 +69,14 @@ typedef struct {
 
 
 void update_all_cycles(long cycles) {    
-    if (cgb_speed) {
-        cycles /= 2;
-    }   
+        
         update_timers(cycles); 
+        if (cgb_speed) {
+            cycles /= 2;
+        }   
         long updated_cycles = update_graphics(cycles); 
         sound_add_cycles(updated_cycles);
-        inc_serial_cycles(updated_cycles);
+        inc_serial_cycles(updated_cycles*2); // Serial is 2* as quick
 }
 
 
@@ -567,6 +568,7 @@ void invalid_op(){
  static void ADD_SP_IM8() {
 
     reg.Z_FLAG = reg.N_FLAG = 0;
+    update_all_cycles(4);
     int8_t s8 = SIGNED_IM_8_BIT;    
     reg.SP += s8;
 
@@ -574,6 +576,7 @@ void invalid_op(){
     uint16_t temp = (reg.SP - s8) ^ s8 ^ reg.SP;
     reg.C_FLAG = !!(temp & 0x100);
     reg.H_FLAG = !!(temp & 0x10);
+    timer_cycles_passed = 4;
 }
 
 

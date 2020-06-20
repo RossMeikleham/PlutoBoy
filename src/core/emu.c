@@ -152,9 +152,9 @@ void run_one_frame() {
     while (!frame_drawn) {
         if (halted || stopped) {
             long current_cycles = cgb_speed ? 2 : 4;
-            update_timers(current_cycles);
+            update_timers(current_cycles*2);
             sound_add_cycles(current_cycles);
-            inc_serial_cycles(current_cycles);
+            inc_serial_cycles(current_cycles*2);
 
             // If Key pressed in "stop" mode, then gameboy is "unstopped"
             if (stopped) {
@@ -168,7 +168,8 @@ void run_one_frame() {
         }
         else if (!(halted || stopped)) {
             current_cycles = 0;
-            current_cycles += exec_opcode(skip_bug);
+            int inc_cycles = exec_opcode(skip_bug);
+            current_cycles += cgb_speed ? inc_cycles / 2 : inc_cycles;
 
         }
 
