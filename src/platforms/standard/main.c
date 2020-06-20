@@ -1,5 +1,7 @@
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
+#include "../../non_core/menu.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,7 +35,19 @@ int main(int argc, char* argv[]) {
     int dmg_mode = 0;
     ClientOrServer cs = NO_CONNECT;
     prog_name = argv[0];   
-    
+
+    int ret_val = 0;
+    int result = ui_menu(&file_name, &ret_val);
+    if (result != 0 || ret_val != 0)
+    {
+        return -1;
+    }
+    else
+    {
+        printf("ret_val: %d\n", ret_val);
+        printf("result: %d\n", result);
+    }
+    /*  
     if (argc < 2) {
         ARG_ERR;
     }
@@ -59,6 +73,7 @@ int main(int argc, char* argv[]) {
     }
 
     file_name = argv[argc - 1];
+    */
 
     if (!init_emu(file_name, debug, dmg_mode, cs)) {
         return 1;

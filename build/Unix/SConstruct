@@ -73,7 +73,7 @@ if framework == 'SDL':
 
 elif framework == 'SDL2':
     env.Append(LIBPATH = ['/usr/local/lib'])
-    env.Append(LIBS = ['SDL2','SDL2_net'])
+    env.Append(LIBS = ['SDL2','SDL2_net', 'SDL2_image', 'SDL2_ttf'])
     env.Append(CPPPATH = ['/usr/include/SDL2'])
     env.Append(CPPPATH = ['/usr/local/include/SDL2'])
     env.Append(CPPPATH = ['/usr/local/include'])
@@ -96,7 +96,8 @@ if framework == 'SDL':
 elif framework == 'SDL2':
     sourceObjs += env.Object( Glob('../../src/shared_libs/SDL2/*.cpp'))\
                 + env.Object( Glob('../../src/shared_libs/SDL2/audio/*.cpp'))\
-                + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))
+                + env.Object( Glob('../../src/shared_libs/SDL2/*.c'))\
+                + env.Object( Glob('../../src/shared_libs/SDL2/UI/*.c'))
 
 
 env.Program('plutoboy',sourceObjs)
