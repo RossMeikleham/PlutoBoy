@@ -33,8 +33,6 @@ int main(int argc, char **argv) {
         return 0;
     }
     
-    //file_name = "sdmc:/switch/Plutoboy/PokemonCrystal.gbc\0";
-    
     /*  
     if (!selectFile(&cgb_mode, file_name)) {
         cleanup();

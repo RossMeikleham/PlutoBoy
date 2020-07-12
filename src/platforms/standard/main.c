@@ -1,6 +1,7 @@
 #include "../../core/emu.h"
 #include "../../core/serial_io.h"
 #include "../../non_core/menu.h"
+#include "../../non_core/logger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,8 @@ int main(int argc, char* argv[]) {
     int dmg_mode = 0;
     ClientOrServer cs = NO_CONNECT;
     prog_name = argv[0];   
+    
+    set_log_level(LOG_INFO);
 
     int ret_val = 0;
     int result = ui_menu(&file_name, &ret_val);
