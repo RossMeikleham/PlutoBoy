@@ -82,9 +82,7 @@ ln -s /SDL_ttf  /mnt/build/Android/jni/SDL_ttf;\
 ln -s /SDL_image  /mnt/build/Android/jni/SDL_image;\
 # symlink SDLActivity.java from SDL2
 #ln -s /SDL/android-project/src/org/libsdl /mnt/build/Android/src/org/libsdl;\
-
-ln -s /SDL/android-project/app/src/main/java/org/libsdl /mnt/build/Android/src/java/org/libsdl;\
-
+ln -s /SDL/android-project/app/src/main/java/org/libsdl /mnt/build/Android/src/main/java/org/libsdl;\
 ndk-build clean;\
 ndk-build;\ 
 ant clean;\
