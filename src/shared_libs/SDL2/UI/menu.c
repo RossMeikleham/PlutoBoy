@@ -1,11 +1,23 @@
 #if defined(_MSC_VER) || defined(__ANDROID__)
+
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
-#else 
+
+#elif defined(TARGET_OS_IPHONE)
+
+#include <SDL2/SDL.h>
+#include <SDL2_image/SDL_image.h>
+#include <SDL2_ttf/SDL_ttf.h>
+
+#include "../../../platforms/IOS/screen_dimensions.h"
+
+#else
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+
 #endif
 
 #include "../../../non_core/menu.h"
@@ -48,7 +60,7 @@
 #define SDLK_VITA_START 11
 #endif
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(TARGET_OS_IPHONE)
 #include "../../../non_core/joypad.h"
 #endif
 
@@ -109,7 +121,7 @@ typedef struct {
 
 void navigation(context_t *context, navigate_option_t navigate_option);
 
-button_state buttons[8];
+static button_state buttons[8];
 
 #define TOTAL_BUTTONS (sizeof(buttons)/sizeof(buttons[0]))
 
@@ -473,6 +485,8 @@ dir_fname_textures_t *get_directory_file_text_textures(SDL_Renderer *renderer, p
         TTF_Font* font = TTF_OpenFont("ux0:data/Plutoboy/8_Bit_Madness.ttf", font_size);
     #elif defined(__SWITCH__)
         TTF_Font* font = TTF_OpenFont("/switch/Plutoboy/8_Bit_Madness.ttf", font_size);
+    #elif defined(TARGET_OS_IPHONE)
+        TTF_Font* font = TTF_OpenFont("8_Bit_Madness.ttf", font_size);
     #elif defined(__ANDROID__)
         // In Android the font is stored in the APK Assets which can't be read
         // from an absolute path. Instead we need to read it into memory and
@@ -777,7 +791,7 @@ int ui_menu(char **selected_path, int *ret_val) {
                                 .screen_text_area_width_ratio_top = 5,
                                 .screen_text_area_width_ratio_bottom = 8
                              };
-    #elif !defined(__ANDROID__)
+    #elif !defined(__ANDROID__) && !defined(TARGET_OS_IPHONE)
     platform_config config = {	//.screen_width = 1280, 
 								//.screen_height = 720,
                                 .screen_width = 1280,
@@ -791,7 +805,7 @@ int ui_menu(char **selected_path, int *ret_val) {
                                 .screen_text_area_width_ratio_bottom = 8
                              };
     #endif
-
+    
     if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK)==-1)) {
         log_message(LOG_ERROR, "Failed to init SDL\n");
         return -1;
@@ -804,7 +818,27 @@ int ui_menu(char **selected_path, int *ret_val) {
     }
 
     log_message(LOG_INFO, "Initialized SDL\n");
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
     SDL_GetCurrentDisplayMode(0, &current);
+    if (current.h > current.w)
+    {
+        uint32_t tmp = current.h;
+        current.h = current.w;
+        current.w = tmp;
+    }
+    //current.w *= 3;
+    //current.h *= 3;
+    
+    #if defined(TARGET_OS_IPHONE)
+        uint32_t x0, y0, w, h;
+        get_dimensions(&x0, &y0, &w, &h);
+
+        current.w = w;
+        current.h = h;
+     
+    #endif
+
+    log_message(LOG_INFO, "width: %d height: %d\n", current.w, current.h);
 
     #if defined(__ANDROID__)
     platform_config config = {	//.screen_width = 1280, 
@@ -819,14 +853,52 @@ int ui_menu(char **selected_path, int *ret_val) {
                                 .screen_text_area_width_ratio_top = 5,
                                 .screen_text_area_width_ratio_bottom = 8
                              };
+    #elif defined(TARGET_OS_IPHONE)
+    platform_config config = {    //.screen_width = 1280,
+                                  //.screen_height = 720,
+                                .screen_width = current.w,
+                                .screen_height = current.h,
+                                .banner_width_percentage = 10,
+                                .banner_height_percentage = 10,
+                                .text_x_start = 75,
+                                .text_y_start = 100,
+                                .text_y_spacing=20,
+                                .screen_text_area_width_ratio_top = 5,
+                                .screen_text_area_width_ratio_bottom = 8
+    };
+    #endif
     
-    #endif 
-
-    screen = SDL_CreateWindow("Plutoboy", 
-                   SDL_WINDOWPOS_UNDEFINED, 
-                   SDL_WINDOWPOS_UNDEFINED,
+    //#if defined(TARGET_OS_IPHONE)
+    screen = SDL_CreateWindow("Plutoboy",
+                     // SDL_WINDOWPOS_UNDEFINED,
+                     // SDL_WINDOWPOS_UNDEFINED,
+                    300,
+                              300,
+                      config.screen_width, config.screen_height,
+                      SDL_WINDOW_ALLOW_HIGHDPI);
+    
+    //SDL_SetWindowSize(screen, config.screen_width - 500, config.screen_height - 500);
+    
+    // A bit annoying but the safeAreaLayoutGuide only has its values set
+    // after SDL_CreateWindow is called, which is kind of useless to us.
+    //
+    // To hack around this we take the dimensions from the already iinitialized window
+    // close it, and then open another one adjusted for the safeAreaLayout
+    //
+    // This ensures part of the screen isn't obscured by the notch, curved borders of
+    // the iPhone X and above series of devices.
+    /*#if defined(TARGET_OS_IPHONE)
+        get_dimensions(&x0, &y0, &w, &h);
+        config.screen_width = w;
+        config.screen_height = h;
+        SDL_DestroyWindow(screen);
+        screen = SDL_CreateWindow("Plutoboy",
+                   x0,
+                   y0 ,
                    config.screen_width, config.screen_height,
-                   0);
+                SDL_WINDOW_ALLOW_HIGHDPI);
+    #endif*/
+    
 
     SDL_Renderer *renderer = SDL_CreateRenderer(screen, -1, 0);
 
@@ -859,7 +931,9 @@ int ui_menu(char **selected_path, int *ret_val) {
     dir_t *dir = get_dir("/switch/Plutoboy/Boxart");
 #elif defined(__ANDROID__)
     dir_t *dir = get_dir("");
-#else    
+#elif defined(TARGET_OS_IPHONE)
+    dir_t *dir = get_dir(".");
+#else
     draw_box_art(renderer, &config, "boxart/Blue.png");
     dir_t *dir = get_dir("./boxart");
 #endif
@@ -930,11 +1004,11 @@ int ui_menu(char **selected_path, int *ret_val) {
 
     log_message(LOG_INFO, "Got this far\n");
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) || defined(TARGET_OS_IPHONE)
     init_vbutton_texture(renderer);
 #endif
 
-#if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IPHONE)  
+#if defined(__ANDROID__) || defined(TARGET_OS_IPHONE)
     SDL_RenderCopy(renderer, overlay_t, NULL, NULL);
 #endif
     

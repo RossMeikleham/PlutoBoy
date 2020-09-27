@@ -8,7 +8,7 @@
 
 #if defined _MSC_VER || defined(__ANDROID__)
 #include "SDL.h"
-#else 
+#else
 #include <SDL2/SDL.h>
 #endif
 
