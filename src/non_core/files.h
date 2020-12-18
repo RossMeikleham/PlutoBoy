@@ -6,8 +6,8 @@
 
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
- *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
-unsigned long load_rom_from_file(const char *file_path, unsigned char *data);
+ *  returns 0 if unsuccessful. */
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size);
 
 /* Given a file_path and buffer, attempts to load save data into the buffer.
  * Returns the size of the file if successful, returns 0 if unsuccessful.
