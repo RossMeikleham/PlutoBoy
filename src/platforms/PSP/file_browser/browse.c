@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include "dirbrowse.h"
+#include "../../../non_core/logger.h"
 #include<SDL.h>
 
 SDL_Surface *front = 0;
@@ -8,6 +9,7 @@ SDL_Joystick *stick;
 
 int get_gb_file(char *file_name) {
 
+    log_message(LOG_INFO, "Getting file\n");    
 	struct directory_browser b;
 	SDL_Event e;
 	int active = 1;
@@ -57,8 +59,8 @@ int get_gb_file(char *file_name) {
 					active = 0;
 					break;
 				case SDL_JOYBUTTONDOWN:
-					{
-						switch(e.jbutton.button) {
+			    {
+                    switch(e.jbutton.button) {
 						case 8: // move up
 							if(b.cur_i > 0)
 								b.cur_i--;
@@ -85,6 +87,7 @@ int get_gb_file(char *file_name) {
 								struct file_node *pnode = skip_nodes(b.head->next, b.cur_i);
 								if(pnode != 0 && pnode->is_dir == 1) {
 									char buf[1000];
+
 									sprintf(buf,"./%s/", pnode->name);
 									struct file_node *new_nodes = ls2link(buf, &b.length);
 									free_nodes(b.head);
@@ -92,6 +95,7 @@ int get_gb_file(char *file_name) {
 									b.head = new_nodes;
 								}
 								else if(pnode != 0 && pnode->is_dir == 0) { // its a file
+                                    log_message(LOG_INFO, "File selected\n");    
                                     strncpy(file_name, pnode->name, 0xFF); 
                                     file_selected = 1;
                                     active = 0;
@@ -109,6 +113,7 @@ int get_gb_file(char *file_name) {
 	}
 
 	
+    log_message(LOG_INFO, "Got file\n");    
 	free_nodes(b.head);
 	SDL_FreeSurface(bg);
 	SDL_FreeFont(the_font);

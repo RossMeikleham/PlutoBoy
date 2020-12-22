@@ -12,7 +12,7 @@
 
 #ifndef EMSCRIPTEN
 static uint64_t last_ticks;
-static float framerate;
+static int framerate_times_ten;
 static int count;
 static uint64_t current_ticks = 0;
 #endif
@@ -84,10 +84,10 @@ uint64_t get_timestamp_micro() {
 
 
 //Assign Framerate in FPS and start counter
-void start_framerate(float f) {
+void start_framerate(int f) {
 #ifndef EMSCRIPTEN
     last_ticks = get_timestamp_micro();
-    framerate = f;
+    framerate_times_ten = f;
     count = 0;
 #endif
 }
@@ -102,15 +102,15 @@ void adjust_to_framerate() {
 
     current_ticks = get_timestamp_micro();
     uint64_t ticks_elapsed = current_ticks - last_ticks;
-    uint64_t estimated_ticks = last_ticks + (uint64_t)(1000 * (1000/framerate));
-    uint64_t framerate_ticks = ticks_elapsed * framerate;
+    uint64_t estimated_ticks = last_ticks + (uint64_t)(1000 * (10000/framerate_times_ten));
+    uint64_t framerate_ticks = (ticks_elapsed * framerate_times_ten) / 10;
     
     // If too fast we sleep for a certain amount of time
     // sleep might go over the time we want to wait
     // so attempt to come out of sleep early and use 
     // cpu cycles to wait for the rest of the time
     if (framerate_ticks < 1000000) {        
-	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
+	uint64_t delay_time = 10000000/(framerate_times_ten) - ticks_elapsed;
 	if (delay_time >= 5000) {
 		//casting uint64_t into uint32_t, not really safe
 		// but we will never be delaying for more than 1000ms which is well in range
