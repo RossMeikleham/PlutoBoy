@@ -77,11 +77,28 @@ static int gettimeofday(struct timeval *tv, struct timezone *tz)
 #endif
 
 #ifndef EMSCRIPTEN
+
+#ifdef THREE_DS
+// Because gettimeofday in libcrtu doesn't 
+// give a sub-milisecond timestamp 
+// for some reason, even though its meant to report 
+// microseconds, and the system is fully capabale of 
+// doing this *sigh*
+
+
+uint64_t get_timestamp_micro() {
+    #define TICKS_PER_SEC_3DS 268123480LLU;
+    uint64_t ticks = svcGetSystemTick();
+    return (ticks * 1000000LLU) / TICKS_PER_SEC_3DS;
+}
+
+#else
 uint64_t get_timestamp_micro() {
 	struct timeval tv;
 	gettimeofday(&tv, NULL);
 	return tv.tv_sec * 1000000ull + tv.tv_usec;
 }
+#endif
 #endif
 
 
@@ -106,7 +123,8 @@ void adjust_to_framerate() {
 
     current_ticks = get_timestamp_micro();
     uint64_t ticks_elapsed = current_ticks - last_ticks;
-    uint64_t estimated_ticks = last_ticks + (uint64_t)(1000 * (10000/framerate_times_ten));
+    uint64_t estimated_ticks = last_ticks + (uint64_t)(10000000/framerate_times_ten);
+
     uint64_t framerate_ticks = (ticks_elapsed * framerate_times_ten) / 10;
     
     // If too fast we sleep for a certain amount of time
@@ -114,25 +132,27 @@ void adjust_to_framerate() {
     // so attempt to come out of sleep early and use 
     // cpu cycles to wait for the rest of the time
     if (limiter && framerate_ticks < 1000000) {        
-	    uint64_t delay_time = 10000000/framerate_times_ten - ticks_elapsed;
+	    /*uint64_t delay_time = 10000000/framerate_times_ten - ticks_elapsed;
 	    if (delay_time >= 5000) {
 		    //casting uint64_t into uint32_t, not really safe
 		    // but we will never be delaying for more than 1000ms which is well in range
  		    SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
-	    }	
-        while(get_timestamp_micro() < estimated_ticks)
-  		    ;;
-        }   
+	    }*/	
+       while((current_ticks = get_timestamp_micro()) < estimated_ticks)
+  	       ;;
+    }   
+    else {
+        current_ticks = get_timestamp_micro();
+    }
 
-    current_ticks = get_timestamp_micro();
     count = (count + 1) % 60;
     if (count == 0) {
 	//printf("speed %u\n", current_ticks - last_ticks);
-        float fps = 1000000.0 / (current_ticks - last_ticks);
         //printf("Gameboy fps:%.2f\n",fps);
         SDL_WM_SetCaption(title_buf,"");
         
         #ifdef THREE_DS
+        double fps = 1000000.0 / (current_ticks - last_ticks);
         int fps_i = (int)fps;
         if (fps_i > 35) {
             show_fps(fps);

@@ -102,7 +102,7 @@ void adjust_to_framerate() {
 
     current_ticks = get_timestamp_micro();
     uint64_t ticks_elapsed = current_ticks - last_ticks;
-    uint64_t estimated_ticks = last_ticks + (uint64_t)(1000 * (10000/framerate_times_ten));
+    uint64_t estimated_ticks = last_ticks + (uint64_t)(10000000/framerate_times_ten);
     uint64_t framerate_ticks = (ticks_elapsed * framerate_times_ten) / 10;
     
     // If too fast we sleep for a certain amount of time
@@ -110,19 +110,19 @@ void adjust_to_framerate() {
     // so attempt to come out of sleep early and use 
     // cpu cycles to wait for the rest of the time
     if (framerate_ticks < 1000000) {        
-	uint64_t delay_time = 10000000/(framerate_times_ten) - ticks_elapsed;
-	if (delay_time >= 5000) {
-		//casting uint64_t into uint32_t, not really safe
-		// but we will never be delaying for more than 1000ms which is well in range
- 		SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
-	}	
-    while(get_timestamp_micro() < estimated_ticks)
-  		;;
+	    uint64_t delay_time = 10000000/(framerate_times_ten) - ticks_elapsed;
+	    if (delay_time >= 5000) {
+		    //casting uint64_t into uint32_t, not really safe
+		    // but we will never be delaying for more than 1000ms which is well in range
+ 		    SDL_Delay( (uint32_t) ((delay_time - 200)/1000));        
+	    }	
+        while((current_ticks = get_timestamp_micro()) < estimated_ticks)
+  		    ;;
 	
-    } 
-   
-    current_ticks = get_timestamp_micro();
-    
+    } else {
+        current_ticks = get_timestamp_micro();
+    }
+
     count = (count + 1) % 60;
     if (count == 0) {
 	//printf("speed %u\n", current_ticks - last_ticks);
