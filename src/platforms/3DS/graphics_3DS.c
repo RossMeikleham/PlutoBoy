@@ -33,8 +33,23 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
 
     screen_width = TOPSCREEN_WIDTH;
     screen_height = SCREEN_HEIGHT;
+    gfxFlushBuffers();
+    gfxSwapBuffers();
     
+    // Cleanout the Framebuffers
     pixels = p;
+    uint8_t* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
+    for (int i = 0; i < 2; i++) {
+        for (int y = 0; y < SCREEN_HEIGHT; y++)  {
+            for (int x = 0; x < TOPSCREEN_WIDTH; x++) {
+                int col = 0x00000000;
+                memcpy(&fb[3 * (239 - y + (x * 240))], &col, 3);
+}
+        }
+        gfxFlushBuffers();
+        gfxSwapBuffers();
+    }
+
 /*
     uint32_t outer_border_color = 0x00FF00; // Purple
     uint32_t inner_border_color = 0x212327; 
