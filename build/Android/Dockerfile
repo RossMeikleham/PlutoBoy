@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM --platform=linux/amd64 debian:stretch
 
 USER root
 
@@ -48,6 +48,10 @@ RUN sdkmanager --list \
 # Install NDK
 RUN curl -o ndk.bin http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin
 RUN chmod a+x ndk.bin
+RUN apt-get install -y libc6-dev
+RUN apt-get install -y libstdc++-6-dev
+RUN ls /lib/
+RUN find / -name "*ld-linux*" 2>/dev/null
 RUN ./ndk.bin > /dev/null
 ENV PATH /android-ndk-r10e:$PATH
 

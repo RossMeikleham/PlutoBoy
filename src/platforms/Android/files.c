@@ -7,7 +7,7 @@
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
-unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size) {
+unsigned long load_rom_from_file(const char *filename, unsigned char *data, unsigned long buf_size) {
         SDL_RWops *rw = SDL_RWFromFile(filename, "rb");
         
         if (rw == NULL) {
