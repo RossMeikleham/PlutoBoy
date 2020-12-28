@@ -52,10 +52,11 @@ target_link_libraries(${SHORT_NAME}
   SceSysmodule_stub
   SceGxm_stub
   SceCommonDialog_stub
+  SceAppMgr_stub
   SceTouch_stub
   ScePower_stub
   SceHid_stub
-  m 
+  m
 )
 
 vita_create_self(${SHORT_NAME}.self ${SHORT_NAME})

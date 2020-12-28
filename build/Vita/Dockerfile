@@ -2,10 +2,14 @@ from miladiir/vitasdk:latest
 
 ENV VITASDK /usr/local/vitasdk
 
+RUN apt-get update -y
+RUN apt install -y python
+
 # Install SDL2 and other VitaSDK libraries
 RUN git clone https://github.com/vitasdk/vdpm;\ 
     cd vdpm;\ 
-    ./install-all.sh;
+    ./install-all.sh;\
+    ./vitasdk-update;
 
 RUN mkdir /plutoboy_vita
 ADD . /plutoboy_vita/
