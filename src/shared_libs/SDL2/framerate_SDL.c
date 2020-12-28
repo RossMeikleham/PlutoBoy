@@ -125,8 +125,8 @@ void adjust_to_framerate() {
 
     count = (count + 1) % 60;
     if (count == 0) {
-	//printf("speed %u\n", current_ticks - last_ticks);
         float fps = 1000000.0 / (current_ticks - last_ticks);
+	    //printf("fps %f\n", fps);
         
 //        sprintf(title_buf, "Gameboy fps:%.2f",fps);
 //        printf("Gameboy fps:%.2f\n",fps);

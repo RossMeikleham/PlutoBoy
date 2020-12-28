@@ -7,7 +7,7 @@
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
-unsigned long load_rom_from_file(const char* filename, unsigned char *data) {
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size) {
         SDL_RWops *rw = SDL_RWFromFile(filename, "rb");
         
         if (rw == NULL) {
@@ -17,10 +17,10 @@ unsigned long load_rom_from_file(const char* filename, unsigned char *data) {
         }
 
         Sint64 res_size = SDL_RWsize(rw);
-        if (res_size > MAX_FILE_SIZE) {
+        if (res_size != buf_size) {
             log_message(LOG_ERROR,
-                "Error opening file %s: File is too large to be a Gameboy ROM\n",
-                filename);
+                "Error opening file %s: File size (%lld) doesn't match header size (%lu)\n",
+                filename, res_size, buf_size);
             return 0;
         }
 
