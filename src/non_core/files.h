@@ -1,13 +1,17 @@
 #ifndef FILES_H
 #define FILES_H
 
+#include <stdlib.h>
+
 #define MAX_FILE_SIZE 0x800000 //8MB Roms
 #define MAX_SRAM_SIZE 0x8000 // 128KB SRAM
 
+#define READ_SIZE 4096
+
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
- *  returns 0 if unsuccessful. */
-unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size);
+ *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data, size_t data_size);
 
 /* Given a file_path and buffer, attempts to load save data into the buffer.
  * Returns the size of the file if successful, returns 0 if unsuccessful.

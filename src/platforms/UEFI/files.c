@@ -16,7 +16,7 @@
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
-unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size) {
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data, size_t data_size) {
 
     // read byte by byte of ROM into memory
     EFI_FILE_PROTOCOL* file = (EFI_FILE_PROTOCOL *)uefi_fopen(file_path, "rb");
@@ -26,15 +26,25 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, uns
     }
 
     uint32_t count = 0; 
-    unsigned char cur;
+    unsigned char *data_ptr = data;
+    int rc = 0;
+    
     //Read file contents into buffer
-    while(count < buf_size && uefi_fread(&cur, 1, 1, file)) {
-        data[count++] = cur;
+    //while(count < MAX_FILE_SIZE && (rc = fread(data_ptr, 1, READ_SIZE, file))) {
+    while(count < data_size && (rc = uefi_fread(data_ptr, 1, READ_SIZE, file))) {
+        if (rc < 0) {
+            log_message(LOG_ERROR, "Failed to read file\n");
+            uefi_fclose(file);
+            return 0;
+        }
+        data_ptr += rc;
+        count += rc;
     }
 
     if (count == 0) {
        log_message(LOG_WARN, "Empty file %s\n", file_path);
     }
+
 
     uefi_fclose(file);
     

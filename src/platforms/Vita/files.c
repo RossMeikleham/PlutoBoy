@@ -7,7 +7,12 @@
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
+<<<<<<< HEAD
 unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size) {
+=======
+unsigned long load_rom_from_file(const char *file_path, unsigned char *data, size_t data_size) {
+ 
+>>>>>>> 76fbc902f29dfc022ee4f9150a5c61b479bd1827
     FILE *file;  
     /* open file in binary read mode
      * read byte by byte of ROM into memory */
@@ -16,6 +21,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, uns
         log_message(LOG_ERROR, "Error opening file %s\n", file_path);
         return 0;
     }
+<<<<<<< HEAD
  
     unsigned long count = 0; 
     unsigned char cur = 0;
@@ -30,9 +36,23 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, uns
         count += bytes_read;
         data_ptr += bytes_read;
     }
+=======
+>>>>>>> 76fbc902f29dfc022ee4f9150a5c61b479bd1827
 
-    if (count == 0) {
-       log_message(LOG_WARN, "Empty file %s\n", file_path);
+    uint32_t count = 0; 
+    unsigned char *data_ptr = data;
+    int rc = 0;
+    
+    //Read file contents into buffer
+    //while(count < MAX_FILE_SIZE && (rc = fread(data_ptr, 1, READ_SIZE, file))) {
+    while(count < data_size && (rc = fread(data_ptr, 1, READ_SIZE, file))) {
+        if (rc < 0) {
+            log_message(LOG_ERROR, "Failed to read file\n");
+            fclose(file);
+            return 0;
+        }
+        data_ptr += rc;
+        count += rc;
     }
 
     fclose(file);
@@ -40,7 +60,6 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, uns
 
     return count;  
 }
-
 
 /* Given a file_path and buffer, attempts to load save data into the buffer
  * up to the suppled size in bytes. Returns the size of the file if successful, 

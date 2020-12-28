@@ -16,8 +16,9 @@ add_definitions(-DPSVITA)
 set(VITA_APP_NAME "Plutoboy")
 set(VITA_TITLEID  "PLUTO0013")
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -std=gnu11 -mtune=cortex-a9")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -std=c++11 -mtune=cortex-a9")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O22 -std=gnu11 -mtune=cortex-a9")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -std=c++11 -mtune=cortex-a9")
+set(VITA_MKSFOEX_FLAGS "${VITA_MKSFOEX_FLAGS} -d ATTRIBUTE2=12")
 
 include_directories(
   ../common
@@ -32,19 +33,25 @@ file(GLOB plutoboy_src
     "../../src/core/audio/*.h"
     "../../src/non_core/*.h"
     "../../src/platforms/Vita/*.c"
-    "../../src/platforms/Vita/file_browser/*.h"
-    "../../src/platforms/Vita/file_browser/*.c"
     "../../src/platforms/Vita/*.h"
+    "../../src/shared_libs/SDL2/UI/menu.c" 
     "../../src/shared_libs/SDL2/*.c"
     "../../src/shared_libs/SDL2/*.cpp"
     "../../src/shared_libs/SDL2/audio/*.h" 
-    "../../src/shared_libs/SDL2/audio/*.cpp" 
+    "../../src/shared_libs/SDL2/audio/*.cpp"
+    "../../src/platforms/Vita/file_browser/filebrowser.c"
 )
 
 add_executable(${SHORT_NAME} ${plutoboy_src})
 
 target_link_libraries(${SHORT_NAME}
   SDL2
+  SDL2_TTF
+  SDL2_Image
+  png
+  jpeg
+  freetype
+  z
   vita2d
   SceDisplay_stub
   SceCtrl_stub
@@ -52,11 +59,11 @@ target_link_libraries(${SHORT_NAME}
   SceSysmodule_stub
   SceGxm_stub
   SceCommonDialog_stub
-  SceAppMgr_stub
   SceTouch_stub
   ScePower_stub
   SceHid_stub
-  m
+  SceAppMgr_stub
+  m 
 )
 
 vita_create_self(${SHORT_NAME}.self ${SHORT_NAME})
