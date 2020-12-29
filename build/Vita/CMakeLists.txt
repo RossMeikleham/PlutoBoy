@@ -34,7 +34,7 @@ file(GLOB plutoboy_src
     "../../src/non_core/*.h"
     "../../src/platforms/Vita/*.c"
     "../../src/platforms/Vita/*.h"
-    "../../src/shared_libs/SDL2/UI/menu.c" 
+    "../../src/shared_libs/SDL2/UI/*.c" 
     "../../src/shared_libs/SDL2/*.c"
     "../../src/shared_libs/SDL2/*.cpp"
     "../../src/shared_libs/SDL2/audio/*.h" 
@@ -46,8 +46,8 @@ add_executable(${SHORT_NAME} ${plutoboy_src})
 
 target_link_libraries(${SHORT_NAME}
   SDL2
-  SDL2_TTF
-  SDL2_Image
+  SDL2_ttf
+  SDL2_image
   png
   jpeg
   freetype
@@ -59,6 +59,8 @@ target_link_libraries(${SHORT_NAME}
   SceSysmodule_stub
   SceGxm_stub
   SceCommonDialog_stub
+  SceAppMgr_stub
+  SceMotion_stub
   SceTouch_stub
   ScePower_stub
   SceHid_stub
@@ -70,9 +72,10 @@ vita_create_self(${SHORT_NAME}.self ${SHORT_NAME})
 vita_create_vpk(${SHORT_NAME}.vpk ${VITA_TITLEID} ${SHORT_NAME}.self
   VERSION ${VITA_VERSION}
   NAME ${VITA_APP_NAME}
-  FILE sce_sys/icon0.png sce_sys/icon0.png
-  FILE sce_sys/livearea/contents/bg0.png sce_sys/livearea/contents/bg0.png
-  FILE sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
-  FILE sce_sys/livearea/contents/frame_icon.png sce_sys/livearea/contents/frame_icon.png
-  FILE sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
+  FILE assets/sce_sys/icon0.png sce_sys/icon0.png
+  FILE assets/sce_sys/livearea/contents/bg0.png sce_sys/livearea/contents/bg0.png
+  FILE assets/sce_sys/livearea/contents/startup.png sce_sys/livearea/contents/startup.png
+  FILE assets/sce_sys/livearea/contents/frame_icon.png sce_sys/livearea/contents/frame_icon.png
+  FILE assets/sce_sys/livearea/contents/template.xml sce_sys/livearea/contents/template.xml
+  FILE assets/8_Bit_Madness.ttf 8_Bit_Madness.ttf
 )

@@ -6,6 +6,12 @@
 #include "../../../non_core/filebrowser.h"
 #include "../../../non_core/logger.h"
 
+#include <unistd.h>
+
+#ifndef PATH_MAX
+#define PATH_MAX 4096
+#endif
+
 #ifdef __SWITCH__
 #include <switch.h>
 
@@ -121,8 +127,6 @@ void draw_select_game_bg(SDL_Renderer *renderer, platform_config *config) {
 
 void draw_box_art(SDL_Renderer *renderer, platform_config *config, char *path) {
     
-    log_message(LOG_INFO, "%s\n", "poop");
-    log_message(LOG_INFO, "%s\n", path);
     //SDL_Surface* img = IMG_Load(path);
   
     SDL_Surface *box_art_surface = IMG_Load(path);
@@ -270,14 +274,15 @@ dir_fname_textures_t *get_directory_file_text_textures(SDL_Renderer *renderer, p
 {
     if (dir == NULL)
     {
+        log_message(LOG_ERROR, "Accessing NULL directory\n"); 
         return NULL;
     }
 
     uint32_t font_size = 24; //TODO dynamically work out via config
     #if defined(PSVITA)
-        TTF_Font* font = TTF_OpenFont("ux0:data/Plutoboy/8_Bit_Madness.ttf", font_size);
+        TTF_Font* font = TTF_OpenFont("app0:8_Bit_Madness.ttf", font_size);
     #elif defined(__SWITCH__)
-        TTF_Font* font = TTF_OpenFont("/switch/Plutoboy/8_Bit_Madness.ttf", font_size);
+        TTF_Font* font = TTF_OpenFont("romfs:/8_Bit_Madness.ttf", font_size);
     #else
         TTF_Font* font = TTF_OpenFont("8_Bit_Madness.ttf", font_size);
     #endif
@@ -694,16 +699,25 @@ int ui_menu(char **selected_path, int *ret_val) {
 
     log_message(LOG_INFO, "about to draw boxart\n");
 #if defined(PSVITA)
-    //draw_box_art(renderer, &config, "ux0:data/Plutoboy/Boxart/Blue.png");
-    dir_t *dir = get_dir("ux0:data/Plutoboy/Boxart");
+    dir_t *dir = get_dir("ux0:data/Plutoboy");
 #elif defined(__SWITCH__)
-    draw_box_art(renderer, &config, "/switch/Plutoboy/Boxart/Blue.png");
-    dir_t *dir = get_dir("/switch/Plutoboy/Boxart");
+    dir_t *dir = get_dir("/switch/Plutoboy");
+    if (dir == NULL) {
+        char cwd_buf[PATH_MAX+1];
+        if (getcwd(cwd_buf, PATH_MAX) != 0) {
+            log_message(LOG_INFO, "buf: %s\n", cwd_buf);
+            dir = get_dir(cwd_buf);
+        }
+        else {
+            log_message(LOG_INFO, "Failed to get cwd\n");
+        }
+    }
 #else    
-    draw_box_art(renderer, &config, "boxart/Blue.png");
-    dir_t *dir = get_dir("./boxart");
+    dir_t *dir = get_dir(".");
 #endif
-    log_message(LOG_INFO, "got dir and boxart\n");	
+    if (dir == NULL) {
+        dir = get_dir(".");
+    }
 
     dir_fname_textures_t *fname_textures =  get_directory_file_text_textures(renderer, &config, dir); 
 

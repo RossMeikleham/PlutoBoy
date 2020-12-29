@@ -1,4 +1,5 @@
 #include "../../../non_core/filebrowser.h"
+#include "../../../non_core/logger.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +12,7 @@
 
 //#ifdef POSIX
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <dirent.h>
 #include <errno.h>
 #include <unistd.h>
@@ -20,135 +22,6 @@
 #define PATH_MAX 4096
 #endif
 
-// DevKitPro doesn't implement this for some reason :/
-//#ifdef __SWITCH__
-#define MAX_READLINKS 32
-
-#ifdef __STDC__
-char *realpath_switch(const char *path, char resolved_path[])
-#else
-char *realpath(path, resolved_path)
-const char *path;
-char resolved_path[];
-#endif
-{
-	char copy_path[PATH_MAX];
-	char link_path[PATH_MAX];
-	char got_path[PATH_MAX];
-	char *new_path = got_path;
-	char *max_path;
-	int readlinks = 0;
-	int n;
-
-	if (path == NULL) {
-		errno = EINVAL;
-		return NULL;
-	}
-	if (*path == '\0') {
-		errno = ENOENT;
-		return NULL;
-	}
-	/* Make a copy of the source path since we may need to modify it. */
-	if (strlen(path) >= PATH_MAX - 2) {
-		errno = ENAMETOOLONG;
-		return NULL;
-	}
-	strcpy(copy_path, path);
-	path = copy_path;
-	max_path = copy_path + PATH_MAX - 2;
-	/* If it's a relative pathname use getcwd for starters. */
-	if (*path != '/') {
-		/* Ohoo... */
-		getcwd(new_path, PATH_MAX - 1);
-		new_path += strlen(new_path);
-		if (new_path[-1] != '/')
-			*new_path++ = '/';
-	} else {
-		*new_path++ = '/';
-		path++;
-	}
-	/* Expand each slash-separated pathname component. */
-	while (*path != '\0') {
-		/* Ignore stray "/". */
-		if (*path == '/') {
-			path++;
-			continue;
-		}
-		if (*path == '.') {
-			/* Ignore ".". */
-			if (path[1] == '\0' || path[1] == '/') {
-				path++;
-				continue;
-			}
-			if (path[1] == '.') {
-				if (path[2] == '\0' || path[2] == '/') {
-					path += 2;
-					/* Ignore ".." at root. */
-					if (new_path == got_path + 1)
-						continue;
-					/* Handle ".." by backing up. */
-					while ((--new_path)[-1] != '/');
-					continue;
-				}
-			}
-		}
-		/* Safely copy the next pathname component. */
-		while (*path != '\0' && *path != '/') {
-			if (path > max_path) {
-				errno = ENAMETOOLONG;
-				return NULL;
-			}
-			*new_path++ = *path++;
-		}
-/*#ifdef S_IFLNK
-		// Protect against infinite loops. 
-		if (readlinks++ > MAX_READLINKS) {
-			errno = ELOOP;
-			return NULL;
-		}
-		// See if latest pathname component is a symlink.
-		*new_path = '\0';
-		n = readlink(got_path, link_path, PATH_MAX - 1);
-		if (n < 0) {
-			// EINVAL means the file exists but isn't a symlink. 
-			if (errno != EINVAL) {
-				// Make sure it's null terminated.
-				*new_path = '\0';
-				strcpy(resolved_path, got_path);
-				return NULL;
-			}
-		} else {
-			// Note: readlink doesn't add the null byte.
-			link_path[n] = '\0';
-			if (*link_path == '/')
-				// Start over for an absolute symlink. 
-				new_path = got_path;
-			else
-				// Otherwise back up over this component.
-				while (*(--new_path) != '/');
-			// Safe sex check. 
-			if (strlen(path) + n >= PATH_MAX - 2) {
-				errno = ENAMETOOLONG;
-				return NULL;
-			}
-			// Insert symlink contents into path.
-			strcat(link_path, path);
-			strcpy(copy_path, link_path);
-			path = copy_path;
-		}
-#endif							// S_IFLNK
-*/
-		*new_path++ = '/';
-	}
-	/* Delete trailing slash but don't whomp a lone slash. */
-	if (new_path != got_path + 1 && new_path[-1] == '/')
-		new_path--;
-	/* Make sure it's null terminated. */
-	*new_path = '\0';
-	strcpy(resolved_path, got_path);
-	return resolved_path;
-}
-//#endif
 
 void free_dir(dir_t * const dir)
 {
@@ -161,7 +34,7 @@ void free_dir(dir_t * const dir)
 
         if (dir->entries != NULL)
         {
-            for (int32_t i = 0; i < dir->entry_count; i++)
+            for (uint32_t i = 0; i < dir->entry_count; i++)
             {
                 if (dir->entries[i].name != NULL)
                 {
@@ -178,45 +51,103 @@ dir_t *get_dir(const char * const dir_path)
 {
     struct dirent *ep;
 
+
+// VitaSDK lacks the API to do realpath, getcwd, etc.
+#if defined(PSVITA) || defined(__SWITCH__)
+    // Our reduced path will always be smaller than the full path
+   char *path = strdup(dir_path);
+    if (path == NULL)
+    {
+        return NULL;
+    }
+
+    // "Simplify" the Directory path if it ends with "." or ".."
+	char *last_dir_chr = strrchr(path, '/');
+	if (last_dir_chr != NULL) 
+    {
+        char *fname = last_dir_chr + 1;
+        if (last_dir_chr != path)
+        {
+            // Same Dir
+            if (!strcmp(fname, ".")) 
+            {
+                // x/y/. -> x/y
+                // /x/. -> /x
+                if (last_dir_chr != path) 
+                {
+                    last_dir_chr[0] = '\0';
+                }
+                // /. -> /
+                else 
+                {
+                    last_dir_chr[1] = '\0';
+                }
+            }
+            // Parent Dir
+            else if (!strcmp(fname, "..")) 
+            {
+                // /.. -> /
+                if (last_dir_chr == path) 
+                {
+                    last_dir_chr[1] = '\0';
+                }
+                // /x/y/.. -> /x/y
+                // x/y/..  ->  x/y
+                // /x/.. -> /x
+                // x/.. -> x
+                else
+                {
+                    last_dir_chr[0] = '\0';
+                }
+
+            
+                // Finally
+                // /x/y -> /x   (/x/y/.. -> /x)
+                // x/y -> x     (x/y/.. -> x)
+                // /x -> /x     (/x/.. -> /x)
+                // x -> x       (x/.. -> x)
+                char *parent_dir_chr = strrchr(path, '/');
+                if (parent_dir_chr != NULL && parent_dir_chr != path) 
+                {
+                    parent_dir_chr[0] = '\0';
+                }
+            }
+	    }
+    }
+#else
+    log_message(LOG_INFO, "Calling realpath: %s\n", dir_path);
+    char *path = realpath_switch(dir_path, NULL);
+    if (path == NULL)
+    {
+        return NULL;
+    }
+#endif
+    log_message(LOG_INFO, "%s dir_path, reduced to %s\n", dir_path, path);
+    //path = strdup(dir_path);
+    
     // Would normally just use dp and not ndp,
     // but for some reason on 3DS and Switch 
     // rewindir appears to do absolutely nothing
-    DIR *dp = opendir(dir_path);
-    DIR *ndp = opendir(dir_path);
+    DIR *dp = opendir(path);
+    DIR *ndp = opendir(path);
+    dir_t *dir = NULL;
 
     if (dp == NULL || ndp == NULL)
     {
-        if (dp != NULL)
-        {
-            closedir(dp);
-        }
-
-        if (ndp != NULL)
-        {
-            closedir(ndp);
-        }
-
-        return NULL;
+        goto err;
     }
    
-    dir_t *dir = calloc(1, sizeof(dir_t));
+    dir = calloc(1, sizeof(dir_t));
     if (dir == NULL)
     {
         goto err;
     }
    
-    char *path = calloc(1, PATH_MAX);
-    char *result = realpath_switch(dir_path, path);
+    //char *path = calloc(1, PATH_MAX);
+    //todo path = 
+    //char *result = realpath_switch(dir_path, path);
 
-    if (result == NULL)
-    {
-        goto err;
-    }
-
-	// Each Path is probably nowhere near PATH_MAX in size
-	char *minimised_path = realloc(path, strlen(path) + 1);
-
-    dir->path = minimised_path;
+    dir->path = path;
     
     // Loop through twice, once to get the number of files
     // so we know how many slots to allocate, then a second time
@@ -229,9 +160,10 @@ dir_t *get_dir(const char * const dir_path)
     
     // Allocate slots for number of entires
     
-    #ifdef __SWITCH__
+    #if defined(__SWITCH__) || defined(PSVITA)
         entry_count += 2; // For some reason Switch's API doesn't include "." and ".."
     #endif
+    log_message(LOG_INFO, "entry count %u\n", entry_count);
 
     dir->entries = calloc(entry_count, sizeof(dir_entry_t));
     if (dir->entries == NULL)
@@ -241,7 +173,7 @@ dir_t *get_dir(const char * const dir_path)
 
     uint32_t entries_read = 0; 
     
-    #ifdef __SWITCH__
+    #if defined(__SWITCH__) || defined(PSVITA)
         dir->entries[0].name = calloc(1, strlen(".") + 1);
         if (dir->entries[0].name == NULL)
         {
@@ -264,7 +196,7 @@ dir_t *get_dir(const char * const dir_path)
     
     
     uint32_t i = 0;
-    #ifdef __SWITCH__
+    #if defined(__SWITCH__) || defined(PSVITA)
         i += 2;
     #endif
 
@@ -276,7 +208,22 @@ dir_t *get_dir(const char * const dir_path)
            goto err;
        }
        strcpy(dir->entries[i].name, ep->d_name);
-       dir->entries[i].is_dir = ep->d_type == DT_DIR;
+       
+       char *file_path = calloc(strlen(dir->path) + 1 + strlen(ep->d_name) + 1, 1);
+       if (file_path == NULL) 
+       {
+           goto err;
+       } 
+       strcpy(file_path, dir->path);
+       file_path[strlen(file_path)] = '/';
+       strcpy(file_path + strlen(dir->path) + 1, ep->d_name);
+       log_message(LOG_INFO, "FILE PATH: %s\n", file_path);
+       struct stat path_stat;
+       stat(file_path, &path_stat);
+       free(file_path);
+       dir->entries[i].is_dir = S_ISDIR(path_stat.st_mode);
+
+       //dir->entries[i].is_dir = ep->d_type == DT_DIR;
        entries_read++; 
     }
 
@@ -287,8 +234,24 @@ dir_t *get_dir(const char * const dir_path)
     return dir;
 
     err:
-        free_dir(dir);
-        closedir(dp);
-        closedir(ndp);
+        if (dir != NULL)
+        {
+            free_dir(dir);
+        }
+        else
+        {
+            free(path);
+        }
+
+        if (dp != NULL)
+        {
+            closedir(dp);
+        }
+
+        if (ndp != NULL)
+        {
+            closedir(ndp);
+        }
+
         return NULL;
 }

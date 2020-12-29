@@ -7,12 +7,8 @@
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
-<<<<<<< HEAD
-unsigned long load_rom_from_file(const char *file_path, unsigned char *data, unsigned long buf_size) {
-=======
 unsigned long load_rom_from_file(const char *file_path, unsigned char *data, size_t data_size) {
  
->>>>>>> 76fbc902f29dfc022ee4f9150a5c61b479bd1827
     FILE *file;  
     /* open file in binary read mode
      * read byte by byte of ROM into memory */
@@ -21,24 +17,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, siz
         log_message(LOG_ERROR, "Error opening file %s\n", file_path);
         return 0;
     }
-<<<<<<< HEAD
  
-    unsigned long count = 0; 
-    unsigned char cur = 0;
-    unsigned char *data_ptr = data; 
-    //Read file contents into buffer
-    while (count < buf_size) {
-        size_t bytes_read = fread(data_ptr, 1, 1024, file);
-
-        if (bytes_read == 0) {
-            break;
-        }
-        count += bytes_read;
-        data_ptr += bytes_read;
-    }
-=======
->>>>>>> 76fbc902f29dfc022ee4f9150a5c61b479bd1827
-
     uint32_t count = 0; 
     unsigned char *data_ptr = data;
     int rc = 0;
