@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM --platform=linux/amd64 debian:stretch
 
 USER root
 
@@ -77,6 +77,10 @@ RUN mv SDL2_image-2.0.5 /SDL_image
 
 
 CMD cd /mnt/build/Android;\ 
+rm /mnt/build/Android/jni/SDL;\
+rm /mnt/build/Android/jni/SDL_ttf;\
+rm /mnt/build/Android/jni/SDL_image;\
+rm /mnt/build/Android/src/main/java/org/libsdl;\
 ln -s /SDL  /mnt/build/Android/jni/SDL;\
 ln -s /SDL_ttf  /mnt/build/Android/jni/SDL_ttf;\
 ln -s /SDL_image  /mnt/build/Android/jni/SDL_image;\

@@ -116,7 +116,7 @@ dir_t *get_dir(const char * const dir_path)
     }
 #else
     log_message(LOG_INFO, "Calling realpath: %s\n", dir_path);
-    char *path = realpath_switch(dir_path, NULL);
+    char *path = realpath(dir_path, NULL);
     if (path == NULL)
     {
         return NULL;

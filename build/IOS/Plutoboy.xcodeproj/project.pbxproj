@@ -63,11 +63,70 @@
 		91EDD8F624DDE772005ED79A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F524DDE771005ED79A /* MobileCoreServices.framework */; };
 		91EDD8F824DDE7A6005ED79A /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F724DDE7A6005ED79A /* ImageIO.framework */; };
 		91EDD8FA24DEB7F5005ED79A /* 8_Bit_Madness.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */; };
-		91EDD8FC24DEE99E005ED79A /* color2.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8FB24DEE99D005ED79A /* color2.png */; };
 		91EDD92F24DFF123005ED79A /* screen_dimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EDD92D24DFF120005ED79A /* screen_dimensions.m */; };
 		91EDD93524E02F73005ED79A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93424E02F73005ED79A /* AVFoundation.framework */; };
 		91EDD93724E02FB3005ED79A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93624E02FB3005ED79A /* CoreBluetooth.framework */; };
 		91EDD93924E053EA005ED79A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD93824E053E5005ED79A /* Default-568h@2x.png */; };
+		91F281222520CC740032E148 /* debugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D71C280D2900559E43 /* debugger.c */; };
+		91F281232520CC740032E148 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D81C280D2900559E43 /* files.c */; };
+		91F281242520CC740032E148 /* logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D91C280D2900559E43 /* logger.c */; };
+		91F281252520CC740032E148 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7DA1C280D2900559E43 /* main.c */; };
+		91F281262520CC740032E148 /* Blip_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7AC1C280C4000559E43 /* Blip_Buffer.cpp */; };
+		91F281272520CC740032E148 /* Effects_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7AF1C280C4000559E43 /* Effects_Buffer.cpp */; };
+		91F281282520CC740032E148 /* Gb_Apu_State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B11C280C4000559E43 /* Gb_Apu_State.cpp */; };
+		91F281292520CC740032E148 /* Gb_Apu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B21C280C4000559E43 /* Gb_Apu.cpp */; };
+		91F2812A2520CC740032E148 /* filebrowser.c in Sources */ = {isa = PBXBuildFile; fileRef = 91EDD8ED24DDBFC0005ED79A /* filebrowser.c */; };
+		91F2812B2520CC740032E148 /* Gb_Oscs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B41C280C4000559E43 /* Gb_Oscs.cpp */; };
+		91F2812C2520CC740032E148 /* Multi_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B61C280C4000559E43 /* Multi_Buffer.cpp */; };
+		91F2812D2520CC740032E148 /* hdma.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D77D1C280C0A00559E43 /* hdma.c */; };
+		91F2812E2520CC740032E148 /* huc1.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D77F1C280C0A00559E43 /* huc1.c */; };
+		91F2812F2520CC740032E148 /* huc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7811C280C0A00559E43 /* huc3.c */; };
+		91F281302520CC740032E148 /* mbc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7831C280C0A00559E43 /* mbc.c */; };
+		91F281312520CC740032E148 /* mbc0.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7851C280C0A00559E43 /* mbc0.c */; };
+		91F281322520CC740032E148 /* mbc1.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7871C280C0A00559E43 /* mbc1.c */; };
+		91F281332520CC740032E148 /* mbc2.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7891C280C0A00559E43 /* mbc2.c */; };
+		91F281342520CC740032E148 /* mbc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D78B1C280C0A00559E43 /* mbc3.c */; };
+		91F281352520CC740032E148 /* mbc5.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D78D1C280C0A00559E43 /* mbc5.c */; };
+		91F281362520CC740032E148 /* menu.c in Sources */ = {isa = PBXBuildFile; fileRef = 91EDD8EE24DDBFC0005ED79A /* menu.c */; };
+		91F281372520CC740032E148 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D78F1C280C0A00559E43 /* memory.c */; };
+		91F281382520CC740032E148 /* mmm01.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7911C280C0A00559E43 /* mmm01.c */; };
+		91F281392520CC740032E148 /* cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7501C280B7600559E43 /* cpu.c */; };
+		91F2813A2520CC740032E148 /* disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7521C280B7600559E43 /* disasm.c */; };
+		91F2813B2520CC740032E148 /* emu.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7541C280B7600559E43 /* emu.c */; };
+		91F2813C2520CC740032E148 /* graphics.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7561C280B7600559E43 /* graphics.c */; };
+		91F2813D2520CC740032E148 /* interrupts.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7581C280B7600559E43 /* interrupts.c */; };
+		91F2813E2520CC740032E148 /* lcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D75A1C280B7600559E43 /* lcd.c */; };
+		91F2813F2520CC740032E148 /* rom_info.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D75D1C280B7600559E43 /* rom_info.c */; };
+		91F281402520CC740032E148 /* serial_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D75F1C280B7600559E43 /* serial_io.c */; };
+		91F281412520CC740032E148 /* sprite_priorities.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7621C280B7600559E43 /* sprite_priorities.c */; };
+		91F281422520CC740032E148 /* timers.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7641C280B7600559E43 /* timers.c */; };
+		91F281432520CC740032E148 /* Sound_Queue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D74B1C280B4500559E43 /* Sound_Queue.cpp */; };
+		91F281442520CC740032E148 /* screen_dimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EDD92D24DFF120005ED79A /* screen_dimensions.m */; };
+		91F281452520CC740032E148 /* framerate_SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7411C280B0B00559E43 /* framerate_SDL.c */; };
+		91F281462520CC740032E148 /* graphics_SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7421C280B0B00559E43 /* graphics_SDL.c */; };
+		91F281472520CC740032E148 /* joypad_SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7431C280B0B00559E43 /* joypad_SDL.c */; };
+		91F281482520CC740032E148 /* serial_io_SDL.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7441C280B0B00559E43 /* serial_io_SDL.c */; };
+		91F281492520CC740032E148 /* sound_SDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7451C280B0B00559E43 /* sound_SDL.cpp */; };
+		91F2814A2520CC740032E148 /* get_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7391C2805EC00559E43 /* get_time.c */; };
+		91F2814C2520CC740032E148 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93624E02FB3005ED79A /* CoreBluetooth.framework */; };
+		91F2814D2520CC740032E148 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93424E02F73005ED79A /* AVFoundation.framework */; };
+		91F2814E2520CC740032E148 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F724DDE7A6005ED79A /* ImageIO.framework */; };
+		91F2814F2520CC740032E148 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F524DDE771005ED79A /* MobileCoreServices.framework */; };
+		91F281512520CC740032E148 /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D761FEA9D8A004D85B8 /* GameController.framework */; };
+		91F281522520CC740032E148 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */; };
+		91F281532520CC740032E148 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D7181C28012700559E43 /* CoreAudio.framework */; };
+		91F281542520CC740032E148 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D7161C28012700559E43 /* QuartzCore.framework */; };
+		91F281552520CC740032E148 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D7121C28012700559E43 /* CoreGraphics.framework */; };
+		91F281562520CC740032E148 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D70E1C28012700559E43 /* UIKit.framework */; };
+		91F281572520CC740032E148 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D71A1C28012700559E43 /* AudioToolbox.framework */; };
+		91F281582520CC740032E148 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D7101C28012700559E43 /* Foundation.framework */; };
+		91F281592520CC740032E148 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9100D7141C28012700559E43 /* OpenGLES.framework */; };
+		91F2815A2520CC740032E148 /* SDL2.Framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FA09AA24D722C200994EFA /* SDL2.Framework */; };
+		91F2815B2520CC740032E148 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F124DDCFD3005ED79A /* SDL2_image.framework */; };
+		91F2815C2520CC740032E148 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F324DDCFD8005ED79A /* SDL2_ttf.framework */; };
+		91F2815F2520CC740032E148 /* rom.gb in Resources */ = {isa = PBXBuildFile; fileRef = 91C0E9EE1C28311300FAE37B /* rom.gb */; };
+		91F281602520CC740032E148 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD93824E053E5005ED79A /* Default-568h@2x.png */; };
+		91F281612520CC740032E148 /* 8_Bit_Madness.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */; };
 		91FA09AB24D722C200994EFA /* SDL2.Framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FA09AA24D722C200994EFA /* SDL2.Framework */; };
 /* End PBXBuildFile section */
 
@@ -131,12 +190,13 @@
 		91EDD8F524DDE771005ED79A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		91EDD8F724DDE7A6005ED79A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = 8_Bit_Madness.ttf; path = ../Android/assets/8_Bit_Madness.ttf; sourceTree = "<group>"; };
-		91EDD8FB24DEE99D005ED79A /* color2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = color2.png; path = ../../../../PlutoBoy/images/color2.png; sourceTree = "<group>"; };
 		91EDD92D24DFF120005ED79A /* screen_dimensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = screen_dimensions.m; path = ../../src/platforms/IOS/screen_dimensions.m; sourceTree = "<group>"; };
 		91EDD92E24DFF121005ED79A /* screen_dimensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screen_dimensions.h; path = ../../src/platforms/IOS/screen_dimensions.h; sourceTree = "<group>"; };
 		91EDD93424E02F73005ED79A /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		91EDD93624E02FB3005ED79A /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		91EDD93824E053E5005ED79A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		91F281652520CC740032E148 /* Plutoboy_tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plutoboy_tvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		91F281662520CC750032E148 /* Plutoboy copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Plutoboy copy-Info.plist"; path = "/Users/ross/Dropbox/Projects/Plutoboy_UI/PlutoBoy/build/IOS/Plutoboy copy-Info.plist"; sourceTree = "<absolute>"; };
 		91FA09AA24D722C200994EFA /* SDL2.Framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.Framework; path = ../../../../../../Library/Frameworks/SDL2.Framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,33 +225,61 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91F2814B2520CC740032E148 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91F2814C2520CC740032E148 /* CoreBluetooth.framework in Frameworks */,
+				91F2814D2520CC740032E148 /* AVFoundation.framework in Frameworks */,
+				91F2814E2520CC740032E148 /* ImageIO.framework in Frameworks */,
+				91F2814F2520CC740032E148 /* MobileCoreServices.framework in Frameworks */,
+				91F281512520CC740032E148 /* GameController.framework in Frameworks */,
+				91F281522520CC740032E148 /* MediaPlayer.framework in Frameworks */,
+				91F281532520CC740032E148 /* CoreAudio.framework in Frameworks */,
+				91F281542520CC740032E148 /* QuartzCore.framework in Frameworks */,
+				91F281552520CC740032E148 /* CoreGraphics.framework in Frameworks */,
+				91F281562520CC740032E148 /* UIKit.framework in Frameworks */,
+				91F281572520CC740032E148 /* AudioToolbox.framework in Frameworks */,
+				91F281582520CC740032E148 /* Foundation.framework in Frameworks */,
+				91F281592520CC740032E148 /* OpenGLES.framework in Frameworks */,
+				91F2815A2520CC740032E148 /* SDL2.Framework in Frameworks */,
+				91F2815B2520CC740032E148 /* SDL2_image.framework in Frameworks */,
+				91F2815C2520CC740032E148 /* SDL2_ttf.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		9100D7021C28012700559E43 = {
 			isa = PBXGroup;
 			children = (
-				91EDD93824E053E5005ED79A /* Default-568h@2x.png */,
-				91EDD92E24DFF121005ED79A /* screen_dimensions.h */,
-				91EDD92D24DFF120005ED79A /* screen_dimensions.m */,
-				91EDD8FB24DEE99D005ED79A /* color2.png */,
 				91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */,
-				91EDD8ED24DDBFC0005ED79A /* filebrowser.c */,
-				91EDD8EE24DDBFC0005ED79A /* menu.c */,
-				91C0E9EE1C28311300FAE37B /* rom.gb */,
-				9100D7D71C280D2900559E43 /* debugger.c */,
-				9100D7D81C280D2900559E43 /* files.c */,
-				9100D7D91C280D2900559E43 /* logger.c */,
-				9100D7DA1C280D2900559E43 /* main.c */,
 				9100D7AC1C280C4000559E43 /* Blip_Buffer.cpp */,
+				9100D7501C280B7600559E43 /* cpu.c */,
+				9100D7D71C280D2900559E43 /* debugger.c */,
+				91EDD93824E053E5005ED79A /* Default-568h@2x.png */,
+				9100D7521C280B7600559E43 /* disasm.c */,
 				9100D7AF1C280C4000559E43 /* Effects_Buffer.cpp */,
+				9100D7541C280B7600559E43 /* emu.c */,
+				91EDD8ED24DDBFC0005ED79A /* filebrowser.c */,
+				9100D7D81C280D2900559E43 /* files.c */,
+				9100D7411C280B0B00559E43 /* framerate_SDL.c */,
+				9100D70D1C28012700559E43 /* Frameworks */,
 				9100D7B11C280C4000559E43 /* Gb_Apu_State.cpp */,
 				9100D7B21C280C4000559E43 /* Gb_Apu.cpp */,
 				9100D7B41C280C4000559E43 /* Gb_Oscs.cpp */,
-				9100D7B61C280C4000559E43 /* Multi_Buffer.cpp */,
+				9100D7391C2805EC00559E43 /* get_time.c */,
+				9100D7421C280B0B00559E43 /* graphics_SDL.c */,
+				9100D7561C280B7600559E43 /* graphics.c */,
 				9100D77D1C280C0A00559E43 /* hdma.c */,
 				9100D77F1C280C0A00559E43 /* huc1.c */,
 				9100D7811C280C0A00559E43 /* huc3.c */,
+				9100D7581C280B7600559E43 /* interrupts.c */,
+				9100D7431C280B0B00559E43 /* joypad_SDL.c */,
+				9100D75A1C280B7600559E43 /* lcd.c */,
+				9100D7D91C280D2900559E43 /* logger.c */,
+				9100D7DA1C280D2900559E43 /* main.c */,
 				9100D7831C280C0A00559E43 /* mbc.c */,
 				9100D7851C280C0A00559E43 /* mbc0.c */,
 				9100D7871C280C0A00559E43 /* mbc1.c */,
@@ -199,27 +287,22 @@
 				9100D78B1C280C0A00559E43 /* mbc3.c */,
 				9100D78D1C280C0A00559E43 /* mbc5.c */,
 				9100D78F1C280C0A00559E43 /* memory.c */,
+				91EDD8EE24DDBFC0005ED79A /* menu.c */,
 				9100D7911C280C0A00559E43 /* mmm01.c */,
-				9100D7501C280B7600559E43 /* cpu.c */,
-				9100D7521C280B7600559E43 /* disasm.c */,
-				9100D7541C280B7600559E43 /* emu.c */,
-				9100D7561C280B7600559E43 /* graphics.c */,
-				9100D7581C280B7600559E43 /* interrupts.c */,
-				9100D75A1C280B7600559E43 /* lcd.c */,
+				9100D7B61C280C4000559E43 /* Multi_Buffer.cpp */,
+				9100D71E1C28012700559E43 /* Plutoboy */,
+				91F281662520CC750032E148 /* Plutoboy copy-Info.plist */,
+				9100D70C1C28012700559E43 /* Products */,
 				9100D75D1C280B7600559E43 /* rom_info.c */,
+				91C0E9EE1C28311300FAE37B /* rom.gb */,
+				91EDD92E24DFF121005ED79A /* screen_dimensions.h */,
+				91EDD92D24DFF120005ED79A /* screen_dimensions.m */,
+				9100D7441C280B0B00559E43 /* serial_io_SDL.c */,
 				9100D75F1C280B7600559E43 /* serial_io.c */,
+				9100D74B1C280B4500559E43 /* Sound_Queue.cpp */,
+				9100D7451C280B0B00559E43 /* sound_SDL.cpp */,
 				9100D7621C280B7600559E43 /* sprite_priorities.c */,
 				9100D7641C280B7600559E43 /* timers.c */,
-				9100D74B1C280B4500559E43 /* Sound_Queue.cpp */,
-				9100D7411C280B0B00559E43 /* framerate_SDL.c */,
-				9100D7421C280B0B00559E43 /* graphics_SDL.c */,
-				9100D7431C280B0B00559E43 /* joypad_SDL.c */,
-				9100D7441C280B0B00559E43 /* serial_io_SDL.c */,
-				9100D7451C280B0B00559E43 /* sound_SDL.cpp */,
-				9100D7391C2805EC00559E43 /* get_time.c */,
-				9100D71E1C28012700559E43 /* Plutoboy */,
-				9100D70D1C28012700559E43 /* Frameworks */,
-				9100D70C1C28012700559E43 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -227,6 +310,7 @@
 			isa = PBXGroup;
 			children = (
 				9100D70B1C28012700559E43 /* Plutoboy.app */,
+				91F281652520CC740032E148 /* Plutoboy_tvOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -284,16 +368,37 @@
 			productReference = 9100D70B1C28012700559E43 /* Plutoboy.app */;
 			productType = "com.apple.product-type.application";
 		};
+		91F281202520CC740032E148 /* Plutoboy_tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91F281622520CC740032E148 /* Build configuration list for PBXNativeTarget "Plutoboy_tvOS" */;
+			buildPhases = (
+				91F281212520CC740032E148 /* Sources */,
+				91F2814B2520CC740032E148 /* Frameworks */,
+				91F2815D2520CC740032E148 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Plutoboy_tvOS;
+			productName = Plutoboy;
+			productReference = 91F281652520CC740032E148 /* Plutoboy_tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		9100D7031C28012700559E43 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1200;
+				DefaultBuildSystemTypeForWorkspace = Latest;
+				LastUpgradeCheck = 1220;
 				TargetAttributes = {
 					9100D70A1C28012700559E43 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 7XX32K65J8;
+					};
+					91F281202520CC740032E148 = {
 						DevelopmentTeam = 5A63KR9XRX;
 					};
 				};
@@ -305,6 +410,7 @@
 			knownRegions = (
 				English,
 				en,
+				Base,
 			);
 			mainGroup = 9100D7021C28012700559E43;
 			productRefGroup = 9100D70C1C28012700559E43 /* Products */;
@@ -312,6 +418,7 @@
 			projectRoot = "";
 			targets = (
 				9100D70A1C28012700559E43 /* Plutoboy */,
+				91F281202520CC740032E148 /* Plutoboy_tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -321,10 +428,19 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91EDD8FC24DEE99E005ED79A /* color2.png in Resources */,
 				91C0E9EF1C28311300FAE37B /* rom.gb in Resources */,
 				91EDD93924E053EA005ED79A /* Default-568h@2x.png in Resources */,
 				91EDD8FA24DEB7F5005ED79A /* 8_Bit_Madness.ttf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91F2815D2520CC740032E148 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91F2815F2520CC740032E148 /* rom.gb in Resources */,
+				91F281602520CC740032E148 /* Default-568h@2x.png in Resources */,
+				91F281612520CC740032E148 /* 8_Bit_Madness.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +495,54 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91F281212520CC740032E148 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91F281222520CC740032E148 /* debugger.c in Sources */,
+				91F281232520CC740032E148 /* files.c in Sources */,
+				91F281242520CC740032E148 /* logger.c in Sources */,
+				91F281252520CC740032E148 /* main.c in Sources */,
+				91F281262520CC740032E148 /* Blip_Buffer.cpp in Sources */,
+				91F281272520CC740032E148 /* Effects_Buffer.cpp in Sources */,
+				91F281282520CC740032E148 /* Gb_Apu_State.cpp in Sources */,
+				91F281292520CC740032E148 /* Gb_Apu.cpp in Sources */,
+				91F2812A2520CC740032E148 /* filebrowser.c in Sources */,
+				91F2812B2520CC740032E148 /* Gb_Oscs.cpp in Sources */,
+				91F2812C2520CC740032E148 /* Multi_Buffer.cpp in Sources */,
+				91F2812D2520CC740032E148 /* hdma.c in Sources */,
+				91F2812E2520CC740032E148 /* huc1.c in Sources */,
+				91F2812F2520CC740032E148 /* huc3.c in Sources */,
+				91F281302520CC740032E148 /* mbc.c in Sources */,
+				91F281312520CC740032E148 /* mbc0.c in Sources */,
+				91F281322520CC740032E148 /* mbc1.c in Sources */,
+				91F281332520CC740032E148 /* mbc2.c in Sources */,
+				91F281342520CC740032E148 /* mbc3.c in Sources */,
+				91F281352520CC740032E148 /* mbc5.c in Sources */,
+				91F281362520CC740032E148 /* menu.c in Sources */,
+				91F281372520CC740032E148 /* memory.c in Sources */,
+				91F281382520CC740032E148 /* mmm01.c in Sources */,
+				91F281392520CC740032E148 /* cpu.c in Sources */,
+				91F2813A2520CC740032E148 /* disasm.c in Sources */,
+				91F2813B2520CC740032E148 /* emu.c in Sources */,
+				91F2813C2520CC740032E148 /* graphics.c in Sources */,
+				91F2813D2520CC740032E148 /* interrupts.c in Sources */,
+				91F2813E2520CC740032E148 /* lcd.c in Sources */,
+				91F2813F2520CC740032E148 /* rom_info.c in Sources */,
+				91F281402520CC740032E148 /* serial_io.c in Sources */,
+				91F281412520CC740032E148 /* sprite_priorities.c in Sources */,
+				91F281422520CC740032E148 /* timers.c in Sources */,
+				91F281432520CC740032E148 /* Sound_Queue.cpp in Sources */,
+				91F281442520CC740032E148 /* screen_dimensions.m in Sources */,
+				91F281452520CC740032E148 /* framerate_SDL.c in Sources */,
+				91F281462520CC740032E148 /* graphics_SDL.c in Sources */,
+				91F281472520CC740032E148 /* joypad_SDL.c in Sources */,
+				91F281482520CC740032E148 /* serial_io_SDL.c in Sources */,
+				91F281492520CC740032E148 /* sound_SDL.cpp in Sources */,
+				91F2814A2520CC740032E148 /* get_time.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -418,7 +582,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -456,13 +620,92 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};
 		9100D7251C28012700559E43 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = arm64;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"~/Library/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+					"~/Library/Frameworks/SDL2_image.framework",
+					"~/Library/Frameworks/SDL2_ttf.framework",
+					"/Users/ross//Library/Frameworks/SDL2.framework/",
+					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				HEADER_SEARCH_PATHS = (
+					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+					"~/Library/Frameworks/SDL2_image.framework/headers",
+					"~/Library/Frameworks/SDL2_ttf.framework/headers",
+				);
+				INFOPLIST_FILE = Plutoboy/info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = "-DTARGET_OS_IPHONE";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		9100D7261C28012700559E43 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				ARCHS = arm64;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"~/Library/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+					"~/Library/Frameworks/SDL2_image.framework",
+					"~/Library/Frameworks/SDL2_ttf.framework",
+					"/Users/ross//Library/Frameworks/SDL2.framework/",
+					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+				);
+				HEADER_SEARCH_PATHS = (
+					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+					"~/Library/Frameworks/SDL2_image.framework/headers",
+					"~/Library/Frameworks/SDL2_ttf.framework/headers",
+				);
+				INFOPLIST_FILE = Plutoboy/info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_CFLAGS = (
+					"-DNS_BLOCK_ASSERTIONS=1",
+					"-DTARGET_OS_IPHONE",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy5;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
+				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		91F281632520CC740032E148 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
@@ -487,18 +730,20 @@
 					"~/Library/Frameworks/SDL2_image.framework/headers",
 					"~/Library/Frameworks/SDL2_ttf.framework/headers",
 				);
-				INFOPLIST_FILE = Plutoboy/info.plist;
+				INFOPLIST_FILE = "Plutoboy copy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_CFLAGS = "-DTARGET_OS_IPHONE";
 				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
 				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
 				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		9100D7261C28012700559E43 /* Release */ = {
+		91F281642520CC740032E148 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
@@ -522,14 +767,16 @@
 					"~/Library/Frameworks/SDL2_image.framework/headers",
 					"~/Library/Frameworks/SDL2_ttf.framework/headers",
 				);
-				INFOPLIST_FILE = Plutoboy/info.plist;
+				INFOPLIST_FILE = "Plutoboy copy-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
 				OTHER_CFLAGS = (
 					"-DNS_BLOCK_ASSERTIONS=1",
 					"-DTARGET_OS_IPHONE",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy3;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
 				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
@@ -554,6 +801,15 @@
 			buildConfigurations = (
 				9100D7251C28012700559E43 /* Debug */,
 				9100D7261C28012700559E43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		91F281622520CC740032E148 /* Build configuration list for PBXNativeTarget "Plutoboy_tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91F281632520CC740032E148 /* Debug */,
+				91F281642520CC740032E148 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
