@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Environment;
+import android.util.Log;
 
 /**
  * Simple dialog to pick file. 
@@ -46,6 +47,23 @@ public class SimpleFileChooser {
 		builder.setItems(mFileList, onDialogItemClickedListener);
 		builder.show();
 	}
+    
+    public String getPath() {
+        return mCurrentPath.getPath();
+    }
+
+    // Modified
+    public String[] fileListForPath(String path) {
+        Log.i("Plutoboy", "fileListForPath: " + mCurrentPath + " " + path);
+            
+        rebuildFileList(new File(mCurrentPath, path));
+        Log.i("Plutoboy", Boolean.toString(mFileList == null));
+        return mFileList;
+    }
+
+    public boolean isDir(String path) {
+        return new File(mCurrentPath, path).isDirectory();
+    }
 
 	// Create list of files and directories.
 	private void rebuildFileList(File path) {

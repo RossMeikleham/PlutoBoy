@@ -5,8 +5,10 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := main
 
 SDL_PATH := ../SDL
+SDL_TTF_PATH := ../SDL_ttf
+SDL_IMG_PATH := ../SDL_image
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(SDL_TTF_PATH) $(LOCAL_PATH)/$(SDL_IMG_PATH)
 
 # Get paths for all the emulator's source files
 SRC_ROOT := ../../../../src
@@ -18,6 +20,7 @@ AUDIO_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/core/audio
 SDL2_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/shared_libs/SDL2
 SDL2_AUDIO_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/shared_libs/SDL2/audio
 SDL2_AUDIO_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/shared_libs/SDL2/audio
+SDL2_UI_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/shared_libs/SDL2/UI
 SHARED_DIR := $(LOCAL_PATH)/$(SRC_ROOT)/shared_libs
 
 MAIN_FILES := $(wildcard $(MAIN_DIR)/*.c)
@@ -27,9 +30,10 @@ AUDIO_FILES = $(wildcard $(AUDIO_DIR)/*.cpp)
 SDL2_FILES = $(wildcard $(SDL2_DIR)/*.c) 
 SDL2_CPP_FILES = $(wildcard $(SDL2_DIR)/*.cpp) 
 SDL2_AUDIO_FILES = $(wildcard $(SDL2_AUDIO_DIR)/*.cpp)
+SDL2_UI_FILES = $(wildcard $(SDL2_UI_DIR)/menu.c)
 EXTRA_FILES = $(wildcard $(SHARED_DIR)/*.c)
 
-GB_FILES = $(MAIN_FILES) $(CORE_FILES) $(MMU_FILES) $(AUDIO_FILES) $(SDL2_FILES) $(SDL2_CPP_FILES) $(SDL2_AUDIO_FILES) $(EXTRA_FILES)
+GB_FILES = $(MAIN_FILES) $(CORE_FILES) $(MMU_FILES) $(AUDIO_FILES) $(SDL2_FILES) $(SDL2_CPP_FILES) $(SDL2_AUDIO_FILES) $(SDL2_UI_FILES) $(EXTRA_FILES)
 
 LOCAL_CFLAGS += -std=c99 -O2
 LOCAL_CPPFLAGS += -std=c++11 -O2
@@ -38,8 +42,7 @@ LOCAL_DISABLE_FORMAT_STRING_CHECKS := true
 # Add your application source files here...
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c $(GB_FILES:$(LOCAL_PATH)/%=%) 
 
-
-LOCAL_SHARED_LIBRARIES := SDL2
+LOCAL_SHARED_LIBRARIES := SDL2 SDL2_ttf SDL2_image
 
 LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog
 
