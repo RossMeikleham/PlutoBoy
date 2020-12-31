@@ -6,7 +6,7 @@
     #include "TargetConditionals.h"
 #endif
 
-#if defined(_MSC_VER) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 
 #include <SDL2/SDL.h>

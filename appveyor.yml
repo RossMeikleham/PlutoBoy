@@ -4,11 +4,7 @@ environment:
 
   matrix:
     - platform: x64 
-      PYTHON: "C:\\Python27"
-      FRAMEWORK: "SDL"
-
-    - platform: x64 
-      PYTHON: "C:\\Python27"
+      PYTHON: "C:\\Python37"
       FRAMEWORK: "SDL2"
 
 install:

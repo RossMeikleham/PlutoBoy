@@ -1,6 +1,6 @@
 #include "../../non_core/framerate.h"
 
-#if defined(_MSC_VER) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 
 #include <SDL2/SDL.h>
@@ -23,15 +23,18 @@ static uint64_t current_ticks = 0;
 
 #if defined(_MSC_VER) || defined(_MSC_EXTENSIONS)
 #define DELTA_EPOCH_IN_MICROSECS  11644473600000000Ui64
-#else
-#define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
-#endif
 
 static struct timezone
 {
 	int  tz_minuteswest; /* minutes W of Greenwich */
 	int  tz_dsttime;     /* type of dst correction */
 };
+
+#else
+#define DELTA_EPOCH_IN_MICROSECS  11644473600000000ULL
+#endif
+
+
 
 static int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
