@@ -4,13 +4,14 @@ import sys
 import urllib, re, os, zipfile, urllib.request
 import SCons.Errors
 
+#tmp
 #Setup environment
 env = Environment(
-                CCFLAGS='-O2',
-                LINKFLAGS='',
-		    )
-
-Environment(TARGET_ARCH = 'x86_64')
+    ENV=os.environ,
+    tools=['mingw'],
+    CCFLAGS='-O2',
+    LINKFLAGS=''
+)
 
 Execute(Delete("build"))
 
@@ -32,10 +33,11 @@ for key, value in ARGLIST:
          if value == 'SDL2':
              framework = 'SDL2'
          else: 
-              'Unknown option "' + value + '" for framework, expected SDL or SDL2'
+              print('Unknown option "' + value + '" for framework, expected SDL or SDL2')
  
-
+print('checking framework')
 if framework == 'SDL2':
+    print('SDL2!!!')
     sdl2_url    = 'http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip'
     sdl2_net_url = "http://www.libsdl.org/projects/SDL_net/release/SDL2_net-devel-2.0.0-VC.zip"
     urllib.request.urlretrieve(sdl2_url, "sdl2.zip")
