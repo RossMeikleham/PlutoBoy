@@ -10,4 +10,4 @@ ADD . /plutoboy_psp/
 WORKDIR /plutoboy_psp/build/PSP
 
 # Build and copy the EBOOT back to the host
-CMD make clean; make; make directory; cp -r Gameboy /mnt;
+CMD make clean; make; make directory; cp -r Plutoboy /mnt;
