@@ -1,6 +1,8 @@
 name: Windows
 # Run this workflow every time a new commit pushed to your repository
 on: push
+    schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
 
 jobs:
   # Set the job key. The key is displayed as the job name
