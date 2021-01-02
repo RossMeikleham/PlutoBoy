@@ -2,6 +2,9 @@
 #include "../../non_core/logger.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#import <Foundation/Foundation.h>
 
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
@@ -34,7 +37,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, siz
     }
 
     fclose(file);
-    log_message(LOG_INFO, "Loaded file with %d\n bytes", count); 
+    log_message(LOG_INFO, "Loaded file with %d\n bytes\n", count);
     return count;  
 }
 
@@ -43,49 +46,48 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, siz
  * up to the suppled size in bytes. Returns the size of the file if successful, 
  * returns 0 if unsuccessful. Buffer should at least be of length size*/
 unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned long size) {
+    @autoreleasepool {
+        log_message(LOG_INFO, "Attempting to load SRAM for file: %s\n",file_path);
     
-    FILE *file;
-    log_message(LOG_INFO, "Attempting to load SRAM for file: %s\n",file_path);
-
-    if(!(file = fopen(file_path,"rb"))) {
-        log_message(LOG_INFO, "Error opening file: %s\n SRAM not loaded",file_path);
-        return 0;
+        NSURL *documents_dir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
+                                                                   inDomains:NSUserDomainMask] lastObject];
+        NSString *end_path = [NSString stringWithCString:file_path];
+        NSString *path = [documents_dir.path stringByAppendingPathComponent:end_path];
+        
+        NSData *load_data  = [NSData dataWithContentsOfFile:path];
+        
+        if (load_data == nil) {
+                log_message(LOG_INFO, "Error opening file: %s\n SRAM not loaded\n", [path cString]);
+                return 0;
+        }
+        
+        if ([load_data length] > size) {
+            log_message(LOG_INFO, "Bytes read from save is too large!\n");
+            return 0;
+        }
+        
+        [load_data getBytes:data length:[load_data length]];
+        log_message(LOG_INFO, "Read %lu bytes from SRAM file\n", [load_data length]);
+        return [load_data length];
     }
-    
-    unsigned long count = 0;
-    count = fread(data, sizeof (char), size, file);
-
-    if (count == 0) {
-        log_message(LOG_WARN, "Empty file %s\n", file_path);
-    }
-
-    fclose(file);
-
-    return count;
 }
  
 
 /* Given a file_path, save data and the size of save data, attempts to
  * save the data to the given file. Returns 1 if successful, 0 otherwise */
 int save_SRAM(const char *file_path, const unsigned char *data, unsigned long size) {
+    @autoreleasepool {
     
-    FILE *file;
-    log_message(LOG_INFO, "Attempting to write SRAM for file: %s\n",file_path);
-    
-    if(!(file = fopen(file_path, "wb"))) {
-        log_message(LOG_ERROR, "Error attempting to open file for writing: %s\n", file_path);
-        return 0;  
-    }
-    
-    unsigned long written_count = fwrite(data, sizeof (char), size, file);
-    if (written_count == size) {
-        fclose(file);
-        log_message(LOG_INFO, "%lu bytes successfully written to file\n",size);
-        return 0;
-    } else {
-        log_message(LOG_ERROR, "Only %lu of %lu bytes written\n",written_count, size);
-    }
+        NSURL *documents_dir = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory
+                                                                   inDomains:NSUserDomainMask] lastObject];
+        NSString *end_path = [NSString stringWithCString:file_path];
+        NSString *path = [documents_dir.path stringByAppendingPathComponent:end_path];
         
-    fclose(file);   
+        NSLog(@"Saving SRAm to Path: %@", path);
+        
+        NSData *save_data = [NSData dataWithBytesNoCopy:(void*)data length:size freeWhenDone:NO];
+        [save_data writeToFile:path atomically:TRUE];
+    
     return 1;
+  }
 }                                      

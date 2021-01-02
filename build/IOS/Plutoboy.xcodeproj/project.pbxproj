@@ -49,7 +49,7 @@
 		9100D7C31C280C4000559E43 /* Gb_Oscs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B41C280C4000559E43 /* Gb_Oscs.cpp */; };
 		9100D7C51C280C4000559E43 /* Multi_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7B61C280C4000559E43 /* Multi_Buffer.cpp */; };
 		9100D7DB1C280D2900559E43 /* debugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D71C280D2900559E43 /* debugger.c */; };
-		9100D7DC1C280D2900559E43 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D81C280D2900559E43 /* files.c */; };
+		9100D7DC1C280D2900559E43 /* files.m in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D81C280D2900559E43 /* files.m */; };
 		9100D7DD1C280D2900559E43 /* logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D91C280D2900559E43 /* logger.c */; };
 		9100D7DE1C280D2900559E43 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7DA1C280D2900559E43 /* main.c */; };
 		91985D751FEA9D7F004D85B8 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */; };
@@ -63,12 +63,13 @@
 		91EDD8F624DDE772005ED79A /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F524DDE771005ED79A /* MobileCoreServices.framework */; };
 		91EDD8F824DDE7A6005ED79A /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F724DDE7A6005ED79A /* ImageIO.framework */; };
 		91EDD8FA24DEB7F5005ED79A /* 8_Bit_Madness.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */; };
+		91EDD8FC24DEE99E005ED79A /* color2.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8FB24DEE99D005ED79A /* color2.png */; };
 		91EDD92F24DFF123005ED79A /* screen_dimensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 91EDD92D24DFF120005ED79A /* screen_dimensions.m */; };
 		91EDD93524E02F73005ED79A /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93424E02F73005ED79A /* AVFoundation.framework */; };
 		91EDD93724E02FB3005ED79A /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD93624E02FB3005ED79A /* CoreBluetooth.framework */; };
 		91EDD93924E053EA005ED79A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD93824E053E5005ED79A /* Default-568h@2x.png */; };
 		91F281222520CC740032E148 /* debugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D71C280D2900559E43 /* debugger.c */; };
-		91F281232520CC740032E148 /* files.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D81C280D2900559E43 /* files.c */; };
+		91F281232520CC740032E148 /* files.m in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D81C280D2900559E43 /* files.m */; };
 		91F281242520CC740032E148 /* logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7D91C280D2900559E43 /* logger.c */; };
 		91F281252520CC740032E148 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7DA1C280D2900559E43 /* main.c */; };
 		91F281262520CC740032E148 /* Blip_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9100D7AC1C280C4000559E43 /* Blip_Buffer.cpp */; };
@@ -124,6 +125,7 @@
 		91F2815A2520CC740032E148 /* SDL2.Framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91FA09AA24D722C200994EFA /* SDL2.Framework */; };
 		91F2815B2520CC740032E148 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F124DDCFD3005ED79A /* SDL2_image.framework */; };
 		91F2815C2520CC740032E148 /* SDL2_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91EDD8F324DDCFD8005ED79A /* SDL2_ttf.framework */; };
+		91F2815E2520CC740032E148 /* color2.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8FB24DEE99D005ED79A /* color2.png */; };
 		91F2815F2520CC740032E148 /* rom.gb in Resources */ = {isa = PBXBuildFile; fileRef = 91C0E9EE1C28311300FAE37B /* rom.gb */; };
 		91F281602520CC740032E148 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD93824E053E5005ED79A /* Default-568h@2x.png */; };
 		91F281612520CC740032E148 /* 8_Bit_Madness.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */; };
@@ -176,7 +178,7 @@
 		9100D7B41C280C4000559E43 /* Gb_Oscs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Gb_Oscs.cpp; path = ../../src/core/audio/Gb_Oscs.cpp; sourceTree = "<group>"; };
 		9100D7B61C280C4000559E43 /* Multi_Buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Multi_Buffer.cpp; path = ../../src/core/audio/Multi_Buffer.cpp; sourceTree = "<group>"; };
 		9100D7D71C280D2900559E43 /* debugger.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = debugger.c; path = ../../src/platforms/IOS/debugger.c; sourceTree = "<group>"; };
-		9100D7D81C280D2900559E43 /* files.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = files.c; path = ../../src/platforms/IOS/files.c; sourceTree = "<group>"; };
+		9100D7D81C280D2900559E43 /* files.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = files.m; path = ../../src/platforms/IOS/files.m; sourceTree = "<group>"; };
 		9100D7D91C280D2900559E43 /* logger.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = logger.c; path = ../../src/platforms/IOS/logger.c; sourceTree = "<group>"; };
 		9100D7DA1C280D2900559E43 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = main.c; path = ../../src/platforms/IOS/main.c; sourceTree = "<group>"; };
 		91985D741FEA9D7F004D85B8 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
@@ -190,6 +192,7 @@
 		91EDD8F524DDE771005ED79A /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		91EDD8F724DDE7A6005ED79A /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = 8_Bit_Madness.ttf; path = ../Android/assets/8_Bit_Madness.ttf; sourceTree = "<group>"; };
+		91EDD8FB24DEE99D005ED79A /* color2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = color2.png; path = ../../../../PlutoBoy/images/color2.png; sourceTree = "<group>"; };
 		91EDD92D24DFF120005ED79A /* screen_dimensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = screen_dimensions.m; path = ../../src/platforms/IOS/screen_dimensions.m; sourceTree = "<group>"; };
 		91EDD92E24DFF121005ED79A /* screen_dimensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = screen_dimensions.h; path = ../../src/platforms/IOS/screen_dimensions.h; sourceTree = "<group>"; };
 		91EDD93424E02F73005ED79A /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -256,6 +259,7 @@
 			children = (
 				91EDD8F924DEB7F4005ED79A /* 8_Bit_Madness.ttf */,
 				9100D7AC1C280C4000559E43 /* Blip_Buffer.cpp */,
+				91EDD8FB24DEE99D005ED79A /* color2.png */,
 				9100D7501C280B7600559E43 /* cpu.c */,
 				9100D7D71C280D2900559E43 /* debugger.c */,
 				91EDD93824E053E5005ED79A /* Default-568h@2x.png */,
@@ -263,7 +267,7 @@
 				9100D7AF1C280C4000559E43 /* Effects_Buffer.cpp */,
 				9100D7541C280B7600559E43 /* emu.c */,
 				91EDD8ED24DDBFC0005ED79A /* filebrowser.c */,
-				9100D7D81C280D2900559E43 /* files.c */,
+				9100D7D81C280D2900559E43 /* files.m */,
 				9100D7411C280B0B00559E43 /* framerate_SDL.c */,
 				9100D70D1C28012700559E43 /* Frameworks */,
 				9100D7B11C280C4000559E43 /* Gb_Apu_State.cpp */,
@@ -428,6 +432,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91EDD8FC24DEE99E005ED79A /* color2.png in Resources */,
 				91C0E9EF1C28311300FAE37B /* rom.gb in Resources */,
 				91EDD93924E053EA005ED79A /* Default-568h@2x.png in Resources */,
 				91EDD8FA24DEB7F5005ED79A /* 8_Bit_Madness.ttf in Resources */,
@@ -438,6 +443,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				91F2815E2520CC740032E148 /* color2.png in Resources */,
 				91F2815F2520CC740032E148 /* rom.gb in Resources */,
 				91F281602520CC740032E148 /* Default-568h@2x.png in Resources */,
 				91F281612520CC740032E148 /* 8_Bit_Madness.ttf in Resources */,
@@ -452,7 +458,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9100D7DB1C280D2900559E43 /* debugger.c in Sources */,
-				9100D7DC1C280D2900559E43 /* files.c in Sources */,
+				9100D7DC1C280D2900559E43 /* files.m in Sources */,
 				9100D7DD1C280D2900559E43 /* logger.c in Sources */,
 				9100D7DE1C280D2900559E43 /* main.c in Sources */,
 				9100D7BB1C280C4000559E43 /* Blip_Buffer.cpp in Sources */,
@@ -500,7 +506,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				91F281222520CC740032E148 /* debugger.c in Sources */,
-				91F281232520CC740032E148 /* files.c in Sources */,
+				91F281232520CC740032E148 /* files.m in Sources */,
 				91F281242520CC740032E148 /* logger.c in Sources */,
 				91F281252520CC740032E148 /* main.c in Sources */,
 				91F281262520CC740032E148 /* Blip_Buffer.cpp in Sources */,
