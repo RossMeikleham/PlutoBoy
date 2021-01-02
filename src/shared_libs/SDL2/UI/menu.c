@@ -255,6 +255,8 @@ static void check_keys_moved(float x, float y, float mv_x, float mv_y) {
     }
 }
 
+
+#if defined(__ANDROID__) || defined(TARGET_OS_IPHONE)
 static void init_vbutton_texture(SDL_Renderer *renderer) {
     // Setup buttons 
     SDL_GetCurrentDisplayMode(0, &current);    
@@ -342,7 +344,7 @@ static void init_vbutton_texture(SDL_Renderer *renderer) {
         log_message(LOG_INFO, "copied overlay\n");
     #endif
 }
-
+#endif
 
 // Main Menu
 /* --------------------- */
