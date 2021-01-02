@@ -1,0 +1,25 @@
+# Run this workflow every time a new commit pushed to your repository
+on: push
+
+jobs:
+  build-iOS:
+    name: iOS
+    runs-on: macos-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Install Dependencies
+       run: |
+         brew install mercurial
+         git clone https://github.com/manifest/sdl-ios-framework
+         cd sdl-ios-framework
+         gem install colorize
+         rake SDL2:build
+         mkdir ~/Library/Frameworks/ 
+         cp -r build/sdl/SDL2.framework ~/Library/Frameworks/
+      - name: Build
+        working-directory: build/iOS
+        run: |
+          xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
