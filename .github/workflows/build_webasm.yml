@@ -9,6 +9,10 @@ jobs:
       - 
        name: Checkout
        uses: actions/checkout@v2
+      -
+       name: Get Placeholder ROM
+       working-directory: build/WebAsm
+       run: wget https://github.com/AntonioND/ucity/releases/download/v1.2/ucity.gbc -O rom.gb
       - 
        name: Build
        run: | 
