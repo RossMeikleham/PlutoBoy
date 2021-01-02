@@ -10,7 +10,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Linux/badge.svg?branch=master) | ✔ | ✔ | N/A |
 | ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Linux/badge.svg?branch=master) | ✗ | ✔ | N/A |
 | ![osxIcon](/images/osxIcon.png?raw=true) macOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/macOS/badge.svg?branch=master) | ✔ | ✔ | N/A |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://github.com/RossMeikleham/Plutoboy/workflows/Windows/badge.svg?branch=master)| ✗  | ✔ | N/A | 
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | ![Build status](https://github.com/RossMeikleham/Plutoboy/workflows/Windows/badge.svg?branch=master)| ✗  | ✔ | N/A | 
 |![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Android/badge.svg?branch=master) | ✗ | ✔ | N/A |
 | ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/iOS/badge.svg?branch=master) | ✗ | ✔ | N/A |
 | ![uefiIcon](/images/uefi.png?raw=true) UEFI | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/UEFI/badge.svg?branch=master) | ✗ | ✗ | ✔ |
