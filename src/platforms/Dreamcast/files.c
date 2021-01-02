@@ -2,7 +2,7 @@
 #include "../../non_core/logger.h"
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <stdint.h>
 /*  Given a file_path and buffer to store file data in, attempts to
  *  read the file into the buffer. Returns the size of the file if successful,
  *  returns 0 if unsuccessful. Buffer should be at minimum of size "MAX_FILE_SIZE"*/
