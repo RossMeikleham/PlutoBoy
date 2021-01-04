@@ -28,4 +28,4 @@ jobs:
       - name: Build
         working-directory: build/iOS
         run: |
-          xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO
+          xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -arch "arm64" ONLY_ACTIVE_ARCH=NO
