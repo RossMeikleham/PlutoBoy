@@ -208,14 +208,13 @@ See the steps the Dockerfile takes
 
 ### How To Build + Run
 
-- Setup the SDL2 iOS framework by generating the `SDL2.Framework` folder from [here](https://github.com/manifest/sdl-ios-framework)
-- Copy `SDL2.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
-- Add all the roms you wish to be able to access to the XCode Project's assets.
-- Open `build\IOS\Plutoboy.xcodeproj` in XCode, add all the roms you with to be able to access to the XCode Project's assets.
+- Setup the SDL2 iOS framework by generating the `SDL2.Framework`, `SDL2_ttf.Framework`, and `SDL2_image.Framework` folders from [here](https://github.com/manifest/sdl-ios-framework)
+- Copy `SDL2.Framework`, `SDL2_ttf.Framework`, and `SDL2_image.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
+- Open `build\IOS\Plutoboy.xcodeproj` in XCode, in Targets -> Plutoboy -> Build Phases, add your roms to the "Copy Bundle Resources" items.
 - In XCode select the build target (either simulator or plugged in device). If using an actual device you will need to setup the codesigning options to point to a free or paid for developer account. Then click run.
 
 # TODO
-    - SRAM loads + saves
+    - Setup shared folders so saves and ROMS can be accessed via iCloud instead of compiling in the ROMs at build time.
 
 ## Web Assembly
 
