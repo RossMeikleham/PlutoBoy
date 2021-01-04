@@ -643,18 +643,15 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"~/Library/Frameworks",
-					"$(USER_LIBRARY_DIR)/Frameworks",
-					"~/Library/Frameworks/SDL2_image.framework",
-					"~/Library/Frameworks/SDL2_ttf.framework",
-					"/Users/ross//Library/Frameworks/SDL2.framework/",
-					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+					"$(HOME)/Library/Frameworks",
+					"$(HOME)/Library/Frameworks/SDL2_image.framework",
+					"$(HOME)/Library/Frameworks/SDL2_ttf.framework",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				HEADER_SEARCH_PATHS = (
-					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
-					"~/Library/Frameworks/SDL2_image.framework/headers",
-					"~/Library/Frameworks/SDL2_ttf.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2_image.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2_ttf.framework/headers",
 				);
 				INFOPLIST_FILE = Plutoboy/info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -662,7 +659,7 @@
 				OTHER_CFLAGS = "-DTARGET_OS_IPHONE";
 				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
+				USER_HEADER_SEARCH_PATHS = "$(HOME)/Library/Frameworks/SDL2.framework/headers";
 				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
 				WRAPPER_EXTENSION = app;
 			};
@@ -681,17 +678,14 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"~/Library/Frameworks",
-					"$(USER_LIBRARY_DIR)/Frameworks",
-					"~/Library/Frameworks/SDL2_image.framework",
-					"~/Library/Frameworks/SDL2_ttf.framework",
-					"/Users/ross//Library/Frameworks/SDL2.framework/",
-					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
+					"$(HOME)/Library/Frameworks",
+					"$(HOME)/Library/Frameworks/SDL2_image.framework",
+					"$(HOME)/Library/Frameworks/SDL2_ttf.framework",
 				);
 				HEADER_SEARCH_PATHS = (
-					"/Users/ross//Library/Frameworks/SDL2.framework/headers",
-					"~/Library/Frameworks/SDL2_image.framework/headers",
-					"~/Library/Frameworks/SDL2_ttf.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2_image.framework/headers",
+					"$(HOME)/Library/Frameworks/SDL2_ttf.framework/headers",
 				);
 				INFOPLIST_FILE = Plutoboy/info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -702,7 +696,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RM.Plutoboy5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "/Users/ross//Library/Frameworks/SDL2.framework/headers";
+				USER_HEADER_SEARCH_PATHS = "$(HOME)/Library/Frameworks/SDL2.framework/headers";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "arm64 arm64e armv7 armv7s";
 				WRAPPER_EXTENSION = app;
