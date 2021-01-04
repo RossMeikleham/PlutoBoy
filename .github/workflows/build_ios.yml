@@ -20,9 +20,11 @@ jobs:
          git clone https://github.com/manifest/sdl-ios-framework
          cd sdl-ios-framework
          gem install colorize
-         rake SDL2:build
+         rake build_all
          mkdir ~/Library/Frameworks/ 
          cp -r build/sdl/SDL2.framework ~/Library/Frameworks/
+         cp -r build/sdl_image/SDL2_image.framework ~/Library/Frameworks/
+         cp -r build/sdl_ttf/SDL2_ttf.framework ~/Library/Frameworks/
       - name: Build
         working-directory: build/iOS
         run: |
