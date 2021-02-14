@@ -11,6 +11,18 @@
 
 #include <stdio.h>
 
+
+/* TODO HACK:  
+ * SDL2_Image has been updated to the point it requires support for webp, which is currently looks like
+ * VitakSDK doesn't support. Lets just add dummy symbols ourselves,
+ *
+ * I'm assuming this will get fixed, and thus will break my hacked fix soon with duplicate webp symbols,
+ * so will remove these when that happens or when I find out how to link webp.
+ */
+void WebPGetFeaturesInternal() {}
+void WebPDecodeRGBAInto() {}
+void WebPDecodeRGBInto() {}
+
 int _newlib_heap_size_user = 128 * 1024 * 1024;
 
 int main(int argc, char *argv[]) 
