@@ -428,7 +428,7 @@ int load_rom(char const *filename, uint8_t header[0x50], int const dmg_mode) {
 
     size_t rom_size = rom_banks * ROM_BANK_SIZE;
     size_t read_size;
-    if (!(read_size = load_rom_from_file(filename, ROM_banks))) {
+    if (!(read_size = load_rom_from_file(filename, ROM_banks, rom_banks * 0x4000))) {
         log_message(LOG_ERROR, "failed to load ROM\n");
         return 0;
     }

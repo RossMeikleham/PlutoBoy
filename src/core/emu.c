@@ -88,19 +88,20 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }
-
+    
     if (!init_gfx()) {
         log_message(LOG_ERROR, "Failed to initialize graphics\n");
         return 0;
     }
-
+    /*
     if (!setup_serial_io(cs, 5000)) {
         log_message(LOG_INFO, "No client or server created\n");
     }
     init_joypad();
+    */
     init_apu(); // Initialize sound
     reset_cpu();
-
+    
     if (debugger) {
         debug = 1;
     }

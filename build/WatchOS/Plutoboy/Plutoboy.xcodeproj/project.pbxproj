@@ -1,0 +1,882 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		910D340325DAF71D0008AA21 /* bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 910D340225DAF71D0008AA21 /* bg@2x.png */; };
+		910D341625DEFB7D0008AA21 /* PlutoboyScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D341525DEFB7D0008AA21 /* PlutoboyScene.swift */; };
+		9119A0002554729E0085D264 /* mbc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FEA2554729C0085D264 /* mbc3.c */; };
+		9119A0012554729E0085D264 /* memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FED2554729C0085D264 /* memory.c */; };
+		9119A0022554729E0085D264 /* mbc.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FEE2554729C0085D264 /* mbc.c */; };
+		9119A0032554729E0085D264 /* mbc5.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FF12554729D0085D264 /* mbc5.c */; };
+		9119A0042554729E0085D264 /* huc1.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FF52554729D0085D264 /* huc1.c */; };
+		9119A0052554729E0085D264 /* mbc1.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FF72554729D0085D264 /* mbc1.c */; };
+		9119A0062554729E0085D264 /* hdma.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FF82554729D0085D264 /* hdma.c */; };
+		9119A0072554729E0085D264 /* mmm01.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FF92554729D0085D264 /* mmm01.c */; };
+		9119A0082554729E0085D264 /* huc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FFA2554729E0085D264 /* huc3.c */; };
+		9119A0092554729E0085D264 /* mbc2.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FFB2554729E0085D264 /* mbc2.c */; };
+		9119A00A2554729E0085D264 /* mbc0.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FFD2554729E0085D264 /* mbc0.c */; };
+		9119A01D255472C40085D264 /* Gb_Apu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A011255472C30085D264 /* Gb_Apu.cpp */; };
+		9119A01E255472C40085D264 /* Gb_Apu_State.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A014255472C30085D264 /* Gb_Apu_State.cpp */; };
+		9119A01F255472C40085D264 /* Multi_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A015255472C30085D264 /* Multi_Buffer.cpp */; };
+		9119A020255472C40085D264 /* Gb_Oscs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A017255472C30085D264 /* Gb_Oscs.cpp */; };
+		9119A021255472C40085D264 /* Blip_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A018255472C30085D264 /* Blip_Buffer.cpp */; };
+		9119A022255472C40085D264 /* Effects_Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A01C255472C40085D264 /* Effects_Buffer.cpp */; };
+		9119A02B255472E40085D264 /* graphics_WatchOS.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A026255472E30085D264 /* graphics_WatchOS.c */; };
+		9119A02C255472E40085D264 /* serial_io_WatchOS.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A027255472E30085D264 /* serial_io_WatchOS.c */; };
+		9119A02D255472E40085D264 /* framerate_WatchOS.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A028255472E40085D264 /* framerate_WatchOS.c */; };
+		9119A02E255472E40085D264 /* joypad_WatchOS.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A029255472E40085D264 /* joypad_WatchOS.c */; };
+		9119A02F255472E40085D264 /* sound_WatchOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9119A02A255472E40085D264 /* sound_WatchOS.cpp */; };
+		9119A0362554730C0085D264 /* files.m in Sources */ = {isa = PBXBuildFile; fileRef = 9119A0332554730C0085D264 /* files.m */; };
+		9119A0372554730C0085D264 /* logger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A0342554730C0085D264 /* logger.c */; };
+		9119A0382554730C0085D264 /* debugger.c in Sources */ = {isa = PBXBuildFile; fileRef = 9119A0352554730C0085D264 /* debugger.c */; };
+		914192522532098F0070AD3B /* PlutoboyWatchOS.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 914192512532098F0070AD3B /* PlutoboyWatchOS.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		914192582532098F0070AD3B /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 914192562532098F0070AD3B /* Interface.storyboard */; };
+		9141925A253209A30070AD3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 91419259253209A30070AD3B /* Assets.xcassets */; };
+		91419261253209A50070AD3B /* Plutoboy WatchKit Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 91419260253209A50070AD3B /* Plutoboy WatchKit Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		91419266253209A50070AD3B /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91419265253209A50070AD3B /* InterfaceController.swift */; };
+		91419268253209A50070AD3B /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91419267253209A50070AD3B /* ExtensionDelegate.swift */; };
+		9141926A253209A50070AD3B /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91419269253209A50070AD3B /* NotificationController.swift */; };
+		9141926C253209A50070AD3B /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9141926B253209A50070AD3B /* ComplicationController.swift */; };
+		9141926E253209AE0070AD3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9141926D253209AE0070AD3B /* Assets.xcassets */; };
+		9141929725320AA30070AD3B /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = 9141929625320AA30070AD3B /* test.c */; };
+		914451D92551E8A2007C03F2 /* emu.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C12551E7D4007C03F2 /* emu.c */; };
+		915311CE25E84265003F9FCB /* sound_queue_WatchOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915311CC25E84265003F9FCB /* sound_queue_WatchOS.cpp */; };
+		9174F2C125F3BF330002DC82 /* GameInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9174F2C025F3BF330002DC82 /* GameInterfaceController.swift */; };
+		9174F2C825F3F8A80002DC82 /* test_rom.gb in Resources */ = {isa = PBXBuildFile; fileRef = 9174F2C625F3F8A80002DC82 /* test_rom.gb */; };
+		9174F2C925F3F8A80002DC82 /* test_rom.png in Resources */ = {isa = PBXBuildFile; fileRef = 9174F2C725F3F8A80002DC82 /* test_rom.png */; };
+		9178D96A25F2B0FC00CBBEFB /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9178D96825F2B0FC00CBBEFB /* Model.xcdatamodeld */; };
+		9178D97025F2B4D200CBBEFB /* Files.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9178D96F25F2B4D200CBBEFB /* Files.swift */; };
+		91A8B165255475FC003C0B61 /* cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C62551E7D4007C03F2 /* cpu.c */; };
+		91A8B166255475FC003C0B61 /* disasm.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C52551E7D4007C03F2 /* disasm.c */; };
+		91A8B167255475FC003C0B61 /* graphics.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C42551E7D4007C03F2 /* graphics.c */; };
+		91A8B168255475FC003C0B61 /* interrupts.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451CC2551E7D5007C03F2 /* interrupts.c */; };
+		91A8B169255475FC003C0B61 /* lcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451BC2551E7D3007C03F2 /* lcd.c */; };
+		91A8B16A255475FD003C0B61 /* rom_info.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451CD2551E7D5007C03F2 /* rom_info.c */; };
+		91A8B16B255475FD003C0B61 /* serial_io.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451CB2551E7D5007C03F2 /* serial_io.c */; };
+		91A8B16C255475FD003C0B61 /* sprite_priorities.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451BB2551E7D3007C03F2 /* sprite_priorities.c */; };
+		91A8B16D255475FD003C0B61 /* timers.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C72551E7D4007C03F2 /* timers.c */; };
+		91AE98EC25E81D1000F28D7F /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91AE98EB25E81D1000F28D7F /* Audio.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		914192532532098F0070AD3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 914192472532098E0070AD3B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 914192502532098F0070AD3B;
+			remoteInfo = "Plutoboy WatchKit App";
+		};
+		91419262253209A50070AD3B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 914192472532098E0070AD3B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9141925F253209A50070AD3B;
+			remoteInfo = "Plutoboy WatchKit Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		910D345625E293560008AA21 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91419276253209AF0070AD3B /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				91419261253209A50070AD3B /* Plutoboy WatchKit Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9141927A253209AF0070AD3B /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				914192522532098F0070AD3B /* PlutoboyWatchOS.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		910D33F925DAE9B70008AA21 /* graphics_WatchOS_callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics_WatchOS_callbacks.h; path = ../../../../../src/shared_libs/WatchOS/graphics_WatchOS_callbacks.h; sourceTree = "<group>"; };
+		910D340225DAF71D0008AA21 /* bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bg@2x.png"; path = "Assets.xcassets/bg@2x.png"; sourceTree = "<group>"; };
+		910D341525DEFB7D0008AA21 /* PlutoboyScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlutoboyScene.swift; sourceTree = "<group>"; };
+		910D342825E134160008AA21 /* joypad_set_WatchOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = joypad_set_WatchOS.h; path = ../../../../../src/shared_libs/WatchOS/joypad_set_WatchOS.h; sourceTree = "<group>"; };
+		910D344A25E293560008AA21 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
+		91199FEA2554729C0085D264 /* mbc3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc3.c; path = ../../../../../src/core/mmu/mbc3.c; sourceTree = "<group>"; };
+		91199FEB2554729C0085D264 /* mbc3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc3.h; path = ../../../../../src/core/mmu/mbc3.h; sourceTree = "<group>"; };
+		91199FEC2554729C0085D264 /* mbc5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc5.h; path = ../../../../../src/core/mmu/mbc5.h; sourceTree = "<group>"; };
+		91199FED2554729C0085D264 /* memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = memory.c; path = ../../../../../src/core/mmu/memory.c; sourceTree = "<group>"; };
+		91199FEE2554729C0085D264 /* mbc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc.c; path = ../../../../../src/core/mmu/mbc.c; sourceTree = "<group>"; };
+		91199FEF2554729C0085D264 /* hdma.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hdma.h; path = ../../../../../src/core/mmu/hdma.h; sourceTree = "<group>"; };
+		91199FF02554729C0085D264 /* mmm01.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mmm01.h; path = ../../../../../src/core/mmu/mmm01.h; sourceTree = "<group>"; };
+		91199FF12554729D0085D264 /* mbc5.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc5.c; path = ../../../../../src/core/mmu/mbc5.c; sourceTree = "<group>"; };
+		91199FF22554729D0085D264 /* mbc1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc1.h; path = ../../../../../src/core/mmu/mbc1.h; sourceTree = "<group>"; };
+		91199FF32554729D0085D264 /* mbc0.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc0.h; path = ../../../../../src/core/mmu/mbc0.h; sourceTree = "<group>"; };
+		91199FF42554729D0085D264 /* huc1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = huc1.h; path = ../../../../../src/core/mmu/huc1.h; sourceTree = "<group>"; };
+		91199FF52554729D0085D264 /* huc1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = huc1.c; path = ../../../../../src/core/mmu/huc1.c; sourceTree = "<group>"; };
+		91199FF62554729D0085D264 /* mbc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc.h; path = ../../../../../src/core/mmu/mbc.h; sourceTree = "<group>"; };
+		91199FF72554729D0085D264 /* mbc1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc1.c; path = ../../../../../src/core/mmu/mbc1.c; sourceTree = "<group>"; };
+		91199FF82554729D0085D264 /* hdma.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hdma.c; path = ../../../../../src/core/mmu/hdma.c; sourceTree = "<group>"; };
+		91199FF92554729D0085D264 /* mmm01.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmm01.c; path = ../../../../../src/core/mmu/mmm01.c; sourceTree = "<group>"; };
+		91199FFA2554729E0085D264 /* huc3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = huc3.c; path = ../../../../../src/core/mmu/huc3.c; sourceTree = "<group>"; };
+		91199FFB2554729E0085D264 /* mbc2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc2.c; path = ../../../../../src/core/mmu/mbc2.c; sourceTree = "<group>"; };
+		91199FFC2554729E0085D264 /* memory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory.h; path = ../../../../../src/core/mmu/memory.h; sourceTree = "<group>"; };
+		91199FFD2554729E0085D264 /* mbc0.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mbc0.c; path = ../../../../../src/core/mmu/mbc0.c; sourceTree = "<group>"; };
+		91199FFE2554729E0085D264 /* huc3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = huc3.h; path = ../../../../../src/core/mmu/huc3.h; sourceTree = "<group>"; };
+		91199FFF2554729E0085D264 /* mbc2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mbc2.h; path = ../../../../../src/core/mmu/mbc2.h; sourceTree = "<group>"; };
+		9119A00E255472C30085D264 /* Multi_Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Multi_Buffer.h; path = ../../../../../src/core/audio/Multi_Buffer.h; sourceTree = "<group>"; };
+		9119A00F255472C30085D264 /* Blip_Synth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blip_Synth.h; path = ../../../../../src/core/audio/Blip_Synth.h; sourceTree = "<group>"; };
+		9119A010255472C30085D264 /* Blip_Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blip_Buffer.h; path = ../../../../../src/core/audio/Blip_Buffer.h; sourceTree = "<group>"; };
+		9119A011255472C30085D264 /* Gb_Apu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gb_Apu.cpp; path = ../../../../../src/core/audio/Gb_Apu.cpp; sourceTree = "<group>"; };
+		9119A012255472C30085D264 /* blargg_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blargg_config.h; path = ../../../../../src/core/audio/blargg_config.h; sourceTree = "<group>"; };
+		9119A013255472C30085D264 /* Gb_Apu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gb_Apu.h; path = ../../../../../src/core/audio/Gb_Apu.h; sourceTree = "<group>"; };
+		9119A014255472C30085D264 /* Gb_Apu_State.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gb_Apu_State.cpp; path = ../../../../../src/core/audio/Gb_Apu_State.cpp; sourceTree = "<group>"; };
+		9119A015255472C30085D264 /* Multi_Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Multi_Buffer.cpp; path = ../../../../../src/core/audio/Multi_Buffer.cpp; sourceTree = "<group>"; };
+		9119A016255472C30085D264 /* Effects_Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Effects_Buffer.h; path = ../../../../../src/core/audio/Effects_Buffer.h; sourceTree = "<group>"; };
+		9119A017255472C30085D264 /* Gb_Oscs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gb_Oscs.cpp; path = ../../../../../src/core/audio/Gb_Oscs.cpp; sourceTree = "<group>"; };
+		9119A018255472C30085D264 /* Blip_Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Blip_Buffer.cpp; path = ../../../../../src/core/audio/Blip_Buffer.cpp; sourceTree = "<group>"; };
+		9119A019255472C30085D264 /* blargg_source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blargg_source.h; path = ../../../../../src/core/audio/blargg_source.h; sourceTree = "<group>"; };
+		9119A01A255472C30085D264 /* blargg_common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blargg_common.h; path = ../../../../../src/core/audio/blargg_common.h; sourceTree = "<group>"; };
+		9119A01B255472C30085D264 /* Gb_Oscs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gb_Oscs.h; path = ../../../../../src/core/audio/Gb_Oscs.h; sourceTree = "<group>"; };
+		9119A01C255472C40085D264 /* Effects_Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Effects_Buffer.cpp; path = ../../../../../src/core/audio/Effects_Buffer.cpp; sourceTree = "<group>"; };
+		9119A026255472E30085D264 /* graphics_WatchOS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = graphics_WatchOS.c; path = ../../../../../src/shared_libs/WatchOS/graphics_WatchOS.c; sourceTree = "<group>"; };
+		9119A027255472E30085D264 /* serial_io_WatchOS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = serial_io_WatchOS.c; path = ../../../../../src/shared_libs/WatchOS/serial_io_WatchOS.c; sourceTree = "<group>"; };
+		9119A028255472E40085D264 /* framerate_WatchOS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = framerate_WatchOS.c; path = ../../../../../src/shared_libs/WatchOS/framerate_WatchOS.c; sourceTree = "<group>"; };
+		9119A029255472E40085D264 /* joypad_WatchOS.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = joypad_WatchOS.c; path = ../../../../../src/shared_libs/WatchOS/joypad_WatchOS.c; sourceTree = "<group>"; };
+		9119A02A255472E40085D264 /* sound_WatchOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sound_WatchOS.cpp; path = ../../../../../src/shared_libs/WatchOS/sound_WatchOS.cpp; sourceTree = "<group>"; };
+		9119A0332554730C0085D264 /* files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = files.m; path = ../../../../../src/platforms/WatchOS/files.m; sourceTree = "<group>"; };
+		9119A0342554730C0085D264 /* logger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = logger.c; path = ../../../../../src/platforms/WatchOS/logger.c; sourceTree = "<group>"; };
+		9119A0352554730C0085D264 /* debugger.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debugger.c; path = ../../../../../src/platforms/WatchOS/debugger.c; sourceTree = "<group>"; };
+		9141924D2532098E0070AD3B /* Plutoboy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Plutoboy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		914192512532098F0070AD3B /* PlutoboyWatchOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlutoboyWatchOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		914192572532098F0070AD3B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
+		91419259253209A30070AD3B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9141925B253209A30070AD3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		91419260253209A50070AD3B /* Plutoboy WatchKit Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Plutoboy WatchKit Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		91419265253209A50070AD3B /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
+		91419267253209A50070AD3B /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
+		91419269253209A50070AD3B /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
+		9141926B253209A50070AD3B /* ComplicationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplicationController.swift; sourceTree = "<group>"; };
+		9141926D253209AE0070AD3B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9141926F253209AE0070AD3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		91419270253209AF0070AD3B /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		9141929425320AA20070AD3B /* Plutoboy WatchKit Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Plutoboy WatchKit Extension-Bridging-Header.h"; sourceTree = "<group>"; };
+		9141929525320AA30070AD3B /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
+		9141929625320AA30070AD3B /* test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test.c; sourceTree = "<group>"; };
+		914451B72551E7D3007C03F2 /* sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sound.h; path = ../../../../../src/core/sound.h; sourceTree = "<group>"; };
+		914451B92551E7D3007C03F2 /* lcd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lcd.h; path = ../../../../../src/core/lcd.h; sourceTree = "<group>"; };
+		914451BA2551E7D3007C03F2 /* emu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emu.h; path = ../../../../../src/core/emu.h; sourceTree = "<group>"; };
+		914451BB2551E7D3007C03F2 /* sprite_priorities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sprite_priorities.c; path = ../../../../../src/core/sprite_priorities.c; sourceTree = "<group>"; };
+		914451BC2551E7D3007C03F2 /* lcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lcd.c; path = ../../../../../src/core/lcd.c; sourceTree = "<group>"; };
+		914451BD2551E7D3007C03F2 /* rom_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rom_info.h; path = ../../../../../src/core/rom_info.h; sourceTree = "<group>"; };
+		914451BE2551E7D3007C03F2 /* disasm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = disasm.h; path = ../../../../../src/core/disasm.h; sourceTree = "<group>"; };
+		914451BF2551E7D4007C03F2 /* bits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bits.h; path = ../../../../../src/core/bits.h; sourceTree = "<group>"; };
+		914451C02551E7D4007C03F2 /* graphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics.h; path = ../../../../../src/core/graphics.h; sourceTree = "<group>"; };
+		914451C12551E7D4007C03F2 /* emu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = emu.c; path = ../../../../../src/core/emu.c; sourceTree = "<group>"; };
+		914451C22551E7D4007C03F2 /* memory_layout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = memory_layout.h; path = ../../../../../src/core/memory_layout.h; sourceTree = "<group>"; };
+		914451C42551E7D4007C03F2 /* graphics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = graphics.c; path = ../../../../../src/core/graphics.c; sourceTree = "<group>"; };
+		914451C52551E7D4007C03F2 /* disasm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = disasm.c; path = ../../../../../src/core/disasm.c; sourceTree = "<group>"; };
+		914451C62551E7D4007C03F2 /* cpu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cpu.c; path = ../../../../../src/core/cpu.c; sourceTree = "<group>"; };
+		914451C72551E7D4007C03F2 /* timers.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = timers.c; path = ../../../../../src/core/timers.c; sourceTree = "<group>"; };
+		914451C82551E7D4007C03F2 /* cpu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = ../../../../../src/core/cpu.h; sourceTree = "<group>"; };
+		914451C92551E7D4007C03F2 /* timers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = timers.h; path = ../../../../../src/core/timers.h; sourceTree = "<group>"; };
+		914451CA2551E7D4007C03F2 /* serial_io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = serial_io.h; path = ../../../../../src/core/serial_io.h; sourceTree = "<group>"; };
+		914451CB2551E7D5007C03F2 /* serial_io.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = serial_io.c; path = ../../../../../src/core/serial_io.c; sourceTree = "<group>"; };
+		914451CC2551E7D5007C03F2 /* interrupts.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = interrupts.c; path = ../../../../../src/core/interrupts.c; sourceTree = "<group>"; };
+		914451CD2551E7D5007C03F2 /* rom_info.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rom_info.c; path = ../../../../../src/core/rom_info.c; sourceTree = "<group>"; };
+		914451CE2551E7D5007C03F2 /* sprite_priorities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sprite_priorities.h; path = ../../../../../src/core/sprite_priorities.h; sourceTree = "<group>"; };
+		914451CF2551E7D5007C03F2 /* interrupts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = interrupts.h; path = ../../../../../src/core/interrupts.h; sourceTree = "<group>"; };
+		915311CC25E84265003F9FCB /* sound_queue_WatchOS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sound_queue_WatchOS.cpp; path = ../../../../../src/shared_libs/WatchOS/sound_queue_WatchOS.cpp; sourceTree = "<group>"; };
+		915311CD25E84265003F9FCB /* sound_queue_WatchOS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sound_queue_WatchOS.h; path = ../../../../../src/shared_libs/WatchOS/sound_queue_WatchOS.h; sourceTree = "<group>"; };
+		9174F2C025F3BF330002DC82 /* GameInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameInterfaceController.swift; sourceTree = "<group>"; };
+		9174F2C625F3F8A80002DC82 /* test_rom.gb */ = {isa = PBXFileReference; lastKnownFileType = file; name = test_rom.gb; path = GameData/test_rom.gb; sourceTree = SOURCE_ROOT; };
+		9174F2C725F3F8A80002DC82 /* test_rom.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = test_rom.png; path = GameData/test_rom.png; sourceTree = SOURCE_ROOT; };
+		9178D96725F2A35F00CBBEFB /* files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = files.h; path = ../../../../../src/non_core/files.h; sourceTree = "<group>"; };
+		9178D96925F2B0FC00CBBEFB /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
+		9178D96F25F2B4D200CBBEFB /* Files.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Files.swift; path = ../../../../src/platforms/WatchOS/Files.swift; sourceTree = "<group>"; };
+		91AE98EB25E81D1000F28D7F /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9141925D253209A50070AD3B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		910D344925E293560008AA21 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				910D344A25E293560008AA21 /* Intents.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		914192462532098E0070AD3B = {
+			isa = PBXGroup;
+			children = (
+				914192552532098F0070AD3B /* Plutoboy WatchKit App */,
+				91419264253209A50070AD3B /* Plutoboy WatchKit Extension */,
+				910D344925E293560008AA21 /* Frameworks */,
+				9141924E2532098E0070AD3B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		9141924E2532098E0070AD3B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9141924D2532098E0070AD3B /* Plutoboy.app */,
+				914192512532098F0070AD3B /* PlutoboyWatchOS.app */,
+				91419260253209A50070AD3B /* Plutoboy WatchKit Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		914192552532098F0070AD3B /* Plutoboy WatchKit App */ = {
+			isa = PBXGroup;
+			children = (
+				914192562532098F0070AD3B /* Interface.storyboard */,
+				91419259253209A30070AD3B /* Assets.xcassets */,
+				910D340225DAF71D0008AA21 /* bg@2x.png */,
+				9141925B253209A30070AD3B /* Info.plist */,
+			);
+			path = "Plutoboy WatchKit App";
+			sourceTree = "<group>";
+		};
+		91419264253209A50070AD3B /* Plutoboy WatchKit Extension */ = {
+			isa = PBXGroup;
+			children = (
+				9174F2C625F3F8A80002DC82 /* test_rom.gb */,
+				9174F2C725F3F8A80002DC82 /* test_rom.png */,
+				9141927E253209CA0070AD3B /* c_src */,
+				91419265253209A50070AD3B /* InterfaceController.swift */,
+				9174F2C025F3BF330002DC82 /* GameInterfaceController.swift */,
+				91419267253209A50070AD3B /* ExtensionDelegate.swift */,
+				91419269253209A50070AD3B /* NotificationController.swift */,
+				9141926B253209A50070AD3B /* ComplicationController.swift */,
+				9141926D253209AE0070AD3B /* Assets.xcassets */,
+				9141926F253209AE0070AD3B /* Info.plist */,
+				91419270253209AF0070AD3B /* PushNotificationPayload.apns */,
+				910D341525DEFB7D0008AA21 /* PlutoboyScene.swift */,
+				91AE98EB25E81D1000F28D7F /* Audio.swift */,
+				9178D96825F2B0FC00CBBEFB /* Model.xcdatamodeld */,
+				9178D96F25F2B4D200CBBEFB /* Files.swift */,
+			);
+			path = "Plutoboy WatchKit Extension";
+			sourceTree = "<group>";
+		};
+		9141927E253209CA0070AD3B /* c_src */ = {
+			isa = PBXGroup;
+			children = (
+				9178D96725F2A35F00CBBEFB /* files.h */,
+				915311CC25E84265003F9FCB /* sound_queue_WatchOS.cpp */,
+				915311CD25E84265003F9FCB /* sound_queue_WatchOS.h */,
+				910D342825E134160008AA21 /* joypad_set_WatchOS.h */,
+				910D33F925DAE9B70008AA21 /* graphics_WatchOS_callbacks.h */,
+				9119A0352554730C0085D264 /* debugger.c */,
+				9119A0332554730C0085D264 /* files.m */,
+				9119A0342554730C0085D264 /* logger.c */,
+				9119A028255472E40085D264 /* framerate_WatchOS.c */,
+				9119A026255472E30085D264 /* graphics_WatchOS.c */,
+				9119A029255472E40085D264 /* joypad_WatchOS.c */,
+				9119A027255472E30085D264 /* serial_io_WatchOS.c */,
+				9119A02A255472E40085D264 /* sound_WatchOS.cpp */,
+				9119A01A255472C30085D264 /* blargg_common.h */,
+				9119A012255472C30085D264 /* blargg_config.h */,
+				9119A019255472C30085D264 /* blargg_source.h */,
+				9119A018255472C30085D264 /* Blip_Buffer.cpp */,
+				9119A010255472C30085D264 /* Blip_Buffer.h */,
+				9119A00F255472C30085D264 /* Blip_Synth.h */,
+				9119A01C255472C40085D264 /* Effects_Buffer.cpp */,
+				9119A016255472C30085D264 /* Effects_Buffer.h */,
+				9119A014255472C30085D264 /* Gb_Apu_State.cpp */,
+				9119A011255472C30085D264 /* Gb_Apu.cpp */,
+				9119A013255472C30085D264 /* Gb_Apu.h */,
+				9119A017255472C30085D264 /* Gb_Oscs.cpp */,
+				9119A01B255472C30085D264 /* Gb_Oscs.h */,
+				9119A015255472C30085D264 /* Multi_Buffer.cpp */,
+				9119A00E255472C30085D264 /* Multi_Buffer.h */,
+				91199FF82554729D0085D264 /* hdma.c */,
+				91199FEF2554729C0085D264 /* hdma.h */,
+				91199FF52554729D0085D264 /* huc1.c */,
+				91199FF42554729D0085D264 /* huc1.h */,
+				91199FFA2554729E0085D264 /* huc3.c */,
+				91199FFE2554729E0085D264 /* huc3.h */,
+				91199FEE2554729C0085D264 /* mbc.c */,
+				91199FF62554729D0085D264 /* mbc.h */,
+				91199FFD2554729E0085D264 /* mbc0.c */,
+				91199FF32554729D0085D264 /* mbc0.h */,
+				91199FF72554729D0085D264 /* mbc1.c */,
+				91199FF22554729D0085D264 /* mbc1.h */,
+				91199FFB2554729E0085D264 /* mbc2.c */,
+				91199FFF2554729E0085D264 /* mbc2.h */,
+				91199FEA2554729C0085D264 /* mbc3.c */,
+				91199FEB2554729C0085D264 /* mbc3.h */,
+				91199FF12554729D0085D264 /* mbc5.c */,
+				91199FEC2554729C0085D264 /* mbc5.h */,
+				91199FED2554729C0085D264 /* memory.c */,
+				91199FFC2554729E0085D264 /* memory.h */,
+				91199FF92554729D0085D264 /* mmm01.c */,
+				91199FF02554729C0085D264 /* mmm01.h */,
+				914451BF2551E7D4007C03F2 /* bits.h */,
+				914451C62551E7D4007C03F2 /* cpu.c */,
+				914451C82551E7D4007C03F2 /* cpu.h */,
+				914451C52551E7D4007C03F2 /* disasm.c */,
+				914451BE2551E7D3007C03F2 /* disasm.h */,
+				914451C12551E7D4007C03F2 /* emu.c */,
+				914451BA2551E7D3007C03F2 /* emu.h */,
+				914451C42551E7D4007C03F2 /* graphics.c */,
+				914451C02551E7D4007C03F2 /* graphics.h */,
+				914451CC2551E7D5007C03F2 /* interrupts.c */,
+				914451CF2551E7D5007C03F2 /* interrupts.h */,
+				914451BC2551E7D3007C03F2 /* lcd.c */,
+				914451B92551E7D3007C03F2 /* lcd.h */,
+				914451C22551E7D4007C03F2 /* memory_layout.h */,
+				914451CD2551E7D5007C03F2 /* rom_info.c */,
+				914451BD2551E7D3007C03F2 /* rom_info.h */,
+				914451CB2551E7D5007C03F2 /* serial_io.c */,
+				914451CA2551E7D4007C03F2 /* serial_io.h */,
+				914451B72551E7D3007C03F2 /* sound.h */,
+				914451BB2551E7D3007C03F2 /* sprite_priorities.c */,
+				914451CE2551E7D5007C03F2 /* sprite_priorities.h */,
+				914451C72551E7D4007C03F2 /* timers.c */,
+				914451C92551E7D4007C03F2 /* timers.h */,
+				9141929525320AA30070AD3B /* test.h */,
+				9141929625320AA30070AD3B /* test.c */,
+				9141929425320AA20070AD3B /* Plutoboy WatchKit Extension-Bridging-Header.h */,
+			);
+			path = c_src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9141924C2532098E0070AD3B /* Plutoboy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9141927B253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy" */;
+			buildPhases = (
+				9141924B2532098E0070AD3B /* Resources */,
+				9141927A253209AF0070AD3B /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				914192542532098F0070AD3B /* PBXTargetDependency */,
+			);
+			name = Plutoboy;
+			productName = Plutoboy;
+			productReference = 9141924D2532098E0070AD3B /* Plutoboy.app */;
+			productType = "com.apple.product-type.application.watchapp2-container";
+		};
+		914192502532098F0070AD3B /* Plutoboy WatchKit App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91419277253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy WatchKit App" */;
+			buildPhases = (
+				9141924F2532098F0070AD3B /* Resources */,
+				91419276253209AF0070AD3B /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				91419263253209A50070AD3B /* PBXTargetDependency */,
+			);
+			name = "Plutoboy WatchKit App";
+			productName = "Plutoboy WatchKit App";
+			productReference = 914192512532098F0070AD3B /* PlutoboyWatchOS.app */;
+			productType = "com.apple.product-type.application.watchapp2";
+		};
+		9141925F253209A50070AD3B /* Plutoboy WatchKit Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91419273253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy WatchKit Extension" */;
+			buildPhases = (
+				9141925C253209A50070AD3B /* Sources */,
+				9141925D253209A50070AD3B /* Frameworks */,
+				9141925E253209A50070AD3B /* Resources */,
+				910D345625E293560008AA21 /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Plutoboy WatchKit Extension";
+			productName = "Plutoboy WatchKit Extension";
+			productReference = 91419260253209A50070AD3B /* Plutoboy WatchKit Extension.appex */;
+			productType = "com.apple.product-type.watchkit2-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		914192472532098E0070AD3B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1240;
+				LastUpgradeCheck = 1200;
+				TargetAttributes = {
+					9141924C2532098E0070AD3B = {
+						CreatedOnToolsVersion = 12.0;
+					};
+					914192502532098F0070AD3B = {
+						CreatedOnToolsVersion = 12.0;
+					};
+					9141925F253209A50070AD3B = {
+						CreatedOnToolsVersion = 12.0;
+						LastSwiftMigration = 1200;
+					};
+				};
+			};
+			buildConfigurationList = 9141924A2532098E0070AD3B /* Build configuration list for PBXProject "Plutoboy" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 914192462532098E0070AD3B;
+			productRefGroup = 9141924E2532098E0070AD3B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9141924C2532098E0070AD3B /* Plutoboy */,
+				914192502532098F0070AD3B /* Plutoboy WatchKit App */,
+				9141925F253209A50070AD3B /* Plutoboy WatchKit Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9141924B2532098E0070AD3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9141924F2532098F0070AD3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				910D340325DAF71D0008AA21 /* bg@2x.png in Resources */,
+				9141925A253209A30070AD3B /* Assets.xcassets in Resources */,
+				914192582532098F0070AD3B /* Interface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9141925E253209A50070AD3B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9174F2C925F3F8A80002DC82 /* test_rom.png in Resources */,
+				9141926E253209AE0070AD3B /* Assets.xcassets in Resources */,
+				9174F2C825F3F8A80002DC82 /* test_rom.gb in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9141925C253209A50070AD3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91A8B165255475FC003C0B61 /* cpu.c in Sources */,
+				91A8B166255475FC003C0B61 /* disasm.c in Sources */,
+				91A8B167255475FC003C0B61 /* graphics.c in Sources */,
+				91A8B168255475FC003C0B61 /* interrupts.c in Sources */,
+				91A8B169255475FC003C0B61 /* lcd.c in Sources */,
+				91A8B16A255475FD003C0B61 /* rom_info.c in Sources */,
+				91AE98EC25E81D1000F28D7F /* Audio.swift in Sources */,
+				91A8B16B255475FD003C0B61 /* serial_io.c in Sources */,
+				91A8B16C255475FD003C0B61 /* sprite_priorities.c in Sources */,
+				91A8B16D255475FD003C0B61 /* timers.c in Sources */,
+				9119A0082554729E0085D264 /* huc3.c in Sources */,
+				9119A0062554729E0085D264 /* hdma.c in Sources */,
+				9119A0032554729E0085D264 /* mbc5.c in Sources */,
+				9119A01D255472C40085D264 /* Gb_Apu.cpp in Sources */,
+				914451D92551E8A2007C03F2 /* emu.c in Sources */,
+				915311CE25E84265003F9FCB /* sound_queue_WatchOS.cpp in Sources */,
+				9119A02F255472E40085D264 /* sound_WatchOS.cpp in Sources */,
+				9119A0052554729E0085D264 /* mbc1.c in Sources */,
+				9141929725320AA30070AD3B /* test.c in Sources */,
+				9119A02C255472E40085D264 /* serial_io_WatchOS.c in Sources */,
+				9119A0012554729E0085D264 /* memory.c in Sources */,
+				9119A01E255472C40085D264 /* Gb_Apu_State.cpp in Sources */,
+				9119A0042554729E0085D264 /* huc1.c in Sources */,
+				9119A022255472C40085D264 /* Effects_Buffer.cpp in Sources */,
+				9119A0372554730C0085D264 /* logger.c in Sources */,
+				9174F2C125F3BF330002DC82 /* GameInterfaceController.swift in Sources */,
+				9141926A253209A50070AD3B /* NotificationController.swift in Sources */,
+				910D341625DEFB7D0008AA21 /* PlutoboyScene.swift in Sources */,
+				9141926C253209A50070AD3B /* ComplicationController.swift in Sources */,
+				91419268253209A50070AD3B /* ExtensionDelegate.swift in Sources */,
+				9119A02E255472E40085D264 /* joypad_WatchOS.c in Sources */,
+				9119A0382554730C0085D264 /* debugger.c in Sources */,
+				9178D96A25F2B0FC00CBBEFB /* Model.xcdatamodeld in Sources */,
+				9119A020255472C40085D264 /* Gb_Oscs.cpp in Sources */,
+				9119A0092554729E0085D264 /* mbc2.c in Sources */,
+				9119A0022554729E0085D264 /* mbc.c in Sources */,
+				9178D97025F2B4D200CBBEFB /* Files.swift in Sources */,
+				9119A0002554729E0085D264 /* mbc3.c in Sources */,
+				9119A02D255472E40085D264 /* framerate_WatchOS.c in Sources */,
+				9119A0072554729E0085D264 /* mmm01.c in Sources */,
+				9119A01F255472C40085D264 /* Multi_Buffer.cpp in Sources */,
+				9119A0362554730C0085D264 /* files.m in Sources */,
+				9119A02B255472E40085D264 /* graphics_WatchOS.c in Sources */,
+				9119A00A2554729E0085D264 /* mbc0.c in Sources */,
+				9119A021255472C40085D264 /* Blip_Buffer.cpp in Sources */,
+				91419266253209A50070AD3B /* InterfaceController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		914192542532098F0070AD3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 914192502532098F0070AD3B /* Plutoboy WatchKit App */;
+			targetProxy = 914192532532098F0070AD3B /* PBXContainerItemProxy */;
+		};
+		91419263253209A50070AD3B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9141925F253209A50070AD3B /* Plutoboy WatchKit Extension */;
+			targetProxy = 91419262253209A50070AD3B /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		914192562532098F0070AD3B /* Interface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				914192572532098F0070AD3B /* Base */,
+			);
+			name = Interface.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		91419271253209AF0070AD3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = PlutoboyWatchOS;
+				SDKROOT = watchos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		91419272253209AF0070AD3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = PlutoboyWatchOS;
+				SDKROOT = watchos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		91419274253209AF0070AD3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Plutoboy WatchKit Extension/Plutoboy WatchKit Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				INFOPLIST_FILE = "Plutoboy WatchKit Extension/Info.plist";
+				INTENTS_CODEGEN_LANGUAGE = Swift;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1.watchkitapp.watchkitextension1;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Plutoboy WatchKit Extension/c_src/Plutoboy WatchKit Extension-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Debug;
+		};
+		91419275253209AF0070AD3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "Plutoboy WatchKit Extension/Plutoboy WatchKit Extension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				GCC_OPTIMIZATION_LEVEL = 2;
+				INFOPLIST_FILE = "Plutoboy WatchKit Extension/Info.plist";
+				INTENTS_CODEGEN_LANGUAGE = Swift;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1.watchkitapp.watchkitextension1;
+				PRODUCT_NAME = "${TARGET_NAME}";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Plutoboy WatchKit Extension/c_src/Plutoboy WatchKit Extension-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Release;
+		};
+		91419278253209AF0070AD3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				IBSC_MODULE = Plutoboy_WatchKit_Extension;
+				INFOPLIST_FILE = "Plutoboy WatchKit App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1.watchkitapp;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME)";
+				PRODUCT_NAME = PlutoboyWatchOS;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Debug;
+		};
+		91419279253209AF0070AD3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				IBSC_MODULE = Plutoboy_WatchKit_Extension;
+				INFOPLIST_FILE = "Plutoboy WatchKit App/Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1.watchkitapp;
+				PRODUCT_MODULE_NAME = "$(PRODUCT_NAME)";
+				PRODUCT_NAME = PlutoboyWatchOS;
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Release;
+		};
+		9141927C253209AF0070AD3B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src/**";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src/";
+			};
+			name = Debug;
+		};
+		9141927D253209AF0070AD3B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7XX32K65J8;
+				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src/**";
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = RM.PlutoboyWatch1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				USER_HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/../../../src/";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9141924A2532098E0070AD3B /* Build configuration list for PBXProject "Plutoboy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91419271253209AF0070AD3B /* Debug */,
+				91419272253209AF0070AD3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		91419273253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy WatchKit Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91419274253209AF0070AD3B /* Debug */,
+				91419275253209AF0070AD3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		91419277253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy WatchKit App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91419278253209AF0070AD3B /* Debug */,
+				91419279253209AF0070AD3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9141927B253209AF0070AD3B /* Build configuration list for PBXNativeTarget "Plutoboy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9141927C253209AF0070AD3B /* Debug */,
+				9141927D253209AF0070AD3B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		9178D96825F2B0FC00CBBEFB /* Model.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				9178D96925F2B0FC00CBBEFB /* Model.xcdatamodel */,
+			);
+			currentVersion = 9178D96925F2B0FC00CBBEFB /* Model.xcdatamodel */;
+			path = Model.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 914192472532098E0070AD3B /* Project object */;
+}
