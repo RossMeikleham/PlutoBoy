@@ -43,7 +43,6 @@
 		9141926A253209A50070AD3B /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91419269253209A50070AD3B /* NotificationController.swift */; };
 		9141926C253209A50070AD3B /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9141926B253209A50070AD3B /* ComplicationController.swift */; };
 		9141926E253209AE0070AD3B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9141926D253209AE0070AD3B /* Assets.xcassets */; };
-		9141929725320AA30070AD3B /* test.c in Sources */ = {isa = PBXBuildFile; fileRef = 9141929625320AA30070AD3B /* test.c */; };
 		914451D92551E8A2007C03F2 /* emu.c in Sources */ = {isa = PBXBuildFile; fileRef = 914451C12551E7D4007C03F2 /* emu.c */; };
 		915311CE25E84265003F9FCB /* sound_queue_WatchOS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915311CC25E84265003F9FCB /* sound_queue_WatchOS.cpp */; };
 		9174F2C125F3BF330002DC82 /* GameInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9174F2C025F3BF330002DC82 /* GameInterfaceController.swift */; };
@@ -180,8 +179,6 @@
 		9141926F253209AE0070AD3B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		91419270253209AF0070AD3B /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		9141929425320AA20070AD3B /* Plutoboy WatchKit Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Plutoboy WatchKit Extension-Bridging-Header.h"; sourceTree = "<group>"; };
-		9141929525320AA30070AD3B /* test.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = test.h; sourceTree = "<group>"; };
-		9141929625320AA30070AD3B /* test.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = test.c; sourceTree = "<group>"; };
 		914451B72551E7D3007C03F2 /* sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sound.h; path = ../../../../../src/core/sound.h; sourceTree = "<group>"; };
 		914451B92551E7D3007C03F2 /* lcd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lcd.h; path = ../../../../../src/core/lcd.h; sourceTree = "<group>"; };
 		914451BA2551E7D3007C03F2 /* emu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = emu.h; path = ../../../../../src/core/emu.h; sourceTree = "<group>"; };
@@ -364,8 +361,6 @@
 				914451CE2551E7D5007C03F2 /* sprite_priorities.h */,
 				914451C72551E7D4007C03F2 /* timers.c */,
 				914451C92551E7D4007C03F2 /* timers.h */,
-				9141929525320AA30070AD3B /* test.h */,
-				9141929625320AA30070AD3B /* test.c */,
 				9141929425320AA20070AD3B /* Plutoboy WatchKit Extension-Bridging-Header.h */,
 			);
 			path = c_src;
@@ -520,7 +515,6 @@
 				915311CE25E84265003F9FCB /* sound_queue_WatchOS.cpp in Sources */,
 				9119A02F255472E40085D264 /* sound_WatchOS.cpp in Sources */,
 				9119A0052554729E0085D264 /* mbc1.c in Sources */,
-				9141929725320AA30070AD3B /* test.c in Sources */,
 				9119A02C255472E40085D264 /* serial_io_WatchOS.c in Sources */,
 				9119A0012554729E0085D264 /* memory.c in Sources */,
 				9119A01E255472C40085D264 /* Gb_Apu_State.cpp in Sources */,
