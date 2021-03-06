@@ -13,6 +13,7 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 | ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | ![Build status](https://github.com/RossMeikleham/Plutoboy/workflows/Windows/badge.svg?branch=master)| ✗  | ✔ | N/A | 
 |![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Android/badge.svg?branch=master) | ✗ | ✔ | N/A |
 | ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/iOS/badge.svg?branch=master) | ✗ | ✔ | N/A |
+| ![watchosIcon](/images/watch.png?raw=true) watchOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/watchOS/badge.svg?branch=master) | ✗ | ✗ | ✔ |
 | ![uefiIcon](/images/uefi.png?raw=true) UEFI | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/UEFI/badge.svg?branch=master) | ✗ | ✗ | ✔ |
 | ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/WebASM/badge.svg?branch=master) | ✗ | ✔ | N/A|
 | ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/PSP/badge.svg?branch=master) | ✔ | ✗ | N/A |
@@ -215,6 +216,20 @@ See the steps the Dockerfile takes
 
 # TODO
     - Setup shared folders so saves and ROMS can be accessed via iCloud instead of compiling in the ROMs at build time.
+
+
+## watchOS
+### Required:
+- XCode 12
+
+### How To Build + Run
+- In Xcode remove "test_rom.gb" and "test_rom.png" and add your rom files to the project in the same location, either with the extension of ".gb" or ".gbc". For each rom you can also optionally add a png image of the name <rom_name>.png for the image to show up in the rom selection when running the app.
+- In XCode select the build target (either simulator or plugged in device). If using an actual device you will need to setup the codesigning options to point to a free or paid for developer account. Then click run.
+
+# TODO
+    - Setup shared folders so saves and ROMS can be accessed via iCloud instead of compiling in the ROMs at build time.
+    - Fix sound, I made the mistake of attempting to use AudioKit which isn't fit for the purpose of outputting sound samples at the rate emulation expects which causes pretty bad stuttering. Need to convert to using CoreAudio like SDL does on macOS and iOS platforms. 
+
 
 ## Web Assembly
 
