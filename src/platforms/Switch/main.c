@@ -7,8 +7,9 @@
 #include "../../core/serial_io.h"
 #include "../../core/mmu/mbc.h"
 #include "../../non_core/logger.h"
+#include "../../non_core/menu.h"
 
-#include "3DES/3des.h"
+//#include "3DES/3des.h"
 
 void cleanup() {
     
@@ -21,16 +22,37 @@ int main(int argc, char **argv) {
     int debug = 0;
     int cgb_mode = 1;
     //char file_name[1024] = "sdmc:/rom.gb";
-    
-    char file_name[1024];
-    if (!selectFile(&cgb_mode, file_name)) {
-        cleanup();
-        return 0;
-    };
-
     ClientOrServer cs = NO_CONNECT;
    
     set_log_level(LOG_INFO);
+   
+	int rc = romfsInit();
+    if (R_FAILED(rc)) 
+	{
+        log_message(LOG_INFO, "romfsInit: %08X\n", rc);
+    } 
+	else
+	{ 
+		log_message(LOG_INFO, "romfsInit succeeded\n");
+	}
+
+    char *file_name;
+    int ret_val;
+
+    int result = ui_menu(&file_name, &ret_val);
+    if (result != 0 || ret_val != 0)
+    {
+        cleanup();
+        return 0;
+    }
+    
+
+    /*
+    if (!selectFile(&cgb_mode, file_name)) {
+        cleanup();
+        return 0;
+    };*/
+
 
     if (!init_emu(file_name, debug, !cgb_mode, cs)) {
         log_message(LOG_ERROR, "Failed to initialize emulator\n");

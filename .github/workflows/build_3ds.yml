@@ -1,0 +1,37 @@
+name: 3DS
+# Run this workflow every time a new commit pushed to your repository
+on: 
+  push:
+  schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
+
+jobs:
+  build-3ds:
+    name: 3DS
+    runs-on: ubuntu-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Build
+       run: | 
+         docker build -t plutoboy -f build/3DS/Dockerfile .
+         docker run -v $(pwd):/mnt plutoboy
+      -
+       name: Package Build
+       run: |
+         zip -r plutoboy_3ds_3dsx.zip Plutoboy.3dsx
+         zip -r plutoboy_3ds_cia.zip Plutoboy.cia
+      - 
+       name: Archive 3DSX Build Output
+       uses: actions/upload-artifact@v2
+       with:
+          name: plutoboy_3ds_3dsx
+          path: plutoboy_3ds_3dsx.zip
+      - 
+       name: Archive CIA Build Output
+       uses: actions/upload-artifact@v2
+       with:
+          name: plutoboy_3ds_cia
+          path: plutoboy_3ds_cia.zip

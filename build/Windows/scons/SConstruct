@@ -1,16 +1,17 @@
 import sys
 
 #!python 
-import urllib, re, os, zipfile
+import urllib, re, os, zipfile, urllib.request
 import SCons.Errors
 
+#tmp
 #Setup environment
 env = Environment(
-                CCFLAGS='-O2',
-                LINKFLAGS='/MACHINE:X64 /STACK:20000000'
-		    )
-
-Environment(TARGET_ARCH = 'x86_64')
+    ENV=os.environ,
+    tools=['mingw'],
+    CCFLAGS='-O2',
+    LINKFLAGS=''
+)
 
 Execute(Delete("build"))
 
@@ -29,30 +30,18 @@ for key, value in ARGLIST:
 #        else:
 #            print("build error, expected arch=x86 or arch=x64");
      if key == 'framework':
-         if value == 'SDL':
-             framework = 'SDL'
-         elif value == 'SDL2':
+         if value == 'SDL2':
              framework = 'SDL2'
          else: 
-              'Unknown option "' + value + '" for framework, expected SDL or SDL2'
-
-# Download and unpack SDL library dependencies
-if framework == 'SDL':
-    sdl_url     = 'http://www.libsdl.org/release/SDL-devel-1.2.15-VC.zip'
-    sdl_net_url = "http://www.libsdl.org/projects/SDL_net/release/SDL_net-devel-1.2.8-VC.zip"
-    urllib.urlretrieve(sdl_url, "sdl.zip")
-    urllib.urlretrieve(sdl_net_url, "sdl_net.zip")
-    zipfile.ZipFile("sdl.zip").extractall()
-    zipfile.ZipFile("sdl_net.zip").extractall()
-    env.Append(LIBS = ['SDL', 'SDL_net'])
-    sdl_path     = Dir('.').abspath + "\\SDL-1.2.15" 
-    sdl_net_path = Dir('.').abspath + "\\SDL_net-1.2.8" 
-
-elif framework == 'SDL2':
+              print('Unknown option "' + value + '" for framework, expected SDL or SDL2')
+ 
+print('checking framework')
+if framework == 'SDL2':
+    print('SDL2!!!')
     sdl2_url    = 'http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip'
     sdl2_net_url = "http://www.libsdl.org/projects/SDL_net/release/SDL2_net-devel-2.0.0-VC.zip"
-    urllib.urlretrieve(sdl2_url, "sdl2.zip")
-    urllib.urlretrieve(sdl2_net_url, "sdl2_net.zip")
+    urllib.request.urlretrieve(sdl2_url, "sdl2.zip")
+    urllib.request.urlretrieve(sdl2_net_url, "sdl2_net.zip")
     zipfile.ZipFile("sdl2.zip").extractall()
     zipfile.ZipFile("sdl2_net.zip").extractall()
     env.Append(LIBS = ['SDL2', 'SDL2_net'])
@@ -82,18 +71,13 @@ sourceObjs = env.Object( Glob(src_dir + '/core/*.c'))\
            + env.Object( Glob(src_dir + '/shared_libs/' + framework + '/*.cpp'))\
            + env.Object( Glob(src_dir + '/shared_libs/' + framework + '/audio/*.cpp'))
 
-
-
 # Compile
-comp = env.Program('gb_emu',sourceObjs)
+name = 'plutoboy'
+comp = env.Program(name, sourceObjs)
 
 dlls = []
 
-if framework == 'SDL':
-    dlls = [sdl_path + "\\lib\\" + gb_arch + "\\SDL.dll",
-            sdl_net_path + "\\lib\\" + gb_arch + "\\SDL.dll"]
-        
-elif framework == 'SDL2':
+if framework == 'SDL2':
     dlls = [sdl_path + "\\lib\\" + gb_arch + "\\SDL2.dll",
             sdl_net_path + "\\lib\\" + gb_arch + "\\SDL2_net.dll"]
 
@@ -102,15 +86,11 @@ elif framework == 'SDL2':
 def after(target, source, env):
     Execute(Mkdir('build'))
 
-    if framework == 'SDL':
-        Execute(Copy('build/SDL.dll', dlls[0]))
-        Execute(Copy('build/SDL_net.dll', dlls[1]))
-    
-    elif framework == 'SDL2':
+    if framework == 'SDL2':
         Execute(Copy('build/SDL2.dll', dlls[0]))
         Execute(Copy('build/SDL2_net.dll', dlls[1]))
     
-    Execute(Copy('build/gb_emu.exe', 'gb_emu.exe'))
+    Execute(Copy('build/' + name + '.exe', name + '.exe'))
 
 after_command = Command('after', [], after) 
 Depends(after_command, comp)

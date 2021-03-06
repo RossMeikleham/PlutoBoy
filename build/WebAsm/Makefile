@@ -26,7 +26,8 @@ C_FILES = $(MAIN_DIR_FILES) $(COMMON_DIR_FILES) $(CORE_DIR_FILES) $(MMU_DIR_FILE
 
 CPP_FILES = $(IO_DIR_FILES2) $(SOUND_FILES) $(AUDIO_FILES)
 
-OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES))) $(addsuffix .o, $(basename $(CPP_FILES)))
+#OBJ_FILES = $(addsuffix .o, $(basename $(C_FILES))) $(addsuffix .o, $(basename $(CPP_FILES)))
+OBJ_FILES = $(addsuffix .o, $(basename $(notdir $(C_FILES)))) $(addsuffix .o, $(basename $(notdir $(CPP_FILES))))
 
 TARGET		= plutoboy.html
 OBJS		= $(OBJ_FILES)

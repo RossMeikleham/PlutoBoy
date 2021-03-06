@@ -1,0 +1,39 @@
+name: Windows
+# Run this workflow every time a new commit pushed to your repository
+on: 
+   push:
+   schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
+
+jobs:
+  # Set the job key. The key is displayed as the job name
+  # when a job name is not provided
+  build-windows:
+    name: Windows x64 SDL2
+    runs-on: windows-latest
+    steps:
+      -
+       name: Install minGW
+       uses: crazy-max/ghaction-chocolatey@v1
+       with:
+        args: install mingw
+      - 
+       name: Install Scons
+       run: pip install scons
+      -
+       name: Checkout
+       uses: actions/checkout@v2
+      -
+       name: Build
+       working-directory: build/Windows/scons
+       run: scons
+      -
+       name: Zip Build Output
+       working-directory: build/Windows/scons
+       run: Compress-Archive build plutoboy_windows_x64.zip
+      - 
+       name: Archive Build Output
+       uses: actions/upload-artifact@v2
+       with:
+          name: plutoboy_windows_x64
+          path: build/Windows/scons/plutoboy_windows_x64.zip

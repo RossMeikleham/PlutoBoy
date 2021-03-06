@@ -1,0 +1,31 @@
+name: iOS
+# Run this workflow every time a new commit pushed to your repository
+on: 
+    push:
+    schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
+
+jobs:
+  build-iOS:
+    name: iOS
+    runs-on: macos-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Install Dependencies
+       run: |
+         brew install mercurial
+         git clone https://github.com/manifest/sdl-ios-framework
+         cd sdl-ios-framework
+         gem install colorize
+         rake build_all
+         mkdir ~/Library/Frameworks/ 
+         cp -r build/sdl/SDL2.framework ~/Library/Frameworks/
+         cp -r build/sdl_image/SDL2_image.framework ~/Library/Frameworks/
+         cp -r build/sdl_ttf/SDL2_ttf.framework ~/Library/Frameworks/
+      - name: Build
+        working-directory: build/iOS
+        run: |
+          xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -arch "arm64" ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"

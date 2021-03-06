@@ -46,7 +46,7 @@ typedef struct {uint8_t red; uint8_t green; uint8_t blue;} GBC_color;
 
 int init_gfx() {
    
-    start_framerate(DEFAULT_FPS); 
+    start_framerate(DEFAULT_FPS_TIMES_10); 
     bg_palette = get_bg_palette();
     sprite_palette = get_sprite_palette();
     refresh_gbc_bg_palettes();
@@ -483,6 +483,7 @@ static void draw_tile_row() {
 
 
 void output_screen() {
+    
     draw_screen();
     adjust_to_framerate();
 }
@@ -506,6 +507,7 @@ void draw_row() {
         if (render_sprites) { 
             draw_sprite_row();
         }
+
    } 
 
    if (row >= 143) {

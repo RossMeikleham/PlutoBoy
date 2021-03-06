@@ -7,19 +7,19 @@ A multiplatform Gameboy and Gameboy Color emulator for Windows, OSX, Linux/Unix 
 
 | Platform   | CI Build Status | SDL 1.2 | SDL 2 | Native API |
 |------------|-----------------|---------|-------|-----|
-| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ | N/A |
-| ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
-| ![osxIcon](/images/osxIcon.png?raw=true) OSX | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✔ | N/A |
-| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | [![Build status](https://ci.appveyor.com/api/projects/status/rqeaw9x2moxmn7os/branch/master?svg=true)](https://ci.appveyor.com/project/RossMeikleham/plutoboy/branch/master) | ✔ | ✔ | N/A | 
-|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
-| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
-| ![uefiIcon](/images/uefi.png?raw=true) UEFI | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✗ | ✔ |
-| ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A|
-| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
-| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
-| ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
-| ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✔ | ✗ | N/A |
-| ![switchIcon](/images/switch.png?raw=true) Switch | ![Build Status](https://travis-ci.org/RossMeikleham/PlutoBoy.svg?branch=master) | ✗ | ✔ | N/A |
+| ![linuxIcon](/images/linuxIcon.png?raw=true) Linux |![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Linux/badge.svg?branch=master) | ✔ | ✔ | N/A |
+| ![piIcon](/images/piIcon.png?raw=true) Raspberry Pi |![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Linux/badge.svg?branch=master) | ✗ | ✔ | N/A |
+| ![osxIcon](/images/osxIcon.png?raw=true) macOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/macOS/badge.svg?branch=master) | ✔ | ✔ | N/A |
+| ![windowsIcon](/images/windowsIcon.png?raw=true) Windows | ![Build status](https://github.com/RossMeikleham/Plutoboy/workflows/Windows/badge.svg?branch=master)| ✗  | ✔ | N/A | 
+|![androidIcon](/images/androidIcon.jpeg?raw=true) Android | ![BuildStatus](https://github.com/RossMeikleham/Plutoboy/workflows/Android/badge.svg?branch=master) | ✗ | ✔ | N/A |
+| ![iosIcon](/images/apple.png?raw=true) iOS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/iOS/badge.svg?branch=master) | ✗ | ✔ | N/A |
+| ![uefiIcon](/images/uefi.png?raw=true) UEFI | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/UEFI/badge.svg?branch=master) | ✗ | ✗ | ✔ |
+| ![webasmIcon](/images/webasmIcon.png?raw=true) WebASM | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/WebASM/badge.svg?branch=master) | ✗ | ✔ | N/A|
+| ![pspIcon](/images/pspIcon.png?raw=true) PSP | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/PSP/badge.svg?branch=master) | ✔ | ✗ | N/A |
+| ![dreamIcon](/images/dreamIcon.png?raw=true) Dreamcast | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/Dreamcast/badge.svg?branch=master) | ✔ | ✗ | N/A |
+| ![VitaIcon](/images/ps-vita.png?raw=true) PS Vita | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/Vita/badge.svg?branch=master) | ✗ | ✔ | N/A |
+| ![3dsIcon](/images/3ds.png?raw=true) 3DS | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/3DS/badge.svg?branch=master) | ✔ | ✗ | N/A |
+| ![switchIcon](/images/switch.png?raw=true) Switch | ![Build Status](https://github.com/RossMeikleham/Plutoboy/workflows/Switch/badge.svg?branch=master) | ✗ | ✔ | N/A |
 
 Play in your web browser [here](http://rossmeikleham.github.io/PlutoBoy/), the game running is an open source Gameboy Color game called [µCity](https://github.com/AntonioND/ucity). Controls are the same as the Desktop controls (see below).
 
@@ -116,6 +116,8 @@ The -d flag starts the emulator in debugging mode.
 
 # Build Instructions
 
+Github Actions CI produces builds for most platforms, see https://github.com/RossMeikleham/PlutoBoy/actions, and click on the workflow for the desired platform, and then select "Artifacts". The CI is scheduled to run once a week and after any pushes.
+
 ## Linux
 
 ### Building for x86 using Docker
@@ -169,10 +171,10 @@ docker run -v $(pwd):/mnt plutoboy_linux_arm
 ### How To Build:
 - Same as for Linux, navigate to the project `build/Unix` folder and enter the command `./scons`
 
-## Windows (Recommended Method)
+## Windows 
 ### Required:
-- Visual Studio
-- Scons
+- MinGW (Easiest way is to install via Choclatey)
+- Scons (Install via Python3 pip)
 
 ### How To Build:
 
@@ -183,30 +185,6 @@ docker run -v $(pwd):/mnt plutoboy_linux_arm
 - The scons builder should download the required SDL dependencies and build the emulator,
   the executable along with the required SDL DLLs should be in a new folder called `build` 
   inside the current `scons` folder
-
-## Windows (Alternative Method)  - *CURRENTLY BROKEN* 
-### Required:
-- Visual C++/ Visual Studio
-- SDL 1.2 Visual C++ development libraries (can be found [here](https://www.libsdl.org/download-1.2.php))
-- SDL_net Visual C++ development library (can be found [here](https://www.libsdl.org/projects/SDL_net/))
-- SDL2.dll (can be found [here] (https://www.libsdl.org/download-2.0.php) Download the VC zip file for Windows.
-### How To Build:
-
-- Navigate to the project `build/Windows/vc` folder.
-
-- Open `Windows GB.sdf`
-
-- Navigate to `Project->Properties->VC++ Directories`
-
-- Edit Include directories to include the "include" directory of the downloaded SDL libraries. `SDL-1.2.15/include`
-  and `SDL2_net-2.0.0/include`
-
-- Edit Library directories to include a library directory of each the downloaded SDL libraries. `SDL-1.2.15/lib/x86`
-  and `SDL2_net-2.0.0/lib/x86`. Can instead include /x64 directory if you wish.
-
-- Press "OK" to close Project Properties dialogue.
-- Now navigate to "Build" and select the "Build Solution" option.
-- The Windows folder should now contain a release folder containing the emulator executable.
 
 > ***Note*** if SDL.dll and/or SDL2_net.dll from the `lib/x86` SDL folder isn't in your path either add it or copy it to the Release folder. Also from the downloaded SDL2 zip file you downloaded extract either lib/x86/SDL2.DLL or lib/x64/SDL2.DLL into the release folder. 
 
@@ -222,51 +200,21 @@ docker run -v $(pwd):/mnt plutoboy_android
 
 ### Building from scratch
 
-#### Required 
-  - Ant
-  - Android NDK (> r7)
-  - Android SDK 21
-  - Android SDK Tools r25.2.5
-  - Android Build Tools 21.1.2 
-  - SDL2-2.0.5 Sources
-
-> ***Note*** README-android.txt in the latest development version of SDL2 explains the build process in more detail.
-
-#### Building (Command Line)
-- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
-- navigate to the `build\Android` folder. 
-- Obtain a copy of [SDL2-2.0.5.zip](https://www.libsdl.org/release/SDL2-2.0.5.zip), unzip and copy the extracted `SDL` folder to `jni/SDL`
-- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from extracted SDL2 to `build/Android/src/org/libsdl/app/SDLActivity.java`
-- Compile the C/C++ source with `ndk-build`
-- Run `ant clean` then `ant release` which should generate the APK file in the `build` folder. The resulting APK will need to be signed before being able to run, if just wanting to run then `ant debug` which will generate a signed debug apk which can be installed/run straight away.
-
-#### Building (Eclipse)
-- Ensure the environment variable `ANDROID_HOME` is set, and the NDK and SDK are in the PATH.
-- navigate to the `build\Android` folder. 
-- Obtain a copy of [SDL2-2.0.5.zip](https://www.libsdl.org/release/SDL2-2.0.5.zip), unzip and copy the extracted `SDL` folder to `jni/SDL`
-- Copy the `SDL/android-project/src/org/libsdl/app/SDLActivity.java` from extracted SDL2 to `build/Android/src/org/libsdl/app/SDLActivity.java`
-- Compile the C/C++ sources with `ndk-build`
-- Open Eclipse (ensure Android plugins are installed). Create a new Android project and select `Create Project From Existing Source`, and select the project's `build\Android` folder. 
-- You should now be able to build and test on emulators/devices through Eclipse.
+See the steps the Dockerfile takes
 
 ## iOS
 ### Required:
-- XCode 7
+- XCode 12
 
-### How To Build + Run in Simulator:
+### How To Build + Run
 
-- Setup the SDL2 iOS framework by generating the `SDL2.Framework` folder from [here](https://github.com/manifest/sdl-ios-framework)
-- Copy `SDL2.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
-- Replace the dummy gameboy ROM `rom.gb` in the project `build\IOS\Rom_Folder` with the ROM you wish to run, and rename it as `rom.gb`.
-- Open `build\IOS\Plutoboy.xcodeproj` in XCode and build + run the app in the simulator.
-
-
-![simulator](/images/sim.png?raw=true) 
+- Setup the SDL2 iOS framework by generating the `SDL2.Framework`, `SDL2_ttf.Framework`, and `SDL2_image.Framework` folders from [here](https://github.com/manifest/sdl-ios-framework)
+- Copy `SDL2.Framework`, `SDL2_ttf.Framework`, and `SDL2_image.Framework` to `~/Library/Frameworks/`. Create the `Frameworks` folder if it doesn't exist.
+- Open `build\IOS\Plutoboy.xcodeproj` in XCode, in Targets -> Plutoboy -> Build Phases, add your roms to the "Copy Bundle Resources" items.
+- In XCode select the build target (either simulator or plugged in device). If using an actual device you will need to setup the codesigning options to point to a free or paid for developer account. Then click run.
 
 # TODO
-    - Build/Run on actual devices
-    - Selecting ROM files from the app to load
-    - SRAM loads + saves
+    - Setup shared folders so saves and ROMS can be accessed via iCloud instead of compiling in the ROMs at build time.
 
 ## Web Assembly
 
@@ -298,10 +246,7 @@ Then navigate to "http://localhost:8080/" in a Web Browser.
 
 ### TODO
   - Need to make a way for the user to enter the address of a rom and attempt to load
-    it rather than hard coding one at compile time. Sound is currently broken
-    due to the sound library using multithreading which isn't currently supported
-    by Web Assembly, but hopefully should be int he near future. 
-
+    it rather than hard coding one at compile time.  
 
 
 ## PSP
@@ -329,7 +274,7 @@ docker run -v $(pwd):/mnt plutoboy_psp
 
 ## Running 
 #### If running on PPSSPP emulator
-- copy ROMS into the Gameboy folder generated or a subfolder of it. Navigate to the Gameboy folder from PPSSPP and run the program.
+- copy ROMS into the Plutoboy folder generated or a subfolder of it. Navigate to the Plutoboy folder from PPSSPP and run the program.
 
 #### If running on an actual PSP
 - Copy the Gameboy folder to PSP/GAME folder on the PSP memory stick.

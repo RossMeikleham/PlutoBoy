@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include "../../non_core/framerate.h"
 
-PrintConsole debug_screen, battery_screen, fps_screen, fps_limiter_screen;
+PrintConsole fps_limiter_screen, fps_screen, battery_screen;
+extern PrintConsole debug_screen;
 
 void show_battery() {
 
@@ -58,5 +59,4 @@ void show_fps_limiter() {
 	printf("FPS Limiter:%s\n", limiter ? limiter_on : limiter_off);
 	consoleSelect(&debug_screen);
 }
-extern PrintConsole fps_limiter_screen, fps_screen, battery_screen, debug_screen;
 //printf("Gameboy fps:%.2f\n",fps);

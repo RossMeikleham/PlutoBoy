@@ -24,7 +24,7 @@
 
 
 static uint64_t last_ticks;
-static float framerate;
+static int  framerate_times_ten;
 static int count;
 static uint64_t current_ticks = 0;
 
@@ -36,9 +36,9 @@ uint64_t get_timestamp_micro() {
 }
 
 //Assign Framerate in FPS and start counter
-void start_framerate(float f) {
+void start_framerate(int f) {
     last_ticks = get_timestamp_micro();
-    framerate = f;
+    framerate_times_ten = f;
     count = 0;
 }
 
@@ -54,7 +54,7 @@ void adjust_to_framerate() {
     //uint64_t framerate_ticks = ticks_elapsed * framerate;
 
     // Running on Bare Metal, just delay for the required cycles 
-    gBS->Stall((UINTN)(1000000/framerate - ticks_elapsed));
+    gBS->Stall((UINTN)(10000000/(framerate_times_ten) - ticks_elapsed));
     /*if (framerate_ticks < 1000000) {        
 	uint64_t delay_time = 1000000/framerate - ticks_elapsed;
 	if (delay_time >= 5000) {

@@ -7,8 +7,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get install -y libsdl1.2-dev libsdl-net1.2-dev\
         libsdl2-dev \
-        libsdl2-net-dev
+        libsdl2-net-dev \
+        python3-pip
 
+RUN pip3 install scons
 RUN mkdir /plutoboy_linux
 COPY ./build /plutoboy_linux/build
 COPY ./src/platforms/standard /plutoboy_linux/src/platforms/standard

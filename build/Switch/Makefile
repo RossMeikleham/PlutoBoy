@@ -34,10 +34,10 @@ APP_AUTHOR		:= Ross Meikleham
 TARGET		:=	Plutoboy
 BUILD		:=	build
 SOURCES		:=	../../src/platforms/Switch\
-				../../src/platforms/Switch/3DES\
 				../../src/core\
 				../../src/core/mmu\
 				../../src/shared_libs/SDL2\
+				../../src/shared_libs/SDL2/UI\
 				../../src/shared_libs/SDL2/audio\
 				../../src/core/audio
 #DATA		:=	data
@@ -50,7 +50,7 @@ EXEFS_SRC	:=	exefs_src
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv8-a -mtune=cortex-a57 -mtp=soft -fPIE
 
-CFLAGS	:=	-Wall -O3 -finline-limit=20000 \
+CFLAGS	:=	-Wall -O2 -finline-limit=20000 \
 			-fomit-frame-pointer -ffunction-sections -frename-registers \
 			-funroll-loops -ffast-math \
 			$(ARCH)
@@ -63,7 +63,7 @@ ASFLAGS	:=	$(ARCH)
 LDFLAGS	=	-specs=$(DEVKITPRO)/libnx/switch.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
 #LIBS	:= -lSDL2_mixer -lSDL2 -lSDL2_image -lnx -lFLAC -lmikmod -lvorbisidec -logg -lm -lEGL -lGLESv2
-LIBS := -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lSDL2 -lpng\
+LIBS := -lSDL2_gfx -lSDL2_image -lSDL2_mixer -lSDL2 -lSDL2_ttf -lwebp -lfreetype -lpng\
 			-lpng -lz -ljpeg -lglad -lEGL -lglapi -ldrm_nouveau  \
 			-lvorbisidec -logg -lmpg123 -lmodplug -lstdc++ \
 			-lnx -lm -lbz2

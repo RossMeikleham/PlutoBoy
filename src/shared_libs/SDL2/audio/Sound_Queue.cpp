@@ -67,12 +67,14 @@ const char* Sound_Queue::start( long sample_rate, int chan_count )
     	return "Out of memory";
     }
 	currently_playing_ = bufs;
-	
+
+#ifndef EMSCRIPTEN	
 	free_sem = SDL_CreateSemaphore( buf_count - 1 );
 	if ( !free_sem ) {
 	    log_message(LOG_ERROR, "Couldn't create semaphore starting sound queue. %s\n", SDL_GetError()); 
     	return sdl_error( "Couldn't create semaphore" );
 	}
+#endif
 
 	SDL_AudioSpec as;
 	as.freq = sample_rate;
@@ -81,15 +83,26 @@ const char* Sound_Queue::start( long sample_rate, int chan_count )
 	as.silence = 0;
 	as.samples = buf_size / chan_count;
 	as.size = 0;
-	as.callback = fill_buffer_;
-	as.userdata = this;
+#ifndef EMSCRIPTEN
+    as.callback = fill_buffer_;
+#else // If you try to output Audio on a non-main thread in emscripten, you're going to
+     //  have a bad time
+    as.callback = NULL; //fill_buffer_;
+#endif	
+    as.userdata = this;
     
     SDL_AudioSpec as2;
-//	if ( SDL_OpenAudio( &as, NULL ) < 0 )
-    if (!(this->device = SDL_OpenAudioDevice(NULL, 0, &as, &as2, SDL_AUDIO_ALLOW_ANY_CHANGE))) {
-		log_message(LOG_ERROR, "Couldn't open SDL audio\n"); 
+
+#ifndef EMSCRIPTEN
+    if (!(this->device = SDL_OpenAudioDevice(NULL, 0, &as, &as2, SDL_AUDIO_ALLOW_ANY_CHANGE))) 
+#else
+//    if (!(this->device = SDL_OpenAudioDevice(NULL, 0, &as, &as2, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE))) 
+    if (!(this->device = SDL_OpenAudioDevice(NULL, 0, &as, &as2, 0))) 
+#endif
+    {
+        log_message(LOG_ERROR, "Couldn't open SDL audio\n"); 
         return sdl_error( "Couldn't open SDL audio" );
-}
+    }
     
     SDL_PauseAudioDevice(this->device, 0);
 	sound_open = true;
@@ -121,8 +134,13 @@ void Sound_Queue::stop()
 
 int Sound_Queue::sample_count() const
 {
-	int buf_free = SDL_SemValue( free_sem ) * buf_size + (buf_size - write_pos);
-	return buf_size * buf_count - buf_free;
+#ifndef EMSCRIPTEN
+	int buf_free = SDL_SemValue(free_sem) * buf_size + (buf_size - write_pos);
+
+#else
+	int buf_free = (buf_count - 1) * buf_size + (buf_size - write_pos);
+#endif   
+    return buf_size * buf_count - buf_free;
 }
 
 inline Sound_Queue::sample_t* Sound_Queue::buf( int index )
@@ -133,7 +151,7 @@ inline Sound_Queue::sample_t* Sound_Queue::buf( int index )
 
 void Sound_Queue::write( const sample_t* in, int count )
 {
-	while ( count )
+    while ( count )
 	{
 		int n = buf_size - write_pos;
 		if ( n > count )
@@ -148,8 +166,12 @@ void Sound_Queue::write( const sample_t* in, int count )
 		{
 			write_pos = 0;
 			write_buf = (write_buf + 1) % buf_count;
-			SDL_SemWait( free_sem );
-		}
+        #ifndef EMSCRIPTEN
+           SDL_SemWait( free_sem );
+        #else // Queue Audio in our main thread
+            SDL_QueueAudio(this->device, buf(write_buf), buf_size * sizeof (sample_t));
+		#endif
+        }
 	}
 }
 

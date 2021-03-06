@@ -1,0 +1,57 @@
+name: macOS
+# Run this workflow every time a new commit pushed to your repository
+on: 
+    push:
+    schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
+
+jobs:
+  build-macos-x64-SDL2:
+    name: macOS x64 SDL2
+    runs-on: macos-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Build
+       working-directory: build/Unix
+       run: |
+         brew install sdl2 sdl2_net scons
+         scons cc=gcc framework=SDL2 mode=release
+      -
+       name: Package Build
+       working-directory: build/Unix
+       run: |
+        zip -r plutoboy_macos_x64_sdl2.zip plutoboy
+      - 
+       name: Archive Build Output
+       uses: actions/upload-artifact@v2
+       with:
+         name: plutoboy_macos_x64_sdl2
+         path: build/Unix/plutoboy_macos_x64_sdl2.zip
+  
+  build-macos-x64-SDL1:
+    name: macOS x64 SDL1.2
+    runs-on: macos-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Build
+       working-directory: build/Unix
+       run: |
+         brew install sdl sdl_net scons
+         scons cc=gcc framework=SDL mode=release
+      -
+       name: Package Build
+       working-directory: build/Unix
+       run: |
+         zip -r plutoboy_macos_x64_sdl.zip plutoboy
+      - 
+       name: Archive Build Output
+       uses: actions/upload-artifact@v2
+       with:
+          name: plutoboy_macos_x64_sdl
+          path: build/Unix/plutoboy_macos_x64_sdl.zip

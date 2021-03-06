@@ -1,4 +1,5 @@
 #include"dirbrowse.h"
+#include "../../../non_core/logger.h"
 
 struct file_node *ls2link(const char *dir, int *length) {
 
@@ -9,7 +10,7 @@ struct file_node *ls2link(const char *dir, int *length) {
 
 	DIR *d;
 	struct stat sb;
-	fn = (struct file_node*)malloc(sizeof(struct file_node));
+    fn = (struct file_node*)malloc(sizeof(struct file_node));
 	fn->name = 0;
 	fn->next = 0;
 	nhead = fn;

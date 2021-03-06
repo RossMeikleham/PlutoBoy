@@ -6,15 +6,21 @@
     #include "TargetConditionals.h"
 #endif
 
-#if defined(_MSC_VER) || defined(__ANDROID__)
+#if defined(_WIN32) || defined(_MSC_VER) || defined(__ANDROID__)
 #include "SDL.h"
 #else 
 #include <SDL2/SDL.h>
 #endif
 
+#ifdef PSVITA
+#include "../../non_core/menu.h"
+#else
 static SDL_Window *screen;
+#endif
+
 static SDL_Renderer *renderer;
-static SDL_Texture *texture; static Uint32 *pixels;
+static SDL_Texture *texture; 
+static Uint32 *pixels;
 
 static SDL_Texture *overlay_t;
 
@@ -73,11 +79,13 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
 
     pixels = p;
 
+    #ifndef PSVITA
+
     if((SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER/*| SDL_INIT_HAPTIC*/)==-1)) {
         log_message(LOG_ERROR, "Could not initialize SDL: %s.\n", SDL_GetError());
         return 0;
      }
-
+    
     // Setup Window
     screen = SDL_CreateWindow("Plutoboy", 
                    SDL_WINDOWPOS_UNDEFINED, 
@@ -89,6 +97,8 @@ int init_screen(int win_x, int win_y, uint32_t *p) {
         log_message(LOG_ERROR, "Could not initialize SDL window: %s.\n", SDL_GetError());
         return 0;
     } 
+
+    #endif
 
     // Setup Renderer
     renderer = SDL_CreateRenderer(screen, -1, 0);

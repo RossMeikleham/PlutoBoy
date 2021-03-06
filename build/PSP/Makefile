@@ -38,7 +38,7 @@ PSPBIN = $(PSPSDK)/../bin
 CFLAGS		= -std=c99 -G0 -Wall -O3
 CXXFLAGS	= $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS	= $(CFLAGS)
-OUTDIR = Gameboy
+OUTDIR = Plutoboy
 
 USE_KERNEL_LIBC = 1 
 USE_KERNEL_LIBS = 1 

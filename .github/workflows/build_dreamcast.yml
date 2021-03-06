@@ -1,0 +1,20 @@
+name: Dreamcast
+# Run this workflow every time a new commit pushed to your repository
+on: 
+    push:
+    schedule:
+      - cron: '0 0 * * 0' # Once per week on Sunday 00:00
+
+jobs:
+  build-dreamcast:
+    name: Dreamcast
+    runs-on: ubuntu-latest
+    steps:
+      - 
+       name: Checkout
+       uses: actions/checkout@v2
+      - 
+       name: Build
+       run: | 
+         docker build -t plutoboy -f build/Dreamcast/Dockerfile .
+         docker run -v $(pwd):/mnt plutoboy

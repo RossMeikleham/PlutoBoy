@@ -67,7 +67,7 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
     
     //Start logger
     set_log_level(LOG_INFO);
-
+    
     log_message(LOG_INFO, "About to open file %s\n", file_path);
     FILE *file;
     if (!(file = PB_FOPEN(file_path,"rb"))) {
@@ -82,9 +82,10 @@ int init_emu(const char *file_path, int debugger, int dmg_mode, ClientOrServer c
         return 0;    
     };
     PB_FCLOSE(file);
-
+    
 	log_message(LOG_INFO, "ROM Header loaded %s\n", file_path);
-    if (!load_rom(file_path, rom_header, dmg_mode)) {
+    
+   if (!load_rom(file_path, rom_header, dmg_mode)) {
         log_message(LOG_ERROR, "failed to initialize GB memory\n");
         return 0;
     }
