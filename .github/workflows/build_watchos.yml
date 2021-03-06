@@ -14,7 +14,7 @@ jobs:
        name: Checkout
        uses: actions/checkout@v2
       - 
-      - name: Build
-        working-directory: build/WatchOS/Plutoboy
-        run: |
+       name: Build
+       working-directory: build/WatchOS/Plutoboy
+       run: |
           xcodebuild -project Plutoboy.xcodeproj -target Plutoboy -arch "arm64_32" ONLY_ACTIVE_ARCH=NO CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGN_ENTITLEMENTS="" CODE_SIGNING_ALLOWED="NO"
