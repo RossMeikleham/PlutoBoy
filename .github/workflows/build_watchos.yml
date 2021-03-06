@@ -1,4 +1,4 @@
-name: iOS
+name: watchOS
 # Run this workflow every time a new commit pushed to your repository
 on: 
     push:
@@ -6,8 +6,8 @@ on:
       - cron: '0 0 * * 0' # Once per week on Sunday 00:00
 
 jobs:
-  build-iOS:
-    name: iOS
+  build-watchOS:
+    name: watchOS
     runs-on: macos-latest
     steps:
       - 
