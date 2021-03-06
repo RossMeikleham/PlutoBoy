@@ -219,6 +219,10 @@ See the steps the Dockerfile takes
 
 
 ## watchOS
+
+
+| ![selectImage](/images/watchOS_fileSelect?raw=true) | ![gameplayImage](/images/watchOS_gamePlay.png) |
+
 ### Required:
 - XCode 12
 
