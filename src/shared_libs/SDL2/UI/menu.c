@@ -362,21 +362,9 @@ void draw_select_game_bg(SDL_Renderer *renderer, platform_config *config) {
 }
 
 
-void draw_box_art(SDL_Renderer *renderer, platform_config *config, char *path) {
+SDL_Texture* draw_box_art(SDL_Renderer *renderer, platform_config *config, char *path) {
     
     SDL_Surface *box_art_surface = IMG_Load(path);
-
-    // IMG_LoadTexture on the Vita doesn't play nice, crashes the GPU.
-    // We need to load the image to a surface and then convert to SDL_PIXELFORMAT_ARGB8888
-    // and finally directly copy the pixels onto the texture.
-    #ifdef PSVITA
-    if (box_art_surface)
-    {
-       SDL_Surface *tmp = SDL_ConvertSurfaceFormat(box_art_surface, SDL_PIXELFORMAT_ARGB8888, 0);
-       SDL_FreeSurface(box_art_surface);
-       box_art_surface = tmp; 
-    }
-    #endif
 
     // Failed to load the image, just place a placeholder image instead.
     // Currently just uses a black square.
@@ -396,7 +384,7 @@ void draw_box_art(SDL_Renderer *renderer, platform_config *config, char *path) {
 
         SDL_FillRect(box_art_surface, &placeholder_rect, p_color);
         
-   } 
+   }
     
     uint32_t x0 = (config->screen_width *  5)  / 8;
 
@@ -422,19 +410,12 @@ void draw_box_art(SDL_Renderer *renderer, platform_config *config, char *path) {
 
     SDL_Rect dest_rect = {x0, y0, width, height};
 
-
-    #ifdef PSVITA
-    SDL_Texture *out_texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                    SDL_TEXTUREACCESS_STREAMING, box_art_surface->w, box_art_surface->h);
-    SDL_UpdateTexture(out_texture, NULL, box_art_surface->pixels, box_art_surface->pitch);
-    #else
     SDL_Texture *out_texture = SDL_CreateTextureFromSurface(renderer, box_art_surface);
-    #endif
 
     SDL_RenderCopy(renderer, out_texture, NULL, &dest_rect);
 
     SDL_FreeSurface(box_art_surface);
-    SDL_DestroyTexture(out_texture);
+    return out_texture;
 }
 
 
@@ -628,13 +609,14 @@ void redraw_screen(context_t *context)
     char *path = dir->path;
 
     char *result = calloc(1, strlen(path) + 1 + strlen(name) + 1);
+    SDL_Texture *box_art_texture = NULL;
     if (result != NULL)
     {
         strcpy(result, path); 
         strcpy(result + strlen(path), "/");
         strcpy(result + strlen(path)  + 1, name);
         
-        draw_box_art(renderer, config, result);
+        box_art_texture = draw_box_art(renderer, config, result);
     }
 
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IPHONE)  
@@ -642,6 +624,7 @@ void redraw_screen(context_t *context)
 #endif
     
     SDL_RenderPresent(renderer);
+    SDL_DestroyTexture(box_art_texture);
 }
 
 
