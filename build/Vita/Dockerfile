@@ -1,4 +1,4 @@
-from miladiir/vitasdk:latest
+from gnuton/vitasdk-docker:latest
 
 ENV VITASDK /usr/local/vitasdk
 

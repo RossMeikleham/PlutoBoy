@@ -1,4 +1,4 @@
-from devkitpro/devkitarm:latest
+from devkitpro/devkitarm:20210510
 
 RUN apt-get update && apt-get install -y gcc g++ zip
 
