@@ -8,6 +8,7 @@ RUN cd /Project_CTR/makerom && make
 ENV PATH="/Project_CTR/makerom/:${PATH}"
 
 # Install bannertool
+RUN git config --global url."https://github.com/".insteadOf git://github.com/
 RUN cd / && git clone https://github.com/Steveice10/bannertool
 RUN cd /bannertool && git submodule update --init --recursive && make 
 ENV PATH="/bannertool/output/linux-x86_64/:${PATH}"
