@@ -17,7 +17,7 @@ jobs:
        name: Install Dependencies
        run: |
          brew install mercurial
-         git clone https://github.com/manifest/sdl-ios-framework
+         git clone https://github.com/RossMeikleham/sdl-ios-framework
          cd sdl-ios-framework
          gem install colorize
          rake build_all
