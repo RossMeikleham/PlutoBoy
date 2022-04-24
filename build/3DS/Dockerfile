@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y gcc g++ zip
 
 # Install makerom
 RUN cd / && git clone https://github.com/profi200/Project_CTR
-RUN cd /Project_CTR/makerom && make
+RUN cd /Project_CTR/makerom && git checkout 8a9f9bda55d71274799eacf && make
 ENV PATH="/Project_CTR/makerom/:${PATH}"
 
 # Install bannertool
