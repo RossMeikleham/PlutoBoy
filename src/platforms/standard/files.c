@@ -35,7 +35,7 @@ unsigned long load_rom_from_file(const char *file_path, unsigned char *data, siz
     }
 
     fclose(file);
-    log_message(LOG_INFO, "Loaded file with %d\n bytes", count); 
+    log_message(LOG_INFO, "Loaded file with %d bytes\m", count); 
     return count;  
 }
 
