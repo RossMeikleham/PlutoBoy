@@ -367,8 +367,6 @@ int update_keys() {
                     check_keys_moved(event.tfinger.x, event.tfinger.y,
                                      event.tfinger.dx, event.tfinger.dy);
                     break;
-                default: 
-                    printf("%d\n",  event.type);
                     
 #endif
             }                   
