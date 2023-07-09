@@ -53,7 +53,7 @@ ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard -mtp=soft
 
 CFLAGS	:=	-Wall -O3 -mword-relocations -finline-limit=20000\
 			-fomit-frame-pointer -ffunction-sections -frename-registers\
-			-funroll-loops -ffast-math\
+			-funroll-loops -ffast-math -D __3DS__\
 			-D THREE_DS\
 			$(ARCH)
 

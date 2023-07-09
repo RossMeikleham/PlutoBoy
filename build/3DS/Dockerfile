@@ -1,4 +1,4 @@
-from devkitpro/devkitarm:20210510
+from devkitpro/devkitarm:20230622
 
 RUN apt-get update && apt-get install -y gcc g++ zip
 
@@ -17,6 +17,7 @@ RUN mkdir /plutoboy_3DS
 ADD . /plutoboy_3DS/
 WORKDIR /plutoboy_3DS/build/3DS
 
-CMD make clean && make && \
+CMD make clean &&\
+    make && \
     bannertool makebanner -i banner.png -a jingle.wav -o banner.bnr &&\
     makerom -rsf Plutoboy.rsf -elf Plutoboy.elf -icon Plutoboy.smdh -banner banner.bnr -f cia -o Plutoboy.cia; cp Plutoboy.3dsx Plutoboy.cia /mnt; 
