@@ -50,8 +50,9 @@ target_link_libraries(${SHORT_NAME}
   SDL2_image
   png
   jpeg
+  bz2
   freetype
-  z
+  z 
   vita2d
   SceDisplay_stub
   SceCtrl_stub

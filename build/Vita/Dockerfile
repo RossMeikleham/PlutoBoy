@@ -1,4 +1,4 @@
-from gnuton/vitasdk-docker:latest
+from gnuton/vitasdk-docker:20220207
 
 ENV VITASDK /usr/local/vitasdk
 

@@ -9,6 +9,10 @@ ENV LC_ALL C.UTF-8
 
 ENV ANDROID_HOME /opt/android-sdk-linux
 
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list 
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list 
+
 RUN dpkg --add-architecture i386 \
   && apt-get update && apt-get install -y --no-install-recommends expect \
     libncurses5:i386 \
