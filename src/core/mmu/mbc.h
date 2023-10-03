@@ -6,6 +6,10 @@
 #define RAM_BANK_SIZE 0x2000 // 8KB
 #define ROM_BANK_SIZE 0x4000 // 16KB
 
+// used to delay the SRAM_write() to file 
+// write to the SRAM file only if it's been XX seconds since we last wrote to it
+#define SRAM_WRITE_DELAY 60000 // 60 seconds
+
 extern uint8_t *RAM_banks;//[][0x2000];  // max 16 * 8KB ram banks (128KB) 0x2000
 extern uint8_t *ROM_banks;//[][0x4000];// max 512 * 16KB rom banks (8MB) 0x4000
 
@@ -41,6 +45,7 @@ void teardown_MBC();
 /* Writes/Reads ROM SRAM from file, used for
  * save games */
 void write_SRAM();
+void flush_SRAM();	// force write to file
 void read_SRAM();
 
 
