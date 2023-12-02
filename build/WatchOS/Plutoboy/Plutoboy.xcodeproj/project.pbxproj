@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51BF9A2C2B1B67A400C3DD1E /* get_time.c in Sources */ = {isa = PBXBuildFile; fileRef = 51BF9A2B2B1B67A400C3DD1E /* get_time.c */; };
 		910D340325DAF71D0008AA21 /* bg@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 910D340225DAF71D0008AA21 /* bg@2x.png */; };
 		910D341625DEFB7D0008AA21 /* PlutoboyScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910D341525DEFB7D0008AA21 /* PlutoboyScene.swift */; };
 		9119A0002554729E0085D264 /* mbc3.c in Sources */ = {isa = PBXBuildFile; fileRef = 91199FEA2554729C0085D264 /* mbc3.c */; };
@@ -115,6 +116,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		51BF9A2B2B1B67A400C3DD1E /* get_time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = get_time.c; path = ../../../../../src/shared_libs/get_time.c; sourceTree = "<group>"; };
 		910D33F925DAE9B70008AA21 /* graphics_WatchOS_callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = graphics_WatchOS_callbacks.h; path = ../../../../../src/shared_libs/WatchOS/graphics_WatchOS_callbacks.h; sourceTree = "<group>"; };
 		910D340225DAF71D0008AA21 /* bg@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "bg@2x.png"; path = "Assets.xcassets/bg@2x.png"; sourceTree = "<group>"; };
 		910D341525DEFB7D0008AA21 /* PlutoboyScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlutoboyScene.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 		9141927E253209CA0070AD3B /* c_src */ = {
 			isa = PBXGroup;
 			children = (
+				51BF9A2B2B1B67A400C3DD1E /* get_time.c */,
 				9178D96725F2A35F00CBBEFB /* files.h */,
 				915311CC25E84265003F9FCB /* sound_queue_WatchOS.cpp */,
 				915311CD25E84265003F9FCB /* sound_queue_WatchOS.h */,
@@ -536,6 +539,7 @@
 				9119A0002554729E0085D264 /* mbc3.c in Sources */,
 				9119A02D255472E40085D264 /* framerate_WatchOS.c in Sources */,
 				9119A0072554729E0085D264 /* mmm01.c in Sources */,
+				51BF9A2C2B1B67A400C3DD1E /* get_time.c in Sources */,
 				9119A01F255472C40085D264 /* Multi_Buffer.cpp in Sources */,
 				9119A0362554730C0085D264 /* files.m in Sources */,
 				9119A02B255472E40085D264 /* graphics_WatchOS.c in Sources */,

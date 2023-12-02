@@ -66,21 +66,6 @@ unsigned long load_SRAM(const char *file_path, unsigned char *data, unsigned lon
     return count;
 }
 
-/* Given a memory location, buffer, and size of the cache, attempts to load save data from cache into the buffer.
- * Returns the size of the cache if successful, returns 0 if unsuccessful.
- * Buffer should be at minimum of size "MAX_SRAMS_SIZE" */
-unsigned long load_SRAM_cached(unsigned char *cache_ptr, unsigned char *data, unsigned long size){
-
-    log_message(LOG_INFO, "Attempting to load SRAM from cache\n");
-    void* dest = memcpy(data, cache_ptr, size);
-    if(dest != NULL){
-        log_message(LOG_INFO, "%lu bytes successfully read from cache\n",size);
-        return size;
-    }
-    return 0;
-}
- 
-
 /* Given a file_path, save data and the size of save data, attempts to
  * save the data to the given file. Returns 1 if successful, 0 otherwise */
 int save_SRAM(const char *file_path, const unsigned char *data, unsigned long size) {
@@ -105,16 +90,3 @@ int save_SRAM(const char *file_path, const unsigned char *data, unsigned long si
     fclose(file);   
     return 1;
 }                                      
-
-/* Given memory location, save data and the size of save data, attempts to
- * save the data to a cache in ram. Used to improve 3DS emulation speed 
- * and lower the amount of taxing I/O writes. Returns 1 if successful, 0 otherwise */
-int save_SRAM_cached(unsigned char *cache_ptr, unsigned char *data, unsigned long size){
-    log_message(LOG_INFO, "Attempting to write SRAM cache\n");
-    void* dest = memcpy(cache_ptr, data, size);
-    if(dest != NULL){
-        log_message(LOG_INFO, "%lu bytes successfully written to cache\n",size);
-        return size;
-    }
-    return 0;
-}
