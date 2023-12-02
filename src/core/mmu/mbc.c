@@ -57,6 +57,7 @@ void write_SRAM() {
     SRAM_cache_valid = 1;   // since we always ensure the cache matches the file, it's always valid except on load up
 }
 
+
 void flush_SRAM() {
     save_SRAM(SRAM_filename, RAM_banks, RAM_bank_count * 0x2000);
 }
@@ -64,7 +65,6 @@ void flush_SRAM() {
 
 void read_SRAM() {
 
-    log_message(LOG_INFO, "read SRAM called\n");
     size_t len;
     if(SRAM_cache_valid){  // depending on if the cache is loaded, use cache or the file
         len = load_SRAM_cached(SRAM_cache, RAM_banks, RAM_bank_count * 0x2000);

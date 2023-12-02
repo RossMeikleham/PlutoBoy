@@ -73,6 +73,16 @@ uint8_t *get_sprite_palette();
 // Read a vlue from gameboy color sprite palette RAM
 uint8_t read_sprite_color_palette(int addr);
 
+/* Given a memory location, buffer, and size of the cache, attempts to load save data from cache into the buffer.
+ * Returns the size of the cache if successful, returns 0 if unsuccessful.
+ * Buffer should be at minimum of size "MAX_SRAMS_SIZE" */
+unsigned long load_SRAM_cached(unsigned char *cache_ptr, unsigned char *data, unsigned long size);
+
+/* Given memory location, save data and the size of save data, attempts to
+ * save the data to a cache in ram. Used to improve 3DS emulation speed 
+ * and lower the amount of taxing I/O writes. Returns 1 if successful, 0 otherwise */
+int save_SRAM_cached(unsigned char *cache_ptr, unsigned char *data, unsigned long size);
+
 
 int interrupt_about_to_raise();
 

@@ -8,7 +8,7 @@ RUN mkdir -p /opt/src/edk2/plutoboy/src/non_core
 
 COPY ./build/UEFI/ /opt/src/edk2/plutoboy/build
 COPY ./src/platforms/UEFI /opt/src/edk2/plutoboy/src/platforms/UEFI
-COPY ./src/shared_libs/UEFI /opt/src/edk2/plutoboy/src/shared_libs/UEFI
+COPY ./src/shared_libs/ /opt/src/edk2/plutoboy/src/shared_libs/
 COPY ./src/core /opt/src/edk2/plutoboy/src/core
 COPY ./src/non_core /opt/src/edk2/plutoboy/src/non_core
 

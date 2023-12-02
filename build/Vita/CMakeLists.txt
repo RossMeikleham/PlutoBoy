@@ -40,6 +40,7 @@ file(GLOB plutoboy_src
     "../../src/shared_libs/SDL2/audio/*.h" 
     "../../src/shared_libs/SDL2/audio/*.cpp"
     "../../src/platforms/Vita/file_browser/filebrowser.c"
+    "../../src/shared_libs/*.c"
 )
 
 add_executable(${SHORT_NAME} ${plutoboy_src})

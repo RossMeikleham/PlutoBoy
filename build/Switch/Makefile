@@ -39,7 +39,9 @@ SOURCES		:=	../../src/platforms/Switch\
 				../../src/shared_libs/SDL2\
 				../../src/shared_libs/SDL2/UI\
 				../../src/shared_libs/SDL2/audio\
-				../../src/core/audio
+				../../src/core/audio\
+				../../src/shared_libs
+
 #DATA		:=	data
 INCLUDES	:=	include
 ROMFS		:=	data

@@ -41,6 +41,7 @@
   ../src/shared_libs/UEFI/joypad_UEFI.c
   ../src/shared_libs/UEFI/serial_io_UEFI.c
   ../src/shared_libs/UEFI/sound_UEFI.c
+  ../src/shared_libs/get_time.c
 
 [Packages]
   MdePkg/MdePkg.dec
