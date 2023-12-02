@@ -42,6 +42,7 @@ SOURCES		:=	../../src/platforms/3DS\
 				../../src/shared_libs/SDL\
 				../../src/shared_libs/SDL/audio\
 				../../src/core/audio\
+				../../src/shared_libs\
 #DATA		:=	data
 INCLUDES	:=	include
 ROMFS		:=	data

@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
     }
 
     write_SRAM();
+    flush_SRAM();   // write straight to file on close
     cleanup();
 	return 0;
 }
